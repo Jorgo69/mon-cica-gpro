@@ -33,6 +33,8 @@ Route::view('/project-list', 'v_beta.project-list')->name('project.list');
 
 Route::view('/admin-it/type_of_project', 'v_beta.admin.type_of_project.index')->middleware(['auth'])->name('admin.it.type.of.project');
 
+Route::view('/admin-it/type_of_project/{projectTypeId}/show', 'v_beta.admin.type_of_project.show')->middleware(['auth'])->name('admin.it.type.of.project.show');
+
 // Route pour afficher le formulaire de création
 Route::view('/admin-it/project-types/create', 'v_beta.admin.type_of_project.form')->name('admin.it.project.types.create');
 

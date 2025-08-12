@@ -28,9 +28,13 @@
                     <div class="mt-4 flex justify-between items-center">
                         <span class="text-xs font-medium text-blue-600 dark:text-blue-400">Catégorie: {{ $type->category ?? 'N/A' }}</span>
                         <div class="space-x-2">
+                            {{-- <a href="{{ route('admin.it.type.of.project.show', ['projectTypeId' => $type->id]) }}" class="px-4 py-2 text-sm font-medium rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-700 transition-colors">
+                                Voir
+                            </a> --}}
                             <a href="{{ route('admin.it.project.types.edit', ['projectTypeId' => $type->id]) }}" class="px-4 py-2 text-sm font-medium rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-700 transition-colors">
                                 Éditer
                             </a>
+                            
                             <button wire:click="deleteProjectType('{{ $type->id }}')" onclick="confirm('Êtes-vous sûr de vouloir supprimer ce type de projet ?') || event.stopImmediatePropagation()" class="px-4 py-2 text-sm font-medium rounded-lg text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-700 transition-colors">
                                 Supprimer
                             </button>

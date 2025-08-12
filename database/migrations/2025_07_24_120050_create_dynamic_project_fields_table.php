@@ -14,15 +14,17 @@ return new class extends Migration
         Schema::create('dynamic_project_fields', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('project_type_id');
-            $table->string('field_name', 100);
+            $table->string('field_name');
             $table->text('question_text');
-            $table->string('input_type', 50);
+            $table->string('input_type');
             $table->json('options')->nullable();
             $table->integer('order');
-            $table->string('target_project_field', 100);
-            $table->string('section', 100);
+            $table->string('target_project_field');
+            $table->string('section');
             $table->string('delimiter_start', 255)->unique();
             $table->string('delimiter_end', 255)->unique();
+            // Nouvelle colonne pour le rendu visuel des listes déroulantes
+            $table->string('render_as')->nullable();
             $table->boolean('is_required')->default(false);
             $table->timestamps();
 

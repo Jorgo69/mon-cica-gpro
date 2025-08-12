@@ -14,11 +14,11 @@ class DynamicProjectField extends Model
     protected $fillable = [
         'id', 'project_type_id', 'field_name', 'question_text', 'input_type',
         'options', 'order', 'target_project_field', 'section',
-        'delimiter_start', 'delimiter_end', 'is_required',
+        'delimiter_start', 'delimiter_end', 'render_as', 'is_required',
     ];
 
     protected $casts = [
-        'options' => 'array', 
+        'options' => 'json', 
         'is_required' => 'boolean'
     ];
 

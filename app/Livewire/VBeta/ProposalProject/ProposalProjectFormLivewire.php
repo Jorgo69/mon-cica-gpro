@@ -107,23 +107,37 @@ class ProposalProjectFormLivewire extends Component
             'budgets.*.total_cost' => 'nullable|numeric|min:0',
             'budgets.*.category' => 'nullable|string',
             'budgets.*.responsible_user_id' => 'nullable|uuid|exists:users,id',
+            
         ];
 
        // Règles dynamiques BASÉES sur l'étape courante
     $currentSection = $this->getSectionFromStep($this->currentStep);
+
     if ($currentSection && isset($this->dynamicFormFields[$currentSection])) {
-        foreach ($this->dynamicFormFields[$currentSection] as $field) {
-            $key = 'dynamicFieldValues.'.$field['field_name'];
-            $rules[$key] = $field['is_required'] ? 'required|string' : 'nullable|string';
-            
-            // Ajouter des règles spécifiques par type de champ
-            if ($field['input_type'] === 'number') {
-                $rules[$key] .= '|numeric';
-            } elseif ($field['input_type'] === 'date') {
-                $rules[$key] .= '|date';
+            foreach ($this->dynamicFormFields[$currentSection] as $field) {
+                $key = 'dynamicFieldValues.' . $field['field_name'];
+                
+                // Règle de validation standard, `required` ou `nullable`
+                $validationRule = $field['is_required'] ? 'required' : 'nullable';
+
+                // Règles spécifiques en fonction du type d'input
+                if ($field['input_type'] === 'number') {
+                    $validationRule .= '|numeric';
+                } elseif ($field['input_type'] === 'date') {
+                    $validationRule .= '|date';
+                } elseif ($field['input_type'] === 'select' && $field['render_as'] === 'checkbox') {
+                    // Les checkboxes renvoient un tableau, la validation doit donc le refléter
+                    $validationRule .= '|array';
+                }  elseif ($field['input_type'] === 'select' && isset($field['render_as']) && $field['render_as'] === 'checkbox') {
+                // Les checkboxes renvoient un tableau, la validation doit donc le refléter
+                $validationRule .= '|array';
+                } else {
+                    $validationRule .= '|string';
+                }
+
+                $rules[$key] = $validationRule;
             }
         }
-    }
 
         return $rules;
     }
@@ -184,66 +198,74 @@ class ProposalProjectFormLivewire extends Component
     public function mount($projectId = null)
     {
         $this->users = User::all();
-        $this->allProjectTypes = ProjectType::all();
+    $this->allProjectTypes = ProjectType::all();
 
-        $this->stepDetails = [
-            ['title' => 'Informations Clés', 'description' => 'Détails de base du projet'],
-            ['title' => 'Contexte & Documents', 'description' => 'Description et fichiers pertinents'],
-            ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
-            ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
-            ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
-            ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
-            ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
-        ];
+    $this->stepDetails = [
+        ['title' => 'Informations Clés', 'description' => 'Détails de base du projet'],
+        ['title' => 'Contexte & Documents', 'description' => 'Description et fichiers pertinents'],
+        ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
+        ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
+        ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
+        ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
+        ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
+    ];
 
-        if ($projectId) {
-            $this->projectId = $projectId;
-            Log::debug("Chargement du projet existant avec ID: {$this->projectId}");
-            $project = Project::with([
-                'projectContext',
-                'projectDocuments',
-                'logicalFramework.specificObjectives.results',
-            'logicalFramework.specificObjectives.results.activities', // Charger les activités via les résultats
-                'budgets',
-                'projectType'
-            ])->find($projectId); // Utiliser find() au lieu de findOrFail() pour éviter l'exception
+    $this->dynamicFieldValues = []; // Initialisation du tableau
 
-            if (!$project) {
-                // Si le projet n'est pas trouvé, réinitialiser et agir comme en mode création
-                Log::warning("Projet avec l'ID: {$this->projectId} non trouvé lors du montage. Initialisation pour la création.");
-                $this->projectId = null;
-                $this->addSpecificObjective();
-                $this->addExpectedResult();
-                $this->addActivity();
-                $this->addBudget();
-                return;
-            }
+    if ($projectId) {
+        $this->projectId = $projectId;
+        $project = Project::with([
+            'projectContext',
+            'projectDocuments',
+            'logicalFramework.specificObjectives.results',
+            'logicalFramework.specificObjectives.results.activities',
+            'budgets',
+            'projectType'
+        ])->find($projectId);
 
-            $this->projectCode = $project->project_code;
-            $this->projectTitle = $project->title;
-            $this->projectShortTitle = $project->short_title;
-            $this->projectStartDate = $project->start_date instanceof Carbon ? $project->start_date->format('Y-m-d') : $project->start_date;
-            $this->projectEndDate = $project->end_date instanceof Carbon ? $project->end_date->format('Y-m-d') : $project->end_date;
-            $this->projectStatus = $project->status;
-            $this->selectedProjectTypeId = $project->project_type_id;
+        if (!$project) {
+            $this->projectId = null;
+            $this->addSpecificObjective();
+            $this->addExpectedResult();
+            $this->addActivity();
+            $this->addBudget();
+            return;
+        }
 
-            // Charger les champs dynamiques et les valeurs existantes
-            $this->loadDynamicFields();
-            Log::debug("Champs dynamiques chargés pour le type de projet: {$this->selectedProjectTypeId}");
+        $this->projectCode = $project->project_code;
+        $this->projectTitle = $project->title;
+        $this->projectShortTitle = $project->short_title;
+        $this->projectStartDate = $project->start_date instanceof Carbon ? $project->start_date->format('Y-m-d') : $project->start_date;
+        $this->projectEndDate = $project->end_date instanceof Carbon ? $project->end_date->format('Y-m-d') : $project->end_date;
+        $this->projectStatus = $project->status;
+        $this->selectedProjectTypeId = $project->project_type_id;
 
-            // Remplir les valeurs des champs dynamiques à partir des champs du projet
-            foreach ($this->dynamicFormFields as $section => $fields) {
-                foreach ($fields as $fieldDef) {
-                    $targetField = $fieldDef['target_project_field'];
-                    $fieldName = $fieldDef['field_name'];
-                    if (isset($project->$targetField)) {
-                        $pattern = '/' . preg_quote($fieldDef['delimiter_start'], '/') . '(.*?)' . preg_quote($fieldDef['delimiter_end'], '/') . '/s';
-                        if (preg_match($pattern, $project->$targetField, $matches)) {
-                            $this->dynamicFieldValues[$fieldName] = $matches[1];
-                        }
+        $projectType = ProjectType::with('dynamicFields')->findOrFail($this->selectedProjectTypeId);
+        $this->dynamicFormFields = $projectType->dynamicFields->groupBy('section')->toArray();
+
+        // Récupérer le contenu du champ qui stocke toutes les données dynamiques
+        $dynamicFieldsString = $project->general_objectives;
+
+        // Si le champ n'est pas vide, extraire les valeurs pour chaque champ dynamique
+        if (!empty($dynamicFieldsString)) {
+            foreach ($projectType->dynamicFields as $fieldDef) {
+                $fieldName = $fieldDef['field_name'];
+                $delimiterStart = $fieldDef['delimiter_start'];
+                $delimiterEnd = $fieldDef['delimiter_end'];
+
+                $pattern = '/' . preg_quote($delimiterStart, '/') . '(.*?)' . preg_quote($delimiterEnd, '/') . '/s';
+                
+                if (preg_match($pattern, $dynamicFieldsString, $matches)) {
+                    $value = $matches[1];
+                    // Gérer les cas spécifiques comme les checkboxes
+                    if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
+                        $this->dynamicFieldValues[$fieldName] = json_decode($value);
+                    } else {
+                        $this->dynamicFieldValues[$fieldName] = $value;
                     }
                 }
             }
+        }
             
             // Charger les données des relations
             $this->contextDescription = $project->projectContext->context_description ?? '';
@@ -297,8 +319,63 @@ class ProposalProjectFormLivewire extends Component
         // Charger les champs dynamiques SI un type est déjà sélectionné
         if ($this->selectedProjectTypeId) {
             $this->loadDynamicFields();
+            // Ici, il faut s'assurer que les valeurs sont prêtes pour les checkboxes
+            $this->initializeDynamicFieldValues();
         }
     }
+
+    private function extractDynamicFieldValues(Project $project, $dynamicFields)
+    {
+        foreach ($dynamicFields as $field) {
+            $targetProjectField = $field->target_project_field;
+            $delimiterStart = $field->delimiter_start;
+            $delimiterEnd = $field->delimiter_end;
+            $fieldName = $field->field_name;
+
+            // On récupère le contenu complet de la colonne du projet
+            $fullContent = $project->$targetProjectField;
+            
+            // On s'assure que le contenu n'est pas null et que les délimiteurs sont définis
+            if (!is_null($fullContent) && !is_null($delimiterStart) && !is_null($delimiterEnd)) {
+                // Créer une expression régulière pour extraire le contenu entre les délimiteurs
+                $pattern = '/' . preg_quote($delimiterStart, '/') . '(.*?)' . preg_quote($delimiterEnd, '/') . '/s';
+                
+                if (preg_match($pattern, $fullContent, $matches)) {
+                    $value = $matches[1];
+                    // Si le champ est une checkbox (stocké en JSON), on décode
+                    if ($field->input_type === 'select' && $field->render_as === 'checkbox') {
+                        $this->dynamicFieldValues[$fieldName] = json_decode($value, true) ?? [];
+                    } else {
+                        $this->dynamicFieldValues[$fieldName] = $value;
+                    }
+                } else {
+                    // Si aucune correspondance n'est trouvée, on met une valeur par défaut
+                    $this->dynamicFieldValues[$fieldName] = null;
+                }
+            } else {
+                 $this->dynamicFieldValues[$fieldName] = null;
+            }
+        }
+    }
+
+
+    /**
+ * Initialise les valeurs des champs dynamiques, en particulier les tableaux pour les checkboxes.
+ *
+ * @return void
+ */
+private function initializeDynamicFieldValues()
+{
+    foreach ($this->dynamicFormFields as $section => $fields) {
+        foreach ($fields as $fieldDef) {
+            if ($fieldDef['input_type'] === 'select' && isset($fieldDef['render_as']) && $fieldDef['render_as'] === 'checkbox') {
+                if (!isset($this->dynamicFieldValues[$fieldDef['field_name']])) {
+                     $this->dynamicFieldValues[$fieldDef['field_name']] = [];
+                }
+            }
+        }
+    }
+}
 
     /**
      * Méthode appelée quand le type de projet est sélectionné ou mis à jour.
@@ -311,6 +388,15 @@ class ProposalProjectFormLivewire extends Component
         $this->loadDynamicFields();
         // Réinitialiser les valeurs des champs dynamiques si le type de projet change
         $this->dynamicFieldValues = [];
+
+         // Initialisation des champs checkbox à des tableaux vides pour éviter les erreurs
+                foreach ($this->dynamicFormFields as $section => $fields) {
+                    foreach ($fields as $fieldDef) {
+                        if ($fieldDef['input_type'] === 'select' && isset($fieldDef['render_as']) && $fieldDef['render_as'] === 'checkbox') {
+                            $this->dynamicFieldValues[$fieldDef['field_name']] = [];
+                        }
+                    }
+                }
     }
 
     /**
@@ -332,17 +418,36 @@ class ProposalProjectFormLivewire extends Component
             'exists' => ProjectType::where('id', $this->selectedProjectTypeId)->exists()
         ]);
 
+        // $fields = DynamicProjectField::where('project_type_id', $this->selectedProjectTypeId)
+        //     ->orderBy('order')
+        //     ->get()
+        //     ->groupBy('section')
+        //     ->toArray();
+
         $fields = DynamicProjectField::where('project_type_id', $this->selectedProjectTypeId)
-            ->orderBy('order')
-            ->get()
-            ->groupBy('section')
-            ->toArray();
+        ->orderBy('order')
+        ->get()
+        ->map(function($field) {
+            // C'est cette ligne qui est la plus importante.
+            // On vérifie que `options` est une chaîne non vide.
+            // Si c'est le cas, on la décode en tableau PHP, sinon on initialise un tableau vide.
+            // CORRECTION: Décodage direct des options JSON
+            if ($field->input_type === 'select' && $field->options) {
+                $field->options = json_decode($field->options, true) ?? [];
+            } else {
+                $field->options = [];
+            }
+            return $field;
+        })
+        ->groupBy('section')
+        ->toArray();
+
 
         // Debug des champs trouvés
-        logger()->debug("Champs dynamiques chargés", [
-            'sections' => array_keys($fields),
-            'total_fields' => array_sum(array_map('count', $fields))
-        ]);
+        // logger()->debug("Champs dynamiques chargés", [
+        //     'sections' => array_keys($fields),
+        //     'total_fields' => array_sum(array_map('count', $fields))
+        // ]);
 
         $this->dynamicFormFields = $fields;
 
@@ -648,49 +753,35 @@ class ProposalProjectFormLivewire extends Component
             $endDate = empty($this->projectEndDate) ? null : $this->projectEndDate;
 
             // Préparer les données du projet principal
-            $projectData = [
-                'project_code' => $this->projectCode,
-                'title' => $this->projectTitle,
-                'short_title' => $this->projectShortTitle,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => $this->projectStatus,
-                'creator_user_id' => Auth::id(), // Utilisateur connecté
-                'project_type_id' => $this->selectedProjectTypeId,
-                'created_by_user_id' => Auth::id(),
-                'updated_by_user_id' => Auth::id(),
-            ];
+            // Intégrer les valeurs des champs dynamiques dans un champ unique
+        $dynamicFieldsString = '';
+        foreach ($this->dynamicFormFields as $section => $fields) {
+            foreach ($fields as $fieldDef) {
+                $fieldName = $fieldDef['field_name'];
+                $value = $this->dynamicFieldValues[$fieldName] ?? null;
 
-            // Intégrer les valeurs des champs dynamiques dans les champs cibles du projet
-            $dynamicDataForProjectFields = [];
-            foreach ($this->dynamicFormFields as $section => $fields) {
-                foreach ($fields as $fieldDef) {
-                    $fieldName = $fieldDef['field_name'];
-                    $value = $this->dynamicFieldValues[$fieldName] ?? '';
-                    $targetProjectField = $fieldDef['target_project_field'];
-
-                    // On s'assure que le champ cible n'est pas un champ de date par défaut du projet
-                    // Et on ne met à jour la valeur que si elle n'est pas vide
-                    // Ajout d'une vérification pour les champs de type 'date' pour s'assurer qu'ils sont valides
-                    if (!in_array($targetProjectField, ['created_at', 'updated_at'])) {
-                        if ($fieldDef['input_type'] === 'date') {
-                            // Si c'est un champ de date dynamique, valider le format avant de l'ajouter
-                            if (!empty($value) && Carbon::parse($value)->isValid()) {
-                                $dynamicDataForProjectFields[$targetProjectField] = $value;
-                            } else {
-                                Log::warning("Champ dynamique de type date invalide ou vide ignoré: {$fieldName} avec valeur '{$value}'");
-                            }
-                        } elseif ($value !== '') {
-                            $delimitedValue = $fieldDef['delimiter_start'] . $value . $fieldDef['delimiter_end'];
-                            $dynamicDataForProjectFields[$targetProjectField] = ($dynamicDataForProjectFields[$targetProjectField] ?? '') . $delimitedValue;
-                        }
+                if (!is_null($value) && $value !== '') {
+                    $delimiterStart = $fieldDef['delimiter_start'];
+                    $delimiterEnd = $fieldDef['delimiter_end'];
+                    
+                    if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
+                        $value = json_encode($value);
                     }
+
+                    // Concaténer la nouvelle valeur avec les délimiteurs
+                    $dynamicFieldsString .= $delimiterStart . $value . $delimiterEnd;
                 }
             }
-            $projectData = array_merge($projectData, $dynamicDataForProjectFields);
-            
-            Log::debug("Final projectData avant l'opération DB:", $projectData);
+        }
+        
+        // Stocker la chaîne complète dans la colonne 'general_objectives'
+        $projectData['general_objectives'] = $dynamicFieldsString;
 
+        // Le reste de la logique de sauvegarde...
+        
+        Log::debug("Final projectData avant l'opération DB:", $projectData);
+
+            // dd($projectData);
             // Créer ou Mettre à jour le Projet
             if ($this->projectId) {
                 $project = Project::find($this->projectId);
@@ -698,6 +789,9 @@ class ProposalProjectFormLivewire extends Component
                 if ($project) {
                     // Le projet a été trouvé, on le met à jour
                     $project->update($projectData);
+                    // dd($projectData);
+                    // $project->update($dynamicDataForProjectFields);
+
                     Log::debug("Projet existant mis à jour avec l'ID: {$project->id}");
 
                     // Gérer la suppression des anciennes dépendances avant de les recréer

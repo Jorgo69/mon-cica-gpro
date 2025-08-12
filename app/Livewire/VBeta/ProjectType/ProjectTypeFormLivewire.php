@@ -2,43 +2,36 @@
 
 namespace App\Livewire\VBeta\ProjectType;
 
-use App\Models\Project;
-use Livewire\Component;
-
+use App\Models\DynamicProjectField;
 use App\Models\ProjectType;
 use Illuminate\Support\Str;
-use App\Models\DynamicProjectField;
-
+use Livewire\Component;
 
 class ProjectTypeFormLivewire extends Component
 {
-    // Propriétés pour le type de projet
     public $projectTypeId;
     public $name = '';
     public $description = '';
     public $category = '';
-
-    // Propriétés pour les champs dynamiques
     public $fields = [];
 
-    // Message de statut
-    public $statusMessage = '';
-    public $statusType = 'hidden'; // 'success', 'error', 'hidden'
-
     // Méthode de montage, appelée à l'initialisation du composant.
-    // Gère le mode édition si un ID de projet est fourni.
     public function mount($projectTypeId = null)
     {
         if ($projectTypeId) {
-            // dd('fffff');
             $this->projectTypeId = $projectTypeId;
-            $projectType = Project::with('dynamicFields')->findOrFail($projectTypeId);
+            $projectType = ProjectType::with('dynamicFields')->findOrFail($projectTypeId);
             $this->name = $projectType->name;
             $this->description = $projectType->description;
             $this->category = $projectType->category;
-            $this->fields = $projectType->dynamicFields->toArray();
+            $this->fields = $projectType->dynamicFields->map(function ($field) {
+                // S'il s'agit d'une liste déroulante, on décode les options JSON en tableau.
+                if ($field->input_type === 'select') {
+                    $field->options = json_decode($field->options, true) ?? [];
+                }
+                return $field->toArray();
+            })->toArray();
         } else {
-            // Ajoute un champ vide par défaut en mode création
             $this->addField();
         }
     }
@@ -50,13 +43,15 @@ class ProjectTypeFormLivewire extends Component
             'field_name' => '',
             'question_text' => '',
             'input_type' => 'text',
-            'options' => '',
+            'render_as' => null, // Nouvelle propriété pour le rendu
+            'options' => [],
             'order' => count($this->fields) + 1,
             'target_project_field' => '',
             'section' => '',
-            'delimiter_start' => '',
-            'delimiter_end' => '',
             'is_required' => false,
+            // Les délimiteurs seront générés automatiquement
+            'delimiter_start' => null,
+            'delimiter_end' => null,
         ];
     }
 
@@ -66,29 +61,51 @@ class ProjectTypeFormLivewire extends Component
         unset($this->fields[$index]);
         $this->fields = array_values($this->fields);
     }
+    
+    // Ajoute une option à un champ de type select
+    public function addOption($fieldIndex)
+    {
+        $this->fields[$fieldIndex]['options'][] = [
+            'label' => '',
+            'value' => '',
+        ];
+    }
+
+    // Retire une option d'un champ de type select
+    public function removeOption($fieldIndex, $optionIndex)
+    {
+        unset($this->fields[$fieldIndex]['options'][$optionIndex]);
+        $this->fields[$fieldIndex]['options'] = array_values($this->fields[$fieldIndex]['options']);
+    }
 
     // Sauvegarde ou met à jour le type de projet et ses champs
     public function save()
     {
-        // Validation des données du formulaire
-        $this->validate([
+        $validationRules = [
             'name' => 'required|string|max:100|unique:project_types,name,' . $this->projectTypeId,
             'description' => 'nullable|string',
             'category' => 'nullable|string|max:255',
             'fields.*.question_text' => 'required|string|max:255',
             'fields.*.field_name' => 'required|string|max:100',
             'fields.*.input_type' => 'required|string|in:text,textarea,select,date,number',
-            'fields.*.options' => 'nullable|string',
             'fields.*.order' => 'required|integer',
             'fields.*.target_project_field' => 'nullable|string|max:100',
             'fields.*.section' => 'nullable|string|max:100',
-            'fields.*.delimiter_start' => 'nullable|string|max:255',
-            'fields.*.delimiter_end' => 'nullable|string|max:255',
             'fields.*.is_required' => 'boolean',
-        ]);
+        ];
+
+        foreach ($this->fields as $index => $field) {
+            if ($field['input_type'] === 'select') {
+                $validationRules['fields.' . $index . '.render_as'] = 'required|string|in:select,radio,checkbox';
+                $validationRules['fields.' . $index . '.options'] = 'array|min:1';
+                $validationRules['fields.' . $index . '.options.*.label'] = 'required|string|max:255';
+                $validationRules['fields.' . $index . '.options.*.value'] = 'required|string|max:255';
+            }
+        }
+    
+        $this->validate($validationRules);
 
         try {
-            // Création ou mise à jour du ProjectType
             if ($this->projectTypeId) {
                 $projectType = ProjectType::findOrFail($this->projectTypeId);
                 $projectType->update([
@@ -97,7 +114,6 @@ class ProjectTypeFormLivewire extends Component
                     'category' => $this->category,
                 ]);
             } else {
-                // dd('');
                 $projectType = ProjectType::create([
                     'id' => (string) Str::uuid(),
                     'name' => $this->name,
@@ -107,8 +123,6 @@ class ProjectTypeFormLivewire extends Component
                 $this->projectTypeId = $projectType->id;
             }
 
-            // Gestion des champs dynamiques (mise à jour/création)
-            // On supprime les anciens champs qui n'existent plus dans le formulaire
             if ($this->projectTypeId) {
                 $existingFieldNames = collect($this->fields)->pluck('field_name')->toArray();
                 DynamicProjectField::where('project_type_id', $this->projectTypeId)
@@ -117,9 +131,23 @@ class ProjectTypeFormLivewire extends Component
             }
 
             foreach ($this->fields as $index => $fieldData) {
-                // S'assurer que le champ a un nom unique pour l'updateOrCreate
+                // Si c'est un nouveau champ, on génère les délimiteurs
+                if (empty($fieldData['delimiter_start'])) {
+                    $uniqueId = (string) Str::uuid();
+                    $fieldData['delimiter_start'] = '{{--START:' . $uniqueId . '--}}';
+                    $fieldData['delimiter_end'] = '{{--END:' . $uniqueId . '--}}';
+                }
+
                 $fieldData['project_type_id'] = $this->projectTypeId;
                 $fieldData['order'] = $index + 1;
+                
+                // Gérer la sérialisation des options en JSON si c'est un 'select'
+                if ($fieldData['input_type'] === 'select') {
+                    $fieldData['options'] = json_encode($fieldData['options']);
+                } else {
+                    $fieldData['options'] = null;
+                    $fieldData['render_as'] = null;
+                }
 
                 DynamicProjectField::updateOrCreate(
                     [
@@ -130,7 +158,6 @@ class ProjectTypeFormLivewire extends Component
                 );
             }
 
-            // Utiliser session() pour les messages flash
             session()->flash('message', 'Type de projet sauvegardé avec succès !');
             return redirect()->route('admin.it.type.of.project');
 
@@ -139,7 +166,6 @@ class ProjectTypeFormLivewire extends Component
         }
     }
 
-    // La méthode render retourne la vue associée au composant
     public function render()
     {
         return view('livewire.v-beta.project-type.project-type-form-livewire');
