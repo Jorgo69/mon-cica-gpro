@@ -13,7 +13,7 @@ class Project extends Model
     protected $fillable = [
         'id', 'creator_user_id', 'project_type_id', 'project_code', 'title',
         'short_title', 'description', 'general_objectives', 'start_date', 'end_date', 'status',
-        'problem_analysis', 'strategy', 'justification',
+        'problem_analysis', 'strategy', 'justification', 'created_by_user_id', 'updated_by_user_id'
     ];
     protected $casts = [
         'start_date' => 'date', 'end_date' => 'date',

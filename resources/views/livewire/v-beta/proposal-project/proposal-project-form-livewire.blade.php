@@ -170,16 +170,49 @@
                                               dark:file:bg-blue-800 dark:file:text-blue-200 dark:hover:file:bg-blue-700">
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Formats acceptés : PDF, DOCX, XLSX, JPG, PNG. Taille max : 50MB par fichier.</p>
                                 @error('uploadedDocuments.*') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                                @if (count($uploadedDocuments) > 0)
-                                    <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                                        Fichiers sélectionnés:
+                                
+
+                                {{-- Affiche les fichiers existants (ceux déjà en BDD en mode édition) --}}
+                                @if (count($existingDocuments) > 0)
+                                    <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                                        Fichiers existants :
                                         <ul class="list-disc list-inside">
-                                            @foreach ($uploadedDocuments as $file)
-                                                <li>{{ $file->getClientOriginalName() }} ({{ round($file->getSize() / 1024 / 1024, 2) }} MB)</li>
+                                            @foreach ($existingDocuments as $document)
+                                                <li class="flex items-center justify-between">
+                                                    <span>{{ $document->file_name }}</span>
+                                                    <button type="button"
+                                                            wire:click="confirmDeleteDocument('{{ $document->id }}')"
+                                                            wire:confirm="Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible."
+                                                            class="ml-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-500 focus:outline-none">
+                                                        Retirer
+                                                    </button>
+                                                </li>
                                             @endforeach
                                         </ul>
                                     </div>
                                 @endif
+
+                            {{-- Affiche les nouveaux fichiers en attente d'upload --}}
+                            @if (count($uploadedDocuments) > 0)
+                                <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                                    Nouveaux fichiers en attente d'upload :
+                                    <ul class="list-disc list-inside">
+                                        @foreach ($uploadedDocuments as $index => $file)
+                                            <li class="flex items-center justify-between">
+                                                <span>{{ $file->getClientOriginalName() }} ({{ round($file->getSize() / 1024 / 1024, 2) }} MB)</span>
+                                                <button type="button"
+                                                        wire:click="removeUploadedFile({{ $index }})"
+                                                        wire:confirm="Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible."
+                                                        class="ml-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-500 focus:outline-none">
+                                                    Retirer
+                                                </button>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+
                             </div>
 
                             {{-- Champs dynamiques pour cette section --}}
@@ -632,8 +665,15 @@
                                         <ul class="list-disc ml-5">
                                             @foreach ($dynamicFormFields as $section => $fields)
                                                 @foreach ($fields as $field)
-                                                    @if (!empty($dynamicFieldValues[$field['field_name']]))
-                                                        <li><strong>{{ $field['question_text'] }}:</strong> {{ Str::limit($dynamicFieldValues[$field['field_name']], 70) }}</li>
+                                                    @if (isset($dynamicFieldValues[$field['field_name']]))
+                                                        @php
+                                                            $value = $dynamicFieldValues[$field['field_name']];
+                                                            // Convertir les tableaux (checkboxes) en une chaîne de caractères
+                                                            if (is_array($value)) {
+                                                                $value = implode(', ', $value);
+                                                            }
+                                                        @endphp
+                                                        <li><strong>{{ $field['question_text'] }}:</strong> {{ Str::limit($value, 70) }}</li>
                                                     @endif
                                                 @endforeach
                                             @endforeach

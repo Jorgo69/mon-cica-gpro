@@ -55,7 +55,7 @@ Route::view('/creator-proposal/proposal-project/create', 'v_beta.proposal-projec
 Route::view('/creator-proposal/proposal-project/{projectId}/edit', 'v_beta.proposal-project.form')->name('creator.proposal.project.edit');
 
 // Route pour afficher les details
-Route::get('/projects/{projectId}', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');
+Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');
 
 // Proposition de projet End
 

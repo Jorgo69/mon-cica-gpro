@@ -2,24 +2,25 @@
 
 namespace App\Livewire\VBeta\ProposalProject;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Budget;
+use App\Models\Result;
 use App\Models\Project;
+use Livewire\Component;
+use App\Models\Activity;
+use App\Models\ProjectType;
+use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
 use App\Models\ProjectContext;
 use App\Models\ProjectDocument;
+use Illuminate\Validation\Rule;
 use App\Models\LogicalFramework;
 use App\Models\SpecificObjective;
-use App\Models\Result;
-use App\Models\Activity;
-use App\Models\Budget;
-use App\Models\User;
-use App\Models\ProjectType;
+use Illuminate\Support\Facades\DB;
 use App\Models\DynamicProjectField;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon; // Import de Carbon pour la manipulation des dates
 
 class ProposalProjectFormLivewire extends Component
@@ -49,6 +50,7 @@ class ProposalProjectFormLivewire extends Component
     // Données des étapes spécifiques
     public $contextDescription;
     public $uploadedDocuments = []; // Pour ProjectDocument
+    public $existingDocuments = [];
     public $initialLogicalFramework = [ // Pour LogicalFramework
         'general_objective' => '',
         'general_obj_indicators' => '',
@@ -198,130 +200,155 @@ class ProposalProjectFormLivewire extends Component
     public function mount($projectId = null)
     {
         $this->users = User::all();
-    $this->allProjectTypes = ProjectType::all();
+        $this->allProjectTypes = ProjectType::all();
 
-    $this->stepDetails = [
-        ['title' => 'Informations Clés', 'description' => 'Détails de base du projet'],
-        ['title' => 'Contexte & Documents', 'description' => 'Description et fichiers pertinents'],
-        ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
-        ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
-        ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
-        ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
-        ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
-    ];
+        $this->stepDetails = [
+            ['title' => 'Informations Clés', 'description' => 'Détails de base du projet'],
+            ['title' => 'Contexte & Documents', 'description' => 'Description et fichiers pertinents'],
+            ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
+            ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
+            ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
+            ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
+            ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
+        ];
 
-    $this->dynamicFieldValues = []; // Initialisation du tableau
+        $this->dynamicFieldValues = []; // Initialisation du tableau
 
-    if ($projectId) {
-        $this->projectId = $projectId;
-        $project = Project::with([
-            'projectContext',
-            'projectDocuments',
-            'logicalFramework.specificObjectives.results',
-            'logicalFramework.specificObjectives.results.activities',
-            'budgets',
-            'projectType'
-        ])->find($projectId);
+        if ($projectId) {
+            $this->projectId = $projectId;
+            $project = Project::with([
+                'projectContext',
+                'projectDocuments',
+                'logicalFramework.specificObjectives.results',
+                'logicalFramework.specificObjectives.results.activities',
+                'budgets',
+                'projectType'
+            ])->find($projectId);
 
-        if (!$project) {
-            $this->projectId = null;
-            $this->addSpecificObjective();
-            $this->addExpectedResult();
-            $this->addActivity();
-            $this->addBudget();
-            return;
-        }
-
-        $this->projectCode = $project->project_code;
-        $this->projectTitle = $project->title;
-        $this->projectShortTitle = $project->short_title;
-        $this->projectStartDate = $project->start_date instanceof Carbon ? $project->start_date->format('Y-m-d') : $project->start_date;
-        $this->projectEndDate = $project->end_date instanceof Carbon ? $project->end_date->format('Y-m-d') : $project->end_date;
-        $this->projectStatus = $project->status;
-        $this->selectedProjectTypeId = $project->project_type_id;
-
-        $projectType = ProjectType::with('dynamicFields')->findOrFail($this->selectedProjectTypeId);
-        $this->dynamicFormFields = $projectType->dynamicFields->groupBy('section')->toArray();
-
-        // Récupérer le contenu du champ qui stocke toutes les données dynamiques
-        $dynamicFieldsString = $project->general_objectives;
-
-        // Si le champ n'est pas vide, extraire les valeurs pour chaque champ dynamique
-        if (!empty($dynamicFieldsString)) {
-            foreach ($projectType->dynamicFields as $fieldDef) {
-                $fieldName = $fieldDef['field_name'];
-                $delimiterStart = $fieldDef['delimiter_start'];
-                $delimiterEnd = $fieldDef['delimiter_end'];
-
-                $pattern = '/' . preg_quote($delimiterStart, '/') . '(.*?)' . preg_quote($delimiterEnd, '/') . '/s';
-                
-                if (preg_match($pattern, $dynamicFieldsString, $matches)) {
-                    $value = $matches[1];
-                    // Gérer les cas spécifiques comme les checkboxes
-                    if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
-                        $this->dynamicFieldValues[$fieldName] = json_decode($value);
-                    } else {
-                        $this->dynamicFieldValues[$fieldName] = $value;
-                    }
-                }
-            }
-        }
-            
-            // Charger les données des relations
-            $this->contextDescription = $project->projectContext->context_description ?? '';
-            
-            if ($project->logicalFramework) {
-                $this->initialLogicalFramework = $project->logicalFramework->toArray();
-                $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
-                
-                // Remplir expectedResults en se basant sur les résultats liés aux objectifs spécifiques
-                $this->expectedResults = [];
-                foreach ($project->logicalFramework->specificObjectives as $obj) {
-                    foreach ($obj->results as $res) {
-                        $this->expectedResults[] = $res->toArray();
-                    }
-                }
-            } else {
-                // Si pas de cadre logique, initialiser pour éviter les erreurs
+            if (!$project) {
+                $this->projectId = null;
                 $this->addSpecificObjective();
                 $this->addExpectedResult();
+                $this->addActivity();
+                $this->addBudget();
+                return;
             }
 
-            // Assurez-vous que les activités et budgets sont des tableaux, même s'ils sont vides
-            // Charger les activités en itérant sur les résultats
-            $this->activities = [];
-            foreach ($project->logicalFramework->specificObjectives as $obj) {
-                foreach ($obj->results as $res) {
-                    foreach ($res->activities as $act) {
-                        $this->activities[] = $act->toArray();
+            $this->existingDocuments = $project->projectDocuments;
+
+            $this->projectCode = $project->project_code;
+            $this->projectTitle = $project->title;
+            $this->projectShortTitle = $project->short_title;
+
+            // $this->projectStartDate = $project->start_date instanceof Carbon ? $project->start_date->format('Y-m-d') : $project->start_date;
+            // $this->projectEndDate = $project->end_date instanceof Carbon ? $project->end_date->format('Y-m-d') : $project->end_date;
+
+            // Correction ici : toujours formater la date au format Y-m-d
+            $this->projectStartDate = $project->start_date ? Carbon::parse($project->start_date)->format('Y-m-d') : null;
+            $this->projectEndDate = $project->end_date ? Carbon::parse($project->end_date)->format('Y-m-d') : null;
+
+            $this->projectStatus = $project->status;
+            $this->selectedProjectTypeId = $project->project_type_id;
+
+            $projectType = ProjectType::with('dynamicFields')->findOrFail($this->selectedProjectTypeId);
+            $this->dynamicFormFields = $projectType->dynamicFields->groupBy('section')->toArray();
+
+            // Récupérer le contenu du champ qui stocke toutes les données dynamiques
+            $dynamicFieldsString = $project->general_objectives;
+
+            // Si le champ n'est pas vide, extraire les valeurs pour chaque champ dynamique
+            if (!empty($dynamicFieldsString)) {
+                foreach ($projectType->dynamicFields as $fieldDef) {
+                    $fieldName = $fieldDef['field_name'];
+                    $delimiterStart = $fieldDef['delimiter_start'];
+                    $delimiterEnd = $fieldDef['delimiter_end'];
+
+                    $pattern = '/' . preg_quote($delimiterStart, '/') . '(.*?)' . preg_quote($delimiterEnd, '/') . '/s';
+                    
+                    if (preg_match($pattern, $dynamicFieldsString, $matches)) {
+                        $value = $matches[1];
+                        // Gérer les cas spécifiques comme les checkboxes
+                        if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
+                            $this->dynamicFieldValues[$fieldName] = json_decode($value);
+                        } else {
+                            $this->dynamicFieldValues[$fieldName] = $value;
+                        }
                     }
                 }
             }
-            $this->budgets = $project->budgets->toArray();
+                
+                // Charger les données des relations
+                $this->contextDescription = $project->projectContext->context_description ?? '';
+                
+                if ($project->logicalFramework) {
+                    $this->initialLogicalFramework = $project->logicalFramework->toArray();
+                    $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
+                    
+                    // Remplir expectedResults en se basant sur les résultats liés aux objectifs spécifiques
+                    $this->expectedResults = [];
+                    foreach ($project->logicalFramework->specificObjectives as $obj) {
+                        foreach ($obj->results as $res) {
+                            $this->expectedResults[] = $res->toArray();
+                        }
+                    }
+                } else {
+                    // Si pas de cadre logique, initialiser pour éviter les erreurs
+                    $this->addSpecificObjective();
+                    $this->addExpectedResult();
+                }
 
-        } else {
-            // Initialisation pour la création
-            Log::debug("Création d'un nouveau projet, initialisation des propriétés.");
-            $this->projectStartDate = null; // Initialisation explicite à null
-            $this->projectEndDate = null;   // Initialisation explicite à null
-            $this->addSpecificObjective();
-            $this->addExpectedResult();
-            $this->addActivity();
-            $this->addBudget();
-        }
+                // Assurez-vous que les activités et budgets sont des tableaux, même s'ils sont vides
+                // Charger les activités en itérant sur les résultats
+                // $this->activities = [];
+                // foreach ($project->logicalFramework->specificObjectives as $obj) {
+                //     foreach ($obj->results as $res) {
+                //         foreach ($res->activities as $act) {
+                //             $this->activities[] = $act->toArray();
+                //         }
+                //     }
+                // }
+                
+                $this->activities = [];
+                foreach ($project->logicalFramework->specificObjectives as $obj) {
+                    foreach ($obj->results as $res) {
+                        foreach ($res->activities as $act) {
+                            $activity = $act->toArray();
+                            // S'assurer que les dates sont formatées correctement
+                            if (isset($activity['start_date'])) {
+                                $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
+                            }
+                            if (isset($activity['end_date'])) {
+                                $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');
+                            }
+                            $this->activities[] = $activity;
+                        }
+                    }
+                }
+                $this->budgets = $project->budgets->toArray();
 
-        \Log::debug("Dynamic Fields Preview", [
-            'sections' => array_keys($this->dynamicFormFields),
-            'first_field' => $this->dynamicFormFields[array_key_first($this->dynamicFormFields)][0] ?? null,
-            'values' => $this->dynamicFieldValues
-        ]);
+            } else {
+                // Initialisation pour la création
+                Log::debug("Création d'un nouveau projet, initialisation des propriétés.");
+                $this->projectStartDate = null; // Initialisation explicite à null
+                $this->projectEndDate = null;   // Initialisation explicite à null
+                $this->addSpecificObjective();
+                $this->addExpectedResult();
+                $this->addActivity();
+                $this->addBudget();
+            }
 
-        // Charger les champs dynamiques SI un type est déjà sélectionné
-        if ($this->selectedProjectTypeId) {
-            $this->loadDynamicFields();
-            // Ici, il faut s'assurer que les valeurs sont prêtes pour les checkboxes
-            $this->initializeDynamicFieldValues();
-        }
+            \Log::debug("Dynamic Fields Preview", [
+                'sections' => array_keys($this->dynamicFormFields),
+                'first_field' => $this->dynamicFormFields[array_key_first($this->dynamicFormFields)][0] ?? null,
+                'values' => $this->dynamicFieldValues
+            ]);
+
+            // Charger les champs dynamiques SI un type est déjà sélectionné
+            if ($this->selectedProjectTypeId) {
+                $this->loadDynamicFields();
+                // Ici, il faut s'assurer que les valeurs sont prêtes pour les checkboxes
+                $this->initializeDynamicFieldValues();
+            }
     }
 
     private function extractDynamicFieldValues(Project $project, $dynamicFields)
@@ -752,34 +779,33 @@ private function initializeDynamicFieldValues()
             $startDate = empty($this->projectStartDate) ? null : $this->projectStartDate;
             $endDate = empty($this->projectEndDate) ? null : $this->projectEndDate;
 
+            
+
             // Préparer les données du projet principal
             // Intégrer les valeurs des champs dynamiques dans un champ unique
-        $dynamicFieldsString = '';
-        foreach ($this->dynamicFormFields as $section => $fields) {
-            foreach ($fields as $fieldDef) {
-                $fieldName = $fieldDef['field_name'];
-                $value = $this->dynamicFieldValues[$fieldName] ?? null;
+            $dynamicFieldsString = '';
+            foreach ($this->dynamicFormFields as $section => $fields) {
+                foreach ($fields as $fieldDef) {
+                    $fieldName = $fieldDef['field_name'];
+                    $value = $this->dynamicFieldValues[$fieldName] ?? null;
 
-                if (!is_null($value) && $value !== '') {
-                    $delimiterStart = $fieldDef['delimiter_start'];
-                    $delimiterEnd = $fieldDef['delimiter_end'];
-                    
-                    if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
-                        $value = json_encode($value);
+                    if (!is_null($value) && $value !== '') {
+                        $delimiterStart = $fieldDef['delimiter_start'];
+                        $delimiterEnd = $fieldDef['delimiter_end'];
+                        
+                        if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
+                            $value = json_encode($value);
+                        }
+
+                        // Concaténer la nouvelle valeur avec les délimiteurs
+                        $dynamicFieldsString .= $delimiterStart . $value . $delimiterEnd;
                     }
-
-                    // Concaténer la nouvelle valeur avec les délimiteurs
-                    $dynamicFieldsString .= $delimiterStart . $value . $delimiterEnd;
                 }
             }
-        }
         
-        // Stocker la chaîne complète dans la colonne 'general_objectives'
-        $projectData['general_objectives'] = $dynamicFieldsString;
+        
 
-        // Le reste de la logique de sauvegarde...
         
-        Log::debug("Final projectData avant l'opération DB:", $projectData);
 
             // dd($projectData);
             // Créer ou Mettre à jour le Projet
@@ -787,10 +813,40 @@ private function initializeDynamicFieldValues()
                 $project = Project::find($this->projectId);
 
                 if ($project) {
+
+                    // Préparer les données du projet principal, avec tous les champs requis
+                    $projectData = [
+                        'project_code' => $this->projectCode,
+                        'title' => $this->projectTitle,
+                        'short_title' => $this->projectShortTitle,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'status' => $this->projectStatus,
+                        'creator_user_id' => Auth::id(), // <-- Cette ligne est cruciale
+                        'project_type_id' => $this->selectedProjectTypeId, // <-- Cette ligne est cruciale
+                        // 'created_by_user_id' => Auth::id(),
+                        'updated_by_user_id' => Auth::id(),
+                        // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
+                        // 'description' => $this->description,
+                        // 'problem_analysis' => $this->problemAnalysis,
+                        // 'strategy' => $this->strategy,
+                        // 'justification' => $this->justification,
+                    ];
+
+                    // Stocker la chaîne complète dans la colonne 'general_objectives'
+                    $projectData['general_objectives'] = $dynamicFieldsString;
+                    // Le reste de la logique de sauvegarde...
+        
+                    Log::debug("Mode Creation: Final projectData avant l'opération DB:", $projectData);
+
+                    // Mettre à jour le statut uniquement si le champ existe dans le formulaire
+                    // Sinon, la valeur existante est conservée
+                    $projectData['status'] = $this->projectStatus;
+                    // Mettre à jour seulement l'utilisateur qui a modifié le projet
+                    $projectData['updated_by_user_id'] = Auth::id();
                     // Le projet a été trouvé, on le met à jour
                     $project->update($projectData);
-                    // dd($projectData);
-                    // $project->update($dynamicDataForProjectFields);
+                    
 
                     Log::debug("Projet existant mis à jour avec l'ID: {$project->id}");
 
@@ -818,16 +874,38 @@ private function initializeDynamicFieldValues()
                     // $project->projectDocuments()->delete(); 
                     // Log::debug("Anciens documents du projet {$project->id} supprimés.");
 
-                } else {
-                    // Le projet n'a pas été trouvé, on en crée un nouveau
-                    Log::warning("Projet avec l'ID: {$this->projectId} non trouvé. Création d'un nouveau projet.");
-                    $project = Project::create(array_merge($projectData, ['id' => (string) Str::uuid()]));
-                    $this->projectId = $project->id;
-                    Log::debug("Nouveau projet créé avec l'ID: {$project->id}");
-                }
+                } 
             } else {
+                
+                // Préparer les données du projet principal, avec tous les champs requis
+                $projectData = [
+                    'project_code' => $this->projectCode,
+                    'title' => $this->projectTitle,
+                    'short_title' => $this->projectShortTitle,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'status' => 'draft', // Le statut est "draft" uniquement à la création
+                    'creator_user_id' => Auth::id(), // <-- Cette ligne est cruciale
+                    'project_type_id' => $this->selectedProjectTypeId, // <-- Cette ligne est cruciale
+                    'created_by_user_id' => Auth::id(),
+                    // 'updated_by_user_id' => Auth::id(),
+                    // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
+                    // 'description' => $this->description,
+                    // 'problem_analysis' => $this->problemAnalysis,
+                    // 'strategy' => $this->strategy,
+                    // 'justification' => $this->justification,
+                ];
+
+                // Stocker la chaîne complète dans la colonne 'general_objectives'
+                $projectData['general_objectives'] = $dynamicFieldsString;
+
+                // Le reste de la logique de sauvegarde...
+        
+                Log::debug("Mode Edit: Final projectData avant l'opération DB:", $projectData);
+
                 // Pas d'ID de projet, on en crée un nouveau
                 $project = Project::create(array_merge($projectData, ['id' => (string) Str::uuid()]));
+                
                 $this->projectId = $project->id;
                 Log::debug("Nouveau projet créé avec l'ID: {$project->id}");
             }
@@ -1001,6 +1079,53 @@ private function initializeDynamicFieldValues()
             DB::rollBack();
             Log::error('Erreur lors de la sauvegarde du projet : ' . $e->getMessage(), ['exception' => $e]);
             session()->flash('error', 'Une erreur est survenue lors de la sauvegarde du projet. Veuillez réessayer. Détail: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Gère la confirmation de suppression d'un document existant.
+     * @param string $documentId
+     */
+    public function confirmDeleteDocument($documentId)
+    {
+        $this->dispatch('confirm-delete-document', ['documentId' => $documentId]);
+    }
+
+    /**
+     * Supprime un fichier qui vient d'être uploadé (avant la sauvegarde).
+     * @param int $index
+     */
+    public function removeUploadedFile($index)
+    {
+        // Livewire permet de manipuler directement le tableau.
+        unset($this->uploadedDocuments[$index]);
+        $this->uploadedDocuments = array_values($this->uploadedDocuments);
+    }
+    
+    /**
+     * Supprime un document existant de la base de données et du stockage.
+     * @param string $documentId
+     */
+    public function removeExistingDocument($documentId)
+    {
+        try {
+            DB::beginTransaction();
+            $document = ProjectDocument::findOrFail($documentId);
+            
+            // Supprimer le fichier physique
+            Storage::disk('public')->delete($document->file_path);
+            
+            // Supprimer l'entrée de la base de données
+            $document->delete();
+            
+            // Rafraîchir la liste des documents existants
+            $this->existingDocuments = $this->existingDocuments->where('id', '!=', $documentId);
+            
+            DB::commit();
+            session()->flash('success', 'Le document a été supprimé.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Erreur lors de la suppression du document.');
         }
     }
 
