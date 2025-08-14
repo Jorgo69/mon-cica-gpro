@@ -59,6 +59,15 @@ Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShow
 
 // Proposition de projet End
 
+// Ressources
+Route::view('/resource/management', 'v_beta.resource.index')->name('resource.index');
+// End Ressource
+
+// Activities
+Route::view('/activity/list', 'v_beta.activity.index')->name('activity.index');
+Route::view('/activity/{activity}/management', 'v_beta.activity.management')->name('activity.management');
+// End Activities
+
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

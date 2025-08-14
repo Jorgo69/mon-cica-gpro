@@ -85,6 +85,7 @@
 
     <title>{{ $title ?? config('app.name') }}</title>
     {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
+    @stack('alpine-js')
     
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

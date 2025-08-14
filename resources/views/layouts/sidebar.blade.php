@@ -23,6 +23,26 @@
                 </a>
             </div>
 
+            <!-- Ressource -->
+            <div class="mb-4">
+                <a href="{{ route('resource.index') }}" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text- @if(Route::is('accomodation*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-folder text-gray-600 dark:text-gray-300"></i>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Ressource') }}</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Activity -->
+            <div class="mb-4">
+                <a href="{{ route('activity.index') }}" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text- @if(Route::is('accomodation*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-folder text-gray-600 dark:text-gray-300"></i>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Activity') }}</span>
+                    </div>
+                </a>
+            </div>
+
             <!-- Project Design -->
             <div class="mb-4" x-data="{ open: false }">
                 <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left @if(Route::is('booking.host*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">

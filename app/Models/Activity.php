@@ -17,7 +17,7 @@ class Activity extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date', 
+        // 'start_date' => 'date', 
         'end_date' => 'date',
         'is_milestone' => 'boolean',
     ];
@@ -47,5 +47,17 @@ class Activity extends Model
     public function qualitativeEvaluations()
     {
         return $this->hasMany(QualitativeEvaluation::class, 'activity_id', 'id');
+    }
+
+
+
+    /**
+     * Accesseur pour obtenir le projet parent de l'activité.
+     * Permet d'appeler $activity->project.
+     */
+    public function getProjectAttribute()
+    {
+        // Retourne le projet en suivant la chaîne de relations
+        return $this->result?->specificObjective?->logicalFramework?->project ?? null;
     }
 }
