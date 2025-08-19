@@ -27,6 +27,8 @@ Route::view('/project-list', 'v_beta.project-list')->name('project.list');
 // Route::view('/project-create', 'v_beta.project-design')->name('project.create');
 // Route::view('/project-edit/{projectId}', 'v_beta.project-design-edit')->name('project.edit');
 
+Route::view('/project-dashboard/{projectId}/management', 'v_beta.project-dashboard')->name('project.dashboard');
+
 // End Project
 
 // Admin - IT

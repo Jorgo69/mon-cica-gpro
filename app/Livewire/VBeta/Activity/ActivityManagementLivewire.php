@@ -8,13 +8,13 @@ use Livewire\Component;
 class ActivityManagementLivewire extends Component
 {
     public string $activityId;
-    // ... propriétés existantes
     public $activity;
-    public $resources; // La liste des ressources de l'activité
-    public $showModal = false; // Propriété pour gérer l'état de la modale
+    public $resources;
+    public $showModal = false;
+    public $editingResourceId = null; // ID de la ressource en cours d'édition
 
-     // Écouteur pour l'événement 'resourceSaved'
-    protected $listeners = ['resourceSaved' => 'refreshResources'];
+    // Écouteur pour l'événement 'resourceSaved'
+    protected $listeners = ['resourceSaved' => 'closeModalAndRefresh'];
 
     public function mount($activityId)
     {
@@ -22,16 +22,28 @@ class ActivityManagementLivewire extends Component
         $this->resources = $this->activity->resources;
     }
 
-    public function openModal()
+    /**
+     * Ouvre la modale pour la création ou l'édition d'une ressource.
+     * @param string|null $resourceId L'ID de la ressource à éditer, si applicable.
+     */
+    public function openModal(?string $resourceId = null)
     {
+        $this->editingResourceId = $resourceId;
         $this->showModal = true;
     }
 
+    /**
+     * Ferme la modale et réinitialise l'état.
+     */
     public function closeModal()
     {
         $this->showModal = false;
+        $this->editingResourceId = null;
     }
 
+    /**
+     * Ferme la modale et rafraîchit la liste des ressources.
+     */
     public function closeModalAndRefresh()
     {
         $this->closeModal();
@@ -45,13 +57,10 @@ class ActivityManagementLivewire extends Component
         $this->resources = $this->activity->resources()->with('responsibleUser')->get();
     }
 
+    
+    
     public function render()
     {
-        $activity = Activity::with('result.specificObjective.logicalFramework.project')
-                    ->findOrFail($this->activityId);
-
-        return view('livewire.v-beta.activity.activity-management-livewire', [
-            'activity' => $activity,
-        ]);
+        return view('livewire.v-beta.activity.activity-management-livewire');
     }
 }

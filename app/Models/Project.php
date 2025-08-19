@@ -1,8 +1,9 @@
 <?php
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
@@ -67,9 +68,49 @@ class Project extends Model
         return $this->hasMany(ProjectDocument::class);
     }
 
-    public function activities()
+    public function getAllActivities(): Collection
     {
-        return $this->hasMany(Activity::class);
+        $activities = collect([]);
+        // Eager load logical framework and its descendants to minimize queries
+        $this->loadMissing('logicalFramework.specificObjectives.results.activities');
+
+        if ($this->logicalFramework) {
+            foreach ($this->logicalFramework->specificObjectives as $specificObjective) {
+                foreach ($specificObjective->results as $result) {
+                    $activities = $activities->merge($result->activities);
+                }
+            }
+        }
+
+        return $activities;
+    }
+
+
+    /**
+     * Calculate the overall progress percentage of the project.
+     * This is based on the average progress of all its activities.
+     *
+     * @return float
+     */
+    public function calculateProgress(): float
+    {
+        // Use the new method to get all activities
+        $activities = $this->getAllActivities();
+
+        // If there are no activities, the progress is 0.
+        if ($activities->isEmpty()) {
+            return 0.0;
+        }
+
+        // Sum up the progress percentages of all activities.
+        $totalProgress = $activities->sum('progress_percentage');
+        
+        // Calculate the average progress.
+        // Divide by the count of activities.
+        $averageProgress = $totalProgress / $activities->count();
+        
+        // Return the average progress, rounded to two decimal places.
+        return round($averageProgress, 2);
     }
     
 }
