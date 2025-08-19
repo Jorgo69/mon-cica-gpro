@@ -110,10 +110,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('project.show', $project->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">Voir</a>
-                                        <a href="{{ route('creator.proposal.project.edit', $project->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Modifier</a>
-                                    </td>
+
+                                    @include('livewire.v-beta.project.link-project-list')
+                                    
                                 </tr>
                             @endforeach
                         </tbody>

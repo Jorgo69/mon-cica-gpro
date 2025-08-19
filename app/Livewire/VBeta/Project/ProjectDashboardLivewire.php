@@ -18,6 +18,9 @@ class ProjectDashboardLivewire extends Component
     public $statusFilter = '';
     public $responsibleUserFilter = '';
     public $perPage = 10;
+    
+    // Propriété pour l'ID de l'activité sélectionnée pour la modale
+    public $selectedActivityId = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -26,10 +29,14 @@ class ProjectDashboardLivewire extends Component
         'perPage' => ['except' => 10],
     ];
 
+    // Listeners pour les événements venant des autres composants
+    protected $listeners = [
+        'closeActivityDetails' => 'closeActivityDetails',
+    ];
+
     public function mount(string $projectId)
     {
         $this->projectId = $projectId;
-        // On charge uniquement le projet pour l'affichage de son titre, sans toutes les activités.
         $this->project = Project::withCount(['qualitativeEvaluations', 'budgets'])->findOrFail($this->projectId);
     }
     
@@ -53,6 +60,18 @@ class ProjectDashboardLivewire extends Component
     {
         $this->resetPage();
     }
+    
+    // Méthode pour ouvrir la modale des détails d'activité
+    public function openActivityDetails($activityId)
+    {
+        $this->selectedActivityId = $activityId;
+    }
+    
+    // Méthode pour fermer la modale des détails d'activité
+    public function closeActivityDetails()
+    {
+        $this->selectedActivityId = null;
+    }
 
     /**
      * Renders the view for the component.
@@ -61,37 +80,30 @@ class ProjectDashboardLivewire extends Component
      */
     public function render()
     {
-        // Démarrer la requête depuis le modèle Activity
         $activitiesQuery = Activity::query();
         
-        // Joindre les tables intermédiaires pour filtrer par l'ID du projet
         $activitiesQuery->whereHas('result.specificObjective.logicalFramework', function ($query) {
             $query->where('project_id', $this->projectId);
         });
 
-        // Appliquer la recherche textuelle
         if ($this->search) {
             $activitiesQuery->where('description', 'like', '%' . $this->search . '%');
         }
 
-        // Appliquer le filtre de statut
         if ($this->statusFilter) {
             $activitiesQuery->where('status', $this->statusFilter);
         }
 
-        // Appliquer le filtre par responsable
         if ($this->responsibleUserFilter) {
             $activitiesQuery->where('responsible_user_id', $this->responsibleUserFilter);
         }
 
-        // Obtenir la liste de tous les responsables pour les options du filtre
         $availableUsers = User::whereHas('responsibleActivities', function ($query) {
             $query->whereHas('result.specificObjective.logicalFramework', function ($subQuery) {
                 $subQuery->where('project_id', $this->projectId);
             });
         })->orderBy('name')->get();
         
-        // Compter toutes les activités (sans pagination) pour les indicateurs
         $allActivities = (clone $activitiesQuery)->get();
         
         return view('livewire.v-beta.project.project-dashboard-livewire', [
