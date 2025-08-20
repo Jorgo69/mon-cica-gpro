@@ -132,7 +132,7 @@ class DashboardController extends Controller
             
             // Projets où l'utilisateur est le créateur ou est responsable d'une activité
             $userProjects = Project::where('creator_user_id', $user->id)
-                                   ->orWhereHas('logicalFrameworks.specificObjectives.results.activities', function ($query) use ($user) {
+                                   ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($query) use ($user) {
                                        $query->where('responsible_user_id', $user->id);
                                    })
                                    ->distinct()
