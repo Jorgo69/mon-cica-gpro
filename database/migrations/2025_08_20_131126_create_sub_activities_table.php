@@ -11,26 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('sub_activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('result_id');
+            $table->uuid('activity_id');
             $table->longText('description');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->uuid('responsible_user_id')->nullable();
             $table->string('status', 50);
-            $table->integer('budget')->nullable();
             $table->text('justification')->nullable();
             $table->boolean('is_milestone')->default(false);
-            $table->integer('progress_percentage')->default(0);
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('result_id');
+            $table->index('activity_id');
             $table->index('responsible_user_id');
 
-            $table->foreign('result_id')->references('id')->on('results')->onDelete('cascade');
+            $table->foreign('activity_id')->references('id')->on('activities')->onDelete('cascade');
             $table->foreign('responsible_user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
@@ -40,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activities');
+        Schema::dropIfExists('sub_activities');
     }
 };

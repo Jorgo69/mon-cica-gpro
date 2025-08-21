@@ -41,6 +41,9 @@
                                     Non assigné
                                 @endif
                             </p>
+                            <p><strong class="font-medium">Budget alloué :</strong>
+                                {{ $activity->budget ?? 'N/A' }}
+                            </p>
                         </div>
                         <div>
                             <p><strong class="font-medium">Créé :</strong> {{ $activity->created_at }}</p>
@@ -86,7 +89,54 @@
                 </div>
                 @endif
 
-                {{-- Section 3: Gestion des Ressources (espace réservé pour le formulaire dynamique) --}}
+                {{-- Section 3: Gestion des Sous activites (espace réservé pour le formulaire dynamique) --}}
+                <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                        <i class="fas fa-hand-holding-usd mr-3 text-blue-600"></i> Gestion des sous Activites
+                    </h2>
+                    <div class="text-gray-700 dark:text-gray-300">
+                        <p>Espace réservé pour la gestion des ressources de l'activité.</p>
+                        {{-- <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">Ajouter une ressource</button> --}}
+                        
+
+                        {{-- Bouton pour ouvrir la modale --}}
+                        <button wire:click="openModalForSubActivity" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">
+                            Ajouter une sous activite
+                        </button>
+
+                        {{-- La modale elle-même --}}
+                        @if ($showModalForSubActivity)
+                            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                {{-- Fond de la modale --}}
+                                <div wire:click="closeModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
+
+                                {{-- Contenu de la modale --}}
+                                <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-full w-full max-w-2xl overflow-y-auto transform transition-all">
+                                    {{-- Bouton de fermeture --}}
+                                    <div class="flex justify-end p-2">
+                                        <button wire:click="closeModalForSubActivity" class="text-gray-400 hover:text-gray-500">
+                                            <span class="sr-only">Fermer</span>
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    {{-- Le composant Livewire du formulaire --}}
+                                    <div class="p-4 sm:p-6">
+                                        @livewire('v-beta.sub-activity.sub-activity-form-livewire', [
+                                            'activityId' => $activity->id,
+                                            'subActivityToEditId' => $editingSubActivityId,
+                                            ])
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        
+                    </div>
+                </div>
+
+                {{-- Section 4: Gestion des Ressources (espace réservé pour le formulaire dynamique) --}}
                 <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                         <i class="fas fa-hand-holding-usd mr-3 text-blue-600"></i> Gestion des Ressources
@@ -97,41 +147,39 @@
                         
 
                         {{-- Bouton pour ouvrir la modale --}}
-<button wire:click="openModal" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">
-    Ajouter une ressource
-</button>
+                        <button wire:click="openModal" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">
+                            Ajouter une ressource
+                        </button>
 
-{{-- La modale elle-même --}}
-@if ($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {{-- Fond de la modale --}}
-        <div wire:click="closeModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
+                        {{-- La modale elle-même --}}
+                        @if ($showModal)
+                            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                {{-- Fond de la modale --}}
+                                <div wire:click="closeModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"></div>
 
-        {{-- Contenu de la modale --}}
-        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-full w-full max-w-2xl overflow-y-auto transform transition-all">
-            {{-- Bouton de fermeture --}}
-            <div class="flex justify-end p-2">
-                <button wire:click="closeModal" class="text-gray-400 hover:text-gray-500">
-                    <span class="sr-only">Fermer</span>
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+                                {{-- Contenu de la modale --}}
+                                <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-h-full w-full max-w-2xl overflow-y-auto transform transition-all">
+                                    {{-- Bouton de fermeture --}}
+                                    <div class="flex justify-end p-2">
+                                        <button wire:click="closeModal" class="text-gray-400 hover:text-gray-500">
+                                            <span class="sr-only">Fermer</span>
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
 
-            {{-- Le composant Livewire du formulaire --}}
-            <div class="p-4 sm:p-6">
-                @livewire('v-beta.resource.resource-form-livewire', [
-                    'activityId' => $activity->id,
-                    'resourceToEditId' => $editingResourceId,
-                    ])
-            </div>
-        </div>
-    </div>
-@endif
-
-
-
+                                    {{-- Le composant Livewire du formulaire --}}
+                                    <div class="p-4 sm:p-6">
+                                        @livewire('v-beta.resource.resource-form-livewire', [
+                                            'activityId' => $activity->id,
+                                            'resourceToEditId' => $editingResourceId,
+                                            ])
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        
                     </div>
                 </div>
 

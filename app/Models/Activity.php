@@ -12,7 +12,7 @@ class Activity extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'result_id', 'description', 'start_date', 'end_date',
+        'id', 'result_id', 'description', 'start_date', 'end_date', 'budget',
         'responsible_user_id', 'status', 'justification', 'is_milestone', 'progress_percentage',
     ];
 

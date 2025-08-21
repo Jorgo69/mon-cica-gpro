@@ -13,63 +13,63 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function adminIndex()
-    {
-        // 1. Statistiques Générales des Projets
-        $totalProjects = Project::count();
-        $projectsInProgress = Project::where('status', 'in_progress')->count();
-        $projectsCompleted = Project::where('status', 'completed')->count();
-        $projectsPlanned = Project::where('status', 'planned')->count();
-        $projectsCanceled = Project::where('status', 'canceled')->count();
+    // public function adminIndex()
+    // {
+    //     // 1. Statistiques Générales des Projets
+    //     $totalProjects = Project::count();
+    //     $projectsInProgress = Project::where('status', 'in_progress')->count();
+    //     $projectsCompleted = Project::where('status', 'completed')->count();
+    //     $projectsPlanned = Project::where('status', 'planned')->count();
+    //     $projectsCanceled = Project::where('status', 'canceled')->count();
 
-        // 2. Statistiques des Activités
-        $totalActivities = Activity::count();
-        $activitiesInProgress = Activity::where('status', 'in_progress')->count();
-        $activitiesCompleted = Activity::where('status', 'completed')->count();
-        $activitiesNotStarted = Activity::where('status', 'not_started')->count();
+    //     // 2. Statistiques des Activités
+    //     $totalActivities = Activity::count();
+    //     $activitiesInProgress = Activity::where('status', 'in_progress')->count();
+    //     $activitiesCompleted = Activity::where('status', 'completed')->count();
+    //     $activitiesNotStarted = Activity::where('status', 'not_started')->count();
 
-        // 3. Vue d'ensemble du Budget (exemple simple)
-        $totalPlannedBudget = Budget::sum('planned_amount');
-        $totalActualBudget = Budget::sum('actual_amount');
-        $budgetVariance = $totalPlannedBudget - $totalActualBudget;
+    //     // 3. Vue d'ensemble du Budget (exemple simple)
+    //     $totalPlannedBudget = Budget::sum('planned_amount');
+    //     $totalActualBudget = Budget::sum('actual_amount');
+    //     $budgetVariance = $totalPlannedBudget - $totalActualBudget;
 
-        // 4. Risques ouverts
-        $openRisks = Risk::where('status', 'open')->count();
-        $highImpactRisks = Risk::where('status', 'open')->where('impact', 'high')->count();
+    //     // 4. Risques ouverts
+    //     $openRisks = Risk::where('status', 'open')->count();
+    //     $highImpactRisks = Risk::where('status', 'open')->where('impact', 'high')->count();
 
-        // 5. Mises à jour de progression récentes (les 5 dernières)
-        $recentProgressUpdates = ProgressUpdate::with(['project', 'activity', 'updater'])
-                                                ->orderBy('update_date', 'desc')
-                                                ->limit(5)
-                                                ->get();
+    //     // 5. Mises à jour de progression récentes (les 5 dernières)
+    //     $recentProgressUpdates = ProgressUpdate::with(['project', 'activity', 'updater'])
+    //                                             ->orderBy('update_date', 'desc')
+    //                                             ->limit(5)
+    //                                             ->get();
 
-        // 6. Projets récents (par exemple, les 5 derniers projets créés)
-        $recentProjects = Project::orderBy('created_at', 'desc')->limit(5)->get();
+    //     // 6. Projets récents (par exemple, les 5 derniers projets créés)
+    //     $recentProjects = Project::orderBy('created_at', 'desc')->limit(5)->get();
 
-        // Vous pouvez passer plus de données selon les besoins
-        return view('v_beta.dahboard', [
-            'totalProjects' => $totalProjects,
-            'projectsInProgress' => $projectsInProgress,
-            'projectsCompleted' => $projectsCompleted,
-            'projectsPlanned' => $projectsPlanned,
-            'projectsCanceled' => $projectsCanceled,
+    //     // Vous pouvez passer plus de données selon les besoins
+    //     return view('v_beta.dahboard', [
+    //         'totalProjects' => $totalProjects,
+    //         'projectsInProgress' => $projectsInProgress,
+    //         'projectsCompleted' => $projectsCompleted,
+    //         'projectsPlanned' => $projectsPlanned,
+    //         'projectsCanceled' => $projectsCanceled,
 
-            'totalActivities' => $totalActivities,
-            'activitiesInProgress' => $activitiesInProgress,
-            'activitiesCompleted' => $activitiesCompleted,
-            'activitiesNotStarted' => $activitiesNotStarted,
+    //         'totalActivities' => $totalActivities,
+    //         'activitiesInProgress' => $activitiesInProgress,
+    //         'activitiesCompleted' => $activitiesCompleted,
+    //         'activitiesNotStarted' => $activitiesNotStarted,
 
-            'totalPlannedBudget' => $totalPlannedBudget,
-            'totalActualBudget' => $totalActualBudget,
-            'budgetVariance' => $budgetVariance,
+    //         'totalPlannedBudget' => $totalPlannedBudget,
+    //         'totalActualBudget' => $totalActualBudget,
+    //         'budgetVariance' => $budgetVariance,
 
-            'openRisks' => $openRisks,
-            'highImpactRisks' => $highImpactRisks,
+    //         'openRisks' => $openRisks,
+    //         'highImpactRisks' => $highImpactRisks,
 
-            'recentProgressUpdates' => $recentProgressUpdates,
-            'recentProjects' => $recentProjects,
-        ]);
-    }
+    //         'recentProgressUpdates' => $recentProgressUpdates,
+    //         'recentProjects' => $recentProjects,
+    //     ]);
+    // }
 
     public function index()
     {

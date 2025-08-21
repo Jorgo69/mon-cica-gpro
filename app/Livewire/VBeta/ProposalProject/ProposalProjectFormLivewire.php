@@ -39,7 +39,7 @@ class ProposalProjectFormLivewire extends Component
     public $projectShortTitle = ''; // Initialisé à une chaîne vide
     public $projectStartDate;
     public $projectEndDate;
-    public $projectStatus = 'draft';
+    public $projectStatus = 'Brouillon';
 
     // Données pour la sélection du type de projet et les champs dynamiques
     public $allProjectTypes = [];
@@ -884,7 +884,7 @@ private function initializeDynamicFieldValues()
                     'short_title' => $this->projectShortTitle,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
-                    'status' => 'draft', // Le statut est "draft" uniquement à la création
+                    'status' => 'Brouillon', // Le statut est "draft" uniquement à la création
                     'creator_user_id' => Auth::id(), // <-- Cette ligne est cruciale
                     'project_type_id' => $this->selectedProjectTypeId, // <-- Cette ligne est cruciale
                     'created_by_user_id' => Auth::id(),

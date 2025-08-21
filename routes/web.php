@@ -33,6 +33,8 @@ Route::view('/project-dashboard/{projectId}/management', 'v_beta.project-dashboa
 
 // Admin - IT
 
+Route::view('/admin-it/project/list', 'v_beta.admin.project.index')->name('admin.it.project.list');
+
 Route::view('/admin-it/type_of_project', 'v_beta.admin.type_of_project.index')->middleware(['auth'])->name('admin.it.type.of.project');
 
 Route::view('/admin-it/type_of_project/{projectTypeId}/show', 'v_beta.admin.type_of_project.show')->middleware(['auth'])->name('admin.it.type.of.project.show');

@@ -464,10 +464,14 @@
                                                 @error('activities.' . $index . '.status') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                                             </div>
                                             <div>
-                                                <label for="activity-justification-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Justification (Optionnel)</label>
-                                                <textarea id="activity-justification-{{ $index }}" wire:model.defer="activities.{{ $index }}.justification" rows="1"
+                                                <label for="activity-justification-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Budget (Optionnel)</label>
+                                                {{-- <textarea id="activity-justification-{{ $index }}" wire:model.defer="activities.{{ $index }}.justification" rows="1"
                                                           class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                                                          placeholder="Raison du statut (si en attente/retard)."></textarea>
+                                                          placeholder="Budget prevu pour cette activité."></textarea> --}}
+                                                <input type="number"
+                                                id="activity-budget-{{ $index }}" wire:model.defer="activities.{{ $index }}.budget" rows="1"
+                                                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                                                    placeholder="Budget prevu pour cette activité.">
                                             </div>
                                             <div class="flex items-center col-span-full">
                                                 <input type="checkbox" id="activity-milestone-{{ $index }}" wire:model.defer="activities.{{ $index }}.is_milestone"
