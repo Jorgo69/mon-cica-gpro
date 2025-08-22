@@ -104,3 +104,7 @@ Ce scénario montre comment les tables `project_types`, `dynamic_project_fields`
 
 Artisan Commande: 
     `php artisan make:migration update_file_type_length_in_project_documents --table=project_documents`
+
+
+
+git add . && git commit -m "Admin re-begin ..." && git push

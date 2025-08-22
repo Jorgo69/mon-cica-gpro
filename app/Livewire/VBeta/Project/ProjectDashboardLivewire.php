@@ -37,7 +37,17 @@ class ProjectDashboardLivewire extends Component
     public function mount(string $projectId)
     {
         $this->projectId = $projectId;
-        $this->project = Project::withCount(['qualitativeEvaluations', 'budgets'])->findOrFail($this->projectId);
+        $this->project = Project::withCount(['qualitativeEvaluations', 'budgets'])
+                        ->findOrFail($this->projectId);
+
+            // Vérifie que l'utilisateur a bien le droit de voir
+        // $this->authorize('view', $this->project);
+        abort_if(
+        !auth()->user()->can('view', $this->project),
+        403,
+        __('messages.access_denied')
+    );
+                
     }
     
     // Méthodes pour réinitialiser la pagination lors du changement de filtre.
