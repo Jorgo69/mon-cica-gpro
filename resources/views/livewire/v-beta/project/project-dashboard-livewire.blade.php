@@ -1,4 +1,4 @@
-<div>
+<main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="p-6 sm:p-10 bg-gray-50 dark:bg-gray-900 min-h-screen font-sans antialiased text-gray-900 dark:text-gray-100 transition-colors duration-300 ease-in-out">
         
         <div class="max-w-6xl mx-auto">
@@ -181,10 +181,11 @@
                 </div>
             </div>
         </div>
+        
     </div>
     
     <!-- Render the modal component if an activity is selected -->
     @if($selectedActivityId)
         @livewire('v-beta.project.project-dashboard-activity-show-livewire', ['activityId' => $selectedActivityId])
     @endif
-</div>
+</main>

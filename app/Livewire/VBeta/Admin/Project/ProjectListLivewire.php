@@ -7,6 +7,7 @@ use App\Models\Project;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use App\Models\GeneralAdministration;
 
 class ProjectListLivewire extends Component
 {
@@ -18,6 +19,7 @@ class ProjectListLivewire extends Component
     public $responsibleUserFilter = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
+    public $projectStatuses = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -52,6 +54,17 @@ class ProjectListLivewire extends Component
         $this->sortField = $field;
     }
 
+    public function updatedProjectStatuses($value, $projectId)
+{
+    $project = Project::find($projectId);
+
+    if ($project) {
+        $project->update(['status' => $value]);
+        // Optionnel : émettre un événement pour prévenir que le statut a changé
+        $this->dispatch('projectStatusUpdated', projectId: $projectId, status: $value);
+    }
+}
+
     public function render()
     {
         $user = Auth::user();
@@ -80,6 +93,8 @@ class ProjectListLivewire extends Component
             $projects->where('status', $this->statusFilter);
         }
 
+        // dd($this->statusFilter);
+
         // Appliquer le filtre par responsable (le créateur du projet)
         if ($this->responsibleUserFilter) {
             $projects->where('creator_user_id', $this->responsibleUserFilter);
@@ -94,10 +109,27 @@ class ProjectListLivewire extends Component
         // Obtenir les statuts de projet uniques (si vous voulez un filtre dynamique)
         $projectStatuses = Project::select('status')->distinct()->get()->pluck('status');
 
+        // AJOUTEZ CECI pour debuguer sans arrêter l'exécution :
+    // if ($projectStatuses->isEmpty()) {
+    //     logger()->info('projectStatuses is empty');
+    // } else {
+    //     logger()->info('projectStatuses content: ', $projectStatuses->toArray());
+    // }
+
+        
+
+        $projectTypes = GeneralAdministration::where('type', 'project_type')
+                        ->pluck('name');
+
+        if (empty($projectStatuses)) {
+            $projectStatuses = $projectTypes->toArray();
+        }
+        
         return view('livewire.v-beta.admin.project.project-list-livewire', [
             'projects' => $projects->paginate(10),
             'availableUsers' => $availableUsers,
-            'projectStatuses' => $projectStatuses,
+            'projectStatuses' => $projectStatuses->toArray(),
+            'projectTypes' => $projectTypes,
         ]);
     }
 }

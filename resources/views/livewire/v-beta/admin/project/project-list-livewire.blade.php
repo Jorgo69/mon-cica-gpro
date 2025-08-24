@@ -10,9 +10,14 @@
                 {{-- Filtre par Statut --}}
                 <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                     <option value="">Tous les statuts</option>
-                    @foreach ($projectStatuses as $status)
-                        <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
-                    @endforeach
+                    @forelse ($projectStatuses as $status)
+        <option value="{{ $status }}">{{ $status }}</option>
+    @empty
+        {{-- Fallback sur projectTypes --}}
+        @foreach ($projectTypes as $type)
+            <option value="{{ $type }}">{{ $type }}</option>
+        @endforeach
+    @endforelse
                 </select>
 
                 {{-- Filtre par Responsable (Créateur du projet) --}}
@@ -28,7 +33,7 @@
 
         {{-- Tableau des Projets --}}
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="p-6 text-gray-900 dark:text-gray-100 overflow-x-auto">
                 @if ($projects->isEmpty())
                     <p class="text-center text-gray-500 dark:text-gray-400">Aucun projet trouvé pour cette sélection.</p>
                 @else
@@ -68,6 +73,9 @@
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <span class="ml-1 text-sm">Status</span>
+                                </th>
                                 <th scope="col" class="relative px-6 py-3">
                                     <span class="sr-only">Actions</span>
                                 </th>
@@ -106,7 +114,8 @@
                                         {{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}
                                     </td>
 
-                                    @include('livewire.v-beta.project.link-project-list')
+                                    @include('livewire.v-beta.project.include.status-project-management-list')
+                                    @include('livewire.v-beta.project.include.link-project-list')
                                     
                                 </tr>
                             @endforeach

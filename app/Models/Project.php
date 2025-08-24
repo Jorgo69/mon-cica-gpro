@@ -12,7 +12,7 @@ class Project extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
-        'id', 'creator_user_id', 'project_type_id', 'project_code', 'title',
+        'id', 'creator_user_id', 'project_type_id', 'project_code', 'title', 'status',
         'short_title', 'description', 'general_objectives', 'start_date', 'end_date', 'status',
         'problem_analysis', 'strategy', 'justification', 'created_by_user_id', 'updated_by_user_id'
     ];

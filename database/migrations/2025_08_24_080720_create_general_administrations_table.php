@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_types', function (Blueprint $table) {
+        Schema::create('general_administrations', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->string('category')->nullable(); // From NewVision.txt
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('type');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_types');
+        Schema::dropIfExists('general_administrations');
     }
 };

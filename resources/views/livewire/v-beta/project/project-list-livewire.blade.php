@@ -111,7 +111,8 @@
                                         {{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}
                                     </td>
 
-                                    @include('livewire.v-beta.project.link-project-list')
+                                    @include('livewire.v-beta.project.include.link-project-list')
+                                    
                                     
                                 </tr>
                             @endforeach

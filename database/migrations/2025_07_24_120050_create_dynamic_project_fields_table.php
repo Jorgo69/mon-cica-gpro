@@ -26,6 +26,7 @@ return new class extends Migration
             // Nouvelle colonne pour le rendu visuel des listes déroulantes
             $table->string('render_as')->nullable();
             $table->boolean('is_required')->default(false);
+            $table->softDeletes();
             $table->timestamps();
 
             $table->unique(['project_type_id', 'field_name']);
