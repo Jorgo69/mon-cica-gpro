@@ -217,11 +217,11 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button wire:click="openModal('{{ $resource->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
-                        Modifier
-                    </button>
-                    {{-- Ajouter ici le bouton de suppression si nécessaire --}}
-                </td>
+                                                <button wire:click="openModal('{{ $resource->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
+                                                    Modifier
+                                                </button>
+                                                {{-- Ajouter ici le bouton de suppression si nécessaire --}}
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

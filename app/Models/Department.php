@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Department extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
     
     protected $primaryKey = 'id';
     public $incrementing = false;

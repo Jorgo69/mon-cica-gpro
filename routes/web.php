@@ -45,6 +45,12 @@ Route::view('/admin-it/project-types/create', 'v_beta.admin.type_of_project.form
 // Route pour afficher le formulaire d'édition
 Route::view('/admin-it/project-types/{projectTypeId}/edit', 'v_beta.admin.type_of_project.form')->name('admin.it.project.types.edit');
 
+// Gestion Membres
+Route::view('/admin-it/members/list', 'v_beta.admin.member.index')->name('admin.it.member.list');
+
+// Gestion Categories
+Route::view('/admin-it/categories/list', 'v_beta.admin.category.index')->name('admin.it.category.list');
+
 // End Admin - IT
 
 
