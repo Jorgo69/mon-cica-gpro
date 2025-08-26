@@ -13,18 +13,27 @@ class SubActivity extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
-        'id', 'activity_id', 'description',
-        'start_date', 'end_date', 'status', 'justification', 'is_milestone', 'responsible_user_id',
+        'id', 'activity_id', 'description', 'status',
+        'start_date', 'end_date', 'is_milestone', 'responsible_user_id',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
+    
 
     protected static function boot()
     {
         parent::boot();
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
     }
+
+    public function activity()
+    {
+        return $this->belongsTo(Activity::class, 'activity_id', 'id');
+    }
+    public function responsibleUser()
+    {
+        return $this->belongsTo(User::class, 'responsible_user_id', 'id');
+    }
+
+    
+
 }

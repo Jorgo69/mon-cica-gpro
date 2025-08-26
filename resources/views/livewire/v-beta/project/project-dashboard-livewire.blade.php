@@ -7,85 +7,51 @@
             </h1>
             
             <!-- Section de la barre de progression -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
-                <h2 class="text-2xl font-bold mb-4">Progression globale</h2>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-2 overflow-hidden">
-                    @php
-                        $progress = $project->calculateProgress();
-                        $progressColor = 'bg-blue-500';
-                        if ($progress < 25) {
-                            $progressColor = 'bg-red-500';
-                        } elseif ($progress < 75) {
-                            $progressColor = 'bg-yellow-500';
-                        } else {
-                            $progressColor = 'bg-green-500';
-                        }
-                    @endphp
-                    <div class="h-4 rounded-full transition-all duration-500 ease-in-out {{ $progressColor }}" style="width: {{ $progress }}%;"></div>
-                </div>
-                <div class="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                    <span class="text-2xl font-bold text-gray-800 dark:text-white">{{ number_format($progress, 2) }}%</span> achevé
-                </div>
-            </div>
+            @include('livewire.v-beta.project.include.progres-bar')
             
             <!-- Section des indicateurs clés -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Activités totales -->
-                @php
-                    $totalActivitiesCount = $allActivities->count();
-                    $completedActivitiesCount = $allActivities->where('progress_percentage', 100)->count();
-                    $ongoingActivitiesCount = $allActivities->where('progress_percentage', '<', 100)->count();
-                    $lateActivitiesCount = $allActivities->where('status', 'En retard')->count();
-                @endphp
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-transform hover:scale-105">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0 text-blue-500 dark:text-blue-400">
-                            <i class="fas fa-tasks text-3xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activités</p>
-                            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $totalActivitiesCount }}</p>
-                        </div>
-                    </div>
+            @php
+                $totalActivitiesCount = $allActivities->count();
+
+                $completedActivitiesCount = $allActivities->filter(fn($a) => $a->calculateProgress() >= 100)->count();
+
+                $nonStartedCount = $allActivities->filter(fn($a) => $a->calculateProgress() === 0)->count();
+
+                $ongoingCount = $allActivities->filter(fn($a) => $a->calculateProgress() > 0 && $a->calculateProgress() < 100)->count();
+
+                // 🔴 En retard : progression < progression attendue selon la date
+                $lateActivitiesCount = $allActivities->filter(function ($activity) {
+                    $plannedProgress = $activity->getPlannedProgressPercentage(); // Ce qu'on devrait avoir aujourd'hui
+                    $actualProgress = $activity->calculateProgress();
+
+                    return $actualProgress < $plannedProgress && $plannedProgress > 0;
+                })->count();
+            @endphp
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 my-6">
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white">{{ $totalActivitiesCount }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">Total</div>
                 </div>
-                
-                <!-- Activités terminées -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-transform hover:scale-105">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0 text-green-500 dark:text-green-400">
-                            <i class="fas fa-check-circle text-3xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Terminées</p>
-                            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $completedActivitiesCount }}</p>
-                        </div>
-                    </div>
+
+                <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-800 dark:text-green-200">{{ $completedActivitiesCount }}</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Terminées</div>
                 </div>
-                
-                <!-- Activités en cours -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-transform hover:scale-105">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0 text-yellow-500 dark:text-yellow-400">
-                            <i class="fas fa-spinner text-3xl animate-spin"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">En cours</p>
-                            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $ongoingActivitiesCount }}</p>
-                        </div>
-                    </div>
+
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-blue-800 dark:text-blue-200">{{ $ongoingCount }}</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">En cours</div>
                 </div>
-                
-                <!-- Activités en retard -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-transform hover:scale-105">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0 text-red-500 dark:text-red-400">
-                            <i class="fas fa-exclamation-triangle text-3xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">En retard</p>
-                            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ $lateActivitiesCount }}</p>
-                        </div>
-                    </div>
+
+                <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-yellow-800 dark:text-yellow-200">{{ $nonStartedCount }}</div>
+                    <div class="text-sm text-yellow-700 dark:text-yellow-300">Non démarrées</div>
+                </div>
+
+                <div class="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-red-800 dark:text-red-200">{{ $lateActivitiesCount }}</div>
+                    <div class="text-sm text-red-700 dark:text-red-300">En retard</div>
                 </div>
             </div>
             
@@ -120,7 +86,7 @@
                             <option value="10">10 par page</option>
                             <option value="25">25 par page</option>
                             <option value="50">50 par page</option>
-                            <option value="{{ $totalActivitiesCount }}">Tout afficher</option>
+                            {{-- <option value="{{ $totalActivitiesCount }}">Tout afficher</option> --}}
                         </select>
                     </div>
                 </div>
@@ -155,7 +121,7 @@
                                             {{ $activity->status }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $activity->progress_percentage }}%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $activity->calculateProgress() }}%</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button wire:click="openActivityDetails('{{ $activity->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
                                             <i class="fas fa-eye text-lg"></i>

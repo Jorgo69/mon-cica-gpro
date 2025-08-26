@@ -42,7 +42,7 @@
                                 
                                 <div>
                                     <p class="font-semibold text-gray-700 dark:text-gray-100">Progression :</p>
-                                    <p>{{ $activity->progress_percentage }}%</p>
+                                    <p>{{ $activity->calculateProgress() }}%</p>
                                 </div>
 
                                 <!-- Section des ressources -->

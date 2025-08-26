@@ -27,7 +27,15 @@
                     </div>
                     <div>
                         <label for="project-type-category" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Catégorie</label>
-                        <input type="text" id="project-type-category" wire:model.defer="category" class="form-input mt-1">
+                        {{-- <input type="text" id="project-type-category" wire:model.defer="category" class="form-input mt-1"> --}}
+                        <select class="form-input mt-1" id="project-type-category" wire:model.defer="category">
+                            <option value="">---</option>
+                            @forelse ($projectCategories as $projectCategory)
+                                <option value="{{ $projectCategory->name }}">{{ $projectCategory->name }}</option>
+                            @empty
+                                <option value="">Vide</option>
+                            @endforelse
+                        </select>
                     </div>
                 </div>
             </div>

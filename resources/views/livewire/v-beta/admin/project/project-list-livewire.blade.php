@@ -10,14 +10,14 @@
                 {{-- Filtre par Statut --}}
                 <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                     <option value="">Tous les statuts</option>
-                    @forelse ($projectStatuses as $status)
+                    {{-- @forelse ($projectStatuses as $status)
                         <option value="{{ $status }}">{{ $status }}</option>
-                    @empty
+                    @empty --}}
                         {{-- Fallback sur projectTypes --}}
                         @foreach ($projectTypes as $type)
                             <option value="{{ $type }}">{{ $type }}</option>
                         @endforeach
-                    @endforelse
+                    {{-- @endforelse --}}
                 </select>
 
                 {{-- Filtre par Responsable (Créateur du projet) --}}
@@ -90,7 +90,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $project->project_code }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                         {{ 
                                             $project->status === 'Actif' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
@@ -101,9 +101,10 @@
                                             )))
                                         }}
                                         ">
-                                            {{ Str::ucfirst(str_replace('_', ' ', $project->status == 'draft' ? 'Brouillon' : $project->status )) }}
+                                            {{ $project->status }}
                                         </span>
-                                    </td>
+                                    </td> --}}
+                                    @include('livewire.v-beta.project.include.status-project-management-list')
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {{ $project->creator->name ?? 'N/A' }}
                                     </td>

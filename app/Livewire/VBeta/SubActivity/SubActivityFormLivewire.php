@@ -2,6 +2,7 @@
 
 namespace App\Livewire\VBeta\SubActivity;
 
+use Illuminate\Support\Str;
 use App\Models\User;
 use Livewire\Component;
 use App\Models\SubActivity;
@@ -25,7 +26,6 @@ class SubActivityFormLivewire extends Component
         return [
         'subActivitiesData.*.description' => 'required|string|max:255',
         'subActivitiesData.*.is_milestone' => 'nullable|in:0,1',
-        'subActivitiesData.*.quantity' => 'nullable|numeric|min:0',
         'subActivitiesData.*.start_date' => 'required|date',
         'subActivitiesData.*.end_date' => 'required|date|after_or_equal:subActivitiesData.*.start_date',
         'subActivitiesData.*.responsible_user_id' => 'nullable|exists:users,id',
@@ -68,7 +68,6 @@ class SubActivityFormLivewire extends Component
                 'id' => $subActivity->id,
                 'description' => $subActivity->description,
                 'is_milestone' => $subActivity->is_milestone,
-                'quantity' => $subActivity->quantity,
                 'start_date' => $subActivity->start_date,
                 'end_date' => $subActivity->end_date,
                 'responsible_user_id' => $subActivity->responsible_user_id,
@@ -79,7 +78,7 @@ class SubActivityFormLivewire extends Component
     public function addBlankSubActivity()
     {
         $this->subActivitiesData[] = [
-            'description' => '', 'is_milestone' => '', 'quantity' => '', 'start_date' => '',
+            'description' => '', 'is_milestone' => '', 'start_date' => '',
             'end_date' => '', 'responsible_user_id' => null
         ];
     }
@@ -143,33 +142,43 @@ class SubActivityFormLivewire extends Component
         }
     }
 
+   
     public function saveSubActivities()
-    {
-        // $this->validate();
-    
-        try {
-            DB::beginTransaction();
-    
-            foreach ($this->subActivitiesData as $data) {
-                dd($this->activityId);
-                // Détecte s'il s'agit d'une mise à jour ou d'une création
-                SubActivity::updateOrCreate(
-                    ['id' => $data['id'] ?? null],
-                    array_merge($data, ['activity_id' => $this->activityId])
-                );
+{
+    try {
+        foreach ($this->subActivitiesData as $data) {
+            $subActivityData = [
+                'description'         => $data['description'],
+                'is_milestone'        => $data['is_milestone'] == "1",
+                'start_date'          => $data['start_date'],
+                'end_date'            => $data['end_date'],
+                'responsible_user_id' => $data['responsible_user_id'],
+                'activity_id'         => $this->activityId,
+                'status'              => $data['status'] ?? 'En Cours', // 👈 valeur par défaut
+            ];
+
+            if (!empty($data['id'])) {
+                // update
+                SubActivity::where('id', $data['id'])->update($subActivityData);
+                \Log::info('Updated subActivity', ['id' => $data['id']]);
+            } else {
+                // create
+                $created = SubActivity::create($subActivityData);
+                \Log::info('Created subActivity', ['id' => $created->id]);
             }
-            DB::commit();
-    
-            $this->dispatch('subActivitySaved');
-    
-            // Réinitialiser le formulaire après la sauvegarde
-            $this->resetForm();
-    
-        } catch (\Exception $e) {
-            DB::rollBack();
-            session()->flash('error', "Une erreur est survenue lors de la sauvegarde : " . $e->getMessage());
         }
+
+        $this->dispatch('subActivitySaved');
+        $this->resetForm();
+
+    } catch (\Exception $e) {
+        \Log::error('Erreur saveSubActivities', ['error' => $e->getMessage()]);
+        session()->flash('error', "Erreur lors de la sauvegarde : " . $e->getMessage());
     }
+}
+
+    
+
     
 
     public function resetForm()

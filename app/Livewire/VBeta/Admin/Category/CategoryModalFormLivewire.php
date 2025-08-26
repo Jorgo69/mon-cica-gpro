@@ -59,7 +59,7 @@ class CategoryModalFormLivewire extends Component
             $data = [
                 'name'        => $this->name,
                 'description' => $this->description,
-                'type'        => 'project_type',
+                'type'        => 'project_type_category',
             ];
             
             GeneralAdministration::updateOrCreate(

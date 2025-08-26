@@ -3,6 +3,7 @@
 namespace App\Livewire\VBeta\ProjectType;
 
 use App\Models\DynamicProjectField;
+use App\Models\GeneralAdministration;
 use App\Models\ProjectType;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -14,6 +15,7 @@ class ProjectTypeFormLivewire extends Component
     public $description = '';
     public $category = '';
     public $fields = [];
+    public $projectCategories = [];
 
     // Méthode de montage, appelée à l'initialisation du composant.
     public function mount($projectTypeId = null)
@@ -34,6 +36,8 @@ class ProjectTypeFormLivewire extends Component
         } else {
             $this->addField();
         }
+
+        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
     }
 
     // Ajoute un nouveau champ dynamique au formulaire

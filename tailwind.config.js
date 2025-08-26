@@ -12,6 +12,7 @@ export default {
     './storage/framework/views/*.php',
     './resources/views/**/*.blade.php', // Ceci est essentiel pour vos propres vues Blade
     './resources/**/*.{blade.php,js,html}',
+    './resources/**/*.{blade.php,js,html}',
 
     // Chemins spécifiques à Livewire pour que Tailwind scanne les classes utilisées dans vos composants
     './vendor/livewire/livewire/src/Features/SupportFileUploads/FileUploadsServiceProvider.php',

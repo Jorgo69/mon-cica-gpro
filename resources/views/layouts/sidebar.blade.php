@@ -66,10 +66,10 @@
                     <a href="{{ route('admin.it.project.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         {{ __('Liste de Projet') }}
                     </a>
-                    <a href="{{ route('admin.it.project.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="{{ route('admin.it.category.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         {{ __('Liste des Categories') }}
                     </a>
-                    <a href="{{ route('admin.it.project.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="{{ route('admin.it.member.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         {{ __('Les Membres') }}
                     </a>
                 </div>

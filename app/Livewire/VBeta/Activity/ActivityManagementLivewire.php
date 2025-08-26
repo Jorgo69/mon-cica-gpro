@@ -2,7 +2,9 @@
 
 namespace App\Livewire\VBeta\Activity;
 
+use App\Models\GeneralAdministration;
 use App\Models\Activity;
+use App\Models\SubActivity;
 use Livewire\Component;
 
 class ActivityManagementLivewire extends Component
@@ -12,6 +14,9 @@ class ActivityManagementLivewire extends Component
     public $resources, $subActivities;
     public $showModal, $showModalForSubActivity = false;
     public $editingResourceId, $editingSubActivityId = null; // ID de la ressource en cours d'édition
+    public $projectCategories,$generalAdministration, $projectTypes = [];
+    public $subActivityStatuses = [];
+
 
     // Écouteur pour l'événement 'resourceSaved'
     protected $listeners = [
@@ -24,6 +29,15 @@ class ActivityManagementLivewire extends Component
         $this->activity = Activity::with('responsibleUser', 'result.specificObjective.logicalFramework.project', 'resources.responsibleUser')->findOrFail($activityId);
         $this->resources = $this->activity->resources;
         $this->subActivities = $this->activity->subActivities;
+        
+        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
+
+        $this->projectTypes = GeneralAdministration::where('type', 'project_type')->get();
+
+        // ⚡ Préremplir les statuts des sous-activités
+        foreach ($this->subActivities as $sub) {
+            $this->subActivityStatuses[$sub->id] = $sub->status;
+        }
     }
 
     /**
@@ -84,6 +98,17 @@ class ActivityManagementLivewire extends Component
     {
         // Recharge la relation pour mettre à jour la liste des ressources
         $this->subActivities = $this->activity->subActivities()->with('responsibleUser')->get();
+    }
+
+    public function updatedSubActivityStatuses($value, $subActivityId)
+    {
+        $subActivity = SubActivity::find($subActivityId);
+
+        if ($subActivity) {
+            $subActivity->update(['status' => $value]);
+            // Optionnel : émettre un événement pour prévenir que le statut a changé
+            $this->dispatch('projectStatusUpdated', subActivityId: $subActivityId, status: $value);
+        }
     }
 
     

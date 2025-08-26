@@ -103,7 +103,7 @@ class CategoryManagementLivewire extends Component
         // Tri
         $categories->orderBy($this->sortField, $this->sortDirection);
 
-        $categories->where('type', 'project_type');
+        $categories->where('type', 'project_type_category');
 
         return view('livewire.v-beta.admin.category.category-management-livewire', [
             'categories' => $categories->paginate(10),

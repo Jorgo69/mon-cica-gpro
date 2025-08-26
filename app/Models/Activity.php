@@ -40,6 +40,10 @@ class Activity extends Model
     {
         return $this->hasMany(Resource::class, 'activity_id', 'id');
     }
+    public function subActivities()
+    {
+        return $this->hasMany(SubActivity::class, 'activity_id', 'id');
+    }
     public function progressTrackers()
     {
         return $this->hasMany(ProgressTracker::class, 'activity_id', 'id');
@@ -60,4 +64,83 @@ class Activity extends Model
         // Retourne le projet en suivant la chaîne de relations
         return $this->result?->specificObjective?->logicalFramework?->project ?? null;
     }
+
+    // App\Models\Activity.php
+
+    public function getPlannedProgressPercentage(): float
+    {
+        if (! $this->start_date || ! $this->end_date) {
+            return 0.0;
+        }
+
+        $startDate = \Carbon\Carbon::parse($this->start_date);
+        $endDate = \Carbon\Carbon::parse($this->end_date);
+        $today = now();
+
+        // Si on n’a pas encore commencé
+        if ($today->lt($startDate)) {
+            return 0.0;
+        }
+
+        // Si on est terminé
+        if ($today->gte($endDate)) {
+            return 100.0;
+        }
+
+        // Progression linéaire dans le temps
+        $totalDuration = $startDate->diffInDays($endDate);
+        $elapsed = $startDate->diffInDays($today);
+
+        if ($totalDuration === 0) {
+            return 100.0;
+        }
+
+        return round(($elapsed / $totalDuration) * 100, 2);
+    }
+
+    // App\Models\Activity.php
+    
+    // public function calculateProgress(): float
+    // {
+    //     $total = $this->subActivities()->count();
+
+    //     if ($total === 0) {
+    //         return 0.0;
+    //     }
+
+    //     $completed = $this->subActivities()
+    //         ->where('status', 'Terminé')
+    //         ->count();
+
+    //     // dd($completed);
+
+    //     return round(($completed / $total) * 100, 2);
+    // }
+
+    public function calculateProgress(): float
+    {
+        $subActivities = $this->subActivities;
+
+        if ($subActivities->isEmpty()) {
+            return 0.0;
+        }
+
+        // 🔹 Définis ici le poids de chaque statut
+        $statusWeight = [
+            'Brouillon'  => 0,
+            'En Attente' => 10,
+            'En Cours'   => 50,
+            'Suspendu'   => 50,
+            'Terminé'    => 100,
+        ];
+
+        $totalProgress = $subActivities->sum(function ($subActivity) use ($statusWeight) {
+            return $statusWeight[$subActivity->status] ?? 0; // 0 si inconnu
+        });
+
+        $average = $totalProgress / $subActivities->count();
+
+        return round($average, 2);
+    }
+
 }

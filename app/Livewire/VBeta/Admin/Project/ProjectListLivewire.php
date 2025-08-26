@@ -53,17 +53,19 @@ class ProjectListLivewire extends Component
         }
         $this->sortField = $field;
     }
+    
+    
 
     public function updatedProjectStatuses($value, $projectId)
-{
-    $project = Project::find($projectId);
+    {
+        $project = Project::find($projectId);
 
-    if ($project) {
-        $project->update(['status' => $value]);
-        // Optionnel : émettre un événement pour prévenir que le statut a changé
-        $this->dispatch('projectStatusUpdated', projectId: $projectId, status: $value);
+        if ($project) {
+            $project->update(['status' => $value]);
+            // Optionnel : émettre un événement pour prévenir que le statut a changé
+            $this->dispatch('projectStatusUpdated', projectId: $projectId, status: $value);
+        }
     }
-}
 
     public function render()
     {

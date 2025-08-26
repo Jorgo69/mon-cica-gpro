@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->uuid('responsible_user_id')->nullable();
-            $table->string('status', 50);
+            $table->string('status', 50)->nullable();
             $table->integer('budget')->nullable();
             $table->text('justification')->nullable();
             $table->boolean('is_milestone')->default(false);
