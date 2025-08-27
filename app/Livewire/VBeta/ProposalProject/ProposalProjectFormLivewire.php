@@ -40,6 +40,10 @@ class ProposalProjectFormLivewire extends Component
     public $projectStartDate;
     public $projectEndDate;
     public $projectStatus = 'Brouillon';
+    public $description;
+    public $problemAnalysis;
+    public $strategy;
+    public $justification;
 
     // Données pour la sélection du type de projet et les champs dynamiques
     public $allProjectTypes = [];
@@ -827,10 +831,10 @@ private function initializeDynamicFieldValues()
                         // 'created_by_user_id' => Auth::id(),
                         'updated_by_user_id' => Auth::id(),
                         // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
-                        // 'description' => $this->description,
-                        // 'problem_analysis' => $this->problemAnalysis,
-                        // 'strategy' => $this->strategy,
-                        // 'justification' => $this->justification,
+                        'description' => $this->description,
+                        'problem_analysis' => $this->problemAnalysis,
+                        'strategy' => $this->strategy,
+                        'justification' => $this->justification,
                     ];
 
                     // Stocker la chaîne complète dans la colonne 'general_objectives'
@@ -890,9 +894,9 @@ private function initializeDynamicFieldValues()
                     'created_by_user_id' => Auth::id(),
                     // 'updated_by_user_id' => Auth::id(),
                     // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
-                    // 'description' => $this->description,
-                    // 'problem_analysis' => $this->problemAnalysis,
-                    // 'strategy' => $this->strategy,
+                    'description' => $this->description,
+                    'problem_analysis' => $this->problemAnalysis,
+                    'strategy' => $this->strategy,
                     // 'justification' => $this->justification,
                 ];
 

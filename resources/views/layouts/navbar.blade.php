@@ -50,7 +50,7 @@
                             {{ auth()->user()->name ?? 'Personne connecte' }}
                         </div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">
-                            {{ auth()->user()->role->name ?? 'Aucun role' }}
+                            {{ auth()->user()->role ?? 'Aucun role' }}
                         </div>
                     </div>
                     <i class="fas fa-chevron-down text-gray-400 text-sm" :class="{ 'transform rotate-180': open }"></i>

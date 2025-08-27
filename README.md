@@ -108,3 +108,5 @@ Artisan Commande:
 
 
 git add . && git commit -m "Admin re-begin ..." && git push
+
+`php artisan db:seed --class=NomDeVotreSeeder`

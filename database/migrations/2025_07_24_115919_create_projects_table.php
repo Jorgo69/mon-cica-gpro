@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();// Clé primaire UUID
             $table->uuid('creator_user_id');// Créateur du projet
-             $table->uuid('project_type_id');
+            $table->uuid('project_type_id');
             $table->string('project_code')->unique();// Code unique du projet (ex: PRJ-001)
 
             $table->string('title');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->longText('problem_analysis')->nullable();
             $table->longText('strategy')->nullable();
             $table->longText('justification')->nullable();
-            $table->string('status')->default('draft');// 'draft', 'active', 'completed', 'on_hold', 'cancelled'
+            $table->string('status')->default('brouillon');// 'draft', 'active', 'completed', 'on_hold', 'cancelled'
 
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

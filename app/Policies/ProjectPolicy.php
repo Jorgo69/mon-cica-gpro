@@ -23,7 +23,7 @@ class ProjectPolicy
     {
         
         if (in_array($project->status, ['draft', 'Brouillon'])) {
-            return $user->role->name === 'Administrateur';
+            return $user->role === 'Administrateur';
         }
 
         return true;

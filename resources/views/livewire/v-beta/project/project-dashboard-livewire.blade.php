@@ -83,10 +83,14 @@
                     </div>
                     <div class="w-full md:w-1/3">
                         <select wire:model="perPage" class="w-full py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                            <option value="10">10 par page</option>
-                            <option value="25">25 par page</option>
-                            <option value="50">50 par page</option>
-                            {{-- <option value="{{ $totalActivitiesCount }}">Tout afficher</option> --}}
+                            @if ($totalActivitiesCount >= 10)
+                                <option value="10">10 par page</option>
+                            @elseif ($totalActivitiesCount >= 25)
+                                <option value="25">25 par page</option>
+                            @elseif ($totalActivitiesCount >= 50)
+                                <option value="50">50 par page</option>
+                            @endif
+                            <option value="{{ $totalActivitiesCount }}">Tout afficher</option>
                         </select>
                     </div>
                 </div>

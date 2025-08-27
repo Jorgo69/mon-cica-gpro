@@ -51,6 +51,9 @@ Route::view('/admin-it/members/list', 'v_beta.admin.member.index')->name('admin.
 // Gestion Categories
 Route::view('/admin-it/categories/list', 'v_beta.admin.category.index')->name('admin.it.category.list');
 
+// Gestion Corbeille
+Route::view('/admin-it/trash/management', 'v_beta.admin.trash.index')->name('admin.it.trash.management');
+
 // End Admin - IT
 
 

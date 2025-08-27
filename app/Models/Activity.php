@@ -128,9 +128,11 @@ class Activity extends Model
         // 🔹 Définis ici le poids de chaque statut
         $statusWeight = [
             'Brouillon'  => 0,
-            'En Attente' => 10,
-            'En Cours'   => 50,
-            'Suspendu'   => 50,
+            'Abandonné' => 0,
+            'En Arrêté' => 0,
+            'En Attente' => 5,
+            'En Cours'   => 40,
+            'Suspendu'   => 45,
             'Terminé'    => 100,
         ];
 

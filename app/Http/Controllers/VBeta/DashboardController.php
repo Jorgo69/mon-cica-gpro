@@ -80,7 +80,7 @@ class DashboardController extends Controller
         }
 
         // Assurez-vous que le rôle est bien géré via la relation et le nom du rôle
-        $isAdmin = ($user->role->name === 'Administrateur');
+        $isAdmin = ($user->role === 'Administrateur');
 
         if ($isAdmin) {
             // Logique pour l'administrateur

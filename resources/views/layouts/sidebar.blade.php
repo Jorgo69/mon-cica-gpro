@@ -49,8 +49,8 @@
                 </a>
             </div>
 
-            <!-- Project Design -->
-            @if (auth()->user()->role->name == 'Administrateur')
+            <!-- Administrator -->
+            @if (auth()->user()->role == 'Administrateur')
             <div class="mb-4" x-data="{ open: false }">
                 <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left @if(Route::is('admin*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
@@ -71,6 +71,9 @@
                     </a>
                     <a href="{{ route('admin.it.member.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         {{ __('Les Membres') }}
+                    </a>
+                    <a href="{{ route('admin.it.trash.management') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        {{ __('Corbeilles') }}
                     </a>
                 </div>
             </div>

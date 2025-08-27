@@ -18,22 +18,22 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // 1. Créer le département par défaut
-        $defaultDepartment = Department::firstOrCreate(
-            ['name' => 'Direction'],
-            [
-                'id' => (string) Str::uuid(),
-                'description' => 'Département de la direction générale'
-            ]
-        );
+        // $defaultDepartment = Department::firstOrCreate(
+        //     ['name' => 'Direction'],
+        //     [
+        //         'id' => (string) Str::uuid(),
+        //         'description' => 'Département de la direction générale'
+        //     ]
+        // );
 
         // 2. Créer le rôle Administrateur s'il n'existe pas
-        $adminRole = Role::firstOrCreate(
-            ['name' => 'Administrateur'],
-            [
-                'id' => (string) Str::uuid(),
-                'description' => 'Accès complet au système'
-            ]
-        );
+        // $adminRole = Role::firstOrCreate(
+        //     ['name' => 'Administrateur'],
+        //     [
+        //         'id' => (string) Str::uuid(),
+        //         'description' => 'Accès complet au système'
+        //     ]
+        // );
 
         // 3. Créer l'utilisateur Administrateur s'il n'existe pas
         // Le nom de domaine de l'email est générique, vous pouvez le modifier
@@ -44,8 +44,9 @@ class UserSeeder extends Seeder
                 'name' => 'Admin',
                 'password' => Hash::make('password'), // Mot de passe par défaut 'password'
                 'email_verified_at' => now(),
-                'role_id' => $adminRole->id,
-                'department_id' => $defaultDepartment->id,
+                'sexe' => 'Homme',
+                'role' => 'Administrateur',
+                'department' => 'Informatique',
             ]
         );
     }

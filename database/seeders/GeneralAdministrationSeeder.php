@@ -23,12 +23,33 @@ class GeneralAdministrationSeeder extends Seeder
             'Rejeté'       => 'Projet refusé après évaluation',
             'En Arrêté'    => 'Projet arrêté avant sa fin prévue',
         ];
+        $activityCategory = [
+            'Brouillon'  => 'Activite en phase de conception',
+            'Abandonné' => 'Activite abandonne',
+            'En Arrêté'    => 'Activite arrêté avant sa fin prévue',
+            'En Attente' => 'Activite mis en pause',
+            'En Cours'     => 'Activite actuellement en exécution',
+            'Suspendu'   => 'Activite temporairement suspendu',
+            'Terminé'    => 'Activite arrêté avant sa fin prévue',
+        ];
 
         foreach ($projectTypes as $name => $description) {
             GeneralAdministration::firstOrCreate(
                 [
                     'name' => $name,
                     'type' => 'project_type',
+                ],
+                [
+                    'id'          => (string) Str::uuid(),
+                    'description' => $description,
+                ]
+            );
+        }
+        foreach ($activityCategory as $name => $description) {
+            GeneralAdministration::firstOrCreate(
+                [
+                    'name' => $name,
+                    'type' => 'activity_category',
                 ],
                 [
                     'id'          => (string) Str::uuid(),

@@ -24,16 +24,14 @@ return new class extends Migration
             $table->string('numero_identification', 100)->unique()->nullable();
             $table->string('pays', 100)->nullable();
             $table->string('ville', 100)->nullable();
-            $table->uuid('role_id');
-            $table->uuid('department_id');
+            $table->string('role')->default('member');
+            $table->string('department')->nullable();
 
             // Ajout des soft deletes
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
-
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('restrict');
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('restrict');
+            
         });
     }
 
