@@ -2,7 +2,7 @@
     
     <div class="p-6">
         <div class="p-6 sm:px-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-            @include('livewire.v-beta.activity.include.progres-bar')3
+            @include('livewire.v-beta.activity.include.progres-bar')
             @if ($activity)
             {{-- En-tête de la page avec titre de l'activité et lien vers le projet --}}
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -25,10 +25,10 @@
                         <div>
                             <p><strong class="font-medium">Statut :</strong>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{
-                                    $activity->status === 'active' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
-                                    ($activity->status === 'draft' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' :
+                                    $activity->status === 'En cours' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
+                                    ($activity->status === 'Brouillon' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' :
                                     ($activity->status === 'Terminé' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                    ($activity->status === 'on_hold' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                    ($activity->status === 'En Attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                                     'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200')))
                                 }}">
                                     {{ ucfirst($activity->status) }}
@@ -57,6 +57,8 @@
                             </div>
                             @endif
                         </div>
+                        Createur Project: {{ $activity->result->specificObjective->logicalFramework->project->creator->name }} <br>
+                        Responsable de l'Activite: {{ $activity->responsibleUser->name }} <br>
                     </div>
                 </div>
 
@@ -100,11 +102,14 @@
                         <p>Espace réservé pour la gestion des ressources de l'activité.</p>
                         {{-- <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">Ajouter une ressource</button> --}}
                         
-
+                     
+                        
                         {{-- Bouton pour ouvrir la modale --}}
+                        @can('create', $activity)
                         <button wire:click="openModalForSubActivity" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">
                             Ajouter une sous activite
                         </button>
+                        @endcan
 
                         {{-- La modale elle-même --}}
                         @if ($showModalForSubActivity)
@@ -152,9 +157,11 @@
                         
 
                         {{-- Bouton pour ouvrir la modale --}}
+                        @can('create', $activity)
                         <button wire:click="openModal" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors">
                             Ajouter une ressource
                         </button>
+                        @endcan
 
                         {{-- La modale elle-même --}}
                         @if ($showModal)
@@ -195,8 +202,8 @@
 
             {{-- Boutons d'action --}}
             <div class="mt-8 flex justify-end space-x-4">
-                <a href="#" class="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Retour à la liste</a>
-                <button type="button" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Modifier</button>
+                <a href="{{ route('activity.index') }}" class="px-6 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Retour à la liste</a>
+                {{-- <button type="button" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Modifier</button> --}}
             </div>
     
             @else

@@ -110,3 +110,59 @@ Artisan Commande:
 git add . && git commit -m "Admin re-begin ..." && git push
 
 `php artisan db:seed --class=NomDeVotreSeeder`
+
+
+regarde attentivement cette partie
+private function syncActivities($logicalFramework)
+{
+    // Récupérer tous les IDs d'activités existantes
+    $allExistingActivityIds = [];
+    foreach ($logicalFramework->specificObjectives as $objective) {
+        foreach ($objective->results as $result) {
+            $activityIds = $result->activities->pluck('id')->toArray();
+            $allExistingActivityIds = array_merge($allExistingActivityIds, $activityIds);
+        }
+    }
+
+    $submittedActivityIds = [];
+    $resultIndex = 0;
+    $allResults = $logicalFramework->specificObjectives->flatMap->results;
+
+    foreach ($this->activities as $activityData) {
+        $cleanData = Arr::except($activityData, ['id', 'result_id', 'created_at', 'updated_at']);
+        
+        // Formater les dates
+        if (isset($cleanData['start_date'])) {
+            $cleanData['start_date'] = Carbon::parse($cleanData['start_date'])->format('Y-m-d');
+        }
+        if (isset($cleanData['end_date'])) {
+            $cleanData['end_date'] = Carbon::parse($cleanData['end_date'])->format('Y-m-d');
+        }
+
+        $result = $allResults[$resultIndex % count($allResults)];
+        
+        if (isset($activityData['id']) && in_array($activityData['id'], $allExistingActivityIds)) {
+            // Mise à jour de l'activité existante
+            Activity::where('id', $activityData['id'])->update($cleanData);
+            $submittedActivityIds[] = $activityData['id'];
+        } else {
+            // Création d'une nouvelle activité
+            $activity = Activity::create(array_merge(
+                $cleanData,
+                ['id' => (string) Str::uuid(), 'result_id' => $result->id]
+            ));
+            $submittedActivityIds[] = $activity->id;
+        }
+        
+        $resultIndex++;
+    }
+
+    // Supprimer seulement les activités qui n'ont pas été soumis
+    $toDelete = array_diff($allExistingActivityIds, $submittedActivityIds);
+    if (!empty($toDelete)) {
+        Activity::whereIn('id', $toDelete)->delete();
+    }
+}
+Dis moi exactement ce que sa fait
+Puis que moi j'ai remarque que en edition sa ajoute encore tout a propose de activite
+meme si je n'ajoute pas d'activite,  l'activite qui est rester dans le champs quand je suis en mode edition se recreer donc je me retourve avec la meme chose deux fois

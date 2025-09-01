@@ -30,14 +30,14 @@ class ActivityManagementLivewire extends Component
         $this->resources = $this->activity->resources;
         $this->subActivities = $this->activity->subActivities;
         
-        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
+        // $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
 
-        $this->projectTypes = GeneralAdministration::where('type', 'project_type')->get();
+        $this->projectTypes = GeneralAdministration::where('type', 'activity_status')->get();
 
         // ⚡ Préremplir les statuts des sous-activités
-        foreach ($this->subActivities as $sub) {
-            $this->subActivityStatuses[$sub->id] = $sub->status;
-        }
+        // foreach ($this->subActivities as $sub) {
+        //     $this->subActivityStatuses[$sub->id] = $sub->status;
+        // }
     }
 
     /**

@@ -24,7 +24,8 @@
                     @endif
                 </h1>
                 
-                <div x-data="{
+                <div 
+                x-data="{
                     currentStep: @entangle('currentStep'),
                     totalSteps: @entangle('totalSteps'),
                     stepDetails: @entangle('stepDetails'),
@@ -162,6 +163,30 @@
                             </div>
 
                             <div>
+                                <label for="problemAnalysis" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Analyse du probleme (Optionnel)</label>
+                                <textarea id="problemAnalysis" wire:model.defer="problemAnalysis" rows="5"
+                                          class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                                          placeholder="Analyse des probleme auquel le project repondra."></textarea>
+                                @error('problemAnalysis') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label for="strategy" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Strategie (Optionnel)</label>
+                                <textarea id="strategy" wire:model.defer="strategy" rows="5"
+                                          class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                                          placeholder="Décrivez le contexte général dans lequel le projet s'inscrit."></textarea>
+                                @error('strategy') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label for="justification" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Justification (Optionnel)</label>
+                                <textarea id="justification" wire:model.defer="justification" rows="5"
+                                          class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
+                                          placeholder="Décrivez le probleme a resoudre dans lequel le projet s'inscrit."></textarea>
+                                @error('justification') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
                                 <label for="uploadedDocuments" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documents Pertinents (Optionnel)</label>
                                 <input type="file" id="uploadedDocuments" wire:model="uploadedDocuments" multiple
                                        class="mt-1 block w-full text-sm text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4
@@ -288,6 +313,7 @@
                                 @foreach($specificObjectives as $index => $objective)
                                     <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg relative">
                                         <button type="button" wire:click="removeSpecificObjective({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">&times;</button>
+                                        <input type="hidden" wire:model="specificObjectives.{{ $index }}.id">
                                         <div>
                                             <label for="specific-objective-description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
                                             <textarea id="specific-objective-description-{{ $index }}" wire:model.defer="specificObjectives.{{ $index }}.description" rows="2"
@@ -366,6 +392,7 @@
                                     <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg relative">
                                         <button type="button" wire:click="removeExpectedResult({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">&times;</button>
                                         <div>
+                                            <input type="hidden" wire:model="expectedResults.{{ $index }}.id">
                                             <label for="expected-result-description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description du Résultat <span class="text-red-500">*</span></label>
                                             <textarea id="expected-result-description-{{ $index }}" wire:model.defer="expectedResults.{{ $index }}.description" rows="2"
                                                       class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
@@ -374,9 +401,9 @@
                                         </div>
                                     </div>
                                 @endforeach
-                                {{-- <button type="button" wire:click="addExpectedResult" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold dark:bg-blue-600 dark:text-gray-100 dark:hover:bg-blue-700">
+                                <button type="button" wire:click="addExpectedResult" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold dark:bg-blue-600 dark:text-gray-100 dark:hover:bg-blue-700">
                                     Ajouter un Résultat
-                                </button> --}}
+                                </button>
                             </div>
 
                             {{-- Champs dynamiques pour cette section --}}
@@ -423,6 +450,7 @@
                                         <button type="button" wire:click="removeActivity({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">&times;</button>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
+                                                <input type="hidden" wire:model="activities.{{ $index }}.id">
                                                 <label for="activity-description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description de l'Activité <span class="text-red-500">*</span></label>
                                                 <textarea id="activity-description-{{ $index }}" wire:model.defer="activities.{{ $index }}.description" rows="2"
                                                           class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
@@ -464,7 +492,7 @@
                                                 @error('activities.' . $index . '.status') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                                             </div>
                                             <div>
-                                                <label for="activity-justification-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Budget (Optionnel)</label>
+                                                <label for="activity-budget-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Budget (Optionnel)</label>
                                                 {{-- <textarea id="activity-justification-{{ $index }}" wire:model.defer="activities.{{ $index }}.justification" rows="1"
                                                           class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                                                           placeholder="Budget prevu pour cette activité."></textarea> --}}
@@ -530,6 +558,7 @@
                                         <button type="button" wire:click="removeBudget({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">&times;</button>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
+                                                <input type="hidden" wire:model="budgets.{{ $index }}.id">
                                                 <label for="budget-description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description de la Ligne Budgétaire <span class="text-red-500">*</span></label>
                                                 <textarea id="budget-description-{{ $index }}" wire:model.defer="budgets.{{ $index }}.description" rows="2"
                                                           class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"

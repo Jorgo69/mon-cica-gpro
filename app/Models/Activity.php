@@ -16,10 +16,15 @@ class Activity extends Model
         'responsible_user_id', 'status', 'justification', 'is_milestone', 'progress_percentage',
     ];
 
+     protected $dateFormat = 'Y-m-d H:i:s';
+     
+
     protected $casts = [
         // 'start_date' => 'date', 
         'end_date' => 'date',
         'is_milestone' => 'boolean',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected static function boot()

@@ -51,7 +51,7 @@ class ProjectTypeFormLivewire extends Component
             'options' => [],
             'order' => count($this->fields) + 1,
             'target_project_field' => '',
-            'section' => '',
+            'section' => '',            
             'is_required' => false,
             // Les délimiteurs seront générés automatiquement
             'delimiter_start' => null,
@@ -144,6 +144,8 @@ class ProjectTypeFormLivewire extends Component
 
                 $fieldData['project_type_id'] = $this->projectTypeId;
                 $fieldData['order'] = $index + 1;
+
+                $fieldData['section'] = trim($fieldData['section'] ?? '') ?: 'general';
                 
                 // Gérer la sérialisation des options en JSON si c'est un 'select'
                 if ($fieldData['input_type'] === 'select') {
@@ -160,6 +162,7 @@ class ProjectTypeFormLivewire extends Component
                     ],
                     $fieldData
                 );
+                
             }
 
             session()->flash('message', 'Type de projet sauvegardé avec succès !');

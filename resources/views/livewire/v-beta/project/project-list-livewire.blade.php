@@ -31,6 +31,11 @@
             </a>
         </div>
 
+
+        {{-- Message de Sucess --}}
+        @include('messages.index')
+        {{-- Message de Success End --}}
+
         {{-- Tableau des Projets --}}
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -111,7 +116,7 @@
                                         {{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}
                                     </td>
 
-                                    @include('livewire.v-beta.project.include.link-project-list')
+                                    @include('livewire.v-beta.project.include.link-project-list', [$project->id])
                                     
                                     
                                 </tr>

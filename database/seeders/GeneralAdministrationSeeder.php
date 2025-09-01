@@ -49,7 +49,7 @@ class GeneralAdministrationSeeder extends Seeder
             GeneralAdministration::firstOrCreate(
                 [
                     'name' => $name,
-                    'type' => 'activity_category',
+                    'type' => 'activity_status',
                 ],
                 [
                     'id'          => (string) Str::uuid(),

@@ -16,9 +16,14 @@ class Budget extends Model
         'total_cost', 'category', 'responsible_user_id',
     ];
 
+     protected $dateFormat = 'Y-m-d H:i:s';
+    
+
     protected $casts = [
         'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     protected static function boot()

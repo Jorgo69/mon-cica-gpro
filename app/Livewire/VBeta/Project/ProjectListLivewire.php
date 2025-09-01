@@ -2,6 +2,7 @@
 
 namespace App\Livewire\VBeta\Project;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Project;
@@ -10,13 +11,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectListLivewire extends Component
 {
-    use WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $search = '';
     public $statusFilter = '';
     public $responsibleUserFilter = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
+    public string $projectId = '' ;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -51,6 +53,14 @@ class ProjectListLivewire extends Component
         $this->sortField = $field;
     }
 
+    public function deleteProject($projectId)
+    {
+        $this->authorize('delete', $this->projectId);
+        dd($projectId);
+
+        Project::find($projectId)->delete();
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -58,12 +68,12 @@ class ProjectListLivewire extends Component
         $projects = Project::query();
 
         // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
-        $projects->where(function ($query) use ($user) {
-            $query->where('creator_user_id', $user->id)
-                  ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($subQuery) use ($user) {
-                      $subQuery->where('responsible_user_id', $user->id);
-                  });
-        });
+        // $projects->where(function ($query) use ($user) {
+        //     $query->where('creator_user_id', $user->id)
+        //           ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($subQuery) use ($user) {
+        //               $subQuery->where('responsible_user_id', $user->id);
+        //           });
+        // });
 
         // Appliquer la recherche textuelle
         if ($this->search) {

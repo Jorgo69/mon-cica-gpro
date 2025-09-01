@@ -197,9 +197,12 @@
                         @endif
 
                         <div class="mt-8 flex justify-end">
+                            @can('update', $project)
                             <a href="{{ route('creator.proposal.project.edit', ['projectId' => $project->id ]) }}" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold">
                                 Modifier
                             </a>
+                            @endcan
+
                             <a href="{{ route('project.list') }}" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold">
                                 Retour a la liste
                             </a>

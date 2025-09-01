@@ -57,6 +57,7 @@
         </div>
         @endforeach
         
+        @can('create', $activity)
         <div class="flex justify-between mt-6">
             @if(!$editing)
             <button type="button" wire:click="addBlankSubActivity" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-md shadow hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
@@ -67,6 +68,7 @@
                 {{ $editing ? 'Mettre à jour' : 'Sauvegarder les sous-activités' }}
             </button>
         </div>
+        @endcan
 
     </form>
     

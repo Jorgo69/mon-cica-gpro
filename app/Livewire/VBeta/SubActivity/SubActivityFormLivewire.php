@@ -2,6 +2,8 @@
 
 namespace App\Livewire\VBeta\SubActivity;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Log;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Livewire\Component;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class SubActivityFormLivewire extends Component
 {
+    use AuthorizesRequests;
     public $activityId, $activityStartDate, $activityEndDate;
     public $subActivityToEditId = null; // Reçoit l'ID de la ressource à éditer
     public $users;
@@ -19,6 +22,8 @@ class SubActivityFormLivewire extends Component
 
     public bool $bulkEditOpen = false;
     public array $allSubActivities = [];
+
+    public $activity;
 
 
     protected function rules()
@@ -144,38 +149,38 @@ class SubActivityFormLivewire extends Component
 
    
     public function saveSubActivities()
-{
-    try {
-        foreach ($this->subActivitiesData as $data) {
-            $subActivityData = [
-                'description'         => $data['description'],
-                'is_milestone'        => $data['is_milestone'] == "1",
-                'start_date'          => $data['start_date'],
-                'end_date'            => $data['end_date'],
-                'responsible_user_id' => $data['responsible_user_id'],
-                'activity_id'         => $this->activityId,
-                'status'              => $data['status'] ?? 'En Cours', // 👈 valeur par défaut
-            ];
+    {
+        try {
+            foreach ($this->subActivitiesData as $data) {
+                $subActivityData = [
+                    'description'         => $data['description'],
+                    'is_milestone'        => $data['is_milestone'] == "1",
+                    'start_date'          => $data['start_date'],
+                    'end_date'            => $data['end_date'],
+                    'responsible_user_id' => $data['responsible_user_id'],
+                    'activity_id'         => $this->activityId,
+                    'status'              => 'En Cours', // 👈 valeur par défaut
+                ];
 
-            if (!empty($data['id'])) {
-                // update
-                SubActivity::where('id', $data['id'])->update($subActivityData);
-                \Log::info('Updated subActivity', ['id' => $data['id']]);
-            } else {
-                // create
-                $created = SubActivity::create($subActivityData);
-                \Log::info('Created subActivity', ['id' => $created->id]);
+                if (!empty($data['id'])) {
+                    // update
+                    SubActivity::where('id', $data['id'])->update($subActivityData);
+                    \Log::info('Updated subActivity', ['id' => $data['id']]);
+                } else {
+                    // create
+                    $created = SubActivity::create($subActivityData);
+                    \Log::info('Created subActivity', ['id' => $created->id]);
+                }
             }
+
+            $this->dispatch('subActivitySaved');
+            $this->resetForm();
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur saveSubActivities', ['error' => $e->getMessage()]);
+            session()->flash('error', "Erreur lors de la sauvegarde : " . $e->getMessage());
         }
-
-        $this->dispatch('subActivitySaved');
-        $this->resetForm();
-
-    } catch (\Exception $e) {
-        \Log::error('Erreur saveSubActivities', ['error' => $e->getMessage()]);
-        session()->flash('error', "Erreur lors de la sauvegarde : " . $e->getMessage());
     }
-}
 
     
 

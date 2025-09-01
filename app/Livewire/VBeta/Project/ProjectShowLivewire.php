@@ -2,6 +2,7 @@
 
 namespace App\Livewire\VBeta\Project;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use App\Models\Project;
 use App\Models\ProjectContext;
@@ -16,6 +17,8 @@ use App\Models\DynamicProjectField;
 
 class ProjectShowLivewire extends Component
 {
+    use AuthorizesRequests;
+
     public $projectId;
     public $project;
     public $dynamicFormFields = []; // Pour stocker les définitions des champs dynamiques
@@ -27,7 +30,12 @@ class ProjectShowLivewire extends Component
     public function mount($projectId)
     {
         $this->projectId = $projectId;
+        
+        
         $this->loadProject();
+        
+        // Vérifie que l'utilisateur peut voir ce projet
+        // $this->authorize('view', $this->project);
     }
 
     /**
@@ -56,6 +64,8 @@ class ProjectShowLivewire extends Component
                 ->toArray();
         }
     }
+
+    
 
     /**
      * Rend la vue du composant.

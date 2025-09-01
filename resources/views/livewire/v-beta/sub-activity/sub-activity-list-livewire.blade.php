@@ -59,40 +59,40 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($subActivities as $resource)
+                            @foreach ($subActivities as $activity)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {{ $resource->title }}
+                                        {{ $activity->title }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $resource->project_code }}
+                                        {{ $activity->project_code }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                         {{ 
-                                            $resource->status === 'Actif' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
-                                            ($resource->status === 'draft' ? 'bg-amber-300 text-amber-800 dark:bg-amber-900 dark:text-amber-200' :
-                                            ($resource->status === 'Terminé' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                            ($resource->status === 'En attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                            $activity->status === 'Actif' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
+                                            ($activity->status === 'draft' ? 'bg-amber-300 text-amber-800 dark:bg-amber-900 dark:text-amber-200' :
+                                            ($activity->status === 'Terminé' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                                            ($activity->status === 'En attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
                                             'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                                             )))
                                         }}
                                         ">
-                                            {{ Str::ucfirst(str_replace('_', ' ', $resource->status == 'draft' ? 'Brouillon' : $resource->status )) }}
+                                            {{  $activity->status }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $resource->creator->name ?? 'N/A' }}
+                                        {{ $activity->creator->name ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($resource->start_date)->format('d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($activity->start_date)->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($resource->end_date)->format('d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($activity->end_date)->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('project.show', $resource->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">Voir</a>
-                                        <a href="{{ route('creator.proposal.project.edit', $resource->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Modifier</a>
+                                        <a href="{{ route('project.show', $activity->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">Voir</a>
+                                        <a href="{{ route('creator.proposal.project.edit', $activity->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Modifier</a>
                                     </td>
                                 </tr>
                             @endforeach

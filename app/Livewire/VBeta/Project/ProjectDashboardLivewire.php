@@ -5,12 +5,13 @@ namespace App\Livewire\VBeta\Project;
 use App\Models\Project;
 use App\Models\Activity;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ProjectDashboardLivewire extends Component
 {
-    use WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $project;
     public string $projectId;
@@ -40,7 +41,7 @@ class ProjectDashboardLivewire extends Component
         $this->project = Project::withCount(['qualitativeEvaluations', 'budgets'])
                         ->findOrFail($this->projectId);
 
-            // Vérifie que l'utilisateur a bien le droit de voir
+        // Vérifie que l'utilisateur a bien le droit de voir
         // $this->authorize('view', $this->project);
         abort_if(
         !auth()->user()->can('view', $this->project),

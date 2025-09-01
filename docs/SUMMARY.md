@@ -17,6 +17,12 @@
   - Relations entre entités
   - Champs obligatoires et optionnels
 
+- [Policy](activity-policy.md)
+  - Structure
+    - [Project Policy](../app/Policies/ProjectPolicy.php)
+    - [Activity Policy](../app/Policies/ActivityPolicy.php)
+    - [SubActivity Policy](../app/Policies/SubActivityPolicy.php)
+
 - [Gestion des Statuts](status-management.md)
   - Liste des statuts possibles
   - Correspondance métier / technique

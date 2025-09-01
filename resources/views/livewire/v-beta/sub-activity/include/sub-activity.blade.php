@@ -42,13 +42,14 @@
                                     wire:model.change="subActivityStatuses.{{ $subActivity->id }}"
                                     class="text-xs rounded border-gray-300 dark:border-gray-700 dark:bg-gray-900"
                                 >
+                                <option value="" @selected($subActivity->status)>{{ $subActivity->status  }}</option>
                                     @foreach($projectTypes as $type)
                                         <option value="{{ $type->name }}" @selected($subActivity->status === $type->name)>{{ $type->name  }}</option>
                                     @endforeach
                                 </select>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button wire:click="openModal('{{ $subActivity->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
+                                <button wire:click="openModalForSubActivity('{{ $subActivity->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
                                     Modifier
                                 </button>
                             </td>

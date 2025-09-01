@@ -2,6 +2,7 @@
 
 namespace App\Livewire\VBeta\ProposalProject;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
 use App\Models\Budget;
 use App\Models\Result;
@@ -9,6 +10,7 @@ use App\Models\Project;
 use Livewire\Component;
 use App\Models\Activity;
 use App\Models\ProjectType;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use App\Models\ProjectContext;
@@ -22,10 +24,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon; // Import de Carbon pour la manipulation des dates
+use Illuminate\Validation\ValidationException;
 
 class ProposalProjectFormLivewire extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, AuthorizesRequests;
 
     // Propriétés du wizard
     public $currentStep = 1;
@@ -40,10 +43,6 @@ class ProposalProjectFormLivewire extends Component
     public $projectStartDate;
     public $projectEndDate;
     public $projectStatus = 'Brouillon';
-    public $description;
-    public $problemAnalysis;
-    public $strategy;
-    public $justification;
 
     // Données pour la sélection du type de projet et les champs dynamiques
     public $allProjectTypes = [];
@@ -53,6 +52,9 @@ class ProposalProjectFormLivewire extends Component
 
     // Données des étapes spécifiques
     public $contextDescription;
+    public $problemAnalysis;
+    public $strategy;
+    public $justification;
     public $uploadedDocuments = []; // Pour ProjectDocument
     public $existingDocuments = [];
     public $initialLogicalFramework = [ // Pour LogicalFramework
@@ -65,6 +67,8 @@ class ProposalProjectFormLivewire extends Component
     public $expectedResults = []; // Tableau de résultats
     public $activities = []; // Tableau d'activités
     public $budgets = []; // Tableau de lignes budgétaires
+
+    
 
     
 
@@ -91,6 +95,10 @@ class ProposalProjectFormLivewire extends Component
             'projectEndDate' => 'required|date|after_or_equal:projectStartDate',
             'selectedProjectTypeId' => 'required|uuid|exists:project_types,id',
             'contextDescription' => 'nullable|string',
+            'problemAnalysis' => 'nullablr|string',
+            'strategy' => 'nullablr|string',
+            'justification' => 'nullablr|string',
+            
             'uploadedDocuments.*' => 'nullable|file|max:50000', // 50MB max par fichier
 
             'initialLogicalFramework.general_objective' => 'required|string',
@@ -219,6 +227,7 @@ class ProposalProjectFormLivewire extends Component
         $this->dynamicFieldValues = []; // Initialisation du tableau
 
         if ($projectId) {
+
             $this->projectId = $projectId;
             $project = Project::with([
                 'projectContext',
@@ -228,6 +237,9 @@ class ProposalProjectFormLivewire extends Component
                 'budgets',
                 'projectType'
             ])->find($projectId);
+            // Vérifie que l'utilisateur peut créer OU mettre à jour
+        
+            $this->authorize('update', $project);
 
             if (!$project) {
                 $this->projectId = null;
@@ -244,8 +256,11 @@ class ProposalProjectFormLivewire extends Component
             $this->projectTitle = $project->title;
             $this->projectShortTitle = $project->short_title;
 
-            // $this->projectStartDate = $project->start_date instanceof Carbon ? $project->start_date->format('Y-m-d') : $project->start_date;
-            // $this->projectEndDate = $project->end_date instanceof Carbon ? $project->end_date->format('Y-m-d') : $project->end_date;
+            $this->problemAnalysis = $project->problem_analysis;
+            $this->strategy = $project->strategy;
+            $this->justification = $project->justification;
+
+            
 
             // Correction ici : toujours formater la date au format Y-m-d
             $this->projectStartDate = $project->start_date ? Carbon::parse($project->start_date)->format('Y-m-d') : null;
@@ -282,55 +297,45 @@ class ProposalProjectFormLivewire extends Component
             }
                 
                 // Charger les données des relations
-                $this->contextDescription = $project->projectContext->context_description ?? '';
+            $this->contextDescription = $project->projectContext->context_description ?? '';
                 
-                if ($project->logicalFramework) {
-                    $this->initialLogicalFramework = $project->logicalFramework->toArray();
-                    $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
-                    
-                    // Remplir expectedResults en se basant sur les résultats liés aux objectifs spécifiques
-                    $this->expectedResults = [];
-                    foreach ($project->logicalFramework->specificObjectives as $obj) {
-                        foreach ($obj->results as $res) {
-                            $this->expectedResults[] = $res->toArray();
-                        }
-                    }
-                } else {
-                    // Si pas de cadre logique, initialiser pour éviter les erreurs
-                    $this->addSpecificObjective();
-                    $this->addExpectedResult();
-                }
-
-                // Assurez-vous que les activités et budgets sont des tableaux, même s'ils sont vides
-                // Charger les activités en itérant sur les résultats
-                // $this->activities = [];
-                // foreach ($project->logicalFramework->specificObjectives as $obj) {
-                //     foreach ($obj->results as $res) {
-                //         foreach ($res->activities as $act) {
-                //             $this->activities[] = $act->toArray();
-                //         }
-                //     }
-                // }
+            if ($project->logicalFramework) {
+                $this->initialLogicalFramework = $project->logicalFramework->toArray();
+                $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
                 
-                $this->activities = [];
+                // Remplir expectedResults en se basant sur les résultats liés aux objectifs spécifiques
+                $this->expectedResults = [];
                 foreach ($project->logicalFramework->specificObjectives as $obj) {
                     foreach ($obj->results as $res) {
-                        foreach ($res->activities as $act) {
-                            $activity = $act->toArray();
-                            // S'assurer que les dates sont formatées correctement
-                            if (isset($activity['start_date'])) {
-                                $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
-                            }
-                            if (isset($activity['end_date'])) {
-                                $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');
-                            }
-                            $this->activities[] = $activity;
-                        }
+                        $this->expectedResults[] = $res->toArray();
                     }
                 }
-                $this->budgets = $project->budgets->toArray();
-
             } else {
+                // Si pas de cadre logique, initialiser pour éviter les erreurs
+                $this->addSpecificObjective();
+                $this->addExpectedResult();
+            }
+
+                
+            $this->activities = [];
+            foreach ($project->logicalFramework->specificObjectives as $obj) {
+                foreach ($obj->results as $res) {
+                    foreach ($res->activities as $act) {
+                        $activity = $act->toArray();
+                        // S'assurer que les dates sont formatées correctement
+                        if (isset($activity['start_date'])) {
+                            $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
+                        }
+                        if (isset($activity['end_date'])) {
+                            $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');
+                        }
+                        $this->activities[] = $activity;
+                    }
+                }
+            }
+            $this->budgets = $project->budgets->toArray();
+
+        } else {
                 // Initialisation pour la création
                 Log::debug("Création d'un nouveau projet, initialisation des propriétés.");
                 $this->projectStartDate = null; // Initialisation explicite à null
@@ -341,7 +346,7 @@ class ProposalProjectFormLivewire extends Component
                 $this->addBudget();
             }
 
-            \Log::debug("Dynamic Fields Preview", [
+            Log::debug("Dynamic Fields Preview", [
                 'sections' => array_keys($this->dynamicFormFields),
                 'first_field' => $this->dynamicFormFields[array_key_first($this->dynamicFormFields)][0] ?? null,
                 'values' => $this->dynamicFieldValues
@@ -353,6 +358,7 @@ class ProposalProjectFormLivewire extends Component
                 // Ici, il faut s'assurer que les valeurs sont prêtes pour les checkboxes
                 $this->initializeDynamicFieldValues();
             }
+            
     }
 
     private function extractDynamicFieldValues(Project $project, $dynamicFields)
@@ -395,18 +401,18 @@ class ProposalProjectFormLivewire extends Component
  *
  * @return void
  */
-private function initializeDynamicFieldValues()
-{
-    foreach ($this->dynamicFormFields as $section => $fields) {
-        foreach ($fields as $fieldDef) {
-            if ($fieldDef['input_type'] === 'select' && isset($fieldDef['render_as']) && $fieldDef['render_as'] === 'checkbox') {
-                if (!isset($this->dynamicFieldValues[$fieldDef['field_name']])) {
-                     $this->dynamicFieldValues[$fieldDef['field_name']] = [];
+    private function initializeDynamicFieldValues()
+    {
+        foreach ($this->dynamicFormFields as $section => $fields) {
+            foreach ($fields as $fieldDef) {
+                if ($fieldDef['input_type'] === 'select' && isset($fieldDef['render_as']) && $fieldDef['render_as'] === 'checkbox') {
+                    if (!isset($this->dynamicFieldValues[$fieldDef['field_name']])) {
+                        $this->dynamicFieldValues[$fieldDef['field_name']] = [];
+                    }
                 }
             }
         }
     }
-}
 
     /**
      * Méthode appelée quand le type de projet est sélectionné ou mis à jour.
@@ -474,12 +480,7 @@ private function initializeDynamicFieldValues()
         ->toArray();
 
 
-        // Debug des champs trouvés
-        // logger()->debug("Champs dynamiques chargés", [
-        //     'sections' => array_keys($fields),
-        //     'total_fields' => array_sum(array_map('count', $fields))
-        // ]);
-
+        
         $this->dynamicFormFields = $fields;
 
         $this->dynamicFormFields = collect($this->dynamicFormFields)
@@ -706,7 +707,7 @@ private function initializeDynamicFieldValues()
     public function addActivity()
     {
         $this->activities[] = [
-            'id' => Str::uuid()->toString(),
+            'id' => null,
             'description' => '',
             'responsible_user_id' => '',
             'start_date' => '',
@@ -760,6 +761,182 @@ private function initializeDynamicFieldValues()
         $this->budgets = array_values($this->budgets);
     }
 
+
+    // Private methods for intelligent synchronization
+    private function syncProjectData($project, $projectData)
+    {
+        $project->update($projectData);
+        Log::debug("Projet mis à jour avec l'ID: {$project->id}");
+        return $project;
+    }
+
+    private function syncLogicalFramework($project)
+    {
+        if ($project->logicalFramework) {
+            $project->logicalFramework->update($this->initialLogicalFramework);
+            return $project->logicalFramework;
+        }
+        
+        return LogicalFramework::create(array_merge(
+            ['id' => (string) Str::uuid(), 'project_id' => $project->id],
+            $this->initialLogicalFramework
+        ));
+    }
+
+    private function syncSpecificObjectives($logicalFramework)
+    {
+        $existingIds = $logicalFramework->specificObjectives->pluck('id')->toArray();
+        $submittedIds = [];
+
+        foreach ($this->specificObjectives as $objData) {
+            $cleanData = Arr::except($objData, ['id', 'logical_framework_id', 'created_at', 'updated_at', 'results']);
+            
+            if (isset($objData['id']) && in_array($objData['id'], $existingIds)) {
+                // Mise à jour de l'objectif existant
+                SpecificObjective::where('id', $objData['id'])->update($cleanData);
+                $submittedIds[] = $objData['id'];
+            } else {
+                // Création d'un nouvel objectif
+                $objective = SpecificObjective::create(array_merge(
+                    $cleanData,
+                    ['id' => (string) Str::uuid(), 'logical_framework_id' => $logicalFramework->id]
+                ));
+                $submittedIds[] = $objective->id;
+            }
+        }
+
+        // Supprimer seulement les objectifs qui n'ont pas été soumis
+        $toDelete = array_diff($existingIds, $submittedIds);
+        if (!empty($toDelete)) {
+            SpecificObjective::whereIn('id', $toDelete)->delete();
+        }
+    }
+
+    private function syncExpectedResults($objectives)
+    {
+        // Récupérer tous les IDs de résultats existants
+        $allExistingResultIds = [];
+        $objectiveResultsMap = [];
+        
+        foreach ($objectives as $objective) {
+            $resultIds = $objective->results->pluck('id')->toArray();
+            $allExistingResultIds = array_merge($allExistingResultIds, $resultIds);
+            $objectiveResultsMap[$objective->id] = $resultIds;
+        }
+
+        $submittedResultIds = [];
+        $objectiveIndex = 0;
+
+        foreach ($this->expectedResults as $resData) {
+            $cleanData = Arr::except($resData, ['id', 'specific_objective_id', 'created_at', 'updated_at', 'activities']);
+            $objective = $objectives[$objectiveIndex % count($objectives)];
+            
+            if (isset($resData['id']) && in_array($resData['id'], $allExistingResultIds)) {
+                // Mise à jour du résultat existant
+                Result::where('id', $resData['id'])->update($cleanData);
+                $submittedResultIds[] = $resData['id'];
+            } else {
+                // Création d'un nouveau résultat
+                $result = Result::create(array_merge(
+                    $cleanData,
+                    ['id' => (string) Str::uuid(), 'specific_objective_id' => $objective->id]
+                ));
+                $submittedResultIds[] = $result->id;
+            }
+            
+            $objectiveIndex++;
+        }
+
+        // Supprimer seulement les résultats qui n'ont pas été soumis
+        $toDelete = array_diff($allExistingResultIds, $submittedResultIds);
+        if (!empty($toDelete)) {
+            Result::whereIn('id', $toDelete)->delete();
+        }
+    }
+
+    private function syncActivities($logicalFramework)
+    {
+        // Récupérer tous les IDs d'activités existantes
+        $allExistingActivityIds = [];
+        foreach ($logicalFramework->specificObjectives as $objective) {
+            foreach ($objective->results as $result) {
+                $activityIds = $result->activities->pluck('id')->toArray();
+                $allExistingActivityIds = array_merge($allExistingActivityIds, $activityIds);
+            }
+        }
+        
+
+        $submittedActivityIds = [];
+        $resultIndex = 0;
+        $allResults = $logicalFramework->specificObjectives->flatMap->results;
+
+        foreach ($this->activities as $activityData) {
+            $cleanData = Arr::except($activityData, ['id', 'result_id', 'created_at', 'updated_at']);
+            
+            // Formater les dates
+            if (isset($cleanData['start_date'])) {
+                $cleanData['start_date'] = Carbon::parse($cleanData['start_date'])->format('Y-m-d');
+            }
+            if (isset($cleanData['end_date'])) {
+                $cleanData['end_date'] = Carbon::parse($cleanData['end_date'])->format('Y-m-d');
+            }
+
+            $result = $allResults[$resultIndex % count($allResults)];
+            
+            
+            if (isset($activityData['id']) && in_array($activityData['id'], $allExistingActivityIds)) {
+                // Mise à jour de l'activité existante
+                Activity::where('id', $activityData['id'])->update($cleanData);
+                $submittedActivityIds[] = $activityData['id'];
+            } else {
+                // Création d'une nouvelle activité
+                $activity = Activity::create(array_merge(
+                    $cleanData,
+                    ['id' => (string) Str::uuid(), 'result_id' => $result->id]
+                ));
+                $submittedActivityIds[] = $activity->id;
+            }
+            
+            $resultIndex++;
+        }
+
+
+        // Supprimer seulement les activités qui n'ont pas été soumis
+        $toDelete = array_diff($allExistingActivityIds, $submittedActivityIds);
+        if (!empty($toDelete)) {
+            Activity::whereIn('id', $toDelete)->delete();
+        }
+    }
+
+    private function syncBudgets($project)
+    {
+        $existingIds = $project->budgets->pluck('id')->toArray();
+        $submittedIds = [];
+
+        foreach ($this->budgets as $budgetData) {
+            $cleanData = Arr::except($budgetData, ['id', 'project_id', 'created_at', 'updated_at']);
+            
+            if (isset($budgetData['id']) && in_array($budgetData['id'], $existingIds)) {
+                // Mise à jour du budget existant
+                Budget::where('id', $budgetData['id'])->update($cleanData);
+                $submittedIds[] = $budgetData['id'];
+            } else {
+                // Création d'un nouveau budget
+                $budget = Budget::create(array_merge(
+                    $cleanData,
+                    ['id' => (string) Str::uuid(), 'project_id' => $project->id]
+                ));
+                $submittedIds[] = $budget->id;
+            }
+        }
+
+        // Supprimer seulement les budgets qui n'ont pas été soumis
+        $toDelete = array_diff($existingIds, $submittedIds);
+        if (!empty($toDelete)) {
+            Budget::whereIn('id', $toDelete)->delete();
+        }
+    }
+
     /**
      * Soumet le formulaire complet et sauvegarde les données du projet.
      *
@@ -767,324 +944,183 @@ private function initializeDynamicFieldValues()
      */
     public function submitForm()
     {
-        // Valide toutes les règles définies dans la méthode rules()
-        $this->validate();
+        $this->validate([
+            'projectTitle' => 'required|string|max:255',
+            'projectCode' => 'nullable|string|max:100',
+            'projectShortTitle' => 'nullable|string|max:255',
+            'projectStartDate' => 'nullable|date',
+            'projectEndDate' => 'nullable|date|after_or_equal:projectStartDate',
+            'projectStatus' => 'required|string',
+            'selectedProjectTypeId' => 'required|exists:project_types,id',
+        ]);
 
-        Log::debug("Validation du formulaire réussie. Début de la transaction de sauvegarde.");
-        Log::debug("projectStartDate (avant traitement): " . (is_string($this->projectStartDate) ? "'" . $this->projectStartDate . "'" : (is_null($this->projectStartDate) ? "NULL" : "Other Type")));
-        Log::debug("projectEndDate (avant traitement): " . (is_string($this->projectEndDate) ? "'" . $this->projectEndDate . "'" : (is_null($this->projectEndDate) ? "NULL" : "Other Type")));
+        $startDate = $this->projectStartDate ? Carbon::parse($this->projectStartDate)->format('Y-m-d') : null;
+        $endDate   = $this->projectEndDate ? Carbon::parse($this->projectEndDate)->format('Y-m-d') : null;
 
+        // Concaténer champs dynamiques
+        $dynamicFieldsString = '';
+        foreach ($this->dynamicFieldValues as $fieldName => $value) {
+            $fieldDef = collect($this->dynamicFormFields)->flatten(1)->firstWhere('field_name', $fieldName);
+            if ($fieldDef) {
+                $delimiterStart = $fieldDef['delimiter_start'];
+                $delimiterEnd   = $fieldDef['delimiter_end'];
 
-        try {
-            DB::beginTransaction();
-
-            // Standardiser les valeurs des dates: si elles sont vides, les rendre null
-            // Ceci est une mesure de sécurité si la validation 'required|date' ne convertit pas les chaînes vides en null
-            $startDate = empty($this->projectStartDate) ? null : $this->projectStartDate;
-            $endDate = empty($this->projectEndDate) ? null : $this->projectEndDate;
-
-            
-
-            // Préparer les données du projet principal
-            // Intégrer les valeurs des champs dynamiques dans un champ unique
-            $dynamicFieldsString = '';
-            foreach ($this->dynamicFormFields as $section => $fields) {
-                foreach ($fields as $fieldDef) {
-                    $fieldName = $fieldDef['field_name'];
-                    $value = $this->dynamicFieldValues[$fieldName] ?? null;
-
-                    if (!is_null($value) && $value !== '') {
-                        $delimiterStart = $fieldDef['delimiter_start'];
-                        $delimiterEnd = $fieldDef['delimiter_end'];
-                        
-                        if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
-                            $value = json_encode($value);
-                        }
-
-                        // Concaténer la nouvelle valeur avec les délimiteurs
-                        $dynamicFieldsString .= $delimiterStart . $value . $delimiterEnd;
-                    }
+                if ($fieldDef['input_type'] === 'select' && $fieldDef['render_as'] === 'checkbox') {
+                    $value = json_encode($value ?? []);
                 }
+
+                $dynamicFieldsString .= $delimiterStart . $value . $delimiterEnd;
             }
-        
-        
+        }
 
-        
+        if ($this->projectId) {
+            // ----------------------
+            // EDITION
+            // ----------------------
+            $project = Project::with([
+                'logicalFramework.specificObjectives.results.activities',
+                'budgets'
+            ])->find($this->projectId);
 
-            // dd($projectData);
-            // Créer ou Mettre à jour le Projet
-            if ($this->projectId) {
-                $project = Project::find($this->projectId);
-
-                if ($project) {
-
-                    // Préparer les données du projet principal, avec tous les champs requis
-                    $projectData = [
-                        'project_code' => $this->projectCode,
-                        'title' => $this->projectTitle,
-                        'short_title' => $this->projectShortTitle,
-                        'start_date' => $startDate,
-                        'end_date' => $endDate,
-                        'status' => $this->projectStatus,
-                        'creator_user_id' => Auth::id(), // <-- Cette ligne est cruciale
-                        'project_type_id' => $this->selectedProjectTypeId, // <-- Cette ligne est cruciale
-                        // 'created_by_user_id' => Auth::id(),
-                        'updated_by_user_id' => Auth::id(),
-                        // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
-                        'description' => $this->description,
-                        'problem_analysis' => $this->problemAnalysis,
-                        'strategy' => $this->strategy,
-                        'justification' => $this->justification,
-                    ];
-
-                    // Stocker la chaîne complète dans la colonne 'general_objectives'
-                    $projectData['general_objectives'] = $dynamicFieldsString;
-                    // Le reste de la logique de sauvegarde...
-        
-                    Log::debug("Mode Creation: Final projectData avant l'opération DB:", $projectData);
-
-                    // Mettre à jour le statut uniquement si le champ existe dans le formulaire
-                    // Sinon, la valeur existante est conservée
-                    $projectData['status'] = $this->projectStatus;
-                    // Mettre à jour seulement l'utilisateur qui a modifié le projet
-                    $projectData['updated_by_user_id'] = Auth::id();
-                    // Le projet a été trouvé, on le met à jour
-                    $project->update($projectData);
-                    
-
-                    Log::debug("Projet existant mis à jour avec l'ID: {$project->id}");
-
-                    // Gérer la suppression des anciennes dépendances avant de les recréer
-                    // Suppression des budgets
-                    $project->budgets()->delete();
-                    Log::debug("Anciens budgets du projet {$project->id} supprimés.");
-
-                    // Suppression du cadre logique et de toutes ses dépendances (objectifs, résultats, activités)
-                    // Assurez-vous que les relations sont configurées avec onDelete('cascade') dans vos migrations
-                    // Sinon, vous devrez supprimer manuellement dans l'ordre inverse des dépendances
-                    if ($project->logicalFramework) {
-                        $project->logicalFramework->specificObjectives->each(function ($objective) {
-                            $objective->results->each(function ($result) {
-                                $result->activities()->delete(); // Supprime les activités liées à ce résultat
-                            });
-                            $objective->results()->delete(); // Supprime les résultats liés à cet objectif
-                        });
-                        $project->logicalFramework->specificObjectives()->delete(); // Supprime les objectifs liés au cadre logique
-                        $project->logicalFramework()->delete(); // Supprime le cadre logique
-                        Log::debug("Ancien LogicalFramework et ses dépendances du projet {$project->id} supprimés.");
-                    }
-                    
-                    // Suppression des documents existants si vous voulez les remplacer, sinon, ne pas supprimer ici
-                    // $project->projectDocuments()->delete(); 
-                    // Log::debug("Anciens documents du projet {$project->id} supprimés.");
-
-                } 
-            } else {
-                
-                // Préparer les données du projet principal, avec tous les champs requis
+            if ($project) {
                 $projectData = [
-                    'project_code' => $this->projectCode,
-                    'title' => $this->projectTitle,
-                    'short_title' => $this->projectShortTitle,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                    'status' => 'Brouillon', // Le statut est "draft" uniquement à la création
-                    'creator_user_id' => Auth::id(), // <-- Cette ligne est cruciale
-                    'project_type_id' => $this->selectedProjectTypeId, // <-- Cette ligne est cruciale
-                    'created_by_user_id' => Auth::id(),
-                    // 'updated_by_user_id' => Auth::id(),
-                    // Les autres champs comme description, problem_analysis, etc., seront inclus si le formulaire les contient
-                    'description' => $this->description,
-                    'problem_analysis' => $this->problemAnalysis,
+                    'project_code'       => $this->projectCode,
+                    'title'              => $this->projectTitle,
+                    'short_title'        => $this->projectShortTitle,
+                    'start_date'         => $startDate,
+                    'end_date'           => $endDate,
+                    'status'             => $this->projectStatus,
+                    
+                    'project_type_id'    => $this->selectedProjectTypeId,
+                    'updated_by_user_id' => Auth::id(),
+                    'general_objectives' => $dynamicFieldsString,
+                    
+                    'problemAnalysis' => $this->problemAnalysis,
                     'strategy' => $this->strategy,
-                    // 'justification' => $this->justification,
+                    'justification' => $this->justification,
                 ];
 
-                // Stocker la chaîne complète dans la colonne 'general_objectives'
-                $projectData['general_objectives'] = $dynamicFieldsString;
-
-                // Le reste de la logique de sauvegarde...
-        
-                Log::debug("Mode Edit: Final projectData avant l'opération DB:", $projectData);
-
-                // Pas d'ID de projet, on en crée un nouveau
-                $project = Project::create(array_merge($projectData, ['id' => (string) Str::uuid()]));
-                
-                $this->projectId = $project->id;
-                Log::debug("Nouveau projet créé avec l'ID: {$project->id}");
-            }
-
-            // Créer/Mettre à jour ProjectContext
-            ProjectContext::updateOrCreate(
-                ['project_id' => $project->id],
-                ['id' => (string) Str::uuid(), 'context_description' => $this->contextDescription]
-            );
-            Log::debug("ProjectContext créé/mis à jour pour le projet: {$project->id}");
-
-            // Gérer les ProjectDocuments (toujours créer de nouveaux documents pour les uploads)
-            foreach ($this->uploadedDocuments as $document) {
-                $path = $document->store('documents/' . $project->id, 'public');
-                ProjectDocument::create([
-                    'id' => (string) Str::uuid(),
-                    'project_id' => $project->id,
-                    'uploaded_by_user_id' => Auth::id(),
-                    'file_path' => $path,
-                    'file_name' => $document->getClientOriginalName(),
-                    'file_type' => $document->getMimeType(),
+                // 🔹 Log avant sync pour debug
+                Log::debug('Before sync — submitted ids', [
+                    'specificObjectives' => array_map(fn($o) => $o['id'] ?? null, $this->specificObjectives),
+                    'expectedResults'    => array_map(fn($r) => $r['id'] ?? null, $this->expectedResults),
+                    'activities'         => array_map(fn($a) => $a['id'] ?? null, $this->activities),
+                    'budgets'            => array_map(fn($b) => $b['id'] ?? null, $this->budgets),
                 ]);
-            }
-            Log::debug("Documents du projet sauvegardés.");
 
-            // Créer le LogicalFramework
+                // 🔹 Mettre à jour projet
+                $this->syncProjectData($project, $projectData);
+
+                $this->contextDescription = $project->projectContext->context_description ?? '';
+
+                // 🔹 Mettre à jour cadre logique
+                $logicalFramework = $this->syncLogicalFramework($project);
+
+                // 🔹 Mettre à jour objectifs spécifiques
+                $this->syncSpecificObjectives($logicalFramework);
+
+                // Recharger avant résultats
+                $logicalFramework->load('specificObjectives.results');
+
+                // 🔹 Mettre à jour résultats
+                $this->syncExpectedResults($logicalFramework->specificObjectives);
+
+                // 🔹 Mettre à jour activités
+                $this->syncActivities($logicalFramework);
+
+                // 🔹 Mettre à jour budgets
+                $this->syncBudgets($project);
+            }
+
+        } else {
+            // ----------------------
+            // CREATION
+            // ----------------------
+            $project = Project::create([
+                'id'                => (string) Str::uuid(),
+                'project_code'      => $this->projectCode,
+                'title'             => $this->projectTitle,
+                'short_title'       => $this->projectShortTitle,
+                'start_date'        => $startDate,
+                'end_date'          => $endDate,
+                'status'            => $this->projectStatus,
+                'creator_user_id'   => Auth::id(),
+                'project_type_id'   => $this->selectedProjectTypeId,
+                'general_objectives'=> $dynamicFieldsString,
+
+                'problem_analysis' => $this->problemAnalysis,
+                'strategy' => $this->strategy,
+                'justification' => $this->justification,
+            ]);
+
+            $this->projectId = $project->id;
+
+            // 🔹 Créer cadre logique
             $logicalFramework = LogicalFramework::create(array_merge(
                 ['id' => (string) Str::uuid(), 'project_id' => $project->id],
                 $this->initialLogicalFramework
             ));
-            Log::debug("LogicalFramework créé avec l'ID: {$logicalFramework->id}");
 
-            // Gérer les objectifs spécifiques (liés au LogicalFramework)
-            // foreach ($this->specificObjectives as $objData) {
-            //     $specificObjective = SpecificObjective::create(array_merge(
-            //         ['id' => (string) Str::uuid(), 'logical_framework_id' => $logicalFramework->id],
-            //         $objData
-            //     ));
-            //     Log::debug("Objectif spécifique créé avec l'ID: {$specificObjective->id}");
-            // }
+            $this->contextDescription = $project->projectContext->context_description ?? '';
 
+            // 🔹 Objectifs spécifiques
             foreach ($this->specificObjectives as $objData) {
-                unset($objData['logical_framework_id']); // Supprime l'ancien ID s'il existe
-                $specificObjective = SpecificObjective::create(array_merge(
-                    ['id' => (string) Str::uuid(), 'logical_framework_id' => $logicalFramework->id],
-                    $objData
-                ));
-                Log::debug("Objectif spécifique créé avec l'ID: {$specificObjective->id}");
-            }
+                if (empty(trim($objData['description'] ?? ''))) continue;
 
-
-            // Gérer les résultats (liés aux objectifs spécifiques)
-            // Nous devons nous assurer que les objectifs spécifiques existent avant de lier les résultats.
-            // Si le nombre de résultats dépasse le nombre d'objectifs, nous pouvons boucler sur les objectifs.
-            $allSpecificObjectives = $logicalFramework->specificObjectives;
-            if ($allSpecificObjectives->isEmpty()) {
-                // Créer un objectif générique si aucun n'existe pour lier les résultats
-                $specificObjective = SpecificObjective::create([
-                    'id' => (string) Str::uuid(),
+                $objective = SpecificObjective::create([
+                    'id'                   => (string) Str::uuid(),
                     'logical_framework_id' => $logicalFramework->id,
-                    'description' => 'Objectif spécifique générique',
+                    'description'          => $objData['description'],
                 ]);
-                $allSpecificObjectives->push($specificObjective);
-                Log::debug("Objectif spécifique générique créé pour lier les résultats.");
-            }
 
-            $objectiveIndex = 0;
-            // foreach ($this->expectedResults as $resData) {
-            //     $specificObjective = $allSpecificObjectives->get($objectiveIndex % $allSpecificObjectives->count());
-            //     Result::create(array_merge(
-            //         ['id' => (string) Str::uuid(), 'specific_objective_id' => $specificObjective->id],
-            //         $resData
-            //     ));
-            //     Log::debug("Résultat créé pour l'objectif: {$specificObjective->id}");
-            //     $objectiveIndex++;
-            // }
+                foreach ($this->expectedResults as $resData) {
+                    if (empty(trim($resData['description'] ?? ''))) continue;
 
-            foreach ($this->expectedResults as $resData) {
-                unset($resData['specific_objective_id']);
-                unset($resData['id']);
-                $specificObjective = $allSpecificObjectives->get($objectiveIndex % $allSpecificObjectives->count());
-                Result::create(array_merge(
-                    ['id' => (string) Str::uuid(), 'specific_objective_id' => $specificObjective->id],
-                    $resData
-                ));
-                $objectiveIndex++;
-            }
-
-
-            // Gérer les activités (liées aux résultats)
-            // foreach ($this->activities as $activityData) {
-            //     // Tenter de lier l'activité au premier résultat disponible du projet
-            //     // Il est crucial que $project->logicalFramework et ses dépendances existent ici
-            //     $firstResult = $logicalFramework->specificObjectives?->first()?->results?->first();
-            //     $resultId = $firstResult?->id;
-                
-            //     // Fallback si aucun résultat n'existe encore, créer un résultat générique
-            //     if (!$resultId) {
-            //         $specificObjectiveForActivity = $logicalFramework->specificObjectives?->first() ?? SpecificObjective::create([
-            //             'id' => (string) Str::uuid(),
-            //             'logical_framework_id' => $logicalFramework->id,
-            //             'description' => 'Objectif générique pour activités (Fallback)',
-            //         ]);
-            //         $resultForActivity = Result::create([
-            //             'id' => (string) Str::uuid(),
-            //             'specific_objective_id' => $specificObjectiveForActivity->id,
-            //             'description' => 'Résultat générique pour activité initiale (Fallback)',
-            //         ]);
-            //         $resultId = $resultForActivity->id;
-            //         Log::debug("Résultat générique créé pour lier l'activité (Fallback): {$resultId}");
-            //     }
-
-            //     Activity::create(array_merge(
-            //         ['id' => (string) Str::uuid(), 'result_id' => $resultId],
-            //         $activityData
-            //     ));
-            //     Log::debug("Activité créée pour le résultat: {$resultId}");
-            // }
-
-            foreach ($this->activities as $activityData) {
-                unset($activityData['result_id']);
-                unset($activityData['id']);
-                $firstResult = $logicalFramework->specificObjectives?->first()?->results?->first();
-                $resultId = $firstResult?->id;
-
-                if (!$resultId) {
-                    $specificObjectiveForActivity = $logicalFramework->specificObjectives?->first() ?? SpecificObjective::create([
-                        'id' => (string) Str::uuid(),
-                        'logical_framework_id' => $logicalFramework->id,
-                        'description' => 'Objectif générique pour activités (Fallback)',
+                    $result = Result::create([
+                        'id'                   => (string) Str::uuid(),
+                        'specific_objective_id'=> $objective->id,
+                        'description'          => $resData['description'],
                     ]);
-                    $resultForActivity = Result::create([
-                        'id' => (string) Str::uuid(),
-                        'specific_objective_id' => $specificObjectiveForActivity->id,
-                        'description' => 'Résultat générique pour activité initiale (Fallback)',
-                    ]);
-                    $resultId = $resultForActivity->id;
+
+                    foreach ($this->activities as $actData) {
+                        if (empty(trim($actData['description'] ?? ''))) continue;
+
+                        Activity::create([
+                            'id'        => (string) Str::uuid(),
+                            'result_id' => $result->id,
+                            'description'=> $actData['description'],
+                            'responsible_user_id'=> $actData['responsible_user_id'],
+                            'budget'=> $actData['budget'],
+                            'is_milestone'=> $actData['is_milestone'],
+                            'start_date'=> !empty($actData['start_date']) ? Carbon::parse($actData['start_date'])->format('Y-m-d') : null,
+                            'end_date'  => !empty($actData['end_date']) ? Carbon::parse($actData['end_date'])->format('Y-m-d') : null,
+                        ]);
+                    }
                 }
-
-                Activity::create(array_merge(
-                    ['id' => (string) Str::uuid(), 'result_id' => $resultId],
-                    $activityData
-                ));
             }
 
-
-            // Gérer les Budgets (création)
-            // foreach ($this->budgets as $budgetData) {
-            //     Budget::create(array_merge(
-            //         ['id' => (string) Str::uuid(), 'project_id' => $project->id],
-            //         $budgetData
-            //     ));
-            // }
+            // 🔹 Budgets
             foreach ($this->budgets as $budgetData) {
-                unset($budgetData['id']);
-                Budget::create(array_merge(
-                    ['id' => (string) Str::uuid(), 'project_id' => $project->id],
-                    $budgetData
-                ));
+                if (empty(trim($budgetData['description'] ?? ''))) continue;
+
+                Budget::create([
+                    'id'         => (string) Str::uuid(),
+                    'project_id' => $project->id,
+                    'description'=> $budgetData['description'],
+                    'amount'     => $budgetData['amount'] ?? 0,
+                ]);
             }
-
-            Log::debug("Budgets du projet créés.");
-
-            DB::commit();
-            Log::debug("Transaction de sauvegarde réussie et validée.");
-
-            session()->flash('success', 'Le projet a été ' . ($this->projectId ? 'mis à jour' : 'créé') . ' avec succès !');
-            return $this->redirectRoute('dashboard'); // Rediriger vers le tableau de bord
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Erreur lors de la sauvegarde du projet : ' . $e->getMessage(), ['exception' => $e]);
-            session()->flash('error', 'Une erreur est survenue lors de la sauvegarde du projet. Veuillez réessayer. Détail: ' . $e->getMessage());
         }
+
+        return redirect()->route('project.list')->with('success', $this->projectId ? 'Projet mis à jour avec succès.' : 'Projet créé avec succès.');
+        // session()->flash('message', $this->projectId ? 'Projet mis à jour avec succès.' : 'Projet créé avec succès.');
     }
+
+    public function deleteProject()
+    {
+        
+    }
+
 
     /**
      * Gère la confirmation de suppression d'un document existant.
