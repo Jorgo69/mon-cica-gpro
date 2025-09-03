@@ -6,7 +6,7 @@
     
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
+    {{-- <style>
         /* Animations personnalisées */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -81,14 +81,16 @@
         body, header, aside, .card, .hover\:bg-gray-100, .bg-white, .bg-gray-50 {
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-    </style>
+    </style> --}}
 
     <title>{{ $title ?? config('app.name') }}</title>
     {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
     @stack('alpine-js')
     
+    
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('message-js')
 
     {{-- @livewireStyles --}}
 </head>

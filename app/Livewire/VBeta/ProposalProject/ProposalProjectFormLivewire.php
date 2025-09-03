@@ -32,7 +32,7 @@ class ProposalProjectFormLivewire extends Component
 
     // Propriétés du wizard
     public $currentStep = 1;
-    public $totalSteps = 7;
+    public $totalSteps = 6;
     public $stepDetails = [];
 
     // Données du projet principal (table 'projects')
@@ -95,9 +95,9 @@ class ProposalProjectFormLivewire extends Component
             'projectEndDate' => 'required|date|after_or_equal:projectStartDate',
             'selectedProjectTypeId' => 'required|uuid|exists:project_types,id',
             'contextDescription' => 'nullable|string',
-            'problemAnalysis' => 'nullablr|string',
-            'strategy' => 'nullablr|string',
-            'justification' => 'nullablr|string',
+            'problemAnalysis' => 'nullable|string',
+            'strategy' => 'nullable|string',
+            'justification' => 'nullable|string',
             
             'uploadedDocuments.*' => 'nullable|file|max:50000', // 50MB max par fichier
 
@@ -220,7 +220,7 @@ class ProposalProjectFormLivewire extends Component
             ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
             ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
             ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
-            ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
+            // ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
             ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
         ];
 
@@ -497,6 +497,7 @@ class ProposalProjectFormLivewire extends Component
     {
         try {
             $this->validateCurrentStep();
+            
             if ($this->currentStep < $this->totalSteps) {
                 $this->currentStep++;
             }
@@ -640,7 +641,7 @@ class ProposalProjectFormLivewire extends Component
             3 => 'cadre_logique',
             4 => 'resultats_attendus',
             5 => 'activites_initiales',
-            6 => 'budget_previsionnel',
+            // 6 => 'budget_previsionnel',
             7 => 'finalisation', // Bien que non utilisé pour les champs dynamiques, utile pour la cohérence
         ];
         return $stepSectionMap[$step] ?? null;
@@ -995,7 +996,7 @@ class ProposalProjectFormLivewire extends Component
                     'updated_by_user_id' => Auth::id(),
                     'general_objectives' => $dynamicFieldsString,
                     
-                    'problemAnalysis' => $this->problemAnalysis,
+                    'problem_analysis' => $this->problemAnalysis,
                     'strategy' => $this->strategy,
                     'justification' => $this->justification,
                 ];
@@ -1029,7 +1030,7 @@ class ProposalProjectFormLivewire extends Component
                 $this->syncActivities($logicalFramework);
 
                 // 🔹 Mettre à jour budgets
-                $this->syncBudgets($project);
+                // $this->syncBudgets($project);
             }
 
         } else {
@@ -1100,19 +1101,19 @@ class ProposalProjectFormLivewire extends Component
             }
 
             // 🔹 Budgets
-            foreach ($this->budgets as $budgetData) {
-                if (empty(trim($budgetData['description'] ?? ''))) continue;
+            // foreach ($this->budgets as $budgetData) {
+            //     if (empty(trim($budgetData['description'] ?? ''))) continue;
 
-                Budget::create([
-                    'id'         => (string) Str::uuid(),
-                    'project_id' => $project->id,
-                    'description'=> $budgetData['description'],
-                    'amount'     => $budgetData['amount'] ?? 0,
-                ]);
-            }
+            //     Budget::create([
+            //         'id'         => (string) Str::uuid(),
+            //         'project_id' => $project->id,
+            //         'description'=> $budgetData['description'],
+            //         'amount'     => $budgetData['amount'] ?? 0,
+            //     ]);
+            // }
         }
 
-        return redirect()->route('project.list')->with('success', $this->projectId ? 'Projet mis à jour avec succès.' : 'Projet créé avec succès.');
+        return redirect()->route('project.list')->with('success-project', $this->projectId ? 'Projet mis à jour avec succès.' : 'Projet créé avec succès.');
         // session()->flash('message', $this->projectId ? 'Projet mis à jour avec succès.' : 'Projet créé avec succès.');
     }
 

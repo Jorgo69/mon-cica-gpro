@@ -79,16 +79,27 @@ class SubActivityFormLivewire extends Component
             ]
         ];
     }
+
+    public function toggleMilestone($index)
+    {
+        $this->subActivitiesData[$index]['is_milestone'] = 
+        $this->subActivitiesData[$index]['is_milestone'] ? 0 : 1;
+    }
     
     public function addBlankSubActivity()
     {
-        $this->subActivitiesData[] = [
-            'description' => '', 'is_milestone' => '', 'start_date' => '',
-            'end_date' => '', 'responsible_user_id' => null
+            $this->subActivitiesData[] = [
+            'description' => '',
+            'is_milestone' => 0,
+            'start_date' => '',
+            'end_date' => '',
+            'responsible_user_id' => '',
         ];
+
+        $this->dispatch('subActivityAdded'); // Animation scroll
     }
 
-    public function removeResource($index)
+    public function removeSubActivity($index)
     {
         unset($this->subActivitiesData[$index]);
         $this->subActivitiesData = array_values($this->subActivitiesData);
@@ -150,14 +161,18 @@ class SubActivityFormLivewire extends Component
    
     public function saveSubActivities()
     {
+        $this->validate();
+
         try {
+            DB::beginTransaction();
+
             foreach ($this->subActivitiesData as $data) {
                 $subActivityData = [
                     'description'         => $data['description'],
                     'is_milestone'        => $data['is_milestone'] == "1",
                     'start_date'          => $data['start_date'],
                     'end_date'            => $data['end_date'],
-                    'responsible_user_id' => $data['responsible_user_id'],
+                    'responsible_user_id' => $data['responsible_user_id']?: null,
                     'activity_id'         => $this->activityId,
                     'status'              => 'En Cours', // 👈 valeur par défaut
                 ];
@@ -172,13 +187,16 @@ class SubActivityFormLivewire extends Component
                     \Log::info('Created subActivity', ['id' => $created->id]);
                 }
             }
+            DB::commit();
 
             $this->dispatch('subActivitySaved');
             $this->resetForm();
 
+            session()->flash('success-sub-activity', 'Sous activite ajouter avec success');
+
         } catch (\Exception $e) {
             \Log::error('Erreur saveSubActivities', ['error' => $e->getMessage()]);
-            session()->flash('error', "Erreur lors de la sauvegarde : " . $e->getMessage());
+            session()->flash('error-sub-activity', "Erreur lors de la sauvegarde : " . $e->getMessage());
         }
     }
 

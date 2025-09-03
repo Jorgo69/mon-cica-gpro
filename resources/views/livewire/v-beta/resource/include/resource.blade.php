@@ -13,7 +13,9 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Quantité</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Coût Total</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Responsable</th>
+                        @can('create', $activity)
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Action</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -30,12 +32,20 @@
                                     Non assigné
                                 @endif
                             </td>
+                            @can('create', $activity)
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button wire:click="openModal('{{ $resource->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
                                     Modifier
                                 </button>
-                                {{-- Ajouter ici le bouton de suppression si nécessaire --}}
+                                
+                                <button 
+                                wire:click="deleteResource('{{ $resource->id }}')"
+                                wire:confirm="Etes vous sur de vouloir supprimer cette resource?"
+                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">
+                                    Supprimer
+                                </button>
                             </td>
+                            @endcan
                         </tr>
                     @endforeach
                 </tbody>

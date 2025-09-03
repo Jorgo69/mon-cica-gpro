@@ -96,6 +96,8 @@ class MemberManagementLivewire extends Component
 
         $this->showModal = false;
         $this->resetForm();
+
+        session()->flash('success', 'Utilisateur ajouter avec success');
     }
 
     public function update()
@@ -104,6 +106,7 @@ class MemberManagementLivewire extends Component
         $rules['email'] = 'required|email|unique:users,email,' . $this->selectedMember->id;
         $rules['numero_identification'] = 'nullable|string|max:100|unique:users,numero_identification,' . $this->selectedMember->id;
         $rules['password'] = 'nullable|min:6';
+
         $this->validate($rules);
 
         $user = $this->selectedMember;
@@ -128,6 +131,8 @@ class MemberManagementLivewire extends Component
 
         $this->showModal = false;
         $this->resetForm();
+        // dd();
+        session()->flash('info-project', 'Info mis a jour');
     }
 
     public function delete()

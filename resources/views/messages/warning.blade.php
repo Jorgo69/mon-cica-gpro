@@ -1,4 +1,4 @@
-@if (session('warning'))
+{{-- @if (session('warning'))
 <div class="alert-container" data-duration="5000">
     <div class="bg-amber-100 border-t-4 border-amber-500 rounded-b text-amber-900 px-4 py-3 my-2 shadow-md relative" role="alert">
         <div class="flex">
@@ -14,4 +14,4 @@
         </div>
     </div>
 </div>
-@endif
+@endif --}}

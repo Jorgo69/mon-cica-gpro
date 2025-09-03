@@ -4,6 +4,7 @@ namespace App\Livewire\VBeta\Activity;
 
 use App\Models\GeneralAdministration;
 use App\Models\Activity;
+use App\Models\Resource;
 use App\Models\SubActivity;
 use Livewire\Component;
 
@@ -21,7 +22,8 @@ class ActivityManagementLivewire extends Component
     // Écouteur pour l'événement 'resourceSaved'
     protected $listeners = [
         'resourceSaved' => 'closeModalAndRefresh',
-        'subActivitySaved' => 'closeModalAndRefresh',
+        'subActivitySaved' => 'closeModalAndRefreshForSubActivity',
+        
     ];
 
     public function mount($activityId)
@@ -78,14 +80,14 @@ class ActivityManagementLivewire extends Component
     {
         $this->closeModal();
         $this->refreshResources();
-        session()->flash('success', 'Ressource(s) sauvegardée(s) avec succès !');
+        session()->flash('success-resource', 'Ressource(s) sauvegardée(s) avec succès !');
     }
 
     public function closeModalAndRefreshForSubActivity()
     {
         $this->closeModalForSubActivity();
         $this->refreshSubActivities();
-        session()->flash('success', 'Sous Activities sauvegardée(s) avec succès !');
+        session()->flash('success-sub-activity', 'Sous Activities sauvegardée(s) avec succès !');
     }
 
     public function refreshResources()
@@ -109,6 +111,17 @@ class ActivityManagementLivewire extends Component
             // Optionnel : émettre un événement pour prévenir que le statut a changé
             $this->dispatch('projectStatusUpdated', subActivityId: $subActivityId, status: $value);
         }
+        session()->flash('info-sub-activity', 'Status change');
+    }
+
+    /**
+     * Supprimer la ressource
+     * @param string|null $resourceId L'ID de la ressource à éditer, si applicable.
+     */
+    public function deleteResource(?string $resourceId = null)
+    {
+        session()->flash('success-resource', 'Ressource supprimer avec success');
+        
     }
 
     

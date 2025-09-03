@@ -93,6 +93,8 @@
                 </div>
                 @endif
 
+                
+
                 {{-- Section 3: Gestion des Sous activites (espace réservé pour le formulaire dynamique) --}}
                 <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
@@ -143,8 +145,15 @@
                     </div>
                 </div>
 
+                {{-- Message de Sucess --}}
+                    @include('messages.index', ['context' => 'sub-activity'])
+                {{-- Message de Success End --}}
+                
                 {{-- Section 4: Ressources liées à l'activité --}}
                 @include('livewire.v-beta.sub-activity.include.sub-activity')
+
+
+                
 
                 {{-- Section 4: Gestion des Ressources (espace réservé pour le formulaire dynamique) --}}
                 <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -195,6 +204,9 @@
                     </div>
                 </div>
 
+                {{-- Message de Sucess --}}
+                    @include('messages.index', ['context' => 'resource'])
+                {{-- Message de Success End --}}
                 {{-- Section 5: Ressources liées à l'activité --}}
                 @include('livewire.v-beta.resource.include.resource')
                 

@@ -16,8 +16,10 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Date de Debut</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Date de Fin</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Responsable</th>
+                        @can('create', $activity)
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Action</th>
+                        @endcan
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -37,6 +39,7 @@
                                 @endif
                             </td>
                             {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $subActivity->status }}</td> --}}
+                            @can('create', $activity)
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <select 
                                     wire:model.change="subActivityStatuses.{{ $subActivity->id }}"
@@ -53,6 +56,7 @@
                                     Modifier
                                 </button>
                             </td>
+                            @endcan
                         </tr>
                     @endforeach
                 </tbody>

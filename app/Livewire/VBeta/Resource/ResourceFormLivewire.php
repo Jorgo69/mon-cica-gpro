@@ -114,6 +114,8 @@ class ResourceFormLivewire extends Component
     
             // Réinitialiser le formulaire après la sauvegarde
             $this->resetForm();
+
+            session()->flash('success-resource', 'Sous activite ajouter avec success');
     
         } catch (\Exception $e) {
             DB::rollBack();
