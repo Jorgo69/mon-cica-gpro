@@ -16,7 +16,7 @@
             <p><strong>Période:</strong> Du {{ $projectStartDate }} au {{ $projectEndDate }}</p>
             
             @if ($contextDescription)
-                <p><strong>Contexte:</strong> {{ Str::limit($contextDescription, 100) }}</p>
+                <p><strong>Contexte:</strong> {!! Str::limit($contextDescription, 100) !!}</p>
             @endif
 
             @if (!empty($initialLogicalFramework['general_objective']))
@@ -28,16 +28,16 @@
             @endif
 
             @if (count($expectedResults) > 0)
-                <p><strong>Résultats Attendus:</strong> {{ count($expectedResults) }}</p>
+                <p><strong>Résultats Attendus:</strong> {!! count($expectedResults) !!}</p>
             @endif
 
             @if (count($activities) > 0)
                 <p><strong>Activités:</strong> {{ count($activities) }}</p>
             @endif
 
-            @if (count($budgets) > 0)
+            {{-- @if (count($budgets) > 0)
                 <p><strong>Lignes Budgétaires:</strong> {{ count($budgets) }}</p>
-            @endif
+            @endif --}}
 
             @php
                 $hasDynamicValues = false;

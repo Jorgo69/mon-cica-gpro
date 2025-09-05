@@ -61,6 +61,18 @@
                                     <strong class="font-medium">Description :</strong>
                                     <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-900 rounded-md text-sm dark:text-gray-300">{{ $project->projectContext->context_description }}</p>
                                 </p>
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    <strong class="font-medium">Justification :</strong>
+                                    <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-900 rounded-md text-sm dark:text-gray-300">{!! $project->justification !!}</p>
+                                </p>
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    <strong class="font-medium">Strategie :</strong>
+                                    <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-900 rounded-md text-sm dark:text-gray-300">{!! $project->strategy !!}</p>
+                                </p>
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    <strong class="font-medium">Analyse du probleme :</strong>
+                                    <p class="mt-1 p-3 bg-gray-50 dark:bg-gray-900 rounded-md text-sm dark:text-gray-300">{!! $project->problem_analysis !!}</p>
+                                </p>
                             </div>
                         @endif
 

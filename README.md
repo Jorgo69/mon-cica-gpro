@@ -166,3 +166,22 @@ private function syncActivities($logicalFramework)
 Dis moi exactement ce que sa fait
 Puis que moi j'ai remarque que en edition sa ajoute encore tout a propose de activite
 meme si je n'ajoute pas d'activite,  l'activite qui est rester dans le champs quand je suis en mode edition se recreer donc je me retourve avec la meme chose deux fois
+
+
+
+
+private function cleanHtml($content)
+{
+    if (empty($content)) return null;
+    
+    if (class_exists('HTMLPurifier')) {
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('HTML.Allowed', 'p,br,strong,em,u,ul,ol,li,a[href|target],img[src|alt]');
+        $config->set('AutoFormat.RemoveEmpty', true);
+        
+        $purifier = new HTMLPurifier($config);
+        return $purifier->purify($content);
+    }
+    
+    return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
+}

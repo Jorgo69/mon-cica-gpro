@@ -2,37 +2,55 @@
     <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Contexte & Documents</h2>
     <p class="text-gray-600 dark:text-gray-300 mb-6">Fournissez une description du contexte du projet et téléchargez les documents pertinents.</p>
 
-    <div>
-        <label for="contextDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description du Contexte (Optionnel)</label>
-        <textarea id="contextDescription" wire:model.defer="contextDescription" rows="5"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Décrivez le contexte général dans lequel le projet s'inscrit."></textarea>
-        @error('contextDescription') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+   <div wire:ignore>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Description du Contexte (Optionnel)
+    </label>
+    <textarea
+        id="contextDescription"
+        class="summernote"
+        data-field="contextDescription"
+        placeholder="Décrivez le contexte général dans lequel le projet s'inscrit.">{!! $contextDescription !!}</textarea>
+    @error('contextDescription') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+</div>
 
-    <div>
-        <label for="problemAnalysis" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Analyse du probleme (Optionnel)</label>
-        <textarea id="problemAnalysis" wire:model.defer="problemAnalysis" rows="5"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Analyse des probleme auquel le project repondra."></textarea>
-        @error('problemAnalysis') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
 
-    <div>
-        <label for="strategy" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Strategie (Optionnel)</label>
-        <textarea id="strategy" wire:model.defer="strategy" rows="5"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Décrivez le contexte général dans lequel le projet s'inscrit."></textarea>
-        @error('strategy') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+<div wire:ignore>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Analyse du problème (Optionnel)
+    </label>
+    <textarea
+        id="problemAnalysis"
+        class="summernote"
+        data-field="problemAnalysis"
+        placeholder="Analyse des problèmes auxquels le projet répondra.">{!! $problemAnalysis !!}</textarea>
+    @error('problemAnalysis') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+</div>
 
-    <div>
-        <label for="justification" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Justification (Optionnel)</label>
-        <textarea id="justification" wire:model.defer="justification" rows="5"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Décrivez le probleme a resoudre dans lequel le projet s'inscrit."></textarea>
-        @error('justification') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+<div wire:ignore>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Stratégie (Optionnel)
+    </label>
+    <textarea
+        id="strategy"
+        class="summernote"
+        data-field="strategy"
+        placeholder="Décrivez la stratégie.">{!! $strategy !!}</textarea>
+    @error('strategy') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+</div>
+
+<div wire:ignore>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Justification (Optionnel)
+    </label>
+    <textarea
+        id="justification"
+        class="summernote"
+        data-field="justification"
+        placeholder="Décrivez la justification.">{!! $justification !!}</textarea>
+    @error('justification') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+</div>
+
 
     <div>
         <label for="uploadedDocuments" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documents Pertinents (Optionnel)</label>
@@ -90,3 +108,5 @@
 
     
 </div>
+
+@include('livewire.v-beta.components.include.index')

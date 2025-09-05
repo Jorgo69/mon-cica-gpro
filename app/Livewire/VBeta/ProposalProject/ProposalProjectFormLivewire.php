@@ -54,6 +54,7 @@ class ProposalProjectFormLivewire extends Component
     public $contextDescription;
     public $problemAnalysis;
     public $strategy;
+    // public $description;
     public $justification;
     public $uploadedDocuments = []; // Pour ProjectDocument
     public $existingDocuments = [];
@@ -259,6 +260,7 @@ class ProposalProjectFormLivewire extends Component
             $this->problemAnalysis = $project->problem_analysis;
             $this->strategy = $project->strategy;
             $this->justification = $project->justification;
+            $this->contextDescription = $project->description;
 
             
 
@@ -297,7 +299,7 @@ class ProposalProjectFormLivewire extends Component
             }
                 
                 // Charger les données des relations
-            $this->contextDescription = $project->projectContext->context_description ?? '';
+            // $this->contextDescription = $project->projectContext->context_description ?? '';
                 
             if ($project->logicalFramework) {
                 $this->initialLogicalFramework = $project->logicalFramework->toArray();
@@ -938,6 +940,22 @@ class ProposalProjectFormLivewire extends Component
         }
     }
 
+    private function cleanHtml($content)
+    {
+        if (empty($content)) return null;
+        
+        // if (class_exists('HTMLPurifier')) {
+        //     $config = HTMLPurifier_Config::createDefault();
+        //     $config->set('HTML.Allowed', 'p,br,strong,em,u,ul,ol,li,a[href|target],img[src|alt]');
+        //     $config->set('AutoFormat.RemoveEmpty', true);
+            
+        //     $purifier = new HTMLPurifier($config);
+        //     return $purifier->purify($content);
+        // }
+        
+        return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
+    }
+
     /**
      * Soumet le formulaire complet et sauvegarde les données du projet.
      *
@@ -996,9 +1014,10 @@ class ProposalProjectFormLivewire extends Component
                     'updated_by_user_id' => Auth::id(),
                     'general_objectives' => $dynamicFieldsString,
                     
-                    'problem_analysis' => $this->problemAnalysis,
-                    'strategy' => $this->strategy,
-                    'justification' => $this->justification,
+                    'description' => $this->cleanHTML($this->contextDescription),
+                    'problem_analysis' => $this->cleanHTML($this->problemAnalysis),
+                    'strategy' => $this->cleanHTML($this->strategy),
+                    'justification' => $this->cleanHTML($this->justification),
                 ];
 
                 // 🔹 Log avant sync pour debug
@@ -1012,7 +1031,7 @@ class ProposalProjectFormLivewire extends Component
                 // 🔹 Mettre à jour projet
                 $this->syncProjectData($project, $projectData);
 
-                $this->contextDescription = $project->projectContext->context_description ?? '';
+                // $this->contextDescription = $project->projectContext->context_description ?? '';
 
                 // 🔹 Mettre à jour cadre logique
                 $logicalFramework = $this->syncLogicalFramework($project);
@@ -1049,9 +1068,10 @@ class ProposalProjectFormLivewire extends Component
                 'project_type_id'   => $this->selectedProjectTypeId,
                 'general_objectives'=> $dynamicFieldsString,
 
-                'problem_analysis' => $this->problemAnalysis,
-                'strategy' => $this->strategy,
-                'justification' => $this->justification,
+                'description' => $this->cleanHTML($this->contextDescription),
+                'problem_analysis' => $this->cleanHTML($this->problemAnalysis),
+                'strategy' => $this->cleanHTML($this->strategy),
+                'justification' => $this->cleanHTML($this->justification),
             ]);
 
             $this->projectId = $project->id;
@@ -1062,7 +1082,7 @@ class ProposalProjectFormLivewire extends Component
                 $this->initialLogicalFramework
             ));
 
-            $this->contextDescription = $project->projectContext->context_description ?? '';
+            // $this->contextDescription = $project->projectContext->context_description ?? '';
 
             // 🔹 Objectifs spécifiques
             foreach ($this->specificObjectives as $objData) {
