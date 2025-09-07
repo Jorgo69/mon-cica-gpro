@@ -185,3 +185,5 @@ private function cleanHtml($content)
     
     return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
 }
+
+

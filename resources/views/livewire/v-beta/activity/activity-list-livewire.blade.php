@@ -1,35 +1,39 @@
 <main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="p-6" wire:loading.class="opacity-50">
 
-        <div class="mb-6 flex justify-between items-center">
-            
-            <div class="flex-grow flex items-center space-x-4">
-                {{-- Champ de recherche --}}
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher un projet..."
-                    class="form-input rounded-md shadow-sm mt-1 block w-full md:w-1/3 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-
-                {{-- Filtre par Statut --}}
-                <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                    <option value="">Tous les statuts</option>
-                    @foreach ($activityStatuses as $status)
-                        <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
-                    @endforeach
-                </select>
-
-                {{-- Filtre par Responsable (Créateur du projet) --}}
-                <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                    <option value="">Tous les responsables</option>
-                    @foreach ($availableUsers as $userOption)
-                        <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            
+        <div class="mb-6">
+    <div class="flex flex-col md:flex-row md:items-center gap-4">
+        {{-- Champ de recherche --}}
+        <div class="w-full md:w-1/3">
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher un projet..."
+                class="form-input rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
         </div>
+
+        {{-- Filtre par Statut --}}
+        <div class="w-full md:w-1/4">
+            <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
+                <option value="">Tous les statuts</option>
+                @foreach ($activityStatuses as $status)
+                    <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Filtre par Responsable (Créateur du projet) --}}
+        <div class="w-full md:w-1/4">
+            <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
+                <option value="">Tous les responsables</option>
+                @foreach ($availableUsers as $userOption)
+                    <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+</div>
 
         {{-- Tableau des Projets --}}
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="p-6 text-gray-900 dark:text-gray-100 overflow-auto">
                 @if ($activities->isEmpty())
                     <p class="text-center text-gray-500 dark:text-gray-400">Aucun projet trouvé pour cette sélection.</p>
                 @else

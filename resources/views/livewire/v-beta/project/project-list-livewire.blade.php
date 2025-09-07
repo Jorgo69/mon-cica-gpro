@@ -1,35 +1,46 @@
 <main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="p-6" wire:loading.class="opacity-50">
 
-        <div class="mb-6 flex justify-between items-center">
-            <div class="flex-grow flex items-center space-x-4">
-                {{-- Champ de recherche --}}
+        <div class="mb-6 space-y-4 md:space-y-0">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <!-- Filtres -->
+        <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:flex-grow">
+            {{-- Champ de recherche --}}
+            <div class="w-full md:w-1/3">
                 <input type="text" wire:model.live.debounce.300ms="search" placeholder="Rechercher un projet..."
-                    class="form-input rounded-md shadow-sm mt-1 block w-full md:w-1/3 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    class="form-input rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
+            </div>
 
-                {{-- Filtre par Statut --}}
-                <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            {{-- Filtre par Statut --}}
+            <div class="w-full md:w-1/4">
+                <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
                     <option value="">Tous les statuts</option>
                     @foreach ($projectStatuses as $status)
                         <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                {{-- Filtre par Responsable (Créateur du projet) --}}
-                <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm mt-1 block w-full md:w-1/4 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            {{-- Filtre par Responsable (Créateur du projet) --}}
+            <div class="w-full md:w-1/4">
+                <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
                     <option value="">Tous les responsables</option>
                     @foreach ($availableUsers as $userOption)
                         <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
                     @endforeach
                 </select>
             </div>
+        </div>
 
-            {{-- Bouton Nouveau Projet --}}
-            <a href="{{ route('creator.proposal.project.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+        {{-- Bouton Nouveau Projet --}}
+        <div class="w-full md:w-auto">
+            <a href="{{ route('creator.proposal.project.create') }}" class="inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 w-full md:w-auto">
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
                 Nouveau Projet
             </a>
         </div>
+    </div>
+</div>
 
 
         {{-- Message de Sucess --}}
@@ -38,7 +49,7 @@
 
         {{-- Tableau des Projets --}}
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
+            <div class="p-6 text-gray-900 dark:text-gray-100 overflow-auto">
                 @if ($projects->isEmpty())
                     <p class="text-center text-gray-500 dark:text-gray-400">Aucun projet trouvé pour cette sélection.</p>
                 @else
