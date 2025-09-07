@@ -166,3 +166,5 @@ private function syncActivities($logicalFramework)
 Dis moi exactement ce que sa fait
 Puis que moi j'ai remarque que en edition sa ajoute encore tout a propose de activite
 meme si je n'ajoute pas d'activite,  l'activite qui est rester dans le champs quand je suis en mode edition se recreer donc je me retourve avec la meme chose deux fois
+
+

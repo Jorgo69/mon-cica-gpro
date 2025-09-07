@@ -81,6 +81,21 @@ Route::view('/activity/list', 'v_beta.activity.index')->name('activity.index');
 Route::view('/activity/{activity}/management', 'v_beta.activity.management')->name('activity.management');
 // End Activities
 
+
+// Docx Word
+
+Route::get('/projects/{id}/export-word', [App\Http\Controllers\VBeta\WordDocx\ProjectExportController::class, 'exportWord'])
+    ->name('projects.export.word');
+
+// End Docx Word
+
+// PDF
+
+Route::get('/projects/{id}/export-pdf', [App\Http\Controllers\VBeta\PDF\ProjectExportController::class, 'exportPdf'])
+    ->name('projects.export.pdf');
+
+// End PDF
+
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

@@ -6,6 +6,10 @@
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Détails du Projet : <span class="text-blue-600">{{ $project->title }}</span></h1>
                     <p class="text-gray-600 dark:text-gray-300 mb-8">{{ $project->short_title ? '('.$project->short_title.')' : '' }} Code: {{ $project->project_code }}</p>
 
+                    <a href="{{ route('projects.export.pdf', $project->id) }}" class="btn btn-primary">
+    Exporter en Word
+</a>
+
                     <div class="space-y-8">
 
                         {{-- Section 1: Informations Générales --}}
@@ -120,7 +124,7 @@
                                                     <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
                                                         @foreach($objective->results as $result)
                                                             <li>
-                                                                <strong class="font-medium">{{ $result->description }}</strong>
+                                                                <strong class="font-medium">{!! $result->description !!}</strong>
                                                                 <p class="text-sm italic">Indicateurs : {{ $result->indicators }}</p>
                                                                 @if($result->activities->isNotEmpty())
                                                                     <h5 class="text-base font-semibold text-gray-600 dark:text-gray-400 mt-2 mb-1">Activités</h5>
@@ -196,15 +200,15 @@
                             </div>
                         @endif
 
-                        <div class="mt-8 flex justify-end">
+                        <div class="mt-8 flex flex-col sm:flex-row justify-end gap-3">
                             @can('update', $project)
-                            <a href="{{ route('creator.proposal.project.edit', ['projectId' => $project->id ]) }}" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold">
+                            <a href="{{ route('creator.proposal.project.edit', ['projectId' => $project->id ]) }}" class="px-4 py-3 sm:px-6 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold text-center">
                                 Modifier
                             </a>
                             @endcan
 
-                            <a href="{{ route('project.list') }}" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold">
-                                Retour a la liste
+                            <a href="{{ route('project.list') }}" class="px-4 py-3 sm:px-6 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold text-center">
+                                Retour à la liste
                             </a>
                         </div>
                     </div>

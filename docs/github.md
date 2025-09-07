@@ -66,6 +66,8 @@ git checkout -b nom-branche-collegue origin/nom-branche-collegue
 git pull origin nom-branche-collegue
 ```
 
+`git push -u origin feature/summernote-editor`
+
 ## 💡 **Astuce importante :**
 
 Si tu ne connais pas le nom exact de la branche de ton collègue, tu peux d'abord lister toutes les branches distantes :
