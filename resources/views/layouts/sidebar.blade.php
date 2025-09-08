@@ -12,7 +12,7 @@
                 text- @if(Route::is('dashboard*')) bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-solid fa-house text-lg text-gray-600 dark:text-gray-300"></i>
-                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Dashboard') }}</span>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('navigation.sidebar.Dashboard') }}</span>
                     </div>
                 </a>
             </div>
@@ -24,7 +24,7 @@
                 text- @if(Route::is('creator.proposal.project*') || Route::is('project*')) bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-folder text-gray-600 dark:text-gray-300"></i>
-                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Project') }}</span>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('navigation.sidebar.Project') }}</span>
                     </div>
                 </a>
             </div>
@@ -43,8 +43,8 @@
             <div class="mb-4">
                 <a href="{{ route('activity.index') }}" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text- @if(Route::is('activity*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
-                        <i class="fa-solid fa-folder text-gray-600 dark:text-gray-300"></i>
-                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Activity') }}</span>
+                        <i class="fas fa-wallet text-gray-600 dark:text-gray-300"></i>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('navigation.sidebar.Activity') }}</span>
                     </div>
                 </a>
             </div>
@@ -81,7 +81,7 @@
             
             
             <!-- Project Design -->
-            <div class="mb-4" x-data="{ open: false }">
+            {{-- <div class="mb-4" x-data="{ open: false }">
                 <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left @if(Route::is('booking.host*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-lightbulb text-gray-600 dark:text-gray-300"></i>
@@ -118,10 +118,10 @@
                         {{ __('Risk analysis') }}
                     </a>
                 </div>
-            </div>
+            </div> --}}
             
             <!-- Clients -->
-            <div class="mb-4" x-data="{ open: false }">
+            {{-- <div class="mb-4" x-data="{ open: false }">
                 <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left @if(Route::is('room.host*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-users text-gray-600 dark:text-gray-300"></i>
@@ -134,7 +134,7 @@
                     <a href="" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">{{ __('Target Groups') }}</a>
                     <a href="" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">{{ __('Deadlines Monitoring') }}</a>
                 </div>
-            </div>
+            </div> --}}
             
             <!-- Marketing -->
             {{-- <div class="mb-4">
@@ -186,19 +186,20 @@
             
             <!-- Settings -->
             <div class="mb-4" x-data="{ open: false }">
-                <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left">
+                <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left 
+                @if(Route::is('setting*') || Route::is('profile*')) bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-tools text-gray-600 dark:text-gray-300"></i>
-                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Settings') }}</span>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('navigation.sidebar.Settings') }}</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 transition-transform" :class="{ 'transform rotate-90': open }"></i>
                 </button>
                 <div x-show="open" x-collapse class="ml-6 mt-2 space-y-1">
-                    <a href="#" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Intégrations</a>
-                    <a href="#" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">API</a>
-                    <a href="#" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Webhooks</a>
+                    <a href="{{ route('setting') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">General</a>
+                    <a href="{{ route('profile.edit') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Profile</a>
                 </div>
             </div>
+            
         </nav>
     </div>
 </aside>

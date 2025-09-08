@@ -67,14 +67,14 @@
                      x-transition:leave-end="transform opacity-0 scale-95"
                      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                     <div class="py-2">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-user mr-2"></i>Mon Profil
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-user mr-2"></i>{{ __('navigation.navbar.profile') }}
                         </a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-cog mr-2"></i>Paramètres
+                            <i class="fas fa-cog mr-2"></i>{{ __('navigation.navbar.setting') }}
                         </a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-question-circle mr-2"></i>Support
+                            <i class="fas fa-question-circle mr-2"></i>{{ __('navigation.navbar.support') }}
                         </a>
                         
                         @auth
@@ -82,7 +82,7 @@
                             <form action="{{ route('logout') }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                    <i class="fas fa-sign-out-alt mr-2"></i>{{ __('navigation.navbar.logout') }}
                                 </button>
                             </form>
                         @else

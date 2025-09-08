@@ -1,9 +1,10 @@
 <x-app-layout>
-    <x-slot name="header">
+    <main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
+    {{-- <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Profile') }}
         </h2>
-    </x-slot>
+    </x-slot> --}}
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -26,4 +27,9 @@
             </div>
         </div>
     </div>
+    <main>
+        @push('alpine-js')
+             <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        @endpush
 </x-app-layout>
+

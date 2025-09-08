@@ -164,12 +164,12 @@
     </script>
     
     <script>
-document.addEventListener('livewire:init', () => {
-    Livewire.on('notify', (data) => {
-        alert(data.message);
-    });
-});
-</script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notify', (data) => {
+                alert(data.message);
+            });
+        });
+    </script>
     {{-- @livewireScripts --}}
 </body>
 </html>

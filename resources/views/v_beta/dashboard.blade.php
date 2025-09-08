@@ -1,26 +1,26 @@
 <x-app-layout>
     <main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
         <div class="p-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                Tableau de Bord @if($isAdmin) (Admin) @else (Mon Espace) @endif
+            <h1 class="text-3xl uppercase font-bold text-gray-900 dark:text-white mb-6">
+                {{ __('dashboard.dashboard') }} @if($isAdmin) (Admin) @else (Mon Espace) @endif
             </h1>
 
             {{-- Statistiques générales --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Projets</h2>
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ __('dashboard.total projects') }}</h2>
                     <p class="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">{{ $totalProjects }}</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Projets en Cours</h2>
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ __('dashboard.current projects') }}</h2>
                     <p class="text-4xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">{{ $projectsInProgress }}</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Projets Terminés</h2>
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ __('dashboard.completed projects') }}</h2>
                     <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{{ $projectsCompleted }}</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Activités en Cours</h2>
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">{{ __('dashboard.current activities') }}</h2>
                     <p class="text-4xl font-bold text-orange-500 dark:text-orange-400 mt-2">{{ $activitiesInProgress }}</p>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                 {{-- Mises à jour récentes --}}
                 <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                        Mises à jour récentes
+                        {{ __('dashboard.recent updates') }}
                     </h2>
                     @forelse($recentProgressUpdates as $update)
                         <div class="flex items-start mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
@@ -52,14 +52,14 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-gray-500 dark:text-gray-400">Aucune mise à jour de progression récente.</p>
+                        <p class="text-gray-500 dark:text-gray-400">{{ __('dashboard.no recent progress updates') }}</p>
                     @endforelse
                 </div>
 
                 {{-- Projets récents --}}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                        Projets Récents
+                        {{ __('dashboard.recent projects') }}
                     </h2>
                     @forelse($recentProjects as $project)
                         <div class="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
@@ -70,7 +70,7 @@
                             </span>
                         </div>
                     @empty
-                        <p class="text-gray-500 dark:text-gray-400">Aucun projet récent trouvé.</p>
+                        <p class="text-gray-500 dark:text-gray-400">{{ __('dashboard.no recent projects found') }}.</p>
                     @endforelse
                 </div>
             </div>
