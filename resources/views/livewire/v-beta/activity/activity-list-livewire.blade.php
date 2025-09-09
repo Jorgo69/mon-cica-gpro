@@ -12,9 +12,10 @@
         {{-- Filtre par Statut --}}
         <div class="w-full md:w-1/4">
             <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
-                <option value="">Tous les statuts</option>
+                <option value="">{{ __('table.status') }}</option>
                 @foreach ($activityStatuses as $status)
-                    <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
+                    <option value="{{ $status }}">{{ $status }}</option>
+                    {{-- <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option> --}}
                 @endforeach
             </select>
         </div>
@@ -35,42 +36,42 @@
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100 overflow-auto">
                 @if ($activities->isEmpty())
-                    <p class="text-center text-gray-500 dark:text-gray-400">Aucun projet trouvé pour cette sélection.</p>
+                    <p class="text-center text-gray-500 dark:text-gray-400">{{ __('table.no activities found for this selection') }}.</p>
                 @else
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('description')">
-                                    Description
+                                    {{ __('table.description') }}
                                     @if ($sortField === 'description')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
                                 </th>
 
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('description')">
-                                    Budget
+                                    {{ __('table.budget') }}
                                     @if ($sortField === 'description')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
                                 </th>
                                 
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
-                                    Statut
+                                    {{ __('table.status') }}
                                     @if ($sortField === 'status')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Responsable
+                                    {{ __('table.responsible') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('start_date')">
-                                    Début
+                                    {{ __('table.start') }}
                                     @if ($sortField === 'start_date')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('end_date')">
-                                    Fin
+                                    {{ __('table.end') }}
                                     @if ($sortField === 'end_date')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif
@@ -116,9 +117,11 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <a href="{{ route('project.show', $activity->project->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">
-                                            Voir
+                                            {{ __('table.preview') }}
                                         </a>
-                                        <a href="{{ route('activity.management', $activity->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Gerer</a>
+                                        <a href="{{ route('activity.management', $activity->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">
+                                            {{ __('table.manage') }}
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
