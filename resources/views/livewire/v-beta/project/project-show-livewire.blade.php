@@ -7,8 +7,8 @@
                     <p class="text-gray-600 dark:text-gray-300 mb-8">{{ $project->short_title ? '('.$project->short_title.')' : '' }} Code: {{ $project->project_code }}</p>
 
                     <a href="{{ route('projects.export.pdf', $project->id) }}" class="btn btn-primary">
-    Exporter en Word
-</a>
+                        Exporter PDF
+                    </a>
 
                     <div class="space-y-8">
 
