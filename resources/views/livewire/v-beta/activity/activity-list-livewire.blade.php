@@ -23,7 +23,7 @@
         {{-- Filtre par Responsable (Créateur du projet) --}}
         <div class="w-full md:w-1/4">
             <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
-                <option value="">Tous les responsables</option>
+                <option value="">{{ __('table.status') }}</option>
                 @foreach ($availableUsers as $userOption)
                     <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
                 @endforeach
@@ -56,7 +56,7 @@
                                 </th>
                                 
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
-                                    {{ __('table.status') }}
+                                    {{ __('table.statut') }}
                                     @if ($sortField === 'status')
                                         <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
                                     @endif

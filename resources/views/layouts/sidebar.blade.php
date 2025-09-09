@@ -55,7 +55,7 @@
                 <button @click="open = !open" class="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left @if(Route::is('admin*')) rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 @endif">
                     <div class="flex items-center space-x-3">
                         <i class="fa-solid fa-user-tie text-gray-600 dark:text-gray-300"></i>
-                        <span class="font-medium text-gray-800 dark:text-white">{{ __('Administrator') }}</span>
+                        <span class="font-medium text-gray-800 dark:text-white">{{ __('navigation.sidebar.administrator') }}</span>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 transition-transform" :class="{ 'transform rotate-90': open }"></i>
                 </button>
@@ -67,10 +67,10 @@
                         {{ __('Liste de Projet') }}
                     </a>
                     <a href="{{ route('admin.it.category.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        {{ __('Liste des Categories') }}
+                        {{ __('navigation.sidebar.categories list') }}
                     </a>
                     <a href="{{ route('admin.it.member.list') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        {{ __('Les Membres') }}
+                        {{ __('navigation.sidebar.members') }}
                     </a>
                     <a href="{{ route('admin.it.trash.management') }}" class="block p-2 rounded text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         {{ __('Corbeilles') }}
