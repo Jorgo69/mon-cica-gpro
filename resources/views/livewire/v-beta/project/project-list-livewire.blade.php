@@ -26,7 +26,7 @@
                         <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
                             <option value="">{{ __('table.responsibles') }}</option>
                             @foreach ($availableUsers as $userOption)
-                                <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
+                                {{-- <option value="{{ $userOption->id }}">{{ $userOption->name }}</option> --}}
                             @endforeach
                         </select>
                     </div>

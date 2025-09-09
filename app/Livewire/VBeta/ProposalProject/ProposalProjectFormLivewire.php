@@ -215,13 +215,30 @@ class ProposalProjectFormLivewire extends Component
         $this->allProjectTypes = ProjectType::all();
 
         $this->stepDetails = [
-            ['title' => 'Informations Clés', 'description' => 'Détails de base du projet'],
-            ['title' => 'Contexte & Documents', 'description' => 'Description et fichiers pertinents'],
-            ['title' => 'Cadre Logique', 'description' => 'But et objectifs spécifiques'],
-            ['title' => 'Résultats Attendus', 'description' => 'Livrables concrets du projet'],
-            ['title' => 'Activités Initiales', 'description' => 'Actions préliminaires du projet'],
-            // ['title' => 'Budget Prévisionnel', 'description' => 'Estimation des coûts initiaux'],
-            ['title' => 'Finalisation', 'description' => 'Vérification et soumission'],
+            [
+                'title' => __('project.step_1.title'),
+                'description' => __('project.step_1.description'),
+            ],
+            [
+                'title' => __('project.step_2.title'),
+                'description' => __('project.step_2.description'),
+            ],
+            [
+                'title' => __('project.step_3.title'),
+                'description' => __('project.step_3.description'),
+            ],
+            [
+                'title' => __('project.step_4.title'),
+                'description' => __('project.step_4.description'),
+            ],
+            [
+                'title' => __('project.step_5.title'),
+                'description' => __('project.step_5.description'),
+            ],
+            [
+                'title' => __('project.step_6.title'),
+                'description' => __('project.step_6.description'),
+            ],
         ];
 
         $this->dynamicFieldValues = []; // Initialisation du tableau
@@ -641,8 +658,7 @@ class ProposalProjectFormLivewire extends Component
             3 => 'cadre_logique',
             4 => 'resultats_attendus',
             5 => 'activites_initiales',
-            // 6 => 'budget_previsionnel',
-            7 => 'finalisation', // Bien que non utilisé pour les champs dynamiques, utile pour la cohérence
+            6 => 'finalisation', // Bien que non utilisé pour les champs dynamiques, utile pour la cohérence
         ];
         return $stepSectionMap[$step] ?? null;
     }
