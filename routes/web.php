@@ -96,6 +96,8 @@ Route::get('/projects/{id}/export-pdf', [App\Http\Controllers\VBeta\PDF\ProjectE
 
 // End PDF
 
+Route::get('/generator/word/{id}', [App\Http\Controllers\VBeta\WordDocx\ProjectExportController::class, 'exportWordViaApi'])->name('project.export.word');
+
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
