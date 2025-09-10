@@ -28,7 +28,7 @@
             <h1 class="text-5xl font-bold text-purple-800 mb-4">429</h1>
             <h2 class="text-2xl font-semibold text-purple-700 mb-6">Trop de Requêtes</h2>
             <p class="text-purple-600 mb-8">Désolé, vous avez envoyé trop de requêtes en peu de temps. Veuillez patienter avant de réessayer.</p>
-            <a href="/" class="inline-block bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <a href="/dashboard" class="inline-block bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 Réessayer
             </a>
         </div>

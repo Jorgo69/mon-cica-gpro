@@ -115,7 +115,7 @@ class ProposalProjectFormLivewire extends Component
             'activities.*.responsible_user_id' => 'required|uuid|exists:users,id',
             'activities.*.start_date' => 'required|date',
             'activities.*.end_date' => 'required|date|after_or_equal:activities.*.start_date',
-            'activities.*.status' => 'required|string|in:En cours,Terminée,En attente,En retard',
+            'activities.*.status' => 'nullable|string|in:En cours,Terminée,En attente,En retard',
             'budgets.*.description' => 'required|string',
             'budgets.*.quantity' => 'nullable|integer|min:0',
             'budgets.*.unit_cost' => 'nullable|numeric|min:0',

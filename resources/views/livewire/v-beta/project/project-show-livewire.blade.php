@@ -64,7 +64,7 @@
                                 <div class="border-t pt-4">
                                     <p class="font-medium dark:text-gray-100">Description Générale :</p>
                                     <p class="mt-2 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg text-sm leading-relaxed text-gray-700 dark:text-gray-300 shadow-inner">
-                                        {{ $project->description }}
+                                        {!! $project->description !!}
                                     </p>
                                 </div>
                             @endif

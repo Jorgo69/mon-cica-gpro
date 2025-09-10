@@ -24,7 +24,7 @@
             <h1 class="text-5xl font-bold text-yellow-800 mb-4">503</h1>
             <h2 class="text-2xl font-semibold text-yellow-700 mb-6">Service Indisponible</h2>
             <p class="text-yellow-600 mb-8">Désolé, le service est temporairement indisponible pour maintenance. Veuillez réessayer plus tard.</p>
-            <a href="/" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <a href="/dashboard" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 Réessayer
             </a>
         </div>

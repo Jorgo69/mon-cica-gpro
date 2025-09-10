@@ -135,9 +135,9 @@ class Activity extends Model
             'Brouillon'  => 0,
             'Abandonné' => 0,
             'En Arrêté' => 0,
-            'En Attente' => 5,
-            'En Cours'   => 40,
-            'Suspendu'   => 45,
+            'En Attente' => 0,
+            'En Cours'   => 0,
+            'Suspendu'   => 0,
             'Terminé'    => 100,
         ];
 

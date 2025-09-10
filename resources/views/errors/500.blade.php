@@ -23,7 +23,7 @@
             <h1 class="text-5xl font-bold text-red-800 mb-4">500</h1>
             <h2 class="text-2xl font-semibold text-red-700 mb-6">Erreur Interne du Serveur</h2>
             <p class="text-red-600 mb-8">Désolé, quelque chose s'est mal passé de notre côté. Notre équipe technique a été notifiée.</p>
-            <a href="/" class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <a href="/dashboard" class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 Retour à l'accueil
             </a>
         </div>
