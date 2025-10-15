@@ -187,24 +187,6 @@ private function cleanHtml($content)
 }
 
 
-Voici la méthode simple pour transférer ton dépôt vers le leur :
-
-### **Cas 1 – Tu veux leur *donner* ton dépôt (transfert officiel GitHub)**
-
-1. Va sur ton dépôt GitHub (ex : `https://github.com/tonpseudo/nom-du-projet`).
-2. Clique sur **Settings** (⚙️ en haut du dépôt).
-3. Descends tout en bas jusqu’à la section **Danger Zone**.
-4. Clique sur **Transfer ownership**.
-5. Entre le nom exact du dépôt (GitHub te le demandera pour confirmer).
-6. Indique le **nom du compte ou de l’organisation** qui doit recevoir le dépôt (ex : `github-username` ou `organisation-name`).
-7. Confirme le transfert.
-
-👉 Après cela, **le dépôt leur appartiendra**. Tu n’y auras plus forcément accès, sauf s’ils te remettent comme collaborateur.
-
----
-
-### **Cas 2 – Tu veux juste leur copier le code (sans transférer la propriété)**
-
 Si tu veux simplement **copier ton code dans leur dépôt** :
 
 1. Clone ton dépôt localement :
@@ -216,7 +198,7 @@ Si tu veux simplement **copier ton code dans leur dépôt** :
 2. Change l’origine vers leur dépôt :
 
    ```bash
-   git remote set-url origin https://github.com/leurpseudo/nom-du-depot.git
+   git remote set-url origin https://github.com/leurpseudo/nom-du-depot.git || https://github.com/Cave-Tech/Pilotage-de-Projet-CICA-Projexia
    ```
 3. Pousse ton code :
 
@@ -227,6 +209,3 @@ Si tu veux simplement **copier ton code dans leur dépôt** :
    (ou `master`, selon le nom de ta branche principale)
 
 ---
-
-Souhaites-tu **leur transférer la propriété complète** ou juste **leur pousser ton code** dans leur dépôt existant ?
-Je te donne les commandes exactes selon ton cas.
