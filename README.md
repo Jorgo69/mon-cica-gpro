@@ -187,25 +187,3 @@ private function cleanHtml($content)
 }
 
 
-Si tu veux simplement **copier ton code dans leur dépôt** :
-
-1. Clone ton dépôt localement :
-
-   ```bash
-   git clone https://github.com/tonpseudo/mon-projet.git
-   cd mon-projet
-   ```
-2. Change l’origine vers leur dépôt :
-
-   ```bash
-   git remote set-url origin https://github.com/leurpseudo/nom-du-depot.git || https://github.com/Cave-Tech/Pilotage-de-Projet-CICA-Projexia
-   ```
-3. Pousse ton code :
-
-   ```bash
-   git push origin main
-   ```
-
-   (ou `master`, selon le nom de ta branche principale)
-
----
