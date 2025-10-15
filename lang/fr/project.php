@@ -31,8 +31,8 @@ return [
         'description' => 'livrables concrets du projet',
     ],
     'step_5' => [
-        'title' => 'contexte & documents',
-        'description' => 'description et fichiers pertinents',
+        'title' => 'activite',
+        'description' => 'action preliminaires',
     ],
     'step_6' => [
         'title' => 'finalisation',

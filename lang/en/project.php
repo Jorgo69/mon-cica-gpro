@@ -32,7 +32,7 @@ return [
     ],
     'step_5' => [
         'title' => 'activities',
-        'description' => 'description and relevant files',
+        'description' => 'preliminary actions',
     ],
     'step_6' => [
         'title' => 'finalization',
