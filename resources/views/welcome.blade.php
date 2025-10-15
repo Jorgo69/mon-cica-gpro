@@ -252,7 +252,7 @@
                     <h4 class="font-semibold mb-4">Liens utiles</h4>
                     <ul class="space-y-2">
                         <li><a href="{{ route('login') }}" class="text-gray-400 hover:text-white transition-colors">Connexion</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Support</a></li>
+                        <li><a href="{{ route('register') }}" class="text-gray-400 hover:text-white transition-colors">Inscription</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
                     </ul>
                 </div>
