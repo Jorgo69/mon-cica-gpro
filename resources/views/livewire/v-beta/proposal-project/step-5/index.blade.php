@@ -47,11 +47,13 @@
                                 <div class="flex items-center gap-2">
                                     <div class="flex-1">
                                         <input type="date" wire:model="activities.{{ $index }}.start_date" 
+                                               min="{{ $projectStartDate }}" max="{{ $projectEndDate }}"
                                                class="block w-full px-3 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-[10px] shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all @error('activities.' . $index . '.start_date') border-rose-500 ring-2 ring-rose-500/20 @enderror">
                                         @error('activities.' . $index . '.start_date') <p class="text-[9px] text-rose-500 font-bold italic mt-1 ml-1 uppercase tracking-tight line-clamp-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div class="flex-1">
                                         <input type="date" wire:model="activities.{{ $index }}.end_date" 
+                                               min="{{ $projectStartDate }}" max="{{ $projectEndDate }}"
                                                class="block w-full px-3 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-[10px] shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all @error('activities.' . $index . '.end_date') border-rose-500 ring-2 ring-rose-500/20 @enderror">
                                         @error('activities.' . $index . '.end_date') <p class="text-[9px] text-rose-500 font-bold italic mt-1 ml-1 uppercase tracking-tight line-clamp-1">{{ $message }}</p> @enderror
                                     </div>

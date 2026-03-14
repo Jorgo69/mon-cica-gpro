@@ -12,12 +12,9 @@ class Project extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = [
-        'id', 'creator_user_id', 'project_type_id', 'project_code', 'title', 'status',
-        'short_title', 'description', 'general_objectives', 'start_date', 'end_date', 'status',
-        'problem_analysis', 'strategy', 'justification', 'created_by_user_id', 'updated_by_user_id'
-    ];
+    
     protected $casts = [
+        'status' => \App\Enums\ProjectStatus::class,
         'start_date' => 'date', 
         'end_date' => 'date',
         'general_objectives' => 'array',

@@ -20,6 +20,7 @@ class Activity extends Model
      
 
     protected $casts = [
+        'status' => \App\Enums\ActivityStatus::class,
         // 'start_date' => 'date', 
         'end_date' => 'date',
         'is_milestone' => 'boolean',
@@ -132,17 +133,21 @@ class Activity extends Model
 
         // 🔹 Définis ici le poids de chaque statut
         $statusWeight = [
-            'Brouillon'  => 0,
-            'Abandonné' => 0,
-            'En Arrêté' => 0,
-            'En Attente' => 0,
-            'En Cours'   => 0,
-            'Suspendu'   => 0,
-            'Terminé'    => 100,
+            \App\Enums\ActivityStatus::DRAFT->value      => 0,
+            \App\Enums\ActivityStatus::ABANDONED->value  => 0,
+            \App\Enums\ActivityStatus::STOPPED->value    => 0,
+            \App\Enums\ActivityStatus::PENDING->value    => 0,
+            \App\Enums\ActivityStatus::ONGOING->value    => 0,
+            \App\Enums\ActivityStatus::SUSPENDED->value  => 0,
+            \App\Enums\ActivityStatus::COMPLETED->value  => 100,
+            \App\Enums\ActivityStatus::OVERDUE->value    => 0,
         ];
 
         $totalProgress = $subActivities->sum(function ($subActivity) use ($statusWeight) {
-            return $statusWeight[$subActivity->status] ?? 0; // 0 si inconnu
+            $statusValue = $subActivity->status instanceof \App\Enums\ActivityStatus 
+                ? $subActivity->status->value 
+                : $subActivity->status;
+            return $statusWeight[$statusValue] ?? 0;
         });
 
         $average = $totalProgress / $subActivities->count();

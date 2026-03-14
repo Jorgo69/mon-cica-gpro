@@ -19,7 +19,8 @@ class DynamicProjectField extends Model
 
     protected $casts = [
         'options' => 'json', 
-        'is_required' => 'boolean'
+        'is_required' => 'boolean',
+        'input_type' => \App\Enums\FieldType::class,
     ];
 
     protected static function boot()

@@ -12,7 +12,6 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.6",
         "mallardduck/blade-lucide-icons": "^1.26",
-        "mckenziearts/laravel-notify": "^2.7",
         "mews/purifier": "^3.4",
         "phpoffice/phpword": "^1.4",
         "spatie/browsershot": "^5.0"

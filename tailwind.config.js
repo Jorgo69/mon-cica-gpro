@@ -8,17 +8,10 @@ export default {
   important: true,
 
   content: [
-    // Chemins par défaut pour les vues Blade de Laravel et les fichiers de pagination
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     './storage/framework/views/*.php',
-    './resources/views/**/*.blade.php', // Ceci est essentiel pour vos propres vues Blade
+    './resources/views/**/*.blade.php',
     './resources/**/*.{blade.php,js,html}',
-    './resources/**/*.{blade.php,js,html}',
-
-    // Chemins spécifiques à Livewire pour que Tailwind scanne les classes utilisées dans vos composants
-    './vendor/livewire/livewire/src/Features/SupportFileUploads/FileUploadsServiceProvider.php',
-    './vendor/livewire/livewire/src/LivewireServiceProvider.php',
-    './vendor/mckenziearts/laravel-notify/resources/views/**/*.blade.php',
   ],
 
   theme: {

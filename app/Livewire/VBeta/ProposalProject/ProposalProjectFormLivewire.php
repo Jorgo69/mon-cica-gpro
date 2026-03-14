@@ -3,7 +3,7 @@
 namespace App\Livewire\VBeta\ProposalProject;
 
 use App\Actions\CreateProjectAction;
-use App\DTOs\ProjectData;
+use App\DTOs\ProjectDTO;
 use App\Models\Activity;
 use App\Models\Budget;
 use App\Models\DynamicProjectField;
@@ -26,10 +26,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Livewire\Traits\WithToastNotifications;
 
 class ProposalProjectFormLivewire extends Component
 {
     use WithFileUploads, AuthorizesRequests;
+    use WithToastNotifications;
 
     // =========================================================================
     // PROPERTIES: Wizard / Stepper
@@ -47,7 +49,7 @@ class ProposalProjectFormLivewire extends Component
     public $projectShortTitle = '';
     public $projectStartDate;
     public $projectEndDate;
-    public $projectStatus = 'Brouillon';
+    public $projectStatus = \App\Enums\ProjectStatus::DRAFT->value;
 
     // =========================================================================
     // PROPERTIES: Specific Step Data / Context
@@ -143,14 +145,6 @@ class ProposalProjectFormLivewire extends Component
                 'before_or_equal:projectEndDate'
             ],
             'activities.*.status' => 'nullable|string|in:En cours,Terminée,En attente,En retard',
-
-            // Budgets
-            'budgets.*.description' => 'required|string',
-            'budgets.*.quantity' => 'nullable|integer|min:0',
-            'budgets.*.unit_cost' => 'nullable|numeric|min:0',
-            'budgets.*.total_cost' => 'nullable|numeric|min:0',
-            'budgets.*.category' => 'nullable|string',
-            'budgets.*.responsible_user_id' => 'nullable|uuid|exists:users,id',
         ];
 
         // Add dynamic rules based on current step
@@ -336,11 +330,11 @@ class ProposalProjectFormLivewire extends Component
             $this->dispatch('stepChanged');
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::info('Validation failed at step ' . $this->currentStep, ['errors' => $e->errors()]);
-            notify()->error('Veuillez corriger les erreurs avant de continuer.');
+            $this->notifyToast('warning', 'Veuillez corriger les erreurs avant de continuer.', 'Action requise');
             throw $e;
         } catch (\Exception $e) {
             Log::error('Unexpected error in nextStep: ' . $e->getMessage());
-            notify()->error('Une erreur inattendue est survenue.');
+            $this->notifyToast('error', 'Une erreur inattendue est survenue.');
         }
     }
 
@@ -570,11 +564,11 @@ class ProposalProjectFormLivewire extends Component
                 ->toArray();
 
             DB::commit();
-            notify()->success('Document supprimé.');
+            $this->notifyToast('success', 'Document supprimé.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error removing document $documentId: " . $e->getMessage());
-            notify()->error('Erreur lors de la suppression.');
+            $this->notifyToast('error', 'Erreur lors de la suppression.');
         }
     }
 
@@ -584,7 +578,13 @@ class ProposalProjectFormLivewire extends Component
 
     public function submitForm()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error('INITIAL_VALIDATION_FAILED: Form validation failed before processing payload.', ['errors' => $e->errors()]);
+            $this->notifyToast('error', 'Il y a des erreurs de validation sur le formulaire. Veuillez vérifier vos saisies.', 'Action Requise');
+            throw $e;
+        }
 
         $projectDataPayload = [
             'project_code'       => $this->projectCode,
@@ -601,26 +601,37 @@ class ProposalProjectFormLivewire extends Component
             'justification'      => $this->cleanHtml($this->justification),
         ];
 
+        \Log::info('SUBMIT_FORM_START: Beginning form submission process.', ['payload' => $projectDataPayload]);
+
         try {
             DB::beginTransaction();
 
             if ($this->projectId) {
+                \Log::info('SUBMIT_FORM_BRANCH: Updating existing project.', ['projectId' => $this->projectId]);
                 $this->updateProject($projectDataPayload);
             } else {
+                \Log::info('SUBMIT_FORM_BRANCH: Creating new project.');
                 $this->createProject($projectDataPayload);
             }
 
             DB::commit();
-            notify()->success('Projet enregistré avec succès.');
+            \Log::info('SUBMIT_FORM_SUCCESS: Transaction committed successfully.');
+            $this->notifyToast('success', 'Projet enregistré avec succès.');
             return redirect()->route('project.list');
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
-            notify()->error('La validation a échoué. Veuillez vérifier tous les onglets.');
+            \Log::error('SUBMIT_FORM_VALIDATION_ERROR: Validation failed.', ['errors' => $e->errors()]);
+            $this->notifyToast('error', 'La validation a échoué. Veuillez vérifier tous les onglets.');
             throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error submitting form: ' . $e->getMessage());
-            notify()->error('Erreur lors de l\'enregistrement : ' . $e->getMessage());
+            \Log::error('SUBMIT_FORM_FATAL_ERROR: Exception thrown during submission.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->notifyToast('error', 'Erreur lors de l\'enregistrement : ' . $e->getMessage());
         }
     }
 
@@ -641,27 +652,21 @@ class ProposalProjectFormLivewire extends Component
 
     private function createProject($data)
     {
-        $dto = new ProjectData(
-            projectName: $this->projectTitle,
-            projectTypeId: $this->selectedProjectTypeId,
-            generalObjectives: $data['general_objectives'],
-            startDate: $data['start_date'],
-            endDate: $data['end_date'],
-            description: $data['description']
-        );
-
-        $project = App::make(CreateProjectAction::class)->execute($dto);
+        \Log::info('CREATE_PROJECT_START: Instantiating ProjectDTO.', ['data' => $data]);
         
-        $project->update([
-            'project_code'    => $this->projectCode,
-            'short_title'     => $this->projectShortTitle,
-            'status'          => $this->projectStatus,
-            'creator_user_id' => Auth::id(),
-            'problem_analysis'=> $data['problem_analysis'],
-            'strategy'        => $data['strategy'],
-            'justification'   => $data['justification'],
-        ]);
+        $dto = \App\DTOs\ProjectDTO::fromArray($data);
 
+        \Log::info('CREATE_PROJECT_DTO_CREATED: Executing CreateProjectAction', ['dto' => (array)$dto]);
+        $project = App::make(CreateProjectAction::class)->execute($dto);
+        \Log::info('CREATE_PROJECT_CORE_CREATED: Core project created.', ['project_id' => $project->id ?? 'NULL']);
+
+        \Log::info('CREATE_PROJECT_LOGFRAME: Executing CreateLogicalFrameworkAction', [
+            'logicalFramework' => $this->initialLogicalFramework,
+            'specificObjectivesCount' => count($this->specificObjectives),
+            'expectedResultsCount' => count($this->expectedResults),
+            'activitiesCount' => count($this->activities)
+        ]);
+        
         App::make(\App\Actions\CreateLogicalFrameworkAction::class)->execute(
             $project->id,
             $this->initialLogicalFramework,
@@ -669,6 +674,8 @@ class ProposalProjectFormLivewire extends Component
             $this->expectedResults,
             $this->activities
         );
+        
+        \Log::info('CREATE_PROJECT_END: Logical framework attached successfully.');
     }
 
     private function cleanHtml($content)
@@ -677,8 +684,28 @@ class ProposalProjectFormLivewire extends Component
         return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
     }
 
+    private function updateStepErrorStates()
+    {
+        $errors = $this->getErrorBag();
+        
+        $stepKeys = [
+            1 => ['projectTitle', 'projectCode', 'projectStartDate', 'projectEndDate', 'selectedProjectTypeId'],
+            2 => ['contextDescription', 'problemAnalysis', 'strategy', 'justification', 'contextFiles', 'contextFiles.*'],
+            3 => ['initialLogicalFramework.*', 'specificObjectives.*'],
+            4 => ['expectedResults.*'],
+            5 => ['activities.*'],
+        ];
+
+        foreach ($this->stepDetails as $index => &$step) {
+            $stepNum = $index + 1;
+            $keys = $stepKeys[$stepNum] ?? [];
+            $step['has_error'] = $errors->hasAny($keys);
+        }
+    }
+
     public function render()
     {
+        $this->updateStepErrorStates();
         return view('livewire.v-beta.proposal-project.proposal-project-form-livewire');
     }
 }

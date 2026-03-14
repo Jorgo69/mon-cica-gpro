@@ -142,3 +142,16 @@ function friendly_date($date)
         return $date;
     }
 }
+
+if (!function_exists('notify')) {
+    /**
+     * Dispatch a global notification using the custom Notifier.
+     * Generates a session flash that will be caught by the AlpineJS Toast component.
+     *
+     * @return \App\Helpers\Notifier
+     */
+    function notify()
+    {
+        return new \App\Helpers\Notifier();
+    }
+}

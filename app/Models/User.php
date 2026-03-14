@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AccountType;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -31,6 +32,12 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'sexe',
+        'telephone',
+        'numero_identification',
+        'pays',
+        'ville',
+        'department',
         'password',
     ];
 
@@ -52,6 +59,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'role' => AccountType::class,
     ];
 
     protected static function boot()
@@ -70,10 +78,11 @@ class User extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class, 'role_id', 'id');
-    }
+    // Relationship removed in favor of Enum-based roles as requested by the user
+    // public function role(): BelongsTo
+    // {
+    //     return $this->belongsTo(Role::class, 'role_id', 'id');
+    // }
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');

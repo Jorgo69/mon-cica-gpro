@@ -1,205 +1,163 @@
-<main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="p-4 md:p-6 space-y-6 md:space-y-10" wire:loading.class="opacity-50">
+<x-ui.page-layout>
 
-        <!-- Table Users -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Membres supprimés</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-100 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                <input type="checkbox" wire:model="selectAllUsers" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rôle</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supprimé le</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+    <x-ui.page-header title="Corbeille" subtitle="Gérez les éléments supprimés — restaurez ou supprimez définitivement" />
+
+    <div class="space-y-6">
+
+        {{-- Membres supprimés --}}
+        <x-ui.section title="Membres supprimés" icon="user-x" :noPadding="false">
+            <div class="overflow-x-auto -mx-6">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllUsers" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Nom</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Email</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden lg:table-cell">Rôle</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
                         @forelse ($trashedUsers as $user)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <input type="checkbox" wire:model="selectedIds" value="{{ $user->id }}" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $user->email }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $user->role }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $user->deleted_at }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                    <div class="flex flex-wrap gap-2">
-                                        <button wire:click="openModal('view','user','{{ $user->id }}')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-md text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
-                                            Voir
-                                        </button>
-                                        <button wire:click="restore('{{ $user->id }}','user')" class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-md text-xs font-medium hover:bg-green-200 dark:hover:bg-green-800 transition-colors">
-                                            Restaurer
-                                        </button>
-                                        <button wire:click="openModal('delete','user','{{ $user->id }}')" class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-md text-xs font-medium hover:bg-red-200 dark:hover:bg-red-800 transition-colors">
-                                            Supprimer
-                                        </button>
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $user->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $user->name }}</td>
+                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell">{{ $user->email }}</td>
+                                <td class="px-6 py-3 hidden lg:table-cell"><x-ui.badge variant="slate" size="sm">{{ $user->role }}</x-ui.badge></td>
+                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $user->deleted_at }}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <x-ui.button wire:click="openModal('view','user','{{ $user->id }}')" variant="ghost" icon="eye" size="sm" />
+                                        <x-ui.button wire:click="restore('{{ $user->id }}','user')" variant="ghost" icon="rotate-ccw" size="sm" class="text-success hover:bg-success/5" />
+                                        <x-ui.button wire:click="openModal('delete','user','{{ $user->id }}')" variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
                                     </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Aucun membre supprimé
-                                </td>
-                            </tr>
+                            <tr><td colspan="6"><x-ui.empty-state icon="user-check" title="Aucun membre supprimé" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                {{ $trashedUsers->links() }}
-            </div>
-        </div>
+            <x-slot:footer>{{ $trashedUsers->links() }}</x-slot:footer>
+        </x-ui.section>
 
-        <!-- Table Project Types -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Types de projet supprimés</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-100 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                <input type="checkbox" wire:model="selectAllTypes" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Catégorie</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supprimé le</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+        {{-- Types de projet supprimés --}}
+        <x-ui.section title="Types de projet supprimés" icon="layout-grid" :noPadding="false">
+            <div class="overflow-x-auto -mx-6">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllTypes" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Nom</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Catégorie</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
                         @forelse ($trashedProjectTypes as $type)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <input type="checkbox" wire:model="selectedIds" value="{{ $type->id }}" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $type->name }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $type->category }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $type->deleted_at }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                    <div class="flex flex-wrap gap-2">
-                                        <button wire:click="openModal('view','project_type','{{ $type->id }}')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-md text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
-                                            Voir
-                                        </button>
-                                        <button wire:click="restore('{{ $type->id }}','project_type')" class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-md text-xs font-medium hover:bg-green-200 dark:hover:bg-green-800 transition-colors">
-                                            Restaurer
-                                        </button>
-                                        <button wire:click="openModal('delete','project_type','{{ $type->id }}')" class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-md text-xs font-medium hover:bg-red-200 dark:hover:bg-red-800 transition-colors">
-                                            Supprimer
-                                        </button>
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $type->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $type->name }}</td>
+                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell">{{ $type->category }}</td>
+                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $type->deleted_at }}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <x-ui.button wire:click="openModal('view','project_type','{{ $type->id }}')" variant="ghost" icon="eye" size="sm" />
+                                        <x-ui.button wire:click="restore('{{ $type->id }}','project_type')" variant="ghost" icon="rotate-ccw" size="sm" class="text-success hover:bg-success/5" />
+                                        <x-ui.button wire:click="openModal('delete','project_type','{{ $type->id }}')" variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
                                     </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Aucun type supprimé
-                                </td>
-                            </tr>
+                            <tr><td colspan="5"><x-ui.empty-state icon="check-circle" title="Aucun type supprimé" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                {{ $trashedProjectTypes->links() }}
-            </div>
-        </div>
+            <x-slot:footer>{{ $trashedProjectTypes->links() }}</x-slot:footer>
+        </x-ui.section>
 
-        <!-- Table Projects -->
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Projets supprimés</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-100 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                <input type="checkbox" wire:model="selectAllProjects" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titre</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Code</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supprimé le</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+        {{-- Projets supprimés --}}
+        <x-ui.section title="Projets supprimés" icon="folder-minus" :noPadding="false">
+            <div class="overflow-x-auto -mx-6">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllProjects" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Titre</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Code</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden lg:table-cell">Statut</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
                         @forelse ($trashedProjects as $project)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="px-4 py-3 whitespace-nowrap">
-                                    <input type="checkbox" wire:model="selectedIds" value="{{ $project->id }}" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $project->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $project->title }}</td>
+                                <td class="px-6 py-3 hidden md:table-cell"><span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span></td>
+                                <td class="px-6 py-3 hidden lg:table-cell">
+                                    @php
+                                        $statusEnum = \App\Enums\ProjectStatus::tryFrom($project->status);
+                                        $variant = $statusEnum ? $statusEnum->color() : 'slate';
+                                    @endphp
+                                    <x-ui.badge :variant="$variant" size="sm">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $project->title }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $project->project_code }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $project->status }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $project->deleted_at }}</td>
-                                <td class="px-4 py-3 whitespace-nowrap text-sm">
-                                    <div class="flex flex-wrap gap-2">
-                                        <button wire:click="openModal('view','project','{{ $project->id }}')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-md text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
-                                            Voir
-                                        </button>
-                                        <button wire:click="restore('{{ $project->id }}','project')" class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-md text-xs font-medium hover:bg-green-200 dark:hover:bg-green-800 transition-colors">
-                                            Restaurer
-                                        </button>
-                                        <button wire:click="openModal('delete','project','{{ $project->id }}')" class="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-md text-xs font-medium hover:bg-red-200 dark:hover:bg-red-800 transition-colors">
-                                            Supprimer
-                                        </button>
+                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $project->deleted_at }}</td>
+                                <td class="px-6 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-1">
+                                        <x-ui.button wire:click="openModal('view','project','{{ $project->id }}')" variant="ghost" icon="eye" size="sm" />
+                                        <x-ui.button wire:click="restore('{{ $project->id }}','project')" variant="ghost" icon="rotate-ccw" size="sm" class="text-success hover:bg-success/5" />
+                                        <x-ui.button wire:click="openModal('delete','project','{{ $project->id }}')" variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
                                     </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    Aucun projet supprimé
-                                </td>
-                            </tr>
+                            <tr><td colspan="6"><x-ui.empty-state icon="check-circle" title="Aucun projet supprimé" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                {{ $trashedProjects->links() }}
-            </div>
-        </div>
+            <x-slot:footer>{{ $trashedProjects->links() }}</x-slot:footer>
+        </x-ui.section>
+
     </div>
 
-    <!-- Modal -->
+    {{-- Modal --}}
     @if ($showModal)
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                @if ($modalType === 'view' && $selectedItem)
-                    <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Détails supprimé</h2>
-                    <pre class="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 p-4 rounded-md overflow-x-auto">{{ json_encode($selectedItem, JSON_PRETTY_PRINT) }}</pre>
-                    <div class="mt-4 flex justify-end">
-                        <button wire:click="$set('showModal', false)" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
-                            Fermer
-                        </button>
-                    </div>
+        <x-ui.modal :show="$showModal"
+                     :title="$modalType === 'view' ? 'Détails de l\'élément' : 'Suppression définitive'"
+                     wire:close="$set('showModal', false)">
+            @if ($modalType === 'view' && $selectedItem)
+                <div class="space-y-2">
+                    @foreach ((array) $selectedItem->toArray() as $key => $val)
+                        @if(!is_array($val) && $val)
+                        <div class="flex items-start gap-2 text-sm">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-36 shrink-0">{{ str_replace('_', ' ', ucfirst($key)) }}</span>
+                            <span class="text-slate-600 dark:text-slate-300 break-all">{{ $val }}</span>
+                        </div>
+                        @endif
+                    @endforeach
+                </div>
 
-                @elseif ($modalType === 'delete' && $selectedItem)
-                    <h2 class="text-xl font-bold mb-4 text-red-600 dark:text-red-400">Suppression définitive</h2>
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">Voulez-vous vraiment supprimer définitivement cet élément ?</p>
-                    <div class="mt-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
-                        <button wire:click="$set('showModal', false)" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
-                            Annuler
-                        </button>
-                        <button wire:click="forceDelete('{{ $selectedItem->id }}','{{ $selectedModel }}')" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-                            Supprimer définitivement
-                        </button>
+            @elseif ($modalType === 'delete' && $selectedItem)
+                <div class="text-center py-4">
+                    <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mx-auto mb-4">
+                        <x-lucide-alert-triangle class="w-6 h-6 text-error" />
                     </div>
-                @endif
-            </div>
-        </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">Cette action est <strong class="text-error">irréversible</strong>.</p>
+                    <p class="text-sm text-slate-500">Voulez-vous supprimer définitivement cet élément ?</p>
+                </div>
+                <x-slot:footer>
+                    <x-ui.button wire:click="$set('showModal', false)" variant="outline" size="sm">Annuler</x-ui.button>
+                    <x-ui.button wire:click="forceDelete('{{ $selectedItem->id }}','{{ $selectedModel }}')" variant="danger" icon="trash-2" size="sm">Supprimer définitivement</x-ui.button>
+                </x-slot:footer>
+            @endif
+        </x-ui.modal>
     @endif
-</main>
+
+</x-ui.page-layout>

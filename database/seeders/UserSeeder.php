@@ -19,62 +19,79 @@ class UserSeeder extends Seeder
     {
         // 1. Administrateur IT
         User::firstOrCreate(
-            ['email' => 'admin@localhost.com'],
+            ['email' => 'admin@cave-tech.com'],
             [
-                'id' => (string) Str::uuid(),
-                'name' => 'IT Administrator',
+                'name' => 'Jean Dupont',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'sexe' => 'Homme',
-                'role' => 'Administrateur',
-                'department' => 'Informatique',
+                'role' => \App\Enums\AccountType::ADMIN,
+                'department' => 'Informatique & Systèmes',
+                'telephone' => '+229 97 00 01 02',
+                'pays' => 'Bénin',
+                'ville' => 'Cotonou',
             ]
         );
 
         // 2. Superviseurs
-        for ($i = 1; $i <= 2; $i++) {
+        $supervisors = [
+            ['name' => 'Alice Dossou', 'email' => 'alice.d@cpro.org', 'sexe' => 'Femme'],
+            ['name' => 'Marc Toko', 'email' => 'marc.toko@cpro.org', 'sexe' => 'Homme'],
+        ];
+
+        foreach ($supervisors as $supervisor) {
             User::firstOrCreate(
-                ['email' => "superviseur{$i}@localhost.com"],
+                ['email' => $supervisor['email']],
                 [
-                    'id' => (string) Str::uuid(),
-                    'name' => "Superviseur {$i}",
+                    'name' => $supervisor['name'],
                     'password' => Hash::make('password'),
                     'email_verified_at' => now(),
-                    'sexe' => $i % 2 == 0 ? 'Femme' : 'Homme',
-                    'role' => 'Superviseur',
-                    'department' => 'Direction',
+                    'sexe' => $supervisor['sexe'],
+                    'role' => \App\Enums\AccountType::SUPERVISOR,
+                    'department' => 'Direction stratégique',
+                    'pays' => 'Bénin',
+                    'ville' => 'Porto-Novo',
                 ]
             );
         }
 
-        // 3. Membres / Agents de terrain
-        for ($i = 1; $i <= 3; $i++) {
-            User::firstOrCreate(
-                ['email' => "membre{$i}@localhost.com"],
-                [
-                    'id' => (string) Str::uuid(),
-                    'name' => "Membre ONG {$i}",
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                    'sexe' => $i % 2 == 0 ? 'Femme' : 'Homme',
-                    'role' => 'membre',
-                    'department' => 'Opérations',
-                ]
-            );
-        }
-
-        // 4. Responsable de Projet
+        // 3. Responsables de Projet
         User::firstOrCreate(
-            ['email' => 'manager@localhost.com'],
+            ['email' => 'p.manager@cpro.org'],
             [
-                'id' => (string) Str::uuid(),
-                'name' => 'Project Manager',
+                'name' => 'Sophie Koumé',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'sexe' => 'Femme',
-                'role' => 'Responsable',
+                'role' => \App\Enums\AccountType::MANAGER,
                 'department' => 'Gestion de Projets',
+                'telephone' => '+229 96 11 22 33',
+                'pays' => 'Bénin',
+                'ville' => 'Abomey-Calavi',
             ]
         );
+
+        // 4. Membres / Agents de terrain
+        $members = [
+            ['name' => 'Idriss Gnonlon', 'email' => 'idriss.g@cpro.org', 'sexe' => 'Homme'],
+            ['name' => 'Carine Sika', 'email' => 'carine.s@cpro.org', 'sexe' => 'Femme'],
+            ['name' => 'Baki Bio', 'email' => 'baki.bio@cpro.org', 'sexe' => 'Homme'],
+        ];
+
+        foreach ($members as $member) {
+            User::firstOrCreate(
+                ['email' => $member['email']],
+                [
+                    'name' => $member['name'],
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
+                    'sexe' => $member['sexe'],
+                    'role' => \App\Enums\AccountType::MEMBER,
+                    'department' => 'Terrain & Opérations',
+                    'pays' => 'Bénin',
+                    'ville' => 'Parakou',
+                ]
+            );
+        }
     }
 }

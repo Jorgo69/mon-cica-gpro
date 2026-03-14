@@ -74,12 +74,18 @@ class ProjectListLivewire extends Component
         $projects = Project::query();
 
         // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
-        $projects->where(function ($query) use ($user) {
-            $query->where('creator_user_id', $user->id)
-                  ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($subQuery) use ($user) {
-                      $subQuery->where('responsible_user_id', $user->id);
-                  });
-        });
+        // Si admin, il voit tout (enlevé la restriction du Dashboard pour la liste globale si c'est la vue Admin)
+        // Mais ici c'est ProjectListLivewire dans Admin, donc on garde la logique de visibilité demandée ou on l'élargit
+        $isAdmin = $user->role === \App\Enums\AccountType::ADMIN;
+
+        if (!$isAdmin) {
+            $projects->where(function ($query) use ($user) {
+                $query->where('creator_user_id', $user->id)
+                      ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($subQuery) use ($user) {
+                          $subQuery->where('responsible_user_id', $user->id);
+                      });
+            });
+        }
 
         // Appliquer la recherche textuelle
         if ($this->search) {
@@ -95,8 +101,6 @@ class ProjectListLivewire extends Component
             $projects->where('status', $this->statusFilter);
         }
 
-        // dd($this->statusFilter);
-
         // Appliquer le filtre par responsable (le créateur du projet)
         if ($this->responsibleUserFilter) {
             $projects->where('creator_user_id', $this->responsibleUserFilter);
@@ -105,33 +109,15 @@ class ProjectListLivewire extends Component
         // Appliquer le tri
         $projects->orderBy($this->sortField, $this->sortDirection);
 
-        // Obtenir les options pour les filtres (par exemple, tous les utilisateurs disponibles)
+        // Obtenir les options pour les filtres
         $availableUsers = User::orderBy('name')->get();
-
-        // Obtenir les statuts de projet uniques (si vous voulez un filtre dynamique)
-        $projectStatuses = Project::select('status')->distinct()->get()->pluck('status');
-
-        // AJOUTEZ CECI pour debuguer sans arrêter l'exécution :
-    // if ($projectStatuses->isEmpty()) {
-    //     logger()->info('projectStatuses is empty');
-    // } else {
-    //     logger()->info('projectStatuses content: ', $projectStatuses->toArray());
-    // }
-
         
-
-        $projectTypes = GeneralAdministration::where('type', 'project_type')
-                        ->pluck('name');
-
-        if (empty($projectStatuses)) {
-            $projectStatuses = $projectTypes->toArray();
-        }
+        $projectStatuses = \App\Enums\ProjectStatus::cases();
         
         return view('livewire.v-beta.admin.project.project-list-livewire', [
-            'projects' => $projects->paginate(10),
+            'projects' => $projects->paginate(12),
             'availableUsers' => $availableUsers,
-            'projectStatuses' => $projectStatuses->toArray(),
-            'projectTypes' => $projectTypes,
+            'projectStatuses' => $projectStatuses,
         ]);
     }
 }

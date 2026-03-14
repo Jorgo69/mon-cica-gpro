@@ -17,7 +17,9 @@ class SubActivity extends Model
         'start_date', 'end_date', 'is_milestone', 'responsible_user_id',
     ];
 
-    
+    protected $casts = [
+        'status' => \App\Enums\ActivityStatus::class,
+    ];
 
     protected static function boot()
     {

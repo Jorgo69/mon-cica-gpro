@@ -43,6 +43,124 @@
     }
 }
 
+@layer components {
+    /* ── Navigation Item (Sidebar & Navbar) ── */
+    .nav-item {
+        @apply flex items-center gap-3 px-3 py-2.5 rounded-lg
+               text-slate-600 dark:text-slate-400
+               transition-all duration-150 ease-in-out
+               hover:bg-slate-100 dark:hover:bg-slate-800/60
+               hover:text-slate-900 dark:hover:text-slate-100;
+    }
+
+    .nav-item-active {
+        @apply bg-accent/[0.06] dark:bg-accent/[0.12]
+               text-accent dark:text-accent
+               border-l-[3px] border-accent
+               font-semibold;
+    }
+
+    .nav-item .nav-icon {
+        @apply w-[18px] h-[18px] flex-shrink-0 opacity-60;
+    }
+
+    .nav-item-active .nav-icon {
+        @apply opacity-100 text-accent dark:text-accent;
+    }
+
+    .nav-item .nav-label {
+        @apply text-[13.5px] font-medium leading-none;
+    }
+
+    .nav-item-active .nav-label {
+        @apply text-accent dark:text-accent;
+    }
+
+    /* ── Sidebar Section Title ── */
+    .sidebar-section-title {
+        @apply text-[10px] font-bold uppercase tracking-[0.12em]
+               text-slate-400 dark:text-slate-500
+               px-3 pt-5 pb-1.5 select-none;
+    }
+
+    /* ── Sidebar Submenu ── */
+    .nav-submenu {
+        @apply ml-[22px] mt-0.5 space-y-0.5
+               border-l border-slate-200 dark:border-slate-700/50
+               pl-3;
+    }
+
+    .nav-submenu-item {
+        @apply block px-2.5 py-1.5 rounded-md
+               text-[12.5px] font-medium
+               text-slate-500 dark:text-slate-400
+               transition-all duration-150
+               hover:text-slate-800 dark:hover:text-slate-200
+               hover:bg-slate-100/80 dark:hover:bg-slate-800/40;
+    }
+
+    .nav-submenu-item-active {
+        @apply text-accent dark:text-accent
+               bg-accent/[0.06] dark:bg-accent/[0.1];
+    }
+
+    /* ── Dropdown (Navbar profile, etc.) ── */
+    .nav-dropdown {
+        @apply absolute right-0 mt-1.5 w-52 py-1.5
+               bg-white dark:bg-slate-800
+               rounded-xl shadow-lg shadow-slate-200/60 dark:shadow-black/40
+               border border-slate-100 dark:border-slate-700/60
+               ring-1 ring-black/[0.04];
+    }
+
+    .nav-dropdown-item {
+        @apply flex items-center gap-2.5 px-3.5 py-2
+               text-[13px] font-medium
+               text-slate-600 dark:text-slate-400
+               transition-colors duration-100
+               hover:bg-slate-50 dark:hover:bg-slate-700/50
+               hover:text-slate-900 dark:hover:text-slate-100;
+    }
+
+    .nav-dropdown-item .nav-icon {
+        @apply w-4 h-4 opacity-50;
+    }
+
+    .nav-dropdown-divider {
+        @apply my-1 border-t border-slate-100 dark:border-slate-700/50;
+    }
+
+    /* ── Notification Badge ── */
+    .nav-badge {
+        @apply absolute -top-0.5 -right-0.5
+               min-w-[16px] h-4 px-1
+               flex items-center justify-center
+               text-[10px] font-bold leading-none
+               text-white bg-error rounded-full;
+    }
+
+    /* ── User Avatar Initials ── */
+    .avatar-initials {
+        @apply w-8 h-8 rounded-lg flex items-center justify-center
+               bg-accent/10 dark:bg-accent/20
+               text-accent dark:text-accent
+               text-xs font-bold uppercase select-none;
+    }
+
+    /* ── Navbar Action Button ── */
+    .navbar-action {
+        @apply relative p-2 rounded-lg
+               text-slate-500 dark:text-slate-400
+               transition-all duration-150
+               hover:bg-slate-100 dark:hover:bg-slate-800
+               hover:text-slate-700 dark:hover:text-slate-200;
+    }
+
+    .navbar-action .nav-icon {
+        @apply w-[18px] h-[18px];
+    }
+}
+
 @layer utilities {
     .bg-primary {
         background-color: rgb(var(--primary)) !important;

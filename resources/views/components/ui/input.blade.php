@@ -9,6 +9,16 @@
     'error' => null,
 ])
 
+@php
+    $hasWireModel = $attributes->whereStartsWith('wire:model')->first();
+    $inputValue = $value ?? ($name ? old($name) : null);
+    
+    // Ensure we never pass an array to the value attribute
+    if (is_array($inputValue)) {
+        $inputValue = '';
+    }
+@endphp
+
 <div class="space-y-2">
     @if($label)
         <label for="{{ $name }}" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
@@ -22,7 +32,7 @@
     <div class="relative group">
         @if($icon)
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-accent transition-colors">
-                <x-lucide-{{ $icon }} class="h-4 w-4 text-slate-300 group-focus-within:text-accent" />
+                <x-dynamic-component :component="'lucide-' . $icon" class="h-4 w-4 text-slate-300 group-focus-within:text-accent" />
             </div>
         @endif
 
@@ -30,7 +40,7 @@
             type="{{ $type }}" 
             name="{{ $name }}" 
             id="{{ $name }}"
-            value="{{ $value ?? old($name) }}"
+            @if(!$hasWireModel) value="{{ $inputValue }}" @endif
             placeholder="{{ $placeholder }}"
             @if($required) required @endif
             {{ $attributes->merge([

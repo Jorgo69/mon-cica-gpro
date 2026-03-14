@@ -97,3 +97,47 @@ git checkout main
 
 # Récupère un commit spécifique
 git cherry-pick <hash-du-commit>
+
+___________________________________________________________
+
+## 7. **Workflow Multi-Dépôts (Double Remote)**
+
+Si tu travailles pour un client mais que tu veux aussi sauvegarder ton travail sur ton propre compte GitHub :
+
+### Configuration Initiale
+Tu as par défaut le dépôt du client appelé `origin`. Tu dois ajouter ton propre dépôt appelé `perso` :
+```bash
+git remote add perso https://github.com/TonPseudo/mon-depot-perso.git
+```
+
+### Le Flux de Travail Quotidien (Workflow)
+
+**1. Quand tu codes (sauvegarde chez TOI) :**
+Travaille toujours sur ta branche `development` ou une sous-branche (`feature/...`).
+```bash
+# Envoyer ton travail en cours sur ton propre GitHub
+git push perso development
+```
+
+**2. Quand tu livres au client (envoi chez LUI) :**
+Quand tu estimes que le code sur `development` est parfait et prêt, tu le verses dans la branche dédiée au client (ex: `Projexia`) et tu l'envoies sur son dépôt (`origin`).
+```bash
+# Va sur la branche du client
+git checkout Projexia
+
+# Importe tout ton travail finalisé depuis development
+git merge development
+
+# Envoie le code au client
+git push origin Projexia
+
+# Retourne sur ta branche de développement pour la suite
+git checkout development
+```
+
+### Problème Courant : "La branche par défaut n'est pas la bonne"
+Si tu as poussé une branche par erreur en premier sur ton dépôt vierge et qu'elle est devenue la branche par défaut, tu peux forcer `development` comme branche principale ainsi :
+```bash
+git remote set-head perso development
+```
+*(Optionnel : Il faudra aussi le changer dans les "Settings -> Default branch" sur le site de GitHub).*

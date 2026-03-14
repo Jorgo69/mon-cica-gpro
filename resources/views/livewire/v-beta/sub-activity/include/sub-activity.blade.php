@@ -41,20 +41,22 @@
                             {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{{ $subActivity->status }}</td> --}}
                             @can('create', $activity)
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <select 
-                                    wire:model.change="subActivityStatuses.{{ $subActivity->id }}"
-                                    class="text-xs rounded border-gray-300 dark:border-gray-700 dark:bg-gray-900"
-                                >
-                                <option value="" @selected($subActivity->status)>{{ $subActivity->status  }}</option>
-                                    @foreach($projectTypes as $type)
-                                        <option value="{{ $type->name }}" @selected($subActivity->status === $type->name)>{{ $type->name  }}</option>
+                                <x-ui.select wire:model.live="subActivityStatuses.{{ $subActivity->id }}" size="sm" class="w-40">
+                                    @foreach($this->activityStatuses as $status)
+                                        <option value="{{ $status->value }}">{{ $status->label() }}</option>
                                     @endforeach
-                                </select>
+                                </x-ui.select>
+                                <div class="mt-1">
+                                    @php $subStatus = $subActivity->status; @endphp
+                                    <x-ui.badge :variant="$subStatus?->color() ?? 'slate'" size="xs">
+                                        {{ $subStatus?->label() ?? $subActivity->status }}
+                                    </x-ui.badge>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button wire:click="openModalForSubActivity('{{ $subActivity->id }}')" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
-                                    Modifier
-                                </button>
+                                <div class="flex items-center justify-end gap-2">
+                                    <x-ui.button wire:click="openModalForSubActivity('{{ $subActivity->id }}')" variant="ghost" size="sm" icon="edit" />
+                                </div>
                             </td>
                             @endcan
                         </tr>

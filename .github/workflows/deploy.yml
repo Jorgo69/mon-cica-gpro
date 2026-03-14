@@ -1,0 +1,121 @@
+# ==============================================================================
+# GITHUB ACTIONS - Deploy to LWS Production (FTP Only)
+# Triggered on push to 'production' branch
+# ==============================================================================
+
+name: Deploy to LWS Production
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      # ------------------------------------------
+      # STEP 1: Checkout source code
+      # ------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------
+      # STEP 2: Setup PHP 8.3
+      # ------------------------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, zip
+          coverage: none
+
+      # ------------------------------------------
+      # STEP 3: Composer dependencies (production)
+      # ------------------------------------------
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      # ------------------------------------------
+      # STEP 4: Build frontend assets
+      # ------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM and build
+        run: |
+          npm ci
+          npm run build
+
+      # ------------------------------------------
+      # STEP 5: Prepare for FTP
+      # Inject webhook secret & Cleanup
+      # ------------------------------------------
+      - name: Inject Webhook Secret
+        run: |
+          if [ -f public/webhook.php ]; then
+            sed -i "s/votre_token_secret_ici/${{ secrets.WEBHOOK_SECRET }}/g" public/webhook.php
+          fi
+
+      - name: Cleanup dev files
+        run: |
+          rm -rf node_modules
+          rm -rf tests
+          rm -rf .git
+          rm -rf .github
+          # Keep vendor/ for FTP hosting
+          rm -f .gitignore
+          rm -f .gitattributes
+          rm -f .editorconfig
+          rm -f phpunit.xml
+          rm -f vite.config.js
+          rm -f README.md
+
+      # ------------------------------------------
+      # STEP 6: Deploy via FTP
+      # Sends all files including vendor/
+      # ------------------------------------------
+      - name: Deploy to LWS via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/tests/**
+            **/.env
+            **/storage/logs/*
+            **/storage/framework/sessions/*
+            **/storage/framework/views/*.php
+            **/storage/framework/cache/data/*
+          dangerous-clean-slate: false
+          log-level: standard
+
+      # ------------------------------------------
+      # STEP 7: Trigger webhook
+      # ------------------------------------------
+      - name: Trigger post-deploy webhook
+        run: |
+          sleep 10
+          curl -X GET "${{ secrets.APP_URL }}/webhook.php?token=${{ secrets.WEBHOOK_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --max-time 300 \
+            --retry 3 \
+            --retry-delay 5

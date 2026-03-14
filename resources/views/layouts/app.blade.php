@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark" x-data="appData()" x-init="initTheme()">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="appData()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,44 +24,7 @@
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
     @stack('styles')
-    
-    {{-- @livewireStyles --}}
-    <x-notify::notify />
-    @notifyCss
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 font-sans">
-    <!-- Removed @notifyJs to prevent Alpine.js conflict, replaced with custom logic below -->
-    
-        @include('layouts.navbar')
-        <!-- Sidebar -->
-        @include('layouts.sidebar')
-    
-    
-    {{-- <div x-show="isMobile && sidebarOpen" @click="sidebarOpen = false" 
-         class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" x-transition>
-    </div> --}}
 
-
-    {{ $slot }}
-    
-    <script>
-        // Custom logic for laravel-notify to avoid loading its bundled Alpine.js
-        document.addEventListener('DOMContentLoaded', () => {
-            let notifyEl = document.querySelector("div.notify");
-            if (notifyEl) {
-                setTimeout(() => { notifyEl.remove() }, {{ config('notify.timeout', 5000) }});
-            }
-        });
-
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('notify', (data) => {
-                alert(data.message);
-            });
-        });
-    </script>
-
-    @stack('scripts')
-    
     <script>
         window.appData = function() {
             return {
@@ -116,6 +79,18 @@
             }
         }
     </script>
-    {{-- @livewireScripts --}}
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    
+        @include('layouts.navbar')
+        <!-- Sidebar -->
+        @include('layouts.sidebar')
+
+
+    {{ $slot }}
+    
+    <x-ui.toast-notifications />
+
+    @stack('scripts')
 </body>
 </html>

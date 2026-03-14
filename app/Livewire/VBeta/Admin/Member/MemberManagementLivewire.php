@@ -7,6 +7,8 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\AccountType;
+use Illuminate\Validation\Rules\Enum;
 
 class MemberManagementLivewire extends Component
 {
@@ -30,19 +32,22 @@ class MemberManagementLivewire extends Component
         'sortDirection' => ['except' => 'desc'],
     ];
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6',
-        'telephone' => 'nullable|string|max:50',
-        'sexe' => 'nullable|string|max:20',
-        'numero_identification' => 'nullable|string|max:100|unique:users,numero_identification',
-        'pays' => 'nullable|string|max:100',
-        'ville' => 'nullable|string|max:100',
-        'role' => 'required|string|max:50',
-        'department' => 'nullable|string|max:100',
-        'image' => 'nullable|image|max:2048',
-    ];
+    protected function rules()
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email' . ($this->selectedMember ? ',' . $this->selectedMember->id : ''),
+            'password' => $this->modalType === 'create' ? 'required|min:6' : 'nullable|min:6',
+            'telephone' => 'nullable|string|max:50',
+            'sexe' => 'nullable|string|max:20',
+            'numero_identification' => 'nullable|string|max:100|unique:users,numero_identification' . ($this->selectedMember ? ',' . $this->selectedMember->id : ''),
+            'pays' => 'nullable|string|max:100',
+            'ville' => 'nullable|string|max:100',
+            'role' => ['required', new Enum(AccountType::class)],
+            'department' => 'nullable|string|max:100',
+            'image' => 'nullable|image|max:2048',
+        ];
+    }
 
     public function updatingSearch()
     {
@@ -102,12 +107,7 @@ class MemberManagementLivewire extends Component
 
     public function update()
     {
-        $rules = $this->rules;
-        $rules['email'] = 'required|email|unique:users,email,' . $this->selectedMember->id;
-        $rules['numero_identification'] = 'nullable|string|max:100|unique:users,numero_identification,' . $this->selectedMember->id;
-        $rules['password'] = 'nullable|min:6';
-
-        $this->validate($rules);
+        $this->validate();
 
         $user = $this->selectedMember;
         $user->name = $this->name;

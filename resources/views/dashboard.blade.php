@@ -1,82 +1,89 @@
 <x-app-layout>
-    <main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div class="p-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                Tableau de Bord @if($isAdmin) (Admin) @else (Mon Espace) @endif
-            </h1>
+    <x-ui.page-layout>
+        {{-- En-tête de la page --}}
+        <x-ui.page-header title="Tableau de Bord (Admin)" subtitle="Vue d'ensemble de la performance des projets">
+            <x-slot:actions>
+                <x-ui.button tag="a" :href="route('admin.it.project.types.create')" variant="accent" icon="plus" size="lg">
+                    Créer un nouveau type
+                </x-ui.button>
+            </x-slot:actions>
+        </x-ui.page-header>
 
-            {{-- Statistiques générales --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Projets</h2>
-                    <p class="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">{{ $totalProjects }}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Projets en Cours</h2>
-                    <p class="text-4xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">{{ $projectsInProgress }}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Projets Terminés</h2>
-                    <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{{ $projectsCompleted }}</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Activités en Cours</h2>
-                    <p class="text-4xl font-bold text-orange-500 dark:text-orange-400 mt-2">{{ $activitiesInProgress }}</p>
-                </div>
-            </div>
+        {{-- Statistiques Globales --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <x-ui.stat-card label="Total Projets" :value="$totalProjects" variant="default" icon="folder" />
+            <x-ui.stat-card label="En Cours" :value="$projectsInProgress" variant="success" icon="play-circle" />
+            <x-ui.stat-card label="Terminés" :value="$projectsCompleted" variant="accent" icon="check-circle" />
+            <x-ui.stat-card label="Annulés" :value="$projectsCanceled" variant="error" icon="x-circle" />
+        </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {{-- Mises à jour récentes --}}
-                <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                        Mises à jour récentes
-                    </h2>
-                    @forelse($recentProgressUpdates as $update)
-                        <div class="flex items-start mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
-                            <div class="flex-shrink-0 mr-4">
-                                {{-- Placeholder pour une icône --}}
-                                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                    </svg>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {{-- Colonne de gauche : Activités --}}
+            <div class="lg:col-span-2 space-y-8">
+                <x-ui.section title="Statut des Activités" icon="activity">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">En Cours</p>
+                            <p class="text-2xl font-black text-primary">{{ $activitiesInProgress }}</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Terminées</p>
+                            <p class="text-2xl font-black text-success">{{ $activitiesCompleted }}</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">En Retard</p>
+                            <p class="text-2xl font-black text-error">{{ $activitiesOverdue }}</p>
+                        </div>
+                    </div>
+                </x-ui.section>
+
+                <x-ui.section title="Mises à jour récentes" icon="history">
+                    <div class="space-y-4">
+                        @forelse($recentProgressUpdates as $update)
+                            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                    <x-lucide-user class="w-5 h-5 text-slate-400" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{{ $update->project->title }}</p>
+                                    <p class="text-xs text-slate-500 truncate">{{ $update->activity->description }}</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase">{{ $update->date->diffForHumans() }}</p>
+                                    <p class="text-xs font-bold text-accent">{{ $update->progress_percentage }}%</p>
                                 </div>
                             </div>
-                            <div class="flex-grow">
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $update->project->title ?? 'N/A' }}</p>
-                                <p class="text-xs text-gray-600 dark:text-gray-400">
-                                    {{ $update->status_update }} - <span class="font-medium">Par : {{ $update->updatedByUser->name ?? 'N/A' }}</span>
-                                </p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    Mise à jour le {{ $update->date }}
-                                </p>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-gray-500 dark:text-gray-400">Aucune mise à jour de progression récente.</p>
-                    @endforelse
-                </div>
+                        @empty
+                            <x-ui.empty-state icon="clock" title="Aucune mise à jour" description="Les activités n'ont pas encore été mises à jour." />
+                        @endforelse
+                    </div>
+                </x-ui.section>
+            </div>
 
-                {{-- Projets récents --}}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                        Projets Récents
-                    </h2>
-                    @forelse($recentProjects as $project)
-                        <div class="mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
-                            <h3 class="font-semibold text-blue-600 dark:text-blue-400">{{ $project->title }}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Créé le {{ $project->created_at->format('d/m/Y') }} par {{ $project->creator->name ?? 'N/A' }}</p>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 mt-2">
-                                Statut : {{ $project->status }}
-                            </span>
-                        </div>
-                    @empty
-                        <p class="text-gray-500 dark:text-gray-400">Aucun projet récent trouvé.</p>
-                    @endforelse
-                </div>
+            {{-- Colonne de droite : Projets Récents --}}
+            <div class="space-y-8">
+                <x-ui.section title="Projets Récents" icon="folder-closed">
+                    <div class="space-y-4">
+                        @forelse($recentProjects as $project)
+                            <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+                                <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1 line-clamp-1">{{ $project->title }}</h4>
+                                <p class="text-[10px] text-slate-500 mb-3 flex items-center gap-1">
+                                    <x-lucide-calendar class="w-3 h-3" />
+                                    Créé le {{ $project->created_at->format('d/m/Y') }}
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <x-ui.badge :variant="$project->status?->color() ?? 'slate'" size="sm">
+                                        {{ $project->status?->label() ?? $project->status }}
+                                    </x-ui.badge>
+                                    <x-ui.button tag="a" :href="route('project.show', $project->id)" variant="ghost" size="sm" icon="arrow-right" />
+                                </div>
+                            </div>
+                        @empty
+                            <x-ui.empty-state icon="folder-open" title="Pas encore de projets" description="Commencez par créer un nouveau projet." />
+                        @endforelse
+                    </div>
+                </x-ui.section>
             </div>
         </div>
-    </main>
-    @push('alpine-js')
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
-    @endpush
+    </x-ui.page-layout>
 </x-app-layout>

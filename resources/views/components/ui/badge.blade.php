@@ -5,7 +5,7 @@
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center font-bold rounded-lg border uppercase tracking-tighter';
+    $baseClasses = 'inline-flex items-center whitespace-nowrap font-bold rounded-lg border uppercase tracking-tighter';
     
     $variants = [
         'primary' => 'bg-primary/5 text-primary border-primary/20',
@@ -27,7 +27,8 @@
 
 <span {{ $attributes->merge(['class' => $classes]) }}>
     @if($icon)
-        <x-lucide-{{ $icon }} class="w-3 h-3 mr-1" />
+        <x-dynamic-component :component="'lucide-' . $icon" class="w-3 h-3 mr-1 shrink-0" />
     @endif
-    {{ $slot }}
+
+    <span>{{ $slot }}</span>
 </span>

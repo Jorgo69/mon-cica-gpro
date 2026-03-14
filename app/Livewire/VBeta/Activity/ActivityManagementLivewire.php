@@ -32,14 +32,15 @@ class ActivityManagementLivewire extends Component
         $this->resources = $this->activity->resources;
         $this->subActivities = $this->activity->subActivities;
         
-        // $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
+        // Pré-remplir les statuts pour wire:model
+        foreach ($this->subActivities as $sub) {
+             $this->subActivityStatuses[$sub->id] = $sub->status instanceof \App\Enums\ActivityStatus ? $sub->status->value : $sub->status;
+        }
+    }
 
-        $this->projectTypes = GeneralAdministration::where('type', 'activity_status')->get();
-
-        // ⚡ Préremplir les statuts des sous-activités
-        // foreach ($this->subActivities as $sub) {
-        //     $this->subActivityStatuses[$sub->id] = $sub->status;
-        // }
+    public function getActivityStatusesProperty()
+    {
+        return \App\Enums\ActivityStatus::cases();
     }
 
     /**

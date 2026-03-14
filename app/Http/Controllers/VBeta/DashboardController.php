@@ -79,29 +79,25 @@ class DashboardController extends Controller
             abort(403, 'Unauthorized. Please log in.');
         }
 
-        // Assurez-vous que le rôle est bien géré via la relation et le nom du rôle
-        $isAdmin = ($user->role === 'Administrateur');
+        $isAdmin = $user->role === \App\Enums\AccountType::ADMIN;
 
         if ($isAdmin) {
-            // Logique pour l'administrateur
-            // L'administrateur voit toutes les données
+            // Administrateur voit toutes les données
             $totalProjects = Project::count();
-            $projectsInProgress = Project::where('status', 'Actif')->count();
-            $projectsCompleted = Project::where('status', 'Terminé')->count();
-            $projectsDraft = Project::where('status', 'Brouillon')->count();
-            $projectsCanceled = Project::where('status', 'Annulé')->count();
+            $projectsInProgress = Project::where('status', \App\Enums\ProjectStatus::ACTIVE)->count();
+            $projectsCompleted = Project::where('status', \App\Enums\ProjectStatus::COMPLETED)->count();
+            $projectsDraft = Project::where('status', \App\Enums\ProjectStatus::DRAFT)->count();
+            $projectsCanceled = Project::where('status', \App\Enums\ProjectStatus::CANCELLED)->count();
 
             $totalActivities = Activity::count();
-            $activitiesInProgress = Activity::where('status', 'En cours')->count();
-            $activitiesCompleted = Activity::where('status', 'Terminée')->count();
-            $activitiesOverdue = Activity::where('status', 'En retard')->count();
+            $activitiesInProgress = Activity::where('status', \App\Enums\ActivityStatus::ONGOING)->count();
+            $activitiesCompleted = Activity::where('status', \App\Enums\ActivityStatus::COMPLETED)->count();
+            $activitiesOverdue = Activity::where('status', \App\Enums\ActivityStatus::OVERDUE)->count();
 
             $totalPlannedBudget = Budget::sum('total_cost');
-            // Logique pour le budget réel si vous avez une table de dépenses réelles
-            $totalActualBudget = 0; // Remplacez par votre logique de calcul de dépenses
+            $totalActualBudget = 0; 
             $budgetVariance = $totalPlannedBudget - $totalActualBudget;
 
-            // Données de suivi récentes
             $recentProgressUpdates = ProgressTracker::with(['project', 'activity', 'updater'])
                                                     ->orderBy('date', 'desc')
                                                     ->limit(5)
@@ -127,10 +123,7 @@ class DashboardController extends Controller
                 'recentProjects'
             ));
         } else {
-            // Logique pour un utilisateur non-administrateur
-            // L'utilisateur ne voit que les données qui le concernent
-            
-            // Projets où l'utilisateur est le créateur ou est responsable d'une activité
+            // Utilisateur ne voit que les données qui le concernent
             $userProjects = Project::where('creator_user_id', $user->id)
                                    ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($query) use ($user) {
                                        $query->where('responsible_user_id', $user->id);
@@ -139,21 +132,20 @@ class DashboardController extends Controller
                                    ->get();
 
             $totalProjects = $userProjects->count();
-            $projectsInProgress = $userProjects->where('status', 'Actif')->count();
-            $projectsCompleted = $userProjects->where('status', 'Terminé')->count();
-            $projectsDraft = $userProjects->where('status', 'Brouillon')->count();
-            $projectsCanceled = $userProjects->where('status', 'Annulé')->count();
+            $projectsInProgress = $userProjects->where('status', \App\Enums\ProjectStatus::ACTIVE)->count();
+            $projectsCompleted = $userProjects->where('status', \App\Enums\ProjectStatus::COMPLETED)->count();
+            $projectsDraft = $userProjects->where('status', \App\Enums\ProjectStatus::DRAFT)->count();
+            $projectsCanceled = $userProjects->where('status', \App\Enums\ProjectStatus::CANCELLED)->count();
 
-            // Activités dont l'utilisateur est responsable
             $userActivities = Activity::where('responsible_user_id', $user->id)->get();
             $totalActivities = $userActivities->count();
-            $activitiesInProgress = $userActivities->where('status', 'En cours')->count();
-            $activitiesCompleted = $userActivities->where('status', 'Terminée')->count();
-            $activitiesOverdue = $userActivities->where('status', 'En retard')->count();
+            $activitiesInProgress = $userActivities->where('status', \App\Enums\ActivityStatus::ONGOING)->count();
+            $activitiesCompleted = $userActivities->where('status', \App\Enums\ActivityStatus::COMPLETED)->count();
+            $activitiesOverdue = $userActivities->where('status', \App\Enums\ActivityStatus::OVERDUE)->count();
 
             $projectIds = $userProjects->pluck('id');
             $totalPlannedBudget = Budget::whereIn('project_id', $projectIds)->sum('total_cost');
-            $totalActualBudget = 0; // À ajuster
+            $totalActualBudget = 0;
             $budgetVariance = $totalPlannedBudget - $totalActualBudget;
 
             $recentProgressUpdates = ProgressTracker::whereIn('project_id', $projectIds)

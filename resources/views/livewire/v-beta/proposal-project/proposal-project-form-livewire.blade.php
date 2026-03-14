@@ -98,19 +98,27 @@
                                     
                                     <div class="step-indicator flex-shrink-0"
                                         :class="{
-                                            'step-active': (index + 1) === currentStep,
-                                            'step-completed': (index + 1) < currentStep,
-                                            'step-future': (index + 1) > currentStep
+                                            'step-active': (index + 1) === currentStep && !step.has_error,
+                                            'step-completed': (index + 1) < currentStep && !step.has_error,
+                                            'step-future': (index + 1) > currentStep && !step.has_error,
+                                            'bg-rose-100 text-rose-600 border border-rose-200 dark:bg-rose-900/30 dark:border-rose-800 dark:text-rose-400 shadow-sm': step.has_error
                                         }">
-                                        <template x-if="(index + 1) < currentStep"><i class="fas fa-check text-xs"></i></template>
-                                        <template x-if="(index + 1) >= currentStep"><span x-text="index + 1"></span></template>
+                                        <template x-if="(index + 1) < currentStep && !step.has_error"><i class="fas fa-check text-xs"></i></template>
+                                        <template x-if="step.has_error"><i class="fas fa-exclamation text-xs"></i></template>
+                                        <template x-if="(index + 1) >= currentStep && !step.has_error"><span x-text="index + 1"></span></template>
                                     </div>
 
                                     <div class="min-w-0">
                                         <p class="font-bold text-xs uppercase tracking-wide truncate" 
-                                           :class="(index + 1) === currentStep ? 'text-accent dark:text-accent-light' : 'text-slate-600 dark:text-slate-400'"
+                                           :class="{
+                                               'text-accent dark:text-accent-light': (index + 1) === currentStep && !step.has_error,
+                                               'text-slate-600 dark:text-slate-400': (index + 1) !== currentStep && !step.has_error,
+                                               'text-rose-600 dark:text-rose-400': step.has_error
+                                           }"
                                            x-text="step.title"></p>
-                                        <p class="text-[9px] opacity-60 italic truncate font-medium" x-text="step.description"></p>
+                                        <p class="text-[9px] opacity-60 italic truncate font-medium" 
+                                           :class="step.has_error ? 'text-rose-500' : ''"
+                                           x-text="step.description"></p>
                                     </div>
                                 </button>
                             </template>
