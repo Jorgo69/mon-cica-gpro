@@ -26,7 +26,7 @@ Vous devez ajouter les secrets suivants dans **Settings > Secrets and variables 
 | `FTP_SERVER` | Hôte FTP (LWS) | `ftp.campuschine.org` |
 | `FTP_USERNAME` | Identifiant FTP | `campu2743848` |
 | `FTP_PASSWORD` | Mot de passe FTP | `5X2u8XGJErwXysR` |
-| `FTP_SERVER_DIR` | Dossier du sous-domaine | `/public_html/cica-pro` |
+| `FTP_SERVER_DIR` | Dossier du sous-domaine (doit finir par `/`) | `/public_html/cica-pro/` |
 | `APP_URL` | URL du sous-domaine | `https://cica-pro.campuschine.org` |
 | `WEBHOOK_SECRET` | Token de sécurité | `VOTRE_TOKEN_ALEATOIRE` |
 
