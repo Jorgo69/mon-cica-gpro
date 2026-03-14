@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    /* Foundation Palette - Architectural & Rigorous */
+    --primary: 15 23 42;      /* #0f172a - Slate 900 */
+    --primary-dark: 2 6 23;   /* #020617 - Slate 950 */
+    
+    --accent: 14 116 144;     /* #0e7490 - Cyan 700 (Petroleum Teal) */
+    --accent-dark: 21 94 117;  /* #155e75 - Cyan 800 */
+    
+    --success: 13 148 136;    /* #0d9488 - Teal 600 */
+    --success-dark: 17 94 89;  /* #115e59 - Teal 700 */
+    
+    --error: 190 18 60;       /* #be123c - Rose 700 */
+    --error-dark: 159 18 57;   /* #9f1239 - Rose 800 */
+    
+    --surface: 248 250 252;   /* #f8fafc - Slate 50 */
+    --border: 226 232 240;    /* #e2e8f0 - Slate 200 */
+}
+
+.dark {
+    --primary: 241 245 249;   /* #f1f5f9 - Slate 100 on dark */
+    --primary-dark: 255 255 255; 
+    
+    --accent: 34 211 238;     /* #22d3ee - Cyan 400 */
+    --accent-dark: 103 232 249; /* #67e8f9 - Cyan 300 */
+    
+    --surface: 15 23 42;      /* Slate 900 */
+    --border: 30 41 59;       /* Slate 800 */
+}
+
+@layer base {
+    body {
+        @apply text-slate-900 dark:text-slate-100 antialiased;
+        letter-spacing: -0.01em; 
+    }
+    
+    h1, h2, h3, h4, .font-heading {
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+    }
+}
+
+@layer utilities {
+    .bg-primary {
+        background-color: rgb(var(--primary)) !important;
+    }
+    .bg-primary-dark {
+        background-color: rgb(var(--primary-dark)) !important;
+    }
+}

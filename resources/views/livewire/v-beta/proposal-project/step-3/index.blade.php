@@ -1,77 +1,91 @@
-{{-- Fenêtre 3 : Cadre Logique (But & Objectifs Spécifiques) --}}
-<div x-show="currentStep === 3" class="space-y-6">
-    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Cadre Logique du Projet</h2>
-    <p class="text-gray-600 dark:text-gray-300 mb-6">Définissez le but général et les objectifs spécifiques de votre projet.</p>
-
-    <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-6 mb-3">But Général</h3>
-    <div>
-        <label for="general_objective" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Objectif Général <span class="text-red-500">*</span></label>
-        <textarea id="general_objective" wire:model.defer="initialLogicalFramework.general_objective" rows="3"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Ex: Contribuer à l'amélioration de la santé maternelle et infantile dans la région X."></textarea>
-        @error('initialLogicalFramework.general_objective') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
-    <div>
-        <label for="general_obj_indicators" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Indicateurs de l'Objectif Général (Optionnel)</label>
-        <textarea id="general_obj_indicators" wire:model.defer="initialLogicalFramework.general_obj_indicators" rows="2"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Ex: Réduction de 15% du taux de mortalité infantile d'ici 2025."></textarea>
-        @error('initialLogicalFramework.general_obj_indicators') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
-    <div>
-        <label for="general_obj_verification_sources" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sources de Vérification (Optionnel)</label>
-        <input type="text" id="general_obj_verification_sources" wire:model.defer="initialLogicalFramework.general_obj_verification_sources"
-                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: Rapports du ministère de la Santé.">
-        @error('initialLogicalFramework.general_obj_verification_sources') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
-    <div>
-        <label for="assumptions" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hypothèses (Optionnel)</label>
-        <textarea id="assumptions" wire:model.defer="initialLogicalFramework.assumptions" rows="2"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Ex: Stabilité politique de la région."></textarea>
-        @error('initialLogicalFramework.assumptions') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
-
-    <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-6 mb-3">Objectifs Spécifiques</h3>
+<div class="space-y-8">
+    {{-- BUT GENERAL --}}
     <div class="space-y-4">
-        @foreach($specificObjectives as $index => $objective)
-            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg relative">
-                <button type="button" wire:click="removeSpecificObjective({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg">&times;</button>
-                <input type="hidden" wire:model="specificObjectives.{{ $index }}.id">
-                <div>
-                    <label for="specific-objective-description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
-                    <textarea id="specific-objective-description-{{ $index }}" wire:model.defer="specificObjectives.{{ $index }}.description" rows="2"
-                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Ex: Augmenter l'accès aux soins prénatals pour les femmes enceintes de 30% en 1 an."></textarea>
-                    @error('specificObjectives.' . $index . '.description') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+        <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">But Général du Projet</label>
+        <div class="space-y-5">
+            <div class="space-y-2">
+                <label for="general_objective" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Objectif Général <span class="text-rose-500">*</span></label>
+                <textarea id="general_objective" wire:model.defer="initialLogicalFramework.general_objective" rows="3"
+                          class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm shadow-sm @error('initialLogicalFramework.general_objective') border-rose-500 ring-2 ring-rose-500/20 @enderror"
+                          placeholder="Ex: Contribuer à l'amélioration de la santé..."></textarea>
+                @error('initialLogicalFramework.general_objective') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label for="general_obj_indicators" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Indicateurs de réussite</label>
+                    <textarea id="general_obj_indicators" wire:model.defer="initialLogicalFramework.general_obj_indicators" rows="2"
+                              class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm italic shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"></textarea>
                 </div>
-                <div>
-                    <label for="specific-objective-indicators-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Indicateurs (Optionnel)</label>
-                    <textarea id="specific-objective-indicators-{{ $index }}" wire:model.defer="specificObjectives.{{ $index }}.indicators" rows="2"
-                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Ex: Nombre de consultations prénatales effectuées."></textarea>
-                    @error('specificObjectives.' . $index . '.indicators') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label for="specific-objective-verification-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sources de Vérification (Optionnel)</label>
-                    <input type="text" id="specific-objective-verification-{{ $index }}" wire:model.defer="specificObjectives.{{ $index }}.verification_sources"
-                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Ex: Registres des centres de santé.">
-                    @error('specificObjectives.' . $index . '.verification_sources') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                </div>
-                <div>
-                    <label for="specific-objective-assumptions-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hypothèses (Optionnel)</label>
-                    <textarea id="specific-objective-assumptions-{{ $index }}" wire:model.defer="specificObjectives.{{ $index }}.assumptions" rows="2"
-                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                                placeholder="Ex: Disponibilité des personnels de santé."></textarea>
-                    @error('specificObjectives.' . $index . '.assumptions') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                <div class="space-y-2">
+                    <label for="general_obj_verification_sources" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Sources de Vérification</label>
+                    <textarea id="general_obj_verification_sources" wire:model.defer="initialLogicalFramework.general_obj_verification_sources" rows="2"
+                               class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm italic shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                               placeholder="Ex: Rapports d'activités, registres..."></textarea>
                 </div>
             </div>
-        @endforeach
-        <button type="button" wire:click="addSpecificObjective" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold dark:bg-blue-600 dark:text-gray-100 dark:hover:bg-blue-700">
-            Ajouter un Objectif Spécifique
-        </button>
+        </div>
     </div>
-    
+
+    {{-- OBJECTIFS SPECIFIQUES --}}
+    <div class="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
+        <div class="flex items-center justify-between px-1">
+            <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em]">Objectifs Spécifiques</label>
+            <button type="button" wire:click="addSpecificObjective" class="text-[10px] font-black text-accent hover:opacity-80 uppercase flex items-center gap-1.5 transition-opacity tracking-widest">
+                <i class="fas fa-plus-circle"></i> Ajouter
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            @foreach($specificObjectives as $index => $objective)
+                <div wire:key="spec-obj-{{ $index }}-{{ $objective['id'] ?? $loop->index }}" 
+                     class="relative p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-3xl group animate-fadeIn transition-colors hover:border-slate-300 dark:hover:border-slate-700">
+                    <button type="button" wire:click="removeSpecificObjective({{ $index }})" 
+                            class="absolute top-6 right-6 text-slate-300 hover:text-rose-500 transition-colors bg-white dark:bg-slate-900 rounded-full w-8 h-8 flex items-center justify-center border border-transparent shadow-sm hover:border-rose-100 hover:bg-rose-50 dark:hover:bg-rose-900/20">
+                        <i class="fas fa-trash-alt text-[10px]"></i>
+                    </button>
+
+                    <div class="flex gap-5">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-slate-500 text-xs shadow-inner border border-slate-100 dark:border-slate-700">{{ $index + 1 }}</div>
+                        <div class="flex-1 space-y-4 pt-1 pr-8">
+                            <input type="hidden" wire:model="specificObjectives.{{ $index }}.id">
+                            
+                            <div class="space-y-2">
+                                <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Description <span class="text-rose-500">*</span></label>
+                                <textarea wire:model.defer="specificObjectives.{{ $index }}.description" rows="2"
+                                          class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all @error('specificObjectives.' . $index . '.description') border-rose-500 ring-2 ring-rose-500/20 @enderror"
+                                          placeholder="Définissez l'objectif précis..."></textarea>
+                                @error('specificObjectives.' . $index . '.description') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="space-y-2">
+                                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Indicateurs</label>
+                                    <textarea wire:model.defer="specificObjectives.{{ $index }}.indicators" rows="2"
+                                              class="block w-full px-4 py-3 rounded-xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs italic shadow-inner text-slate-700 dark:text-slate-300 focus:ring-1 focus:ring-accent focus:border-accent transition-all"></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Sources & Hypothèses</label>
+                                    <div class="space-y-2 relative">
+                                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-file-alt text-slate-300 text-[10px]"></i>
+                                        </div>
+                                        <input type="text" wire:model.defer="specificObjectives.{{ $index }}.verification_sources" placeholder="Sources de vérification"
+                                               class="block w-full pl-8 pr-4 py-2.5 rounded-xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-[10px] italic shadow-inner text-slate-700 dark:text-slate-300 focus:ring-1 focus:ring-accent focus:border-accent transition-all">
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                                <i class="fas fa-lightbulb text-slate-300 text-[10px]"></i>
+                                            </div>
+                                            <input type="text" wire:model.defer="specificObjectives.{{ $index }}.assumptions" placeholder="Hypothèses critiques"
+                                                class="block w-full pl-8 pr-4 py-2.5 rounded-xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-[10px] italic shadow-inner text-slate-700 dark:text-slate-300 focus:ring-1 focus:ring-accent focus:border-accent transition-all">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 </div>

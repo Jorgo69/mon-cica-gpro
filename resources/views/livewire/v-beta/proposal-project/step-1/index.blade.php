@@ -1,65 +1,85 @@
-<div x-show="currentStep === 1" class="space-y-6">
-    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ __('project.step_1.form.title') }}</h2>
-    <p class="text-gray-600 dark:text-gray-300 mb-6">{{ __('project.step_1.form.description') }}</p>
-
-    <div>
-        <label for="selectedProjectTypeId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('project.step_1.form.input_1') }} <span class="text-red-500">*</span></label>
-        <select id="selectedProjectTypeId" wire:model.live="selectedProjectTypeId"
-                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500">
-            <option value="">{{ __('project.step_1.form.option') }}</option>
-            @foreach($allProjectTypes as $type)
-                <option value="{{ $type->id }}">{{ $type->name }}</option>
-            @endforeach
-        </select>
-        @error('selectedProjectTypeId') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
-
-    @if ($selectedProjectTypeId)
-        <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-200 p-4 rounded-lg mb-6">
-            <p class="font-semibold">{{ __('project.step_1.form.select') }} :</p>
-            <p>{{ $allProjectTypes->where('id', $selectedProjectTypeId)->first()->description ?? 'N/A' }}</p>
+<div class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Project Type --}}
+        <div class="md:col-span-2 space-y-2">
+            <label for="selectedProjectTypeId" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ __('project.step_1.form.input_1') }} <span class="text-rose-500">*</span>
+            </label>
+            <select id="selectedProjectTypeId" wire:model.live="selectedProjectTypeId"
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm @error('selectedProjectTypeId') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+                <option value="">{{ __('project.step_1.form.option') }}</option>
+                @foreach($allProjectTypes as $type)
+                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                @endforeach
+            </select>
+            @error('selectedProjectTypeId') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+            
+            @if ($selectedProjectTypeId)
+                <div class="mt-3 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] text-slate-500 italic flex gap-3">
+                    <i class="fas fa-info-circle text-accent mt-0.5"></i>
+                    <div>
+                        <span class="font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 not-italic mr-1">Note :</span>
+                        {{ $allProjectTypes->where('id', $selectedProjectTypeId)->first()->description ?? 'N/A' }}
+                    </div>
+                </div>
+            @endif
         </div>
-    @endif
 
-    <div>
-        <label for="projectTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('project.step_1.form.input_2') }} <span class="text-red-500">*</span></label>
-        <input type="text" id="projectTitle" wire:model.defer="projectTitle"
-                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: Système de gestion de projet IA">
-        @error('projectTitle') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+        {{-- Project Title --}}
+        <div class="md:col-span-2 space-y-2">
+            <label for="projectTitle" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ __('project.step_1.form.input_2') }} <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="projectTitle" wire:model.defer="projectTitle"
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm @error('projectTitle') border-rose-500 ring-2 ring-rose-500/20 @enderror"
+                    placeholder="Ex: Système de gestion de projet IA">
+            @error('projectTitle') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+        </div>
 
-    <div>
-        <label for="projectCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('project.step_1.form.input_3') }} <span class="text-red-500">*</span></label>
-        <input type="text" id="projectCode" wire:model.defer="projectCode"
-                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: PRJ-ALPHA-001">
-        @error('projectCode') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+        {{-- Project Code --}}
+        <div class="space-y-2">
+            <label for="projectCode" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ __('project.step_1.form.input_3') }} <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="projectCode" wire:model.defer="projectCode"
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm uppercase @error('projectCode') border-rose-500 ring-2 ring-rose-500/20 @enderror"
+                    placeholder="PRJ-2024-X">
+            @error('projectCode') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+        </div>
 
-    <div>
-        <label for="projectShortTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('project.step_1.form.input_4') }}</label>
-        <input type="text" id="projectShortTitle" wire:model.defer="projectShortTitle"
-                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Ex: SysGProj IA">
-        @error('projectShortTitle') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-    </div>
+        {{-- Short Title --}}
+        <div class="space-y-2">
+            <label for="projectShortTitle" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ __('project.step_1.form.input_4') }}
+            </label>
+            <input type="text" id="projectShortTitle" wire:model.defer="projectShortTitle"
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm"
+                    placeholder="Ex: SysGProj IA">
+            @error('projectShortTitle') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
+        </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <label for="projectStartDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> {{ __('project.step_1.form.input_5') }}<span class="text-red-500">*</span></label>
+        {{-- Dates --}}
+        <div class="space-y-2">
+            <label for="projectStartDate" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                 {{ __('project.step_1.form.input_5') }} <span class="text-rose-500">*</span>
+            </label>
             <input type="date" id="projectStartDate" wire:model.defer="projectStartDate"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500">
-            @error('projectStartDate') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm @error('projectStartDate') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+            @error('projectStartDate') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
         </div>
-        <div>
-            <label for="projectEndDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> {{ __('project.step_1.form.input_6') }} <span class="text-red-500">*</span></label>
+
+        <div class="space-y-2">
+            <label for="projectEndDate" class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ __('project.step_1.form.input_6') }} <span class="text-rose-500">*</span>
+            </label>
             <input type="date" id="projectEndDate" wire:model.defer="projectEndDate"
-                    class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500">
-            @error('projectEndDate') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                    class="block w-full px-4 py-3.5 rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all text-sm @error('projectEndDate') border-rose-500 ring-2 ring-rose-500/20 @enderror">
+            @error('projectEndDate') <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p> @enderror
         </div>
     </div>
     
-    {{-- Champs dynamiques pour cette section --}}
-    @include('livewire.v-beta.proposal-project.dynamic-fields-section')
+    {{-- Dynamic Fields --}}
+    <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+        @include('livewire.v-beta.proposal-project.dynamic-fields-section')
+    </div>
 </div>

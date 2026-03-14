@@ -6,126 +6,64 @@
     
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    {{-- <style>
-        /* Animations personnalisées */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .dark .card-hover:hover {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        /* Scrollbar personnalisée */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        
-        .dark .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #4b5563;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
-        }
-        
-        /* Transition fluide pour le mode sombre */
-        body, header, aside, .card, .hover\:bg-gray-100, .bg-white, .bg-gray-50 {
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-    </style> --}}
 
     <title>{{ $title ?? config('app.name') }}</title>
     {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
     @stack('alpine-js')
     
-    
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('message-js')
     
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <!-- jQuery is required for Summernote -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Summernote -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
-
-    {{-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet"> --}}
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    {{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> --}}
-
-    <link href="{{ asset('assets/summernote/summernote.css') }}" rel="stylesheet">
-    <script src="{{ asset('assets/summernote/summernote.min.js') }}"></script>
-
-    <!-- include summernote-ko-KR -->
-    <script src="lang/summernote-ko-KR.js"></script>
     @stack('styles')
     
-
-
     {{-- @livewireStyles --}}
+    <x-notify::notify />
+    @notifyCss
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    <!-- Removed @notifyJs to prevent Alpine.js conflict, replaced with custom logic below -->
     
         @include('layouts.navbar')
         <!-- Sidebar -->
         @include('layouts.sidebar')
     
     
-    <div x-show="isMobile && sidebarOpen" @click="sidebarOpen = false" 
-         class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" x-transition></div>
+    {{-- <div x-show="isMobile && sidebarOpen" @click="sidebarOpen = false" 
+         class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" x-transition>
+    </div> --}}
+
 
     {{ $slot }}
     
     <script>
-        function appData() {
+        // Custom logic for laravel-notify to avoid loading its bundled Alpine.js
+        document.addEventListener('DOMContentLoaded', () => {
+            let notifyEl = document.querySelector("div.notify");
+            if (notifyEl) {
+                setTimeout(() => { notifyEl.remove() }, {{ config('notify.timeout', 5000) }});
+            }
+        });
+
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notify', (data) => {
+                alert(data.message);
+            });
+        });
+    </script>
+
+    @stack('scripts')
+    
+    <script>
+        window.appData = function() {
             return {
                 sidebarOpen: false,
                 isMobile: false,
@@ -151,15 +89,13 @@
                 initSidebar() {
                     this.checkScreenSize();
                     window.addEventListener('resize', () => this.checkScreenSize());
-                    // Ouvrir par défaut sur grand écran
                     if (!this.isMobile) {
                         this.sidebarOpen = true;
                     }
                 },
                 
                 checkScreenSize() {
-                    this.isMobile = window.innerWidth < 1024; // lg breakpoint
-                    // Ajuster l'état du sidebar en fonction de la taille
+                    this.isMobile = window.innerWidth < 1024;
                     if (this.isMobile) {
                         this.sidebarOpen = false;
                     } else {
@@ -180,21 +116,6 @@
             }
         }
     </script>
-    
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('notify', (data) => {
-                alert(data.message);
-            });
-        });
-    </script>
-
-
-    <script>
-      
-    </script>
-
-@stack('scripts')
     {{-- @livewireScripts --}}
 </body>
 </html>

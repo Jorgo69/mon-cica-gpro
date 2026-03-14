@@ -5,6 +5,7 @@ import forms from '@tailwindcss/forms'; // Assurez-vous d'avoir installé @tailw
 export default {
   // Active le mode sombre basé sur la classe 'dark' sur l'élément HTML
   darkMode: 'class',
+  important: true,
 
   content: [
     // Chemins par défaut pour les vues Blade de Laravel et les fichiers de pagination
@@ -17,8 +18,7 @@ export default {
     // Chemins spécifiques à Livewire pour que Tailwind scanne les classes utilisées dans vos composants
     './vendor/livewire/livewire/src/Features/SupportFileUploads/FileUploadsServiceProvider.php',
     './vendor/livewire/livewire/src/LivewireServiceProvider.php',
-    // Si vous créez des classes Livewire, assurez-vous que leurs vues associées sont scannées.
-    // Par exemple, si vous avez des vues dans resources/views/livewire/..., le chemin ci-dessus les couvrira.
+    './vendor/mckenziearts/laravel-notify/resources/views/**/*.blade.php',
   ],
 
   theme: {
@@ -31,14 +31,19 @@ export default {
       // Palette de couleurs personnalisée pour une interface moderne
       colors: {
         primary: {
-          light: '#6366F1', // Indigo 500
-          DEFAULT: '#4F46E5', // Indigo 600
-          dark: '#4338CA', // Indigo 700
+          light: '#334155', // Slate 700
+          DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
+          dark: 'rgb(var(--primary-dark) / <alpha-value>)',
+        },
+        accent: {
+          light: 'rgb(var(--accent-dark) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          dark: 'rgb(var(--accent-dark) / <alpha-value>)',
         },
         secondary: {
-          light: '#A78BFA', // Violet 400
-          DEFAULT: '#8B5CF6', // Violet 500
-          dark: '#7C3AED', // Violet 600
+          light: '#94A3B8', // Slate 400
+          DEFAULT: '#64748B', // Slate 500
+          dark: '#475569', // Slate 600
         },
         // Couleurs de fond pour les modes clair et sombre
         background: {
@@ -62,12 +67,12 @@ export default {
         },
         // Couleurs de succès, erreur, avertissement, info
         success: {
-          DEFAULT: '#10B981', // Emerald 500
-          dark: '#059669', // Emerald 600
+          DEFAULT: 'rgb(var(--success) / <alpha-value>)',
+          dark: 'rgb(var(--success-dark) / <alpha-value>)',
         },
         error: {
-          DEFAULT: '#EF4444', // Red 500
-          dark: '#DC2626', // Red 600
+          DEFAULT: 'rgb(var(--error) / <alpha-value>)',
+          dark: 'rgb(var(--error-dark) / <alpha-value>)',
         },
         warning: {
           DEFAULT: '#F59E0B', // Amber 500

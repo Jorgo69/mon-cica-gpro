@@ -18,7 +18,9 @@ class Project extends Model
         'problem_analysis', 'strategy', 'justification', 'created_by_user_id', 'updated_by_user_id'
     ];
     protected $casts = [
-        'start_date' => 'date', 'end_date' => 'date',
+        'start_date' => 'date', 
+        'end_date' => 'date',
+        'general_objectives' => 'array',
     ];
     protected static function boot()
     {
@@ -93,49 +95,7 @@ class Project extends Model
      *
      * @return float
      */
-    // public function calculateProgress(): float
-    // {
-    //     // Use the new method to get all activities
-    //     $activities = $this->getAllActivities();
-
-    //     // If there are no activities, the progress is 0.
-    //     if ($activities->isEmpty()) {
-    //         return 0.0;
-    //     }
-
-    //     // Sum up the progress percentages of all activities.
-    //     $totalProgress = $activities->sum('progress_percentage');
-        
-    //     // Calculate the average progress.
-    //     // Divide by the count of activities.
-    //     $averageProgress = $totalProgress / $activities->count();
-        
-    //     // Return the average progress, rounded to two decimal places.
-    //     return round($averageProgress, 2);
-    // }
-
-    // App\Models\Project.php
-
-    // public function calculateProjectProgress(): float
-    // {
-    //     $activities = $this->getAllActivities(); // Collection d'activités
-
-    //     if ($activities->isEmpty()) {
-    //         return 0.0;
-    //     }
-
-    //     // On ne prend en compte que les activités démarrées ou terminées
-    //     $validActivities = $activities->whereIn('status', ['En Cours', 'Terminé']);
-
-    //     if ($validActivities->isEmpty()) {
-    //         return 0.0;
-    //     }
-
-    //     $completed = $validActivities->where('status', 'Terminé')->count();
-    //     $total = $validActivities->count();
-
-    //     return round(($completed / $total) * 100, 2);
-    // }
+    
 
     public function calculateProjectProgress(): float
     {

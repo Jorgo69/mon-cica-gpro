@@ -1,143 +1,186 @@
-<main class="lg:ml-64 pt-16 min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="p-6" wire:loading.class="opacity-50">
+<main class="lg:ml-64 pt-20 pb-12 min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8" wire:loading.class="opacity-60">
+        
+        {{-- Header Section --}}
+        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">
+                    Liste des Projets
+                </h1>
+                <div class="mt-2 w-12 h-1 bg-accent rounded-full"></div>
+                <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] italic">Gérez et suivez l'avancement de vos initiatives stratégiques</p>
+            </div>
 
-        <div class="mb-6 space-y-4 md:space-y-0">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <!-- Filtres -->
-                <div class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:flex-grow">
-                    {{-- Champ de recherche --}}
-                    <div class="w-full md:w-1/3">
-                        <input type="text" wire:model.live.debounce.300ms="search" placeholder="{{ __('table.search project') }}..."
-                            class="form-input rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
-                    </div>
+            <x-ui.button tag="a" :href="route('creator.proposal.project.create')" 
+                        variant="accent" size="lg"
+                        class="group">
+                <i class="fas fa-plus-circle transition-transform group-hover:rotate-90 mr-3"></i>
+                Nouveau Projet
+            </x-ui.button>
+        </header>
 
-                    {{-- Filtre par Statut --}}
-                    <div class="w-full md:w-1/4">
-                        <select wire:model.live="statusFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
-                            <option value="">{{ __('table.status') }}</option>
-                            @foreach ($projectStatuses as $status)
-                                <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Filtre par Responsable (Créateur du projet) --}}
-                    <div class="w-full md:w-1/4">
-                        <select wire:model.live="responsibleUserFilter" class="form-select rounded-md shadow-sm block w-full dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2">
-                            <option value="">{{ __('table.responsibles') }}</option>
-                            @foreach ($availableUsers as $userOption)
-                                {{-- <option value="{{ $userOption->id }}">{{ $userOption->name }}</option> --}}
-                            @endforeach
-                        </select>
+        {{-- Filters Section --}}
+        <div class="mb-8 p-6 bg-white dark:bg-gray-800 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- Search --}}
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Recherche</label>
+                    <div class="relative group">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-accent transition-colors"></i>
+                        <input type="text" wire:model.live.debounce.300ms="search" 
+                               placeholder="Titre, code, mots-clés..."
+                               class="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-900 border-transparent dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-accent focus:bg-white transition-all">
                     </div>
                 </div>
 
-                {{-- Bouton Nouveau Projet --}}
-                <div class="w-full md:w-auto">
-                    <a href="{{ route('creator.proposal.project.create') }}" class="inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 w-full md:w-auto">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                        {{ __('table.new project') }}
-                    </a>
+                {{-- Status Filter --}}
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Statut</label>
+                    <select wire:model.live="statusFilter" 
+                            class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-900 border-transparent dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-accent focus:bg-white transition-all capitalize">
+                        <option value="">Tous les statuts</option>
+                        @foreach ($projectStatuses as $status)
+                            <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', $status == 'draft' ? 'Brouillons' : $status )) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Responsible Filter --}}
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Responsable</label>
+                    <select wire:model.live="responsibleUserFilter" 
+                            class="w-full px-4 py-3.5 bg-slate-50 dark:bg-slate-900 border-transparent dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-accent focus:bg-white transition-all">
+                        <option value="">Tous les responsables</option>
+                        @foreach ($availableUsers as $userOption)
+                             <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
 
-
-        {{-- Message de Sucess --}}
+        {{-- Flash Messages --}}
         @include('messages.index')
-        {{-- Message de Success End --}}
 
-        {{-- Tableau des Projets --}}
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100 overflow-auto">
+        {{-- Projects Table Container --}}
+        <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div class="overflow-x-auto">
                 @if ($projects->isEmpty())
-                    <p class="text-center text-gray-500 dark:text-gray-400">{{ __('table.No projects found for this selection') }}.</p>
+                    <div class="p-20 text-center">
+                        <div class="w-16 h-16 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                            <i class="fas fa-folder-open text-2xl"></i>
+                        </div>
+                        <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Aucun projet trouvé</p>
+                        <p class="text-[10px] text-gray-400 italic mt-1">Essayez de modifier vos filtres ou de créer un nouveau projet.</p>
+                    </div>
                 @else
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('title')">
-                                    {{ __('table.title') }}
-                                    @if ($sortField === 'title')
-                                        <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                                    @endif
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                                <th class="px-8 py-5 text-left cursor-pointer group" wire:click="sortBy('title')">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-accent transition-colors">Projet</span>
+                                        @if ($sortField === 'title')
+                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-accent text-[10px]"></i>
+                                        @endif
+                                    </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('project_code')">
-                                    {{ __('table.cod') }}
-                                    @if ($sortField === 'project_code')
-                                        <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                                    @endif
+                                <th class="px-8 py-5 text-left cursor-pointer group" wire:click="sortBy('project_code')">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-accent transition-colors">Code</span>
+                                        @if ($sortField === 'project_code')
+                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-accent text-[10px]"></i>
+                                        @endif
+                                    </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('status')">
-                                    {{ __('table.status') }}
-                                    @if ($sortField === 'status')
-                                        <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                                    @endif
+                                <th class="px-8 py-5 text-left cursor-pointer group" wire:click="sortBy('status')">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-accent transition-colors">Statut</span>
+                                        @if ($sortField === 'status')
+                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-accent text-[10px]"></i>
+                                        @endif
+                                    </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    {{ __('table.responsible') }}
+                                <th class="px-8 py-5 text-left">
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Responsable</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('start_date')">
-                                    {{ __('table.start') }}
-                                    @if ($sortField === 'start_date')
-                                        <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                                    @endif
+                                <th class="px-8 py-5 text-left cursor-pointer group" wire:click="sortBy('start_date')">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] group-hover:text-accent transition-colors">Période</span>
+                                        @if ($sortField === 'start_date')
+                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} text-accent text-[10px]"></i>
+                                        @endif
+                                    </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" wire:click="sortBy('end_date')">
-                                    {{ __('table.end') }}
-                                    @if ($sortField === 'end_date')
-                                        <span class="ml-1 text-sm">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
-                                    @endif
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Actions</span>
-                                </th>
+                                <th class="px-8 py-5 text-right font-black text-[10px] text-slate-300 uppercase tracking-widest">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-50 dark:divide-gray-700/50">
                             @foreach ($projects as $project)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {{ $project->title }}
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-900/20 transition-colors group">
+                                    <td class="px-8 py-6">
+                                        <div class="max-w-xs md:max-w-sm">
+                                            <p class="text-sm font-black text-gray-800 dark:text-gray-100 truncate group-hover:text-indigo-600 transition-colors">{{ $project->title }}</p>
+                                            <p class="text-[10px] text-gray-400 italic mt-0.5 truncate">{{ $project->short_title ?: 'Sans titre court' }}</p>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $project->project_code }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        {{ 
-                                            $project->status === 'Actif' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200' :
-                                            ($project->status === 'draft' ? 'bg-amber-300 text-amber-800 dark:bg-amber-900 dark:text-amber-200' :
-                                            ($project->status === 'Terminé' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                            ($project->status === 'En attente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                                            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                            )))
-                                        }}
-                                        ">
-                                            {{ Str::ucfirst(str_replace('_', ' ', $project->status == 'draft' ? 'Brouillon' : $project->status )) }}
+                                    <td class="px-8 py-6">
+                                        <span class="text-xs font-mono font-bold text-gray-500 bg-gray-100 dark:bg-gray-900 px-2.5 py-1 rounded-lg border border-gray-100 dark:border-gray-700">
+                                            {{ $project->project_code }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ $project->creator->name ?? 'N/A' }}
+                                    <td class="px-8 py-6">
+                                        @php
+                                            $statusVariants = [
+                                                'Actif' => 'accent',
+                                                'draft' => 'warning',
+                                                'Terminé' => 'success',
+                                                'En attente' => 'slate',
+                                            ];
+                                            $variant = $statusVariants[$project->status] ?? 'error';
+                                        @endphp
+                                        <x-ui.badge :variant="$variant" size="md">
+                                            {{ $project->status == 'draft' ? 'Brouillon' : $project->status }}
+                                        </x-ui.badge>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-[10px] border border-slate-200 dark:border-slate-700">
+                                                {{ strtoupper(substr($project->creator->name ?? '?', 0, 1)) }}
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400">{{ $project->creator->name ?? 'N/A' }}</span>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                        {{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}
+                                    <td class="px-8 py-6">
+                                        <div class="space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[9px] font-black text-gray-300 uppercase tracking-tighter">Du</span>
+                                                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-400">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[9px] font-black text-gray-300 uppercase tracking-tighter">Au</span>
+                                                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-400">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</span>
+                                            </div>
+                                        </div>
                                     </td>
-
-                                    @include('livewire.v-beta.project.include.link-project-list', [$project->id])
+                                    <td class="px-8 py-6 text-right">
+                                        <div class="flex items-center justify-end gap-2 outline-none">
+                                            @include('livewire.v-beta.project.include.link-project-list', [$project->id])
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    {{-- Pagination Livewire --}}
-                    <div class="mt-4">
-                        {{ $projects->links() }}
-                    </div>
                 @endif
             </div>
+
+            {{-- Pagination Section --}}
+            @if ($projects->isNotEmpty())
+                <div class="px-8 py-6 bg-gray-50/30 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
+                    {{ $projects->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </main>

@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
         // Appeler le seeder qui va créer les utilisateurs et les rôles
         $this->call([
             UserSeeder::class,
-            // GeneralAdministrationSeeder::class,
+            ProjectTypeSeeder::class,
+            GeneralAdministrationSeeder::class,
         ]);
     }
 }

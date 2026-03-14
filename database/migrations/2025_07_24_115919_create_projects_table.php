@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('short_title')->nullable();
             $table->longText('description')->nullable();
-            $table->longText('general_objectives')->nullable();// ADDED for dynamic fields
+            $table->json('general_objectives')->nullable();// ADDED for dynamic fields
             $table->longText('problem_analysis')->nullable();
             $table->longText('strategy')->nullable();
             $table->longText('justification')->nullable();
