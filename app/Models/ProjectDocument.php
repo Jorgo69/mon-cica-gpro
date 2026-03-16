@@ -17,7 +17,7 @@ class ProjectDocument extends Model
         'file_path', 
         'file_name', 
         'file_type', 
-        'uploaded_by_user_id',
+        'creator_user_id',
     ];
 
     protected static function boot()
@@ -31,8 +31,8 @@ class ProjectDocument extends Model
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
-    public function uploader()
+    public function creator()
     {
-        return $this->belongsTo(User::class, 'uploaded_by_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

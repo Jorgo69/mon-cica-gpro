@@ -6,14 +6,15 @@ use Illuminate\Support\Str;
 
 class Activity extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'result_id', 'description', 'start_date', 'end_date', 'budget',
-        'responsible_user_id', 'status', 'justification', 'is_milestone', 'progress_percentage',
+        'id', 'organization_id', 'result_id', 'parent_id', 'creator_user_id', 'description', 
+        'start_date', 'end_date', 'budget', 'responsible_user_id', 'status', 
+        'justification', 'is_milestone', 'progress_percentage',
     ];
 
      protected $dateFormat = 'Y-m-d H:i:s';
@@ -21,7 +22,6 @@ class Activity extends Model
 
     protected $casts = [
         'status' => \App\Enums\ActivityStatus::class,
-        // 'start_date' => 'date', 
         'end_date' => 'date',
         'is_milestone' => 'boolean',
         'created_at' => 'datetime:Y-m-d H:i:s',
@@ -38,6 +38,22 @@ class Activity extends Model
     {
         return $this->belongsTo(Result::class, 'result_id', 'id');
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Activity::class, 'parent_id', 'id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Activity::class, 'parent_id', 'id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
     public function responsibleUser()
     {
         return $this->belongsTo(User::class, 'responsible_user_id', 'id');
@@ -45,10 +61,6 @@ class Activity extends Model
     public function resources()
     {
         return $this->hasMany(Resource::class, 'activity_id', 'id');
-    }
-    public function subActivities()
-    {
-        return $this->hasMany(SubActivity::class, 'activity_id', 'id');
     }
     public function progressTrackers()
     {
@@ -59,19 +71,20 @@ class Activity extends Model
         return $this->hasMany(QualitativeEvaluation::class, 'activity_id', 'id');
     }
 
-
-
     /**
      * Accesseur pour obtenir le projet parent de l'activité.
      * Permet d'appeler $activity->project.
      */
     public function getProjectAttribute()
     {
-        // Retourne le projet en suivant la chaîne de relations
+        // Si c'est une sous-activité, on remonte au parent
+        if ($this->parent_id) {
+            return $this->parent?->project;
+        }
+        
+        // Sinon on suit la chaîne de relations via le résultat
         return $this->result?->specificObjective?->logicalFramework?->project ?? null;
     }
-
-    // App\Models\Activity.php
 
     public function getPlannedProgressPercentage(): float
     {
@@ -83,17 +96,14 @@ class Activity extends Model
         $endDate = \Carbon\Carbon::parse($this->end_date);
         $today = now();
 
-        // Si on n’a pas encore commencé
         if ($today->lt($startDate)) {
             return 0.0;
         }
 
-        // Si on est terminé
         if ($today->gte($endDate)) {
             return 100.0;
         }
 
-        // Progression linéaire dans le temps
         $totalDuration = $startDate->diffInDays($endDate);
         $elapsed = $startDate->diffInDays($today);
 
@@ -104,55 +114,36 @@ class Activity extends Model
         return round(($elapsed / $totalDuration) * 100, 2);
     }
 
-    // App\Models\Activity.php
-    
-    // public function calculateProgress(): float
-    // {
-    //     $total = $this->subActivities()->count();
-
-    //     if ($total === 0) {
-    //         return 0.0;
-    //     }
-
-    //     $completed = $this->subActivities()
-    //         ->where('status', 'Terminé')
-    //         ->count();
-
-    //     // dd($completed);
-
-    //     return round(($completed / $total) * 100, 2);
-    // }
-
     public function calculateProgress(): float
     {
-        $subActivities = $this->subActivities;
+        $children = $this->children;
 
-        if ($subActivities->isEmpty()) {
-            return 0.0;
+        if ($children->isEmpty()) {
+            return $this->status === \App\Enums\ActivityStatus::COMPLETED ? 100.0 : (float) ($this->progress_percentage ?? 0);
         }
 
-        // 🔹 Définis ici le poids de chaque statut
         $statusWeight = [
             \App\Enums\ActivityStatus::DRAFT->value      => 0,
             \App\Enums\ActivityStatus::ABANDONED->value  => 0,
             \App\Enums\ActivityStatus::STOPPED->value    => 0,
             \App\Enums\ActivityStatus::PENDING->value    => 0,
-            \App\Enums\ActivityStatus::ONGOING->value    => 0,
-            \App\Enums\ActivityStatus::SUSPENDED->value  => 0,
+            \App\Enums\ActivityStatus::ONGOING->value    => 50,
+            \App\Enums\ActivityStatus::SUSPENDED->value  => 25,
             \App\Enums\ActivityStatus::COMPLETED->value  => 100,
-            \App\Enums\ActivityStatus::OVERDUE->value    => 0,
+            \App\Enums\ActivityStatus::OVERDUE->value    => 10,
         ];
 
-        $totalProgress = $subActivities->sum(function ($subActivity) use ($statusWeight) {
-            $statusValue = $subActivity->status instanceof \App\Enums\ActivityStatus 
-                ? $subActivity->status->value 
-                : $subActivity->status;
-            return $statusWeight[$statusValue] ?? 0;
+        $totalProgress = $children->sum(function ($child) use ($statusWeight) {
+            if ($child->children()->exists()) {
+                return $child->calculateProgress();
+            }
+
+            $statusValue = $child->status instanceof \App\Enums\ActivityStatus 
+                ? $child->status->value 
+                : $child->status;
+            return $statusWeight[$statusValue] ?? (float) ($child->progress_percentage ?? 0);
         });
 
-        $average = $totalProgress / $subActivities->count();
-
-        return round($average, 2);
+        return round($totalProgress / $children->count(), 2);
     }
-
 }

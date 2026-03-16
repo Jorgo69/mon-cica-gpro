@@ -8,22 +8,37 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    
+    protected $fillable = [
+        'organization_id',
+        'creator_user_id',
+        'project_type_id',
+        'project_code',
+        'title',
+        'short_title',
+        'description',
+        'general_objectives',
+        'status',
+        'start_date',
+        'end_date',
+    ];
+
     protected $casts = [
         'status' => \App\Enums\ProjectStatus::class,
         'start_date' => 'date', 
         'end_date' => 'date',
         'general_objectives' => 'array',
     ];
+
     protected static function boot()
     {
         parent::boot();
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
     }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_user_id', 'id');

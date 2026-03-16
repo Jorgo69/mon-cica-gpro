@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('project_documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('project_id');
-            $table->uuid('uploaded_by_user_id');
+            $table->uuid('creator_user_id');
             $table->string('file_path');
             $table->string('file_name');
             $table->string('file_type');
@@ -23,11 +23,11 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('project_id');
-            $table->index('uploaded_by_user_id');
+            $table->index('creator_user_id');
 
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-            $table->foreign('uploaded_by_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

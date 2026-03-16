@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();// Clé primaire UUID
+            $table->uuid('organization_id')->nullable();// Unité d'isolation
             $table->uuid('creator_user_id');// Créateur du projet
             $table->uuid('project_type_id');
             $table->string('project_code')->unique();// Code unique du projet (ex: PRJ-001)
@@ -42,6 +43,7 @@ return new class extends Migration
             $table->index('end_date');
 
             // Définition des clés étrangères
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('created_by_user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by_user_id')->references('id')->on('users')->onDelete('set null');

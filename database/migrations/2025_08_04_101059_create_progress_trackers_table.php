@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('progress_percentage');
             $table->text('status_update')->nullable();
             $table->text('justification')->nullable();
-            $table->uuid('updated_by_user_id');
+            $table->uuid('creator_user_id');
             $table->integer('performance_score')->nullable();
             $table->text('evaluation_comment')->nullable();
 
@@ -28,11 +28,11 @@ return new class extends Migration
 
             $table->index('activity_id');
             $table->index('project_id');
-            $table->index('updated_by_user_id');
+            $table->index('creator_user_id');
 
             $table->foreign('activity_id')->references('id')->on('activities')->onDelete('set null');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');
-            $table->foreign('updated_by_user_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        // 1. Création de la table des Organisations
+        Schema::create('organizations', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->softDeletes();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('status')->default(\App\Enums\OrganizationStatus::TRIAL->value);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('organizations');
     }
 };

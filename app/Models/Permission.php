@@ -1,10 +1,10 @@
 <?php
 namespace App\Models;
 
-use Spatie\Permission\Models\Role as SpatieRole;
+use Spatie\Permission\Models\Permission as SpatiePermission;
 use Illuminate\Support\Str;
 
-class Role extends SpatieRole
+class Permission extends SpatiePermission
 {
     public $incrementing = false;
     protected $keyType = 'string';

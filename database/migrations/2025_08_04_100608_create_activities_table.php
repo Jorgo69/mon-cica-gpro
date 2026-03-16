@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('result_id');
+            $table->uuid('organization_id')->nullable();
+            $table->uuid('result_id')->nullable();
+            $table->uuid('parent_id')->nullable();
+            $table->uuid('creator_user_id')->nullable();
             $table->longText('description');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
@@ -27,10 +30,16 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->index('organization_id');
             $table->index('result_id');
+            $table->index('parent_id');
+            $table->index('creator_user_id');
             $table->index('responsible_user_id');
 
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->foreign('result_id')->references('id')->on('results')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('activities')->onDelete('cascade');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('responsible_user_id')->references('id')->on('users')->onDelete('set null');
         });
     }

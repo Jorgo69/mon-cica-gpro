@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('pays', 100)->nullable();
             $table->string('ville', 100)->nullable();
             $table->string('role')->default('member');
+            $table->foreignUuid('organization_id')
+                  ->nullable()
+                  ->constrained('organizations')
+                  ->onDelete('cascade');
             $table->string('department')->nullable();
 
             // Ajout des soft deletes

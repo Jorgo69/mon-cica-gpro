@@ -4,21 +4,29 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SubActivity extends Model
+class Organization extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
+
     protected $fillable = [
-        'id', 'activity_id', 'description', 'status',
-        'start_date', 'end_date', 'is_milestone', 'responsible_user_id',
+        'name',
+        'slug',
+        'status',
+    ];
+
+    protected $attributes = [
+        'status' => 'trial',
     ];
 
     protected $casts = [
-        'status' => \App\Enums\ActivityStatus::class,
+        'status' => \App\Enums\OrganizationStatus::class,
     ];
 
     protected static function boot()
@@ -27,15 +35,13 @@ class SubActivity extends Model
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
     }
 
-    public function activity()
+    public function users()
     {
-        return $this->belongsTo(Activity::class, 'activity_id', 'id');
-    }
-    public function responsibleUser()
-    {
-        return $this->belongsTo(User::class, 'responsible_user_id', 'id');
+        return $this->hasMany(User::class);
     }
 
-    
-
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

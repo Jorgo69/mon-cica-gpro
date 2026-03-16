@@ -13,12 +13,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Spatie\Permission\Traits\HasRoles;
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -32,6 +34,7 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'organization_id',
         'sexe',
         'telephone',
         'numero_identification',
@@ -93,7 +96,7 @@ class User extends Authenticatable
     }
     public function uploadedDocuments(): HasMany
     {
-        return $this->hasMany(ProjectDocument::class, 'uploaded_by_user_id', 'id');
+        return $this->hasMany(ProjectDocument::class, 'creator_user_id', 'id');
     }
     public function responsibleActivities(): HasMany
     {
@@ -109,10 +112,15 @@ class User extends Authenticatable
     }
     public function progressUpdates(): HasMany
     {
-        return $this->hasMany(ProgressTracker::class, 'updated_by_user_id', 'id');
+        return $this->hasMany(ProgressTracker::class, 'creator_user_id', 'id');
     }
     public function qualitativeEvaluations(): HasMany
     {
         return $this->hasMany(QualitativeEvaluation::class, 'evaluator_id', 'id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 }

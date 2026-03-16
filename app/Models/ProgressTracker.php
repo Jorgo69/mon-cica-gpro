@@ -13,7 +13,7 @@ class ProgressTracker extends Model
 
     protected $fillable = [
         'id', 'activity_id', 'project_id', 'date', 'progress_percentage',
-        'status_update', 'justification', 'updated_by_user_id',
+        'status_update', 'justification', 'creator_user_id',
         'performance_score', 'evaluation_comment',
     ];
 
@@ -35,8 +35,8 @@ class ProgressTracker extends Model
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
-    public function updater()
+    public function creator()
     {
-        return $this->belongsTo(User::class, 'updated_by_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }
