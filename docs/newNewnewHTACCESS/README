@@ -1,6 +1,6 @@
 # ================================================
-# .htaccess pour Laravel sur hébergement mutualisé LWS
-# Placez ce fichier à la RACINE de votre sous-domaine
+# .htaccess OPTIMISÉ POUR LARAVEL SUR LWS
+# Localisation : /htdocs/.htaccess (domaine principal campuschine.org)
 # ================================================
 
 <IfModule mod_rewrite.c>
@@ -13,6 +13,9 @@
     # Si la requête ne commence pas déjà par /public/
     RewriteCond %{REQUEST_URI} !^/public/
     
+    # UNIQUEMENT pour le domaine principal (pas les sous-domaines)
+    RewriteCond %{HTTP_HOST} ^(www\.)?campuschine\.org$ [NC]
+    
     # Rediriger tout vers le dossier public/ (syntaxe LWS)
     RewriteRule ^(.*)$ public/$1 [L]
     
@@ -20,19 +23,15 @@
     # Sécurité : Bloquer l'accès aux fichiers sensibles
     # ------------------------------------------------
     
-    # Bloquer .env
+    # Bloquer l'accès au fichier .env
     RewriteRule ^\.env$ - [F,L]
     
-    # Bloquer les fichiers de config
+    # Bloquer les dossiers sensibles
     RewriteRule ^config/ - [F,L]
-    
-    # Bloquer le dossier storage (sauf storage/app/public via symlink)
+    RewriteRule ^vendor/ - [F,L]
     RewriteRule ^storage/(?!app/public) - [F,L]
     
-    # Bloquer le dossier vendor
-    RewriteRule ^vendor/ - [F,L]
-    
-    # Bloquer les fichiers .php à la racine (sauf via public)
+    # Bloquer l'exécution de fichiers PHP à la racine
     RewriteRule ^(?!public/).*\.php$ - [F,L]
 </IfModule>
 
@@ -40,10 +39,8 @@
 # Sécurité supplémentaire
 # ================================================
 
-# Désactiver l'affichage du contenu des répertoires
 Options -Indexes
 
-# Protéger contre le clickjacking
 <IfModule mod_headers.c>
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
@@ -51,43 +48,25 @@ Options -Indexes
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# Bloquer l'accès aux fichiers cachés (sauf .well-known pour SSL)
 <FilesMatch "^\.(?!well-known)">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Bloquer l'accès aux fichiers de sauvegarde
 <FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|lock)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# ================================================
-# Compression GZIP pour de meilleures performances
-# ================================================
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
-    AddOutputFilterByType DEFLATE application/javascript application/x-javascript
-    AddOutputFilterByType DEFLATE application/json application/xml
-    AddOutputFilterByType DEFLATE font/opentype font/truetype font/eot
-    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
 </IfModule>
 
-# ================================================
-# Cache des assets statiques
-# ================================================
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 year"
     ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
