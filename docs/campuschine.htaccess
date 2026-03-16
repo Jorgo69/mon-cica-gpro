@@ -1,0 +1,64 @@
+# ================================================
+# .htaccess PARENT (Localisation : /htdocs/.htaccess)
+# Domaine principal : campuschine.org
+# ================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. REDIRECTION VERS LE DOSSIER PUBLIC (CAMPUSCHINE.ORG UNIQUEMENT)
+    # On force la redirection seulement si c'est le domaine principal
+    RewriteCond %{HTTP_HOST} ^(www\.)?campuschine\.org$ [NC]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # 2. SÉCURITÉ : Bloquer l'accès aux fichiers sensibles
+    # Bloquer .env et les fichiers systèmes de l'application principale
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^vendor/ - [F,L]
+    RewriteRule ^storage/(?!app/public) - [F,L]
+    
+    # 3. ISOLATION : Empêcher l'accès direct au dossier du sous-domaine via campuschine.org
+    RewriteRule ^cica-pro-app/ - [F,L]
+</IfModule>
+
+# ================================================
+# Sécurité supplémentaire
+# ================================================
+
+Options -Indexes
+
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<FilesMatch "^\.(?!well-known)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|lock)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ================================================
+# Optimisation Performances (Gzip & Cache)
+# ================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+</IfModule>
