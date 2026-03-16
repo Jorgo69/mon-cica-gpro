@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
 
 :root {
     /* Foundation Palette - Architectural & Rigorous */
@@ -158,6 +160,15 @@
 
     .navbar-action .nav-icon {
         @apply w-[18px] h-[18px];
+    }
+
+    /* Fix Navbar Appearance */
+    header {
+        @apply shadow-sm;
+    }
+
+    .dark header {
+        @apply shadow-lg shadow-black/20 border-slate-800/50;
     }
 }
 

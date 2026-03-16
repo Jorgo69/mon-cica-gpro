@@ -31,8 +31,8 @@
             </button>
             
             <!-- Profile Menu -->
-            <div class="relative ml-1" x-data="{ open: false }">
-                <button @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150">
+            <div class="relative ml-1">
+                <button @click="profileOpen = !profileOpen" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150">
                     @php
                         $userName = auth()->user()->name ?? 'U';
                         $initials = collect(explode(' ', $userName))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->implode('');
@@ -46,12 +46,12 @@
                             {{ auth()->user()->role ?? 'Aucun rôle' }}
                         </div>
                     </div>
-                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': open }" />
+                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />
                 </button>
                 
                 <!-- Dropdown -->
-                <div x-show="open" 
-                     @click.away="open = false" 
+                <div x-show="profileOpen" 
+                     @click.away="profileOpen = false" 
                      x-transition:enter="transition ease-out duration-150" 
                      x-transition:enter-start="opacity-0 translate-y-1" 
                      x-transition:enter-end="opacity-100 translate-y-0" 

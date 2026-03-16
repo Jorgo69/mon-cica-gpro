@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <title>{{ $title ?? config('app.name') }}</title>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
+    @livewireStyles
     @stack('alpine-js')
     
 
@@ -26,27 +26,24 @@
     @stack('styles')
 
     <script>
+        // Initialisation immédiate du thème pour éviter le flash blanc
+        if (localStorage.getItem('darkMode') === 'true' || 
+            (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
         window.appData = function() {
             return {
                 sidebarOpen: false,
                 isMobile: false,
-                profileDropdownOpen: false,
-                darkMode: localStorage.getItem('darkMode') === 'true',
+                profileOpen: false,
+                darkMode: localStorage.getItem('darkMode') === 'true' || 
+                         (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
                 
                 init() {
-                    this.initTheme();
                     this.initSidebar();
-                },
-                
-                initTheme() {
-                    if (localStorage.getItem('darkMode') === 'true' || 
-                        (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                        document.documentElement.classList.add('dark');
-                        this.darkMode = true;
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        this.darkMode = false;
-                    }
                 },
                 
                 initSidebar() {
@@ -91,6 +88,7 @@
     
     <x-ui.toast-notifications />
 
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>
