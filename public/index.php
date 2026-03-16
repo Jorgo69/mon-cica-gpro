@@ -1,38 +1,55 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// DEBUG TEST
-if (isset($_GET['test_die'])) {
-    die("<h1>INDEX.PHP EST BIEN ACCESSIBLE</h1>");
-}
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-try {
-    $autoload = __DIR__.'/../vendor/autoload.php';
-    if (!file_exists($autoload)) {
-        die("Erreur Fatale : Le fichier autoload n'existe pas a l'emplacement : $autoload");
-    }
-    require $autoload;
+/*
+|--------------------------------------------------------------------------
+| Check If The Application Is Under Maintenance
+|--------------------------------------------------------------------------
+|
+| If the application is in maintenance / demo mode via the "down" command
+| we will load this file so that any pre-rendered content can be shown
+| instead of starting the framework, which could cause an exception.
+|
+*/
 
-    $app_file = __DIR__.'/../bootstrap/app.php';
-    if (!file_exists($app_file)) {
-        die("Erreur Fatale : Le fichier bootstrap/app.php n'existe pas a l'emplacement : $app_file");
-    }
-    $app = require_once $app_file;
-
-    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
-    $response = $kernel->handle(
-        $request = Illuminate\Http\Request::capture()
-    )->send();
-
-    $kernel->terminate($request, $response);
-} catch (Throwable $e) {
-    echo "<h1>Exception capturée !</h1>";
-    echo "<strong>Message :</strong> " . $e->getMessage() . "<br>";
-    echo "<strong>Fichier :</strong> " . $e->getFile() . " (Ligne " . $e->getLine() . ")<br>";
-    echo "<h2>Trace :</h2><pre>" . $e->getTraceAsString() . "</pre>";
+if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+    require $maintenance;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
+
+require __DIR__.'/../vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request using
+| the application's HTTP kernel. Then, we will send the response back
+| to this client's browser, allowing them to enjoy our application.
+|
+*/
+
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+$kernel = $app->make(Kernel::class);
+
+$response = $kernel->handle(
+    $request = Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);

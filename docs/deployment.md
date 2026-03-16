@@ -27,6 +27,7 @@ Vous devez ajouter les secrets suivants dans **Settings > Secrets and variables 
 | `FTP_USERNAME` | Identifiant FTP | `campu2743848` |
 | `FTP_PASSWORD` | Mot de passe FTP | `5X2u8XGJErwXysR` |
 | `FTP_SERVER_DIR` | Dossier du sous-domaine (doit finir par `/`) | `cica-pro.campuschine.org/` |
+| `FTP_SERVER_DIR` | Dossier du sous-domaine (doit finir par `/`) | `cica-pro-app/` A cause du link fait sur celui du haut le dossier `cica-pro.campuschine.org` pointe vers `cica-pro-app` |
 | `APP_URL` | URL du sous-domaine | `https://cica-pro.campuschine.org` |
 | `WEBHOOK_SECRET` | Token de sécurité | `VOTRE_TOKEN_ALEATOIRE` |
 
