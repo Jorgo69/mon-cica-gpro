@@ -17,10 +17,35 @@
             </x-slot:actions>
         </x-ui.page-header>
 
+        {{-- Tabs Navigation --}}
+        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 mb-6 overflow-x-auto no-scrollbar">
+            <button wire:click="switchTab('overview')" 
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'overview' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Aperçu
+                @if($activeTab === 'overview') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('logframe')" 
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'logframe' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Cadre Logique
+                @if($activeTab === 'logframe') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('documents')" 
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'documents' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Documents
+                @if($activeTab === 'documents') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('history')" 
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Historique
+                @if($activeTab === 'history') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+        </div>
+
         <div class="space-y-6">
 
-            {{-- Section 1: Informations Générales --}}
-            <x-ui.section title="Informations Générales" icon="info">
+            @if($activeTab === 'overview')
+                {{-- Section 1: Informations Générales --}}
+                <x-ui.section title="Informations Générales" icon="info">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-3 text-sm">
                         <div class="flex items-center gap-2">
@@ -142,7 +167,8 @@
                 @endforeach
             @endif
 
-            {{-- Section 4: Cadre Logique --}}
+            @if($activeTab === 'logframe')
+                {{-- Section 4: Cadre Logique --}}
             @if($project->logicalFramework)
 
                 {{-- Objectif Général --}}
@@ -250,23 +276,36 @@
                 @endif
             @endif
 
-            {{-- Section: Documents --}}
-            @if($project->documents->isNotEmpty())
-                <x-ui.section title="Documents Associés" icon="paperclip">
-                    <ul class="space-y-2">
-                        @foreach($project->documents as $document)
-                            <li>
-                                <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" 
-                                   class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                                    <x-lucide-file class="w-4 h-4 text-accent opacity-60" />
-                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-accent transition-colors">
-                                        {{ $document->file_name }}
-                                    </span>
-                                    <x-ui.badge variant="slate" size="sm">{{ strtoupper($document->file_mime_type) }}</x-ui.badge>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+            @endif
+
+            @if($activeTab === 'documents')
+                {{-- Section: Documents --}}
+                @if($project->documents->isNotEmpty())
+                    <x-ui.section title="Documents Associés" icon="paperclip">
+                        <ul class="space-y-2">
+                            @foreach($project->documents as $document)
+                                <li>
+                                    <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" 
+                                       class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                                        <x-lucide-file class="w-4 h-4 text-accent opacity-60" />
+                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-accent transition-colors">
+                                            {{ $document->file_name }}
+                                        </span>
+                                        <x-ui.badge variant="slate" size="sm">{{ strtoupper($document->file_mime_type) }}</x-ui.badge>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </x-ui.section>
+                @else
+                    <x-ui.empty-state icon="file-question" title="Aucun document" description="Il n'y a pas encore de documents associés à ce projet." />
+                @endif
+            @endif
+
+            @if($activeTab === 'history')
+                {{-- Section: Historique --}}
+                <x-ui.section title="Audit & Traçabilité" icon="history">
+                    @livewire('v-beta.audit.activity-history-livewire', ['subject' => $project])
                 </x-ui.section>
             @endif
 

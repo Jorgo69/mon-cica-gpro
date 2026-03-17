@@ -18,4 +18,7 @@ Route::middleware(['auth'])->prefix('v_beta/admin-it')->name('admin.it.')->group
 
     // Corbeille
     Route::view('/trash/management', 'v_beta.admin.trash.index')->name('trash.management');
+
+    // Audit Logs
+    Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
 });

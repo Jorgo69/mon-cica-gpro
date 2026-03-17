@@ -17,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, \Spatie\Activitylog\Traits\LogsActivity;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, SoftDeletes;
@@ -73,6 +73,20 @@ class User extends Authenticatable
             // Génère un UUID et l'assigne à la clé primaire si elle n'est pas déjà définie
             $model->{$model->getKeyName()} = (string) Str::uuid();
         });
+    }
+
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontLogIfAttributesChangedOnly(['password', 'remember_token'])
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
+    {
+        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
     }
 
     /*

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -37,6 +37,19 @@ class Project extends Model
     {
         parent::boot();
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+    }
+
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
+    {
+        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
     }
 
     public function creator()

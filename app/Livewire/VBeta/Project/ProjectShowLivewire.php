@@ -21,7 +21,13 @@ class ProjectShowLivewire extends Component
 
     public $projectId;
     public $project;
-    public $dynamicFormFields = []; // Pour stocker les définitions des champs dynamiques
+    public $dynamicFormFields = [];
+    public $activeTab = 'overview'; // [overview, logframe, documents, history]
+
+    public function switchTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
 
     /**
      * Monte le composant avec l'ID du projet.
