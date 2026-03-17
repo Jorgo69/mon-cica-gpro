@@ -6,22 +6,17 @@ use Illuminate\Support\Str;
 
 class Result extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 
-        'specific_objective_id', 
-        'description',
-        'created_at',
-        'updated_at'
+        'id', 'organization_id', 'specific_objective_id', 'creator_user_id', 'description',
     ];
 
-     protected $dateFormat = 'Y-m-d H:i:s';
+    protected $dateFormat = 'Y-m-d H:i:s';
     
-    // Ou pour gérer les deux formats :
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
@@ -37,6 +32,12 @@ class Result extends Model
     {
         return $this->belongsTo(SpecificObjective::class, 'specific_objective_id', 'id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
     public function activities()
     {
         return $this->hasMany(Activity::class, 'result_id', 'id');

@@ -20,7 +20,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
+    use HasFactory, SoftDeletes;
 
     public $incrementing = false;
     protected $keyType = 'string';

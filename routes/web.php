@@ -22,7 +22,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('dashboard', [App\Http\Controllers\VBeta\DashboardController::class, 'index'])
+Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 

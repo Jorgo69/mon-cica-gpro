@@ -1,87 +1,112 @@
-<div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-    
+<div class="space-y-6">
     <form wire:submit.prevent="saveResources">
 
-        {{-- @if($editing)
-            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Modifier la ressource</h3>
-        @else
-            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ajouter une ou plusieurs ressources</h3>
-        @endif --}}
-        
-        @foreach ($resourcesData as $index => $resourceData)
-        <div class="relative p-4 border rounded-lg mb-4 bg-gray-50 dark:bg-gray-700">
-            {{-- Le bouton de suppression n'apparaît que pour l'ajout de ressources --}}
-            @if(count($resourcesData) > 1 && !$editing)
-            <button type="button" wire:click="removeResource({{ $index }})" class="absolute top-2 right-2 text-red-500 hover:text-red-700">
-                <i class="fas fa-times-circle"></i>
-            </button>
-            @endif
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {{-- Champ Nom --}}
-                <div>
-                    <label for="name-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom</label>
-                    <input type="text" id="name-{{ $index }}" wire:model.defer="resourcesData.{{ $index }}.name" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @error('resourcesData.{{ $index }}.name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-                {{-- Champ Type --}}
-                <div>
-                    <label for="type-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
-                    <select id="type-{{ $index }}" wire:model.defer="resourcesData.{{ $index }}.type" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="">Sélectionner un type</option>
+        <div class="space-y-4">
+            @foreach ($resourcesData as $index => $resourceData)
+            <x-ui.card class="relative overflow-visible" :noPadding="false">
+                {{-- Bouton de suppression --}}
+                @if(count($resourcesData) > 1 && !$editing)
+                <button type="button" wire:click="removeResource({{ $index }})" 
+                        class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all z-10"
+                        title="Supprimer cette ressource">
+                    <x-lucide-x-circle class="w-5 h-5" />
+                </button>
+                @endif
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {{-- Nom --}}
+                    <x-ui.input 
+                        label="Désignation" 
+                        wire:model.blur="resourcesData.{{ $index }}.name" 
+                        placeholder="Ex: Expert en Logique" 
+                        icon="type"
+                        :error="$errors->first('resourcesData.'.$index.'.name')"
+                        required
+                    />
+
+                    {{-- Type --}}
+                    <x-ui.select 
+                        label="Type de ressource" 
+                        wire:model.live="resourcesData.{{ $index }}.type" 
+                        icon="layers"
+                        :error="$errors->first('resourcesData.'.$index.'.type')"
+                        required
+                    >
+                        <option value="">Sélectionner...</option>
                         <option value="Humain">Humain</option>
                         <option value="Materiel">Matériel</option>
                         <option value="Financier">Financier</option>
-                    </select>
-                    @error('resourcesData.{{ $index }}.type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-                {{-- Champ Quantité --}}
-                <div>
-                    <label for="quantity-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantité</label>
-                    <input type="number" id="quantity-{{ $index }}" wire:model="resourcesData.{{ $index }}.quantity" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @error('resourcesData.{{ $index }}.quantity') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-                {{-- Champ Coût Unitaire --}}
-                <div>
-                    <label for="unit_cost-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Coût Unitaire</label>
-                    <input type="number" step="0.01" id="unit_cost-{{ $index }}" wire:model="resourcesData.{{ $index }}.unit_cost" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @error('resourcesData.{{ $index }}.unit_cost') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-                {{-- Champ Coût Total (affiché uniquement) --}}
-                <div>
-                    <label for="total_cost-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Coût Total</label>
-                    <input type="text" id="total_cost-{{ $index }}" wire:model="resourcesData.{{ $index }}.total_cost" disabled class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm">
-                </div>
-                {{-- Champ Catégorie --}}
-                <div>
-                    <label for="category-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Catégorie</label>
-                    <input type="text" id="category-{{ $index }}" wire:model.defer="resourcesData.{{ $index }}.category" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @error('resourcesData.{{ $index }}.category') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-                {{-- Champ Utilisateur Responsable --}}
-                <div>
-                    <label for="responsible_user_id-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Responsable</label>
-                    <select id="responsible_user_id-{{ $index }}" wire:model.defer="resourcesData.{{ $index }}.responsible_user_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </x-ui.select>
+
+                    {{-- Catégorie --}}
+                    <x-ui.input 
+                        label="Catégorie" 
+                        wire:model.blur="resourcesData.{{ $index }}.category" 
+                        placeholder="Ex: Consulting / Équipement" 
+                        icon="tag"
+                        :error="$errors->first('resourcesData.'.$index.'.category')"
+                    />
+
+                    {{-- Quantité --}}
+                    <x-ui.input 
+                        type="number"
+                        label="Quantité" 
+                        wire:model.live="resourcesData.{{ $index }}.quantity" 
+                        icon="hash"
+                        :error="$errors->first('resourcesData.'.$index.'.quantity')"
+                        required
+                    />
+
+                    {{-- Coût Unitaire --}}
+                    <x-ui.input 
+                        type="number"
+                        step="0.01"
+                        label="Coût Unitaire" 
+                        wire:model.live="resourcesData.{{ $index }}.unit_cost" 
+                        icon="banknote"
+                        :error="$errors->first('resourcesData.'.$index.'.unit_cost')"
+                        required
+                    />
+
+                    {{-- Coût Total (Lecture seule) --}}
+                    <div class="space-y-2 cursor-not-allowed opacity-80">
+                         <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Coût Total</label>
+                         <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-sm font-black text-accent flex items-center gap-2">
+                             <x-lucide-calculator class="w-4 h-4 text-slate-300" />
+                             {{ number_format((float)$resourcesData[$index]['total_cost'], 2, ',', ' ') }}
+                         </div>
+                    </div>
+
+                    {{-- Responsable --}}
+                    <x-ui.select 
+                        label="Responsable" 
+                        wire:model.defer="resourcesData.{{ $index }}.responsible_user_id" 
+                        icon="user"
+                        :error="$errors->first('resourcesData.'.$index.'.responsible_user_id')"
+                    >
                         <option value="">Sélectionner un responsable</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach
-                    </select>
-                    @error('resourcesData.{{ $index }}.responsible_user_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </x-ui.select>
                 </div>
-            </div>
+            </x-ui.card>
+            @endforeach
         </div>
-        @endforeach
         
-        {{-- Boutons d'action pour les formulaires --}}
-        <div class="flex justify-between mt-6">
+        {{-- Boutons d'action --}}
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
             @if(!$editing)
-            <button type="button" wire:click="addBlankResource" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-md shadow hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
-                <i class="fas fa-plus mr-2"></i> Ajouter une autre ressource
-            </button>
+            <x-ui.button type="button" variant="outline" icon="plus" wire:click="addBlankResource">
+                Ajouter une autre ressource
+            </x-ui.button>
+            @else
+            <div></div> {{-- Spacer --}}
             @endif
-            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                {{ $editing ? ' Mettre a jour ' : ' Sauvegarder les ressources ' }}
-            </button>
+
+            <x-ui.button type="submit" variant="primary" icon="save" size="lg" loadingTarget="saveResources">
+                {{ $editing ? 'Mettre à jour la ressource' : 'Enregistrer les ressources' }}
+            </x-ui.button>
         </div>
     </form>
 </div>

@@ -3,7 +3,7 @@
     {{-- Header Section --}}
     <x-ui.page-header title="Liste des Projets" subtitle="Gérez et suivez l'avancement de vos initiatives stratégiques">
         <x-slot:actions>
-            <x-ui.button tag="a" :href="route('creator.proposal.project.create')" variant="accent" icon="plus-circle" size="lg">
+            <x-ui.button tag="a" :href="route('creator.proposal.project.create')" variant="accent" icon="plus-circle" size="lg" wire:navigate>
                 Nouveau Projet
             </x-ui.button>
         </x-slot:actions>
@@ -18,10 +18,11 @@
                 <option value="">Tous les statuts</option>
                 @foreach ($projectStatuses as $status)
                     @php
-                        $statusEnum = \App\Enums\ProjectStatus::tryFrom($status);
-                        $label = $statusEnum ? $statusEnum->label() : Str::ucfirst(str_replace('_', ' ', $status));
+                        $statusEnum = $status instanceof \App\Enums\ProjectStatus ? $status : \App\Enums\ProjectStatus::tryFrom($status);
+                        $label = $statusEnum ? $statusEnum->label() : Str::ucfirst(str_replace('_', ' ', (string) $status));
+                        $val = $statusEnum ? $statusEnum->value : $status;
                     @endphp
-                    <option value="{{ $status }}">{{ $label }}</option>
+                    <option value="{{ $val }}">{{ $label }}</option>
                 @endforeach
             </x-ui.select>
 
@@ -100,7 +101,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
-                                        $statusEnum = \App\Enums\ProjectStatus::tryFrom($project->status);
+                                        $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                         $variant = $statusEnum ? $statusEnum->color() : 'slate';
                                     @endphp
                                     <x-ui.badge :variant="$variant" size="md">
@@ -129,7 +130,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1">
-                                        @include('livewire.v-beta.project.include.link-project-list', [$project->id])
+                                        @include('livewire.v-beta.project.include.link-project-list', ['project' => $project])
                                     </div>
                                 </td>
                             </tr>

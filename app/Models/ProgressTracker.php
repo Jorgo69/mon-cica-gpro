@@ -6,19 +6,14 @@ use Illuminate\Support\Str;
 
 class ProgressTracker extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-
     protected $fillable = [
-        'id', 'activity_id', 'project_id', 'date', 'progress_percentage',
-        'status_update', 'justification', 'creator_user_id',
-        'performance_score', 'evaluation_comment',
-    ];
-
-    protected $casts = [
-        'date' => 'date',
+        'id', 'organization_id', 'activity_id', 'project_id', 'creator_user_id', 
+        'date', 'progress_percentage', 'status_update', 'justification',
+        'performance_score', 'evaluation_comment'
     ];
 
     protected static function boot()

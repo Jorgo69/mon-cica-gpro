@@ -6,18 +6,13 @@ use Illuminate\Support\Str;
 
 class ProjectDocument extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 
-        'project_id', 
-        'file_path', 
-        'file_name', 
-        'file_type', 
-        'creator_user_id',
+        'id', 'organization_id', 'project_id', 'creator_user_id', 'file_path', 'file_name', 'file_type',
     ];
 
     protected static function boot()

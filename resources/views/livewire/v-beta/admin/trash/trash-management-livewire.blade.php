@@ -102,7 +102,7 @@
                                 <td class="px-6 py-3 hidden md:table-cell"><span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span></td>
                                 <td class="px-6 py-3 hidden lg:table-cell">
                                     @php
-                                        $statusEnum = \App\Enums\ProjectStatus::tryFrom($project->status);
+                                        $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                         $variant = $statusEnum ? $statusEnum->color() : 'slate';
                                     @endphp
                                     <x-ui.badge :variant="$variant" size="sm">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>

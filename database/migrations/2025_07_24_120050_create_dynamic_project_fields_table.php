@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('dynamic_project_fields', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('organization_id')->nullable();
+            $table->uuid('creator_user_id')->nullable();
             $table->uuid('project_type_id');
             $table->string('field_name');
             $table->text('question_text');
@@ -21,15 +23,20 @@ return new class extends Migration
             $table->integer('order');
             $table->string('target_project_field');
             $table->string('section');
-            $table->string('delimiter_start', 255)->unique();
-            $table->string('delimiter_end', 255)->unique();
+            $table->string('delimiter_start', 255)->nullable();
+            $table->string('delimiter_end', 255)->nullable();
             // Nouvelle colonne pour le rendu visuel des listes déroulantes
             $table->string('render_as')->nullable();
             $table->boolean('is_required')->default(false);
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unique(['project_type_id', 'field_name']);
+            $table->index('organization_id');
+            $table->index('creator_user_id');
+
+            $table->unique(['organization_id', 'project_type_id', 'field_name'], 'dpf_org_type_field_unique');
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('project_type_id')->references('id')->on('project_types')->onDelete('cascade');
         });
     }

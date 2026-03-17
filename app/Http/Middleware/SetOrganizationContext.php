@@ -27,7 +27,8 @@ class SetOrganizationContext
             }
 
             // 2. Si l'organisation est suspendue ou inactive, on bloque l'accès
-            if ($user->organization && $user->organization->status === \App\Enums\OrganizationStatus::SUSPENDED) {
+            $organization = $user->organization;
+            if ($organization && $organization->status === \App\Enums\OrganizationStatus::SUSPENDED) {
                 auth()->logout();
                 return redirect()->route('login')->with('error', 'Votre organisation est suspendue. Contactez l\'administrateur.');
             }

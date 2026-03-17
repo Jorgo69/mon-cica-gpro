@@ -23,6 +23,7 @@ enum ActivityStatus: string
             self::ONGOING => 'En Cours',
             self::SUSPENDED => 'Suspendu',
             self::COMPLETED => 'Terminé',
+            self::OVERDUE => 'En retard',
         };
     }
 
@@ -36,6 +37,7 @@ enum ActivityStatus: string
             self::ONGOING => 'primary',
             self::SUSPENDED => 'warning',
             self::COMPLETED => 'success',
+            self::OVERDUE => 'error',
         };
     }
 
@@ -49,6 +51,7 @@ enum ActivityStatus: string
             self::ONGOING => 'play-circle',
             self::SUSPENDED => 'pause-circle',
             self::COMPLETED => 'check-circle-2',
+            self::OVERDUE => 'alert-circle',
         };
     }
 }

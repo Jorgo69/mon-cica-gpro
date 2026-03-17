@@ -6,13 +6,13 @@ use Illuminate\Support\Str;
 
 class DynamicProjectField extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
     
     protected $fillable = [
-        'id', 'project_type_id', 'field_name', 'question_text', 'input_type',
+        'id', 'organization_id', 'creator_user_id', 'project_type_id', 'field_name', 'question_text', 'input_type',
         'options', 'order', 'target_project_field', 'section',
         'delimiter_start', 'delimiter_end', 'render_as', 'is_required',
     ];
@@ -32,5 +32,10 @@ class DynamicProjectField extends Model
     public function projectType()
     {
         return $this->belongsTo(ProjectType::class, 'project_type_id', 'id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

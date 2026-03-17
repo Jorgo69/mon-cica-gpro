@@ -4,14 +4,14 @@
         <x-ui.page-header title="Détails du Projet" :subtitle="$project->project_code">
             <x-slot:actions>
                 @can('update', $project)
-                    <x-ui.button tag="a" :href="route('creator.proposal.project.edit', ['projectId' => $project->id])" variant="outline" icon="pencil" size="sm">
+                    <x-ui.button tag="a" :href="route('creator.proposal.project.edit', ['projectId' => $project->id])" variant="outline" icon="pencil" size="sm" wire:navigate>
                         Modifier
                     </x-ui.button>
                 @endcan
                 <x-ui.button tag="a" :href="route('projects.export.pdf', $project->id)" variant="accent" icon="file-down" size="sm">
                     Exporter PDF
                 </x-ui.button>
-                <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm">
+                <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm" wire:navigate>
                     Retour
                 </x-ui.button>
             </x-slot:actions>
@@ -36,10 +36,10 @@
                         <div class="flex items-center gap-2">
                             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Statut</span>
                             @php
-                                $statusEnum = \App\Enums\ProjectStatus::tryFrom($project->status);
+                                $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                 $badgeVariant = $statusEnum ? $statusEnum->color() : 'slate';
                             @endphp
-                            <x-ui.badge :variant="$badgeVariant">{{ $project->status }}</x-ui.badge>
+                            <x-ui.badge :variant="$badgeVariant">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Période</span>
@@ -273,7 +273,7 @@
         </div>
     @else
         <x-ui.empty-state icon="folder-x" title="Projet non trouvé" description="Le projet demandé n'existe pas ou a été supprimé.">
-            <x-ui.button tag="a" :href="route('project.list')" variant="outline" icon="arrow-left" size="sm">
+            <x-ui.button tag="a" :href="route('project.list')" variant="outline" icon="arrow-left" size="sm" wire:navigate>
                 Retour à la liste
             </x-ui.button>
         </x-ui.empty-state>

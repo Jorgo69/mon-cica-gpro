@@ -6,16 +6,13 @@ use Illuminate\Support\Str;
 
 class ProjectContext extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 
-        'project_id', 
-        'context_description', 
-        'ai_analysis_result',
+        'id', 'organization_id', 'project_id', 'creator_user_id', 'context_description', 'ai_analysis_result',
     ];
 
     protected static function boot()
@@ -27,5 +24,10 @@ class ProjectContext extends Model
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

@@ -7,11 +7,11 @@ use Illuminate\Support\Str;
 
 class ProjectType extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['id', 'name', 'description', 'category'];
+    protected $fillable = ['id', 'organization_id', 'creator_user_id', 'name', 'description', 'category'];
     protected static function boot()
     {
         parent::boot();
@@ -24,5 +24,9 @@ class ProjectType extends Model
     public function dynamicFields()
     {
         return $this->hasMany(DynamicProjectField::class, 'project_type_id', 'id')->orderBy('order');
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

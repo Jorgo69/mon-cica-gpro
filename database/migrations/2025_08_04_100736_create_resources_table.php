@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('resources', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('organization_id')->nullable();
             $table->uuid('activity_id');
+            $table->uuid('creator_user_id')->nullable();
             $table->string('name');
             $table->string('type', 50);
             $table->integer('quantity');
@@ -25,10 +27,14 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->index('organization_id');
             $table->index('activity_id');
+            $table->index('creator_user_id');
             $table->index('responsible_user_id');
 
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->foreign('activity_id')->references('id')->on('activities')->onDelete('cascade');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('responsible_user_id')->references('id')->on('users')->onDelete('set null');
         });
     }

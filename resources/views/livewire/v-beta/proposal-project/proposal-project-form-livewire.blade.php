@@ -171,25 +171,18 @@
                         <div class="flex items-center gap-4">
                             @if ($currentStep < $totalSteps)
                                 <x-ui.button type="button" wire:click="nextStep" 
-                                        wire:loading.attr="disabled"
                                         size="lg"
-                                        class="">
-                                    <span wire:loading.remove wire:target="nextStep">Suivant</span>
-                                    <span wire:loading wire:target="nextStep">Validation...</span>
-                                    <i class="fas fa-chevron-right text-[10px]" wire:loading.remove wire:target="nextStep"></i>
+                                        icon="chevron-right"
+                                        loadingTarget="nextStep">
+                                    Suivant
                                 </x-ui.button>
                             @else
                                 <x-ui.button type="submit" 
-                                        wire:loading.attr="disabled"
                                         variant="accent"
-                                        size="lg">
-                                    <div class="flex items-center gap-3" wire:loading.remove wire:target="submitForm">
-                                        <span class="font-black">Soumettre le projet</span> 
-                                        <i class="fas fa-check-double text-[10px]"></i>
-                                    </div>
-                                    <div class="flex items-center gap-2" wire:loading wire:target="submitForm">
-                                        <i class="fas fa-circle-notch fa-spin"></i> <span>Enregistrement...</span>
-                                    </div>
+                                        size="lg"
+                                        icon="check-check"
+                                        loadingTarget="submitForm">
+                                    Soumettre le projet
                                 </x-ui.button>
                             @endif
                         </div>

@@ -9,6 +9,11 @@ Route::middleware(['auth'])->prefix('v_beta')->group(function () {
         Route::view('/proposal-project/{projectId}/edit', 'v_beta.proposal-project.form')->name('edit');
     });
 
+    // Alias pour project.create (utilisé dans les vues existantes)
+    Route::get('/v_beta/projects/create-alias', function() {
+        return redirect()->route('creator.proposal.project.create');
+    })->middleware(['auth'])->name('project.create');
+
     // Gestion Centrale Projet
     Route::view('/project-list', 'v_beta.project-list')->name('project.list');
     Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');

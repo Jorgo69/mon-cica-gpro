@@ -6,13 +6,13 @@ use Illuminate\Support\Str;
 
 class QualitativeEvaluation extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'project_id', 'activity_id', 'evaluator_id', 'rating', 'score', 'comments',
+        'id', 'organization_id', 'project_id', 'activity_id', 'creator_user_id', 'rating', 'score', 'comments',
     ];
 
     protected static function boot()
@@ -29,8 +29,8 @@ class QualitativeEvaluation extends Model
     {
         return $this->belongsTo(Activity::class, 'activity_id', 'id');
     }
-    public function evaluator()
+    public function creator()
     {
-        return $this->belongsTo(User::class, 'evaluator_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

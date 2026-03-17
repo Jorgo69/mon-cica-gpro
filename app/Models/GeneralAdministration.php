@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class GeneralAdministration extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
     
     protected $primaryKey = 'id';
     public $incrementing = false;
@@ -17,6 +17,8 @@ class GeneralAdministration extends Model
 
     protected $fillable = [
         'id',
+        'organization_id',
+        'creator_user_id',
         'name',
         'description',
         'type'
@@ -26,5 +28,10 @@ class GeneralAdministration extends Model
     {
         parent::boot();
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

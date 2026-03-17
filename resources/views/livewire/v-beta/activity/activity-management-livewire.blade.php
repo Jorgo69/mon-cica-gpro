@@ -27,7 +27,7 @@
                             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28 shrink-0 pt-0.5">Statut</span>
                             @php $actStatus = $activity->status; @endphp
                             <x-ui.badge :variant="$actStatus?->color() ?? 'slate'">
-                                {{ $actStatus?->label() ?? $activity->status }}
+                                {{ $actStatus instanceof \App\Enums\ActivityStatus ? $actStatus->label() : ($actStatus instanceof \BackedEnum ? $actStatus->value : (string)$actStatus) }}
                             </x-ui.badge>
                         </div>
                         <div class="flex items-center gap-2">
@@ -98,10 +98,10 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Statut</span>
                                 @php
-                                    $projStatusEnum = \App\Enums\ProjectStatus::tryFrom($activity->project->status);
+                                    $projStatusEnum = $activity->project->status instanceof \App\Enums\ProjectStatus ? $activity->project->status : \App\Enums\ProjectStatus::tryFrom($activity->project->status);
                                     $projBadgeVariant = $projStatusEnum ? $projStatusEnum->color() : 'slate';
                                 @endphp
-                                <x-ui.badge :variant="$projBadgeVariant">{{ $projStatusEnum ? $projStatusEnum->label() : ucfirst($activity->project->status) }}</x-ui.badge>
+                                <x-ui.badge :variant="$projBadgeVariant">{{ $projStatusEnum ? $projStatusEnum->label() : $activity->project->status }}</x-ui.badge>
                             </div>
                         </div>
                     </div>

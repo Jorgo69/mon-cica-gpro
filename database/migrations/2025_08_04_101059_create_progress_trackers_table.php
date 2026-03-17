@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('progress_trackers', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('organization_id')->nullable();
             $table->uuid('activity_id')->nullable();
             $table->uuid('project_id')->nullable();
             $table->date('date');
@@ -26,10 +27,12 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->index('organization_id');
             $table->index('activity_id');
             $table->index('project_id');
             $table->index('creator_user_id');
 
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->foreign('activity_id')->references('id')->on('activities')->onDelete('set null');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('set null');
             $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('restrict');

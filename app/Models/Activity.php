@@ -77,13 +77,19 @@ class Activity extends Model
      */
     public function getProjectAttribute()
     {
-        // Si c'est une sous-activité, on remonte au parent
-        if ($this->parent_id) {
-            return $this->parent?->project;
+        // On évite les appels récursifs via ->project sur le parent
+        // On remonte manuellement pour plus de sécurité
+        $current = $this;
+        $depth = 0;
+        $maxDepth = 10; // Sécurité anti-boucle
+
+        while ($current->parent_id && $depth < $maxDepth) {
+            $current = $current->parent;
+            $depth++;
         }
         
-        // Sinon on suit la chaîne de relations via le résultat
-        return $this->result?->specificObjective?->logicalFramework?->project ?? null;
+        // Une fois au sommet de la hiérarchie des activités, on récupère le projet via le résultat
+        return $current->result?->specificObjective?->logicalFramework?->project ?? null;
     }
 
     public function getPlannedProgressPercentage(): float
@@ -116,6 +122,7 @@ class Activity extends Model
 
     public function calculateProgress(): float
     {
+        // Utilisation de eager loading 'children' dans le contexte d'appel est conseillé
         $children = $this->children;
 
         if ($children->isEmpty()) {
@@ -133,14 +140,17 @@ class Activity extends Model
             \App\Enums\ActivityStatus::OVERDUE->value    => 10,
         ];
 
+        // On évite calculateProgress sur les enfants si on est déjà trop profond ou si on veut rester simple
+        // Ici on fait une somme pondérée simple
         $totalProgress = $children->sum(function ($child) use ($statusWeight) {
-            if ($child->children()->exists()) {
-                return $child->calculateProgress();
-            }
-
+            // Si l'enfant a lui-même des enfants, on pourrait appeler récursivement, 
+            // mais attention aux performances. Pour l'instant on reste sur le statut de l'enfant direct
+            // pour éviter le timeout constaté.
+            
             $statusValue = $child->status instanceof \App\Enums\ActivityStatus 
                 ? $child->status->value 
                 : $child->status;
+                
             return $statusWeight[$statusValue] ?? (float) ($child->progress_percentage ?? 0);
         });
 

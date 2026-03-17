@@ -6,13 +6,13 @@ use Illuminate\Support\Str;
 
 class Budget extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'project_id', 'description', 'quantity', 'unit_cost',
+        'id', 'organization_id', 'project_id', 'creator_user_id', 'description', 'quantity', 'unit_cost',
         'total_cost', 'category', 'responsible_user_id',
     ];
 
@@ -36,10 +36,17 @@ class Budget extends Model
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
     public function responsibleUser()
     {
         return $this->belongsTo(User::class, 'responsible_user_id', 'id');
     }
+    
     public function quarterlyBudgets()
     {
         return $this->hasMany(QuarterlyBudget::class, 'budget_id', 'id');

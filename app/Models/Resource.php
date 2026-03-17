@@ -6,12 +6,13 @@ use Illuminate\Support\Str;
 
 class Resource extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Multitenantable;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
+    
     protected $fillable = [
-        'id', 'activity_id', 'name', 'type', 'quantity',
+        'id', 'organization_id', 'activity_id', 'creator_user_id', 'name', 'type', 'quantity',
         'unit_cost', 'total_cost', 'category', 'responsible_user_id',
     ];
 
@@ -30,6 +31,12 @@ class Resource extends Model
     {
         return $this->belongsTo(Activity::class, 'activity_id', 'id');
     }
+    
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
     public function responsibleUser()
     {
         return $this->belongsTo(User::class, 'responsible_user_id', 'id');

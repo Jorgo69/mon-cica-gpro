@@ -107,7 +107,7 @@
                                     <button wire:click="openActivityDetails('{{ $activity->id }}')" class="navbar-action" title="Voir">
                                         <x-lucide-eye class="nav-icon" />
                                     </button>
-                                    <a href="{{ route('activity.management', ['activity' => $activity->id]) }}" class="navbar-action" title="Gérer">
+                                    <a href="{{ route('activity.management', ['activity' => $activity->id]) }}" class="navbar-action" title="Gérer" wire:navigate>
                                         <x-lucide-settings-2 class="nav-icon" />
                                     </a>
                                 </div>

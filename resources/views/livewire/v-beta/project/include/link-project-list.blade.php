@@ -23,12 +23,12 @@
         class="fixed right-10 top-20 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50 border dark:border-gray-700"
     >
             <div class="py-1">
-                <a href="{{ route('project.show', $project->id) }}"
+                <a href="{{ route('project.show', $project->id) }}" wire:navigate
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <i class="fa-solid fa-eye mr-2"></i> {{ __('table.preview') }}
                 </a>
 
-                <a href="{{ route('creator.proposal.project.edit', $project->id) }}"
+                <a href="{{ route('creator.proposal.project.edit', $project->id) }}" wire:navigate
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <i class="fa-solid fa-pen mr-2"></i> {{ __('table.update') }}
                 </a>
@@ -36,7 +36,7 @@
                 {{-- @if (!in_array($project->status, ['draft', 'Brouillon']) || auth()->user()->role->name === 'Administrateur') --}}
 
                 
-                <a href="{{ route('project.dashboard', $project->id) }}"
+                <a href="{{ route('project.dashboard', $project->id) }}" wire:navigate
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <i class="fa-solid fa-chart-line mr-2"></i> {{ __('table.dashboard') }}
                 </a>

@@ -13,11 +13,20 @@ return new class extends Migration
     {
         Schema::create('project_types', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name')->unique();
+            $table->uuid('organization_id')->nullable();
+            $table->uuid('creator_user_id')->nullable();
+            $table->string('name');
             $table->text('description')->nullable();
             $table->string('category')->nullable(); // From NewVision.txt
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('organization_id');
+            $table->index('creator_user_id');
+
+            $table->unique(['organization_id', 'name']);
+            $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
+            $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

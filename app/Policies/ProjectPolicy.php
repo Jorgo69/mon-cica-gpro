@@ -2,9 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Project;
-use Illuminate\Support\Str;
+use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
@@ -14,7 +13,7 @@ class ProjectPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('view-projects');
     }
 
     /**
@@ -22,17 +21,15 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        // Si le projet est en brouillon : seul l'administrateur peut voir
-        // if ($project->status === 'Brouillon') {
-        //     return $user->role === 'Administrateur';
-        // }
-        if (Str::lower($project->status) === 'brouillon') {
-            return $user->role === 'Administrateur';
+        if (!$user->hasPermissionTo('view-projects')) {
+            return false;
         }
-        
 
-        // Si le projet n'est pas en brouillon : créateur ou administrateur peuvent voir
-        return $user->role === 'Administrateur' || $project->creator_user_id === $user->id;
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
     }
 
     /**
@@ -40,9 +37,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        // Pour la création, on peut autoriser tous les utilisateurs authentifiés, ou restreindre davantage si nécessaire.
-        // Ici, nous autorisons tous les utilisateurs authentifiés à créer.
-        return $user->exists(); // Assure que l'utilisateur est authentifié
+        return $user->hasPermissionTo('create-projects');
     }
 
     /**
@@ -50,9 +45,15 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        // dd($user->id);
-        // L'utilisateur peut mettre à jour si c'est l'utilisateur responsable OU s'il est administrateur.
-        return $user->id === $project->creator_user_id || $user->role === 'Administrateur';
+        if (!$user->hasPermissionTo('edit-projects')) {
+            return false;
+        }
+
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
     }
 
     /**
@@ -60,8 +61,31 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        // L'utilisateur peut supprimer si c'est l'utilisateur responsable OU s'il est administrateur.
-        return $user->role === 'Administrateur';
+        if (!$user->hasPermissionTo('delete-projects')) {
+            return false;
+        }
+
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
+    }
+    
+    /**
+     * Determine whether the user can validate the model.
+     */
+    public function validate(User $user, Project $project): bool
+    {
+        if (!$user->hasPermissionTo('validate-projects')) {
+            return false;
+        }
+
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
     }
 
     /**
@@ -69,8 +93,15 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project): bool
     {
-        // L'utilisateur peut restaurer s'il est administrateur.
-        return $user->role === 'Administrateur';
+        if (!$user->hasPermissionTo('delete-projects')) {
+            return false;
+        }
+
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
     }
 
     /**
@@ -78,7 +109,14 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project): bool
     {
-        // L'utilisateur peut restaurer s'il est administrateur.
-        return $user->role === 'Administrateur';
+        if (!$user->hasPermissionTo('delete-projects')) {
+            return false;
+        }
+
+        if ($user->hasRole('IT_ADMIN')) {
+            return true;
+        }
+
+        return $user->organization_id === $project->organization_id;
     }
 }
