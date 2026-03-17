@@ -25,15 +25,18 @@ class UpdateActivityProgressAction
                 'justification' => $data['justification'] ?? $activity->justification,
             ]);
 
-            // 2. Créer une entrée dans le tracker de progression pour l'historique
-            ProgressTracker::create([
-                'activity_id' => $activity->id,
-                'project_id' => $activity->project?->id,
-                'date' => now(),
-                'progress_percentage' => $activity->progress_percentage,
-                'status_update' => "Mise à jour via action: " . ($data['status'] ?? $activity->status->value),
-                'justification' => $data['justification'] ?? null,
-            ]);
+            // 3. Notifier
+            $notification = new \App\Notifications\ActivityProgressUpdatedNotification($activity, $activity->progress_percentage);
+            
+            // On notifie le responsable s'il est différent de l'auteur de la mise à jour
+            if ($activity->responsible && $activity->responsible->id !== auth()->id()) {
+                $activity->responsible->notify($notification);
+            }
+
+            // On notifie le créateur du projet
+            if ($activity->project && $activity->project->creator && $activity->project->creator->id !== auth()->id()) {
+                $activity->project->creator->notify($notification);
+            }
 
             return $activity;
         });

@@ -51,11 +51,23 @@ class ProjectStatsQueryService
 
         $recentProjects = Project::with('creator')->orderBy('created_at', 'desc')->limit(5)->get();
 
+        $budgetByProject = Project::limit(10)
+            ->get()
+            ->map(fn($p) => ['label' => \Illuminate\Support\Str::limit($p->title, 20), 'value' => \App\Models\Budget::where('project_id', $p->id)->sum('total_cost')])
+            ->toArray();
+
+        $statusDistribution = [
+            ['label' => 'En cours', 'value' => $projectsInProgress, 'color' => '#10b981'],
+            ['label' => 'Terminé', 'value' => $projectsCompleted, 'color' => '#3b82f6'],
+            ['label' => 'Brouillon', 'value' => $projectsDraft, 'color' => '#94a3b8'],
+            ['label' => 'Annulé', 'value' => $projectsCanceled, 'color' => '#ef4444'],
+        ];
+
         return compact(
             'totalProjects', 'projectsInProgress', 'projectsCompleted', 'projectsDraft', 'projectsCanceled',
             'totalActivities', 'activitiesInProgress', 'activitiesCompleted', 'activitiesOverdue',
             'totalPlannedBudget', 'totalActualBudget', 'budgetVariance',
-            'recentProgressUpdates', 'recentProjects'
+            'recentProgressUpdates', 'recentProjects', 'budgetByProject', 'statusDistribution'
         );
     }
 
@@ -93,11 +105,23 @@ class ProjectStatsQueryService
 
         $recentProjects = $userProjects->sortByDesc('created_at')->take(5);
 
+        $budgetByProject = $userProjects->take(10)
+            ->map(fn($p) => ['label' => \Illuminate\Support\Str::limit($p->title, 20), 'value' => \App\Models\Budget::where('project_id', $p->id)->sum('total_cost')])
+            ->values()
+            ->toArray();
+
+        $statusDistribution = [
+            ['label' => 'En cours', 'value' => $projectsInProgress, 'color' => '#10b981'],
+            ['label' => 'Terminé', 'value' => $projectsCompleted, 'color' => '#3b82f6'],
+            ['label' => 'Brouillon', 'value' => $projectsDraft, 'color' => '#94a3b8'],
+            ['label' => 'Annulé', 'value' => $projectsCanceled, 'color' => '#ef4444'],
+        ];
+
         return compact(
             'totalProjects', 'projectsInProgress', 'projectsCompleted', 'projectsDraft', 'projectsCanceled',
             'totalActivities', 'activitiesInProgress', 'activitiesCompleted', 'activitiesOverdue',
             'totalPlannedBudget', 'totalActualBudget', 'budgetVariance',
-            'recentProgressUpdates', 'recentProjects'
+            'recentProgressUpdates', 'recentProjects', 'budgetByProject', 'statusDistribution'
         );
     }
 }

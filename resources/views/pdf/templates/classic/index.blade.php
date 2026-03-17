@@ -1,0 +1,109 @@
+@extends('pdf.layouts.report')
+
+@section('title', 'Projet : ' . $project->title)
+
+@section('content')
+    <div class="p-12">
+        {{-- En-tête officiel --}}
+        <div class="flex justify-between items-start mb-12 border-b-2 border-slate-900 pb-8">
+            <div class="w-2/3">
+                <h1 class="text-2xl font-bold uppercase mb-2">{{ $project->title }}</h1>
+                <p class="text-sm text-slate-500 italic">Document de référence technique</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black uppercase text-slate-400">Code Identification</p>
+                <p class="text-lg font-bold">{{ $project->project_code }}</p>
+            </div>
+        </div>
+
+        {{-- Tableau des données de base --}}
+        <div class="mb-10">
+            <h3 class="text-xs font-black uppercase tracking-widest bg-slate-100 p-2 mb-4">1. Identité du Projet</h3>
+            <table class="w-full text-sm border-collapse border border-slate-200">
+                <tr>
+                    <td class="border border-slate-200 p-3 bg-slate-50 font-bold w-1/3">Statut</td>
+                    <td class="border border-slate-200 p-3">{{ $project->status?->label() ?? 'Non défini' }}</td>
+                </tr>
+                <tr>
+                    <td class="border border-slate-200 p-3 bg-slate-50 font-bold">Type</td>
+                    <td class="border border-slate-200 p-3">{{ $project->projectType?->name ?? 'Standard' }}</td>
+                </tr>
+                <tr>
+                    <td class="border border-slate-200 p-3 bg-slate-50 font-bold">Période d'exécution</td>
+                    <td class="border border-slate-200 p-3">{{ $project->start_date?->format('d/m/Y') }} au {{ $project->end_date?->format('d/m/Y') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        {{-- Cadre Logique --}}
+        <div class="mb-10">
+            <h3 class="text-xs font-black uppercase tracking-widest bg-slate-100 p-2 mb-4">2. Cadre Logique</h3>
+            @if($project->logicalFramework && $project->logicalFramework->specificObjectives->count())
+                <table class="w-full text-xs border-collapse border border-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="border border-slate-200 p-2 text-left">Objectif Spécifique</th>
+                            <th class="border border-slate-200 p-2 text-left">Résultats & Activités</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($project->logicalFramework->specificObjectives as $obj)
+                            <tr>
+                                <td class="border border-slate-200 p-3 align-top font-bold">{{ $obj->description }}</td>
+                                <td class="border border-slate-200 p-3 align-top">
+                                    @foreach($obj->results as $res)
+                                        <div class="mb-3">
+                                            <p class="font-bold underline mb-1">Résultat : {{ $res->description }}</p>
+                                            <ul class="list-disc list-inside">
+                                                @foreach($res->activities as $act)
+                                                    <li>{{ $act->description }} ({{ number_format($act->budget, 0, ',', ' ') }} FCFA)</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <p class="text-sm italic text-slate-500">Aucun cadre logique disponible.</p>
+            @endif
+        </div>
+
+        {{-- Autres informations --}}
+        @if($dynamicFormFields)
+            <div class="page-break"></div>
+            <h3 class="text-xs font-black uppercase tracking-widest bg-slate-100 p-2 mb-4">3. Informations Complémentaires</h3>
+            @foreach($dynamicFormFields as $section => $fields)
+                <div class="mb-6">
+                    <h4 class="text-sm font-bold border-b border-slate-200 mb-3">{{ ucfirst($section) }}</h4>
+                    <div class="space-y-4">
+                        @foreach($fields as $fieldDef)
+                             @php
+                                $targetField = $fieldDef['target_project_field'];
+                                $value = null;
+                                if (isset($project->$targetField)) {
+                                    if (is_array($project->$targetField)) {
+                                        $value = $project->$targetField[$fieldDef['question_text']] ?? null;
+                                    } else {
+                                        $pattern = '/' . preg_quote($fieldDef['delimiter_start'], '/') . '(.*?)' . preg_quote($fieldDef['delimiter_end'], '/') . '/s';
+                                        if (preg_match($pattern, $project->$targetField, $matches)) {
+                                            $value = $matches[1];
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if($value)
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase text-slate-400">{{ $fieldDef['question_text'] }}</p>
+                                    <p class="text-sm leading-relaxed">{{ $value }}</p>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        @endif
+    </div>
+@endsection

@@ -197,6 +197,8 @@ class EditProjectDesignLivewire extends Component
             DB::beginTransaction();
 
             $project = Project::findOrFail($this->projectId);
+            $oldStatus = $project->status;
+            
             $project->update([
                 'title' => $this->projectTitle,
                 'project_code' => $this->projectCode,
@@ -209,6 +211,19 @@ class EditProjectDesignLivewire extends Component
                 'strategy' => $this->strategy,
                 'justification' => $this->justification,
             ]);
+
+            // Notifications
+            if ($oldStatus !== $this->projectStatus) {
+                $statusLabel = is_object($this->projectStatus) ? $this->projectStatus->label() : $this->projectStatus;
+                $oldStatusLabel = is_object($oldStatus) ? $oldStatus->label() : $oldStatus;
+                
+                $notification = new \App\Notifications\ProjectStatusUpdatedNotification($project, $oldStatusLabel, $statusLabel);
+                
+                // On notifie le créateur si ce n'est pas l'auteur du changement
+                if ($project->creator && $project->creator->id !== auth()->id()) {
+                    $project->creator->notify($notification);
+                }
+            }
 
             // PROJECT CONTEXT (hasOne)
             $project->projectContext()->updateOrCreate(

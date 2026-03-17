@@ -77,6 +77,27 @@
         }
     </script>
 </head>
+
+{{-- <body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    <div class="min-h-screen transition-colors duration-300">
+        @include('layouts.navbar')
+        @include('layouts.sidebar')
+
+        <!-- Main Content -->
+        <main class="lg:ml-60 pt-14 min-h-screen">
+            <div class="p-4 sm:p-6 lg:p-8">
+                {{ $slot }}
+            </div>
+        </main>
+    </div>
+
+    @livewire('v-beta.search.global-search-livewire')
+    <x-ui.toast-notifications />
+
+    @livewireScripts
+    @stack('scripts')
+</body> --}}
+
 <body class="bg-gray-50 dark:bg-gray-900 font-sans">
     
         @include('layouts.navbar')
@@ -86,9 +107,11 @@
 
     {{ $slot }}
     
+    @livewire('v-beta.search.global-search-livewire')
     <x-ui.toast-notifications />
 
     @livewireScripts
     @stack('scripts')
 </body>
+
 </html>

@@ -8,8 +8,8 @@
                         Modifier
                     </x-ui.button>
                 @endcan
-                <x-ui.button tag="a" :href="route('projects.export.pdf', $project->id)" variant="accent" icon="file-down" size="sm">
-                    Exporter PDF
+                <x-ui.button tag="a" :href="route('projects.export.pdf', ['projectId' => $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
+                    Rapport Premium
                 </x-ui.button>
                 <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm" wire:navigate>
                     Retour
@@ -33,6 +33,11 @@
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'documents' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
                 Documents
                 @if($activeTab === 'documents') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('analytics')" 
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'analytics' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Analyses
+                @if($activeTab === 'analytics') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('history')" 
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
@@ -300,6 +305,42 @@
                 @else
                     <x-ui.empty-state icon="file-question" title="Aucun document" description="Il n'y a pas encore de documents associés à ce projet." />
                 @endif
+            @endif
+
+            @if($activeTab === 'analytics')
+                {{-- Section: Analyses Spécifiques --}}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <x-ui.section title="Répartition des Ressources" icon="pie-chart">
+                        @php
+                            $resourceData = $project->resources->groupBy('type')->map(fn($group) => $group->sum('total_cost'));
+                        @endphp
+                        <x-ui.chart 
+                            type="pie" 
+                            height="300px"
+                            :labels="$resourceData->keys()->toArray()"
+                            :datasets="[
+                                [
+                                    'data' => $resourceData->values()->toArray(),
+                                    'backgroundColor' => ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
+                                    'borderWidth' => 0
+                                ]
+                            ]"
+                        />
+                    </x-ui.section>
+
+                    <x-ui.section title="Santé Budgétaire" icon="banknote">
+                        <div class="flex flex-col items-center justify-center h-[300px] space-y-4">
+                            <div class="text-center">
+                                <p class="text-xs text-slate-500 uppercase font-black tracking-widest">Budget Total</p>
+                                <p class="text-3xl font-black text-primary">{{ number_format($project->resources->sum('total_cost'), 0, ',', ' ') }} FCFA</p>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-4 rounded-full overflow-hidden">
+                                <div class="bg-accent h-full" style="width: 100%"></div>
+                            </div>
+                            <p class="text-xs text-slate-500 italic">Consommation du budget : 100% planifié</p>
+                        </div>
+                    </x-ui.section>
+                </div>
             @endif
 
             @if($activeTab === 'history')

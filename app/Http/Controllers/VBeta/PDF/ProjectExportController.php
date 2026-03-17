@@ -47,33 +47,15 @@ class ProjectExportController extends Controller
     // return response()->download($path)->deleteFileAfterSend(true);
     // }
 
-    public function exportPdf(string $projectId)
+    public function exportPdf(string $projectId, Request $request, \App\Actions\PDF\GenerateProjectReportAction $generateAction)
     {
-         $project = Project::with([
-            'creator',
-            'projectType',
-            'projectContext',
-            'logicalFramework.specificObjectives.results.activities.subActivities',
-            'budgets.responsibleUser',
-            'documents',
-            ])->findOrFail($projectId);
+        try {
+            $templateKey = $request->query('template', 'modern');
+            $path = $generateAction->execute($projectId, $templateKey);
 
-        // Charge les définitions des champs dynamiques pour l'affichage
-        if ($project->projectType) {
-             $dynamicFormFields = $project->projectType->dynamicFields()
-                ->orderBy('order')
-                ->get()
-                ->groupBy('section')
-                ->toArray();
+            return response()->download($path)->deleteFileAfterSend(false);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erreur lors de la génération du PDF : ' . $e->getMessage());
         }
-
-    
-    // 1. Construire ton HTML avec Blade
-    return view('v_beta.pdf.index', [
-        'project' => $project,
-        'dynamicFormFields' => $dynamicFormFields
-    ]);
-
-    
     }
 }

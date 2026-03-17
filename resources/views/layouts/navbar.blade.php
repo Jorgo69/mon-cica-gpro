@@ -18,6 +18,13 @@
         <!-- Actions -->
         <div class="flex items-center gap-1">
 
+            <!-- Global Search -->
+            <button @click="$dispatch('toggle-search')" class="navbar-action group hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl transition-all hover:border-accent/30">
+                <x-lucide-search class="w-4 h-4 text-slate-400 group-hover:text-accent" />
+                <span class="text-xs font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200">Rechercher...</span>
+                <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[10px] font-black text-slate-400 group-hover:text-accent">Ctrl+K</kbd>
+            </button>
+
             <!-- Theme Toggle -->
             <button @click="toggleTheme()" class="navbar-action">
                 <x-lucide-moon x-show="!darkMode" class="nav-icon" x-cloak />
@@ -25,10 +32,7 @@
             </button>
             
             <!-- Notifications -->
-            <button class="navbar-action">
-                <x-lucide-bell class="nav-icon" />
-                <span class="nav-badge">3</span>
-            </button>
+            @livewire('v-beta.notifications.notification-center-livewire')
             
             <!-- Profile Menu -->
             <div class="relative ml-1">

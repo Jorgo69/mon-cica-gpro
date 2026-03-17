@@ -17,6 +17,50 @@
             <x-ui.stat-card :label="__('Cancelled')" :value="$projectsCanceled" variant="error" icon="x-circle" />
         </div>
 
+        {{-- Section Analytique : Graphiques --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <x-ui.section :title="__('Budget per Project')" icon="bar-chart-3">
+                <x-ui.chart 
+                    type="bar" 
+                    height="320px"
+                    :labels="collect($budgetByProject)->pluck('label')->toArray()"
+                    :datasets="[
+                        [
+                            'label' => __('Planned Budget (FCFA)'),
+                            'data' => collect($budgetByProject)->pluck('value')->toArray(),
+                            'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
+                            'borderColor' => 'rgb(99, 102, 241)',
+                            'borderWidth' => 2,
+                            'borderRadius' => 8,
+                            'hoverBackgroundColor' => 'rgba(99, 102, 241, 0.4)',
+                        ]
+                    ]"
+                />
+            </x-ui.section>
+
+            <x-ui.section :title="__('Projects Overview')" icon="pie-chart">
+                <x-ui.chart 
+                    type="doughnut" 
+                    height="320px"
+                    :labels="collect($statusDistribution)->pluck('label')->toArray()"
+                    :datasets="[
+                        [
+                            'data' => collect($statusDistribution)->pluck('value')->toArray(),
+                            'backgroundColor' => collect($statusDistribution)->pluck('color')->toArray(),
+                            'borderWidth' => 0,
+                            'hoverOffset' => 10
+                        ]
+                    ]"
+                    :options="[
+                        'plugins' => [
+                            'legend' => [ 'position' => 'right' ]
+                        ],
+                        'cutout' => '70%'
+                    ]"
+                />
+            </x-ui.section>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Colonne de gauche : Activités --}}
             <div class="lg:col-span-2 space-y-8">
