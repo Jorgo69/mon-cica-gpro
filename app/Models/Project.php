@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @OA\Schema(
+ *     schema="Project",
+ *     title="Project",
+ *     description="Project model",
+ *     @OA\Property(property="id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+ *     @OA\Property(property="organization_id", type="string", format="uuid"),
+ *     @OA\Property(property="title", type="string", example="Construction d'un complexe scolaire"),
+ *     @OA\Property(property="project_code", type="string", example="PRJ-2026-001"),
+ *     @OA\Property(property="status", type="string", enum={"draft", "proposed", "approved", "rejected"}),
+ *     @OA\Property(property="start_date", type="string", format="date"),
+ *     @OA\Property(property="end_date", type="string", format="date")
+ * )
+ */
 class Project extends Model
 {
     use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;

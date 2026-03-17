@@ -15,6 +15,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @OA\Schema(
+ *     schema="User",
+ *     title="User",
+ *     description="User model",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="name", type="string", example="Jean Dupont"),
+ *     @OA\Property(property="email", type="string", format="email", example="jean.dupont@example.com"),
+ *     @OA\Property(property="organization_id", type="string", format="uuid")
+ * )
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, \Spatie\Activitylog\Traits\LogsActivity;

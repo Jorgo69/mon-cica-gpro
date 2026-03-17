@@ -4,6 +4,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @OA\Schema(
+ *     schema="Activity",
+ *     title="Activity",
+ *     description="Activity model",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="description", type="string"),
+ *     @OA\Property(property="status", type="string", enum={"pending", "in_progress", "completed", "overdue"}),
+ *     @OA\Property(property="progress", type="number", format="float", example=45.5)
+ * )
+ */
 class Activity extends Model
 {
     use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;

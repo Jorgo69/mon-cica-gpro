@@ -4,6 +4,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @OA\Schema(
+ *     schema="Resource",
+ *     title="Resource",
+ *     description="Resource model",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="name", type="string", example="Ciment"),
+ *     @OA\Property(property="type", type="string"),
+ *     @OA\Property(property="quantity", type="number"),
+ *     @OA\Property(property="unit_cost", type="number", format="float"),
+ *     @OA\Property(property="total_cost", type="number", format="float")
+ * )
+ */
 class Resource extends Model
 {
     use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
