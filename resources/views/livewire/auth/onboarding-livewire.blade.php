@@ -1,15 +1,19 @@
-<div class="space-y-8">
+<div x-data="{ step: @entangle('step') }" class="space-y-8">
     <div class="text-center">
         <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Onboarding</h2>
         <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Configurez votre environnement de travail professionnel.</p>
     </div>
 
-    @if($step === 'choice')
-        <div class="grid grid-cols-1 gap-4" x-transition:enter="transition ease-out duration-300 delay-150" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-            <button wire:click="selectCreate" class="group relative p-6 text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 hover:border-accent/30 dark:hover:border-accent/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
+    <div x-show="step === 'choice'" 
+         x-transition:enter="transition ease-out duration-300 delay-150" 
+         x-transition:enter-start="opacity-0 translate-y-4" 
+         x-transition:enter-end="opacity-100 translate-y-0"
+    >
+        <div class="grid grid-cols-1 gap-4">
+            <button type="button" @click="step = 'create'" class="group relative p-6 text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 hover:border-accent/30 dark:hover:border-accent/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
-                        <x-ui.icon name="plus-circle" class="w-6 h-6" />
+                        <x-lucide-plus-circle class="w-6 h-6" />
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-900 dark:text-white text-sm">Créer un espace</h3>
@@ -18,10 +22,10 @@
                 </div>
             </button>
 
-            <button wire:click="selectJoin" class="group relative p-6 text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 hover:border-accent/30 dark:hover:border-accent/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
+            <button type="button" @click="step = 'join'" class="group relative p-6 text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 hover:border-accent/30 dark:hover:border-accent/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
-                        <x-ui.icon name="users" class="w-6 h-6" />
+                        <x-lucide-users class="w-6 h-6" />
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-900 dark:text-white text-sm">Rejoindre une équipe</h3>
@@ -29,21 +33,40 @@
                     </div>
                 </div>
             </button>
+
+            <button type="button" @click="step = 'independent'" class="group relative p-6 text-left rounded-3xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-800/50 hover:border-accent/30 dark:hover:border-accent/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                        <x-lucide-user class="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-sm">Travailler en Indépendant</h3>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Utilisez CICA-GPRO gratuitement sans organisation.</p>
+                    </div>
+                </div>
+            </button>
         </div>
-    @elseif($step === 'create')
-        <form wire:submit="createOrganization" class="space-y-6" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+    </div>
+
+    <div x-show="step === 'create'" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 scale-95" 
+         x-transition:enter-end="opacity-100 scale-100"
+         x-cloak
+         style="display: none;"
+    >
+        <form wire:submit="createOrganization" class="space-y-6">
             <x-ui.input 
                 label="Nom de l'Organisation" 
                 placeholder="Ex: Cave Tech, ONG Humanitaire..."
                 wire:model="organizationName"
                 icon="building"
                 required 
-                autofocus 
                 :error="$errors->first('organizationName')"
             />
 
             <div class="flex items-center gap-3 pt-2">
-                <x-ui.button type="button" variant="ghost" icon="arrow-left" wire:click="back">
+                <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
                     Retour
                 </x-ui.button>
                 <x-ui.button type="submit" variant="primary" icon="check" class="flex-1">
@@ -51,20 +74,27 @@
                 </x-ui.button>
             </div>
         </form>
-    @elseif($step === 'join')
-        <form wire:submit="joinOrganization" class="space-y-6" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+    </div>
+
+    <div x-show="step === 'join'" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 scale-95" 
+         x-transition:enter-end="opacity-100 scale-100"
+         x-cloak
+         style="display: none;"
+    >
+        <form wire:submit="joinOrganization" class="space-y-6">
             <x-ui.input 
                 label="Code d'Invitation" 
                 placeholder="Entrez le code reçu par email"
                 wire:model="inviteCode"
                 icon="key"
                 required 
-                autofocus 
                 :error="$errors->first('inviteCode')"
             />
 
             <div class="flex items-center gap-3 pt-2">
-                <x-ui.button type="button" variant="ghost" icon="arrow-left" wire:click="back">
+                <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
                     Retour
                 </x-ui.button>
                 <x-ui.button type="submit" variant="primary" icon="send" class="flex-1">
@@ -72,5 +102,35 @@
                 </x-ui.button>
             </div>
         </form>
-    @endif
+    </div>
+
+    <div x-show="step === 'independent'" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 scale-95" 
+         x-transition:enter-end="opacity-100 scale-100"
+         x-cloak
+         style="display: none;"
+    >
+        <form wire:key="independent" wire:submit="selectIndependent" class="space-y-6 text-center">
+            <div class="mx-auto w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 shadow-sm border border-emerald-100 dark:border-emerald-800/50">
+                <x-lucide-user class="w-8 h-8" />
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Travailler en Indépendant</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2 max-w-sm mx-auto">
+                    Vous allez configurer un compte complet sans être rattaché à une organisation. Vous pourrez rejoindre une équipe plus tard.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3 pt-4">
+                <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
+                    Retour
+                </x-ui.button>
+                <x-ui.button type="submit" variant="primary" icon="check" class="flex-1">
+                    Confirmer le choix
+                </x-ui.button>
+            </div>
+        </form>
+    </div>
 </div>

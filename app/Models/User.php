@@ -46,6 +46,7 @@ class User extends Authenticatable
         'email',
         'role',
         'organization_id',
+        'is_independent',
         'sexe',
         'telephone',
         'numero_identification',

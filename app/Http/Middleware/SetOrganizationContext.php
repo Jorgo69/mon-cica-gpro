@@ -27,10 +27,16 @@ class SetOrganizationContext
                 return $next($request);
             }
 
-            // 2. Gestion de l'Onboarding (Si aucune organisation rattachée)
-            if (!$user->organization_id) {
+            // 2. Gestion de l'Onboarding (Si aucune organisation rattachée et non indépendant)
+            if (!$user->organization_id && !$user->is_independent) {
                 $onboardingRoutes = ['onboarding', 'logout'];
-                if (!$request->routeIs($onboardingRoutes)) {
+
+                // Autoriser les requêtes Livewire (AJAX) depuis la page d'onboarding
+                // Sans cette exception, le middleware redirige /livewire/update en 302
+                // et Livewire crash car il reçoit du HTML au lieu du JSON attendu.
+                $isLivewireRequest = $request->hasHeader('X-Livewire');
+
+                if (!$request->routeIs($onboardingRoutes) && !$isLivewireRequest) {
                     return redirect()->route('onboarding');
                 }
                 return $next($request);
