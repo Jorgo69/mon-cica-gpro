@@ -3,7 +3,7 @@
         {{-- En-tête de la page --}}
         <x-ui.page-header title="Tableau de Bord (Admin)" subtitle="Vue d'ensemble de la performance des projets">
             <x-slot:actions>
-                <x-ui.button tag="a" :href="route('admin.it.project.types.create')" variant="accent" icon="plus" size="lg">
+                <x-ui.button tag="a" :href="route('admin.project.types.create')" variant="accent" icon="plus" size="lg">
                     Créer un nouveau type
                 </x-ui.button>
             </x-slot:actions>

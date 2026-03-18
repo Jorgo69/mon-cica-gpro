@@ -57,13 +57,16 @@ class UserSeeder extends Seeder
         // 2. Créer les Utilisateurs et assigner les rôles
 
         // IT Admin
+        // On s'assure que le contexte d'organisation est nul pour l'attribution globale
+        setPermissionsTeamId(null);
+
         $itAdmin = User::firstOrCreate(
             ['email' => 'admin@cave-tech.com'],
             [
                 'name' => 'Jean Dupont',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
-                'organization_id' => $orgId,
+                'organization_id' => null, // Super Admin Global
                 'sexe' => 'Homme',
                 'role' => \App\Enums\AccountType::ADMIN,
                 'department' => 'Informatique & Systèmes',
@@ -72,7 +75,10 @@ class UserSeeder extends Seeder
                 'ville' => 'Cotonou',
             ]
         );
-        $itAdmin->assignRole('IT_ADMIN'); // Rôle global
+        $itAdmin->assignRole('IT_ADMIN'); 
+
+        // On remet le contexte pour la suite du seeding
+        setPermissionsTeamId($orgId);
 
         // Org Admin (Superviseurs dans le seed original)
         $supervisors = [

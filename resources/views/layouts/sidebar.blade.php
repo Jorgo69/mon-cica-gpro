@@ -44,34 +44,65 @@
         </a>
 
 
-        {{-- ── ADMINISTRATION ── --}}
-        @if (auth()->user()->role === \App\Enums\AccountType::ADMIN)
+        {{-- ── SYSTÈME (SUPER ADMIN / IT_ADMIN) ── --}}
+        @if (auth()->user()->hasRole('IT_ADMIN'))
+        <p class="sidebar-section-title">Système</p>
+
+        <div x-data="{ open: {{ Route::is('system*') ? 'true' : 'false' }} }">
+            <button @click="open = !open" 
+                    class="nav-item w-full justify-between @if(Route::is('system*')) nav-item-active @endif">
+                <div class="flex items-center gap-3 text-rose-600 dark:text-rose-400">
+                    <x-lucide-server class="nav-icon" />
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">Configuration</span>
+                </div>
+                <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
+            </button>
+            <div x-show="open" x-collapse>
+                <div class="nav-submenu">
+                    <a href="{{ route('system.roles') }}" class="nav-submenu-item @if(Route::is('system.roles*')) nav-submenu-item-active @endif">
+                        Rôles & Permissions
+                    </a>
+                    <a href="{{ route('system.organizations') }}" class="nav-submenu-item @if(Route::is('system.organizations*')) nav-submenu-item-active @endif">
+                        Organisations
+                    </a>
+                    <a href="{{ route('system.audit.logs') }}" class="nav-submenu-item @if(Route::is('system.audit.logs*')) nav-submenu-item-active @endif">
+                        Logs d'audit global
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+
+
+        {{-- ── ADMINISTRATION (ORG ADMIN & ADMINS) ── --}}
+        @php
+            $isAdmin = auth()->user()->hasAnyRole(['IT_ADMIN', 'ORG_ADMIN']) || auth()->user()->hasPermissionTo('manage-users');
+        @endphp
+
+        @if ($isAdmin)
         <p class="sidebar-section-title">Administration</p>
 
         <div x-data="{ open: {{ Route::is('admin*') ? 'true' : 'false' }} }">
             <button @click="open = !open" 
                     class="nav-item w-full justify-between @if(Route::is('admin*')) nav-item-active @endif">
                 <div class="flex items-center gap-3">
-                    <x-lucide-shield class="nav-icon" />
-                    <span class="nav-label">{{ __('navigation.sidebar.administrator') }}</span>
+                    <x-lucide-shield-check class="nav-icon text-indigo-500" />
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">Gestion Organisme</span>
                 </div>
                 <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
-                    <a href="{{ route('admin.it.type.of.project') }}" class="nav-submenu-item @if(Route::is('admin.it.type.of.project*')) nav-submenu-item-active @endif">
-                        {{ __('Type de Projet') }}
-                    </a>
-                    <a href="{{ route('admin.it.project.list') }}" class="nav-submenu-item @if(Route::is('admin.it.project.list*')) nav-submenu-item-active @endif">
-                        {{ __('Liste de Projet') }}
-                    </a>
-                    <a href="{{ route('admin.it.category.list') }}" class="nav-submenu-item @if(Route::is('admin.it.category.list*')) nav-submenu-item-active @endif">
-                        {{ __('navigation.sidebar.categories list') }}
-                    </a>
-                    <a href="{{ route('admin.it.member.list') }}" class="nav-submenu-item @if(Route::is('admin.it.member.list*')) nav-submenu-item-active @endif">
+                    <a href="{{ route('admin.member.list') }}" class="nav-submenu-item @if(Route::is('admin.member.list*')) nav-submenu-item-active @endif">
                         {{ __('navigation.sidebar.members') }}
                     </a>
-                    <a href="{{ route('admin.it.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.it.trash.management*')) nav-submenu-item-active @endif">
+                    <a href="{{ route('admin.category.list') }}" class="nav-submenu-item @if(Route::is('admin.category.list*')) nav-submenu-item-active @endif">
+                        {{ __('navigation.sidebar.categories list') }}
+                    </a>
+                    <a href="{{ route('admin.type.of.project') }}" class="nav-submenu-item @if(Route::is('admin.type.of.project*')) nav-submenu-item-active @endif">
+                        {{ __('Type de Projet') }}
+                    </a>
+                    <a href="{{ route('admin.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.trash.management*')) nav-submenu-item-active @endif">
                         {{ __('Corbeilles') }}
                     </a>
                 </div>
@@ -88,17 +119,17 @@
                     class="nav-item w-full justify-between @if(Route::is('setting*') || Route::is('profile*')) nav-item-active @endif">
                 <div class="flex items-center gap-3">
                     <x-lucide-settings class="nav-icon" />
-                    <span class="nav-label">{{ __('navigation.sidebar.Settings') }}</span>
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.sidebar.Settings') }}</span>
                 </div>
                 <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
                     <a href="{{ route('setting') }}" class="nav-submenu-item @if(Route::is('setting')) nav-submenu-item-active @endif">
-                        General
+                        Général
                     </a>
                     <a href="{{ route('profile.edit') }}" class="nav-submenu-item @if(Route::is('profile*')) nav-submenu-item-active @endif">
-                        Profile
+                        Mon Profil
                     </a>
                 </div>
             </div>

@@ -1,189 +1,85 @@
-# Scénario de la Phase 1 : Création des types de projets et des champs dynamiques par l'administrateur
+# 🚀 CICA-GPRO : Système Intelligent de Gestion de Projets
 
-1.**Accès au panneau d'administration :**
-    L'un des administrateurs du département IT, appelons-le **Alex**, se connecte à l'application. Son tableau de bord n'affiche pas encore de projets à créer, mais une section dédiée à l'administration du système.
+[![Laravel 10](https://img.shields.io/badge/Laravel-10.x-red.svg)](https://laravel.com)
+[![Livewire 3](https://img.shields.io/badge/Livewire-3.x-blue.svg)](https://livewire.laravel.com)
+[![Pest](https://img.shields.io/badge/Pest-v2-green.svg)](https://pestphp.com)
+[![License](https://img.shields.io/badge/License-Proprietary-black.svg)]()
 
-2.**Création d'un nouveau type de projet :**
-    Alex navigue vers le menu `Administration` puis sélectionne `Types de Projets`. Il voit une liste des types de projets existants (s'il y en a) et un bouton `Ajouter un nouveau type de projet`. Il clique sur ce bouton.
-
-3.**Définition des informations de base du type de projet :**
-    Un formulaire simple s'affiche. Alex saisit les informations de base pour ce nouveau type de projet :
-    ***Nom**: "Projet d'Assistance Humanitaire"
-    ***Description**: "Ce modèle est destiné à la création de projets d'aide d'urgence et de développement communautaire."
-
-4.**Ajout des champs dynamiques (`DynamicProjectField`) :**
-    Une fois le type de projet enregistré, Alex peut commencer à définir les champs spécifiques qui apparaîtront pour ce type de projet. C'est ici que le modèle `DynamicProjectField` entre en jeu.
-
-    ***Champ 1 (Texte) :**Alex ajoute un premier champ. Il donne un **libellé**: "Région d'Intervention". Il choisit le **type de champ**"Texte" et le marque comme **requis**.
-    ***Champ 2 (Sélection) :**Alex ajoute un second champ. Il le nomme "Type d'Urgence" et choisit le **type de champ**"Sélection". Il entre ensuite les différentes **options**possibles, par exemple : "Catastrophe Naturelle", "Conflit Armé", "Crise Sanitaire".
-    ***Champ 3 (Date) :**Un troisième champ est ajouté pour collecter une information spécifique, par exemple "Date de Début Prévue". Le **type de champ**est défini sur "Date".
-    ***Champ 4 (Zone de texte) :**Un dernier champ pour des informations plus longues, avec un **libellé**"Population Cible" et un **type**"Zone de texte".
-
-5.**Finalisation :**
-    Alex valide et enregistre la configuration du type de projet. Il peut revenir à tout moment pour modifier ou ajouter d'autres champs dynamiques.
-
-Le résultat final est un modèle de formulaire personnalisé et flexible. Lorsque, dans la phase suivante, un membre de l'ONG voudra créer un "Projet d'Assistance Humanitaire", le formulaire affichera automatiquement les champs "Région d'Intervention", "Type d'Urgence", "Date de Début Prévue" et "Population Cible", tels que définis par Alex.
+**CICA-GPRO** est une plateforme moderne et puissante de gestion de projets basée sur le **Cadre Logique (LogFrame)**. Conçue pour les organisations exigeantes, elle combine une architecture multi-tenant robuste avec une expérience utilisateur premium.
 
 ---
 
+## ✨ Fonctionnalités Clés
 
-D'accord, maintenant que la première phase de configuration des types de projets et de leurs champs dynamiques par le département IT est en place, nous pouvons passer aux étapes suivantes de votre scénario.
+### 🏗️ Architecture & Sécurité
+- **Multi-Tenancy Natif** : Isolation totale des données par organisation via `organization_id`.
+- **RBAC Complet** : Gestion fine des permissions avec `spatie/laravel-permission` (IT_ADMIN, ORG_ADMIN, MANAGER, MEMBER).
+- **Audit Logs** : Historique complet des modifications sur chaque entité (Projets, Activités, Ressources).
 
----
+### 📊 Pilotage de Projet (Cadre Logique)
+- **Structure Hiérarchique** : Projets > Cadre Logique > Objectifs Spécifiques > Résultats > Activités.
+- **Suivi de Progression** : Calcul automatique de l'avancement pondéré et historique des jalons.
+- **Tableaux de Bord Dynamiques** : Analytics en temps réel via Chart.js pour visualiser les budgets et les taux d'exécution.
 
-###**Phase 2 : Création et Soumission du Projet par un Membre de l'ONG**📝
-
-Cette phase est celle où un membre de l'ONG (non-admin) initie concrètement un projet en utilisant les modèles que l'IT a définis.
-
-1.**Accès au Formulaire de Création de Projet :**
-    *Un membre de l'ONG, par exemple **Marie**, se connecte à l'application.
-    *Elle navigue vers une section `Créer un Projet`.
-    *L'application lui présente une liste des **types de projets**disponibles (tirés de la table `project_types`). Marie sélectionne, par exemple, le "Projet d'Urgence Humanitaire".
-
-2.**Affichage du Formulaire Dynamique :**
-    *Une fois le type de projet sélectionné, l'application utilise les définitions des champs de la table `dynamic_project_fields` (liés à ce `project_type_id`) pour construire dynamiquement le formulaire.
-    *Marie voit les champs comme "Quelle est la zone géographique exacte de l'intervention ?", "Quel est le type de catastrophe/crise ?", "Nombre estimé de bénéficiaires directs ?", etc., tels que configurés par l'administrateur IT.
-
-3.**Saisie des Informations du Projet :**
-    *Marie remplit le formulaire avec les détails spécifiques à son projet d'urgence (ex: "Zone : Nord du Bénin", "Type de crise : Inondation", "Bénéficiaires : 5000").
-    *Les informations saisies sont collectées et formatées. Les valeurs des champs dynamiques seront stockées dans les `target_project_field` correspondants de la table `projects` (par exemple, dans les champs `description` ou `general_objectives`, en utilisant les `delimiter_start` et `delimiter_end` pour les identifier).
-
-4.**Enregistrement Initial du Projet :**
-    *Lorsque Marie soumet le formulaire, une nouvelle entrée est créée dans la table `projects`.
-    *Le `creator_user_id` est renseigné avec l'ID de Marie.
-    *Le `project_type_id` est lié au type de projet qu'elle a choisi.
-    *Le `status` du projet est initialisé à "Brouillon" ou "En attente de validation".
-    *Des entrées initiales peuvent également être créées dans d'autres tables liées au projet, comme :
-        *`project_contexts` (pour le contexte général du projet).
-        *`project_documents` (si Marie télécharge des documents initiaux).
-        *`logical_frameworks` (pour les objectifs généraux du projet).
-        *`specific_objectives` (pour les objectifs spécifiques liés au cadre logique).
-        *`results` (pour les résultats attendus).
-        *`activities` (pour les activités initiales, même si les responsables et dates précises peuvent être affinés plus tard).
-
-5.**Soumission pour Validation :**
-    *Une fois le projet créé, Marie le "soumet" pour validation. Cela peut changer son statut à "En attente de validation" et déclencher une notification aux superviseurs ou au comité de validation.
+### 💎 Expérience Utilisateur (Premium UX)
+- **Recherche Globale (Ctrl+K)** : Moteur de recherche ultra-rapide couvrant les projets, membres et activités.
+- **Reporting PDF Premium** : Génération de rapports haute fidélité (Vecteurs/Browsershot) avec templates Modernes et Classiques.
+- **Centre de Notifications** : Alertes en temps réel sur l'avancement, les retards et les validations requises.
+- **UI Component Library** : Bibliothèque de composants `x-ui` cohérente, accessible et supportant le mode sombre.
 
 ---
 
-###**Phase 3 : Validation, Interaction et Suivi du Projet**🔄
+## 🛠️ Stack Technique
 
-Cette phase implique la collaboration des membres de l'ONG et le suivi de l'avancement du projet.
+- **Backend** : PHP 8.2+, Laravel 10.x
+- **Frontend** : Livewire 3, Alpine.js, Tailwind CSS
+- **Base de données** : PostgreSQL / MySQL / SQLite
+- **Exports** : Spatie Browsershot (Puppeteer), Laravel Excel
+- **Tests** : Pest PHP
 
-1.**Revue et Validation du Projet :**
-    *Les superviseurs ou membres du comité de validation (qui ont les rôles appropriés dans la table `roles` et sont des `users`) accèdent à une liste des projets "En attente de validation".
-    *Ils examinent les détails du projet créé par Marie.
-    *Ils peuvent décider de :
-        ***Valider le projet :**Le `status` du projet dans la table `projects` passe à "Actif". C'est à ce moment que le budget et la durée finale peuvent être définis.
-        ***Demander des modifications :**Le `status` reste "En attente de validation" ou passe à "Modifications requises", avec des commentaires ajoutés. Marie est notifiée pour apporter les ajustements.
-        ***Refuser le projet :**Le `status` passe à "Refusé".
+---
 
-2.**Planification Détaillée (si validé) :**
-    *Si le projet est validé et passe au statut "Actif", les équipes financières ou les gestionnaires de projet peuvent commencer à définir le budget détaillé.
-    *Des entrées sont créées dans la table `budgets` pour les lignes budgétaires principales du projet.
-    *Ces budgets peuvent ensuite être ventilés par trimestre dans la table `quarterly_budgets`.
-    *Les `activities` peuvent être affinées, des `responsible_user_id` (liés à la table `users`) sont assignés, et les `start_date` et `end_date` sont précisées.
-    *Des `resources` (humaines, matérielles, financières) sont allouées aux `activities`.
+## 🚀 Installation Rapide
 
-3.**Suivi de la Progression :**
-    *Tout au long de l'exécution du projet, les responsables d'activités ou les superviseurs mettent à jour l'avancement.
-    *La table `progress_trackers` est utilisée pour enregistrer :
-        *La `date` du suivi.
-        *Le `progress_percentage` de l'activité ou du projet.
-        *Un `status_update` (commentaire).
-        *Une `justification` en cas de retard.
-        *L'utilisateur (`updated_by_user_id` de la table `users`) qui a effectué la mise à jour.
-    *Des `qualitative_evaluations` peuvent être réalisées pour évaluer la qualité des activités ou du projet.
+```bash
+# 1. Cloner le projet
+git clone [repository-url]
+cd new-log-frame-laravel-10
 
-4.**Clôture du Projet :**
-    *Une fois toutes les activités terminées et les objectifs atteints, le `status` du projet dans la table `projects` passe à "Terminé".
+# 2. Installer les dépendances
+composer install
+npm install
 
-Ce scénario montre comment les tables `project_types`, `dynamic_project_fields`, `projects`, `logical_frameworks`, `specific_objectives`, `results`, `activities`, `budgets`, `quarterly_budgets`, `progress_trackers`, et `qualitative_evaluations` s'articulent pour gérer le cycle de vie complet d'un projet au sein de l'ONG.
+# 3. Configurer l'environnement
+cp .env.example .env
+php artisan key:generate
 
+# 4. Migrer et Seeder (Multi-Tenant inclus)
+php artisan migrate --seed
 
+# 5. Lancer le serveur de dev
+php artisan serve
+npm run dev
+```
 
-Artisan Commande: 
-    `php artisan make:migration update_file_type_length_in_project_documents --table=project_documents`
+---
 
+## 🧪 Tests Automatisés
 
+Nous utilisons **Pest** pour garantir la robustesse des actions métiers.
 
-git add . && git commit -m "Admin re-begin ..." && git push
+```bash
+php artisan test
+```
 
-`php artisan db:seed --class=NomDeVotreSeeder`
+---
 
+## 🤝 Contribution
 
-regarde attentivement cette partie
-private function syncActivities($logicalFramework)
-{
-    // Récupérer tous les IDs d'activités existantes
-    $allExistingActivityIds = [];
-    foreach ($logicalFramework->specificObjectives as $objective) {
-        foreach ($objective->results as $result) {
-            $activityIds = $result->activities->pluck('id')->toArray();
-            $allExistingActivityIds = array_merge($allExistingActivityIds, $activityIds);
-        }
-    }
+Veuillez consulter le fichier [CONTRIBUTING.md](CONTRIBUTING.md) pour plus de détails sur nos standards de développement et le workflow Git.
 
-    $submittedActivityIds = [];
-    $resultIndex = 0;
-    $allResults = $logicalFramework->specificObjectives->flatMap->results;
+---
 
-    foreach ($this->activities as $activityData) {
-        $cleanData = Arr::except($activityData, ['id', 'result_id', 'created_at', 'updated_at']);
-        
-        // Formater les dates
-        if (isset($cleanData['start_date'])) {
-            $cleanData['start_date'] = Carbon::parse($cleanData['start_date'])->format('Y-m-d');
-        }
-        if (isset($cleanData['end_date'])) {
-            $cleanData['end_date'] = Carbon::parse($cleanData['end_date'])->format('Y-m-d');
-        }
+## 📄 Licence
 
-        $result = $allResults[$resultIndex % count($allResults)];
-        
-        if (isset($activityData['id']) && in_array($activityData['id'], $allExistingActivityIds)) {
-            // Mise à jour de l'activité existante
-            Activity::where('id', $activityData['id'])->update($cleanData);
-            $submittedActivityIds[] = $activityData['id'];
-        } else {
-            // Création d'une nouvelle activité
-            $activity = Activity::create(array_merge(
-                $cleanData,
-                ['id' => (string) Str::uuid(), 'result_id' => $result->id]
-            ));
-            $submittedActivityIds[] = $activity->id;
-        }
-        
-        $resultIndex++;
-    }
-
-    // Supprimer seulement les activités qui n'ont pas été soumis
-    $toDelete = array_diff($allExistingActivityIds, $submittedActivityIds);
-    if (!empty($toDelete)) {
-        Activity::whereIn('id', $toDelete)->delete();
-    }
-}
-Dis moi exactement ce que sa fait
-Puis que moi j'ai remarque que en edition sa ajoute encore tout a propose de activite
-meme si je n'ajoute pas d'activite,  l'activite qui est rester dans le champs quand je suis en mode edition se recreer donc je me retourve avec la meme chose deux fois
-
-
-
-
-private function cleanHtml($content)
-{
-    if (empty($content)) return null;
-    
-    if (class_exists('HTMLPurifier')) {
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,br,strong,em,u,ul,ol,li,a[href|target],img[src|alt]');
-        $config->set('AutoFormat.RemoveEmpty', true);
-        
-        $purifier = new HTMLPurifier($config);
-        return $purifier->purify($content);
-    }
-    
-    return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
-}
-
-
+Ce logiciel est propriétaire. Tous droits réservés à **Cave-Tech**.

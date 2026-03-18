@@ -42,7 +42,18 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function createOrgUser()
 {
-    // ..
+    $org = \App\Models\Organization::factory()->create();
+    $user = \App\Models\User::factory()->create(['organization_id' => $org->id]);
+    
+    return [$org, $user];
+}
+
+function loginAsUser()
+{
+    [$org, $user] = createOrgUser();
+    test()->actingAs($user);
+    
+    return [$org, $user];
 }

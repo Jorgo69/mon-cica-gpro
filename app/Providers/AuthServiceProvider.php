@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        \App\Models\User::class => \App\Policies\UserPolicy::class,
     ];
 
     /**
@@ -21,6 +21,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        // Super Admin Bypass : le rôle IT_ADMIN a tous les droits
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            return $user->hasRole('IT_ADMIN') ? true : null;
+        });
     }
 }

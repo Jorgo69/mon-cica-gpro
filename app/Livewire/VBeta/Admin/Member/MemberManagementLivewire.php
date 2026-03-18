@@ -2,18 +2,23 @@
 
 namespace App\Livewire\VBeta\Admin\Member;
 
+use App\Actions\Admin\Member\DeleteMemberAction;
+use App\Actions\Admin\Member\SaveMemberAction;
+use App\Services\Admin\MemberQueryService;
+use App\Models\User;
+use App\Enums\AccountType;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rules\Enum;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use App\Enums\AccountType;
-use Illuminate\Validation\Rules\Enum;
+use App\Livewire\Traits\WithToastNotifications;
 
 class MemberManagementLivewire extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithPagination, WithFileUploads, AuthorizesRequests, WithToastNotifications;
 
+    // Filtres et Tri
     public $search = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
@@ -21,9 +26,9 @@ class MemberManagementLivewire extends Component
     // Gestion des modals
     public $showModal = false;
     public $modalType = 'create'; // create, edit, view, delete
-    public $selectedMember = null;
+    public ?User $selectedMember = null;
 
-    // Champs formulaire
+    // Champs formulaire (liés directement au x-ui.input/select)
     public $name, $email, $password, $telephone, $sexe, $numero_identification, $pays, $ville, $role, $department, $image;
 
     protected $queryString = [
@@ -32,6 +37,9 @@ class MemberManagementLivewire extends Component
         'sortDirection' => ['except' => 'desc'],
     ];
 
+    /**
+     * Règles de validation centralisées.
+     */
     protected function rules()
     {
         return [
@@ -64,105 +72,98 @@ class MemberManagementLivewire extends Component
         $this->sortField = $field;
     }
 
-    public function openModal($type, $id = null)
+    /**
+     * Ouvre le modal spécifié.
+     */
+    public function openModal($type, $id = null, MemberQueryService $queryService)
     {
+        $this->authorize('viewAny', User::class);
+        
         $this->resetValidation();
         $this->resetForm();
         $this->modalType = $type;
         $this->showModal = true;
 
         if ($id) {
-            $this->selectedMember = User::findOrFail($id);
-            $this->fill($this->selectedMember->toArray());
+            $this->selectedMember = $queryService->findById($id);
+            if ($this->selectedMember) {
+                $this->authorize('view', $this->selectedMember);
+                $this->fill($this->selectedMember->toArray());
+                // On s'assure que le role est bien l'enum value pour le select
+                $this->role = $this->selectedMember->role->value;
+            }
         }
     }
 
-    public function store()
+    /**
+     * Ferme le modal et réinitialise l'état.
+     */
+    public function closeModal()
     {
-        $this->validate();
-
-        $user = new User();
-        $user->name = $this->name;
-        $user->email = $this->email;
-        $user->password = Hash::make($this->password);
-        $user->telephone = $this->telephone;
-        $user->sexe = $this->sexe;
-        $user->numero_identification = $this->numero_identification;
-        $user->pays = $this->pays;
-        $user->ville = $this->ville;
-        $user->role = $this->role;
-        $user->department = $this->department;
-
-        if ($this->image) {
-            $user->image = $this->image->store('members', 'public');
-        }
-
-        $user->save();
-
-        $this->showModal = false;
-        $this->resetForm();
-
-        session()->flash('success', 'Utilisateur ajouter avec success');
-    }
-
-    public function update()
-    {
-        $this->validate();
-
-        $user = $this->selectedMember;
-        $user->name = $this->name;
-        $user->email = $this->email;
-        if ($this->password) {
-            $user->password = Hash::make($this->password);
-        }
-        $user->telephone = $this->telephone;
-        $user->sexe = $this->sexe;
-        $user->numero_identification = $this->numero_identification;
-        $user->pays = $this->pays;
-        $user->ville = $this->ville;
-        $user->role = $this->role;
-        $user->department = $this->department;
-
-        if ($this->image) {
-            $user->image = $this->image->store('members', 'public');
-        }
-
-        $user->save();
-
-        $this->showModal = false;
-        $this->resetForm();
-        // dd();
-        session()->flash('info-project', 'Info mis a jour');
-    }
-
-    public function delete()
-    {
-        if ($this->selectedMember) {
-            $this->selectedMember->delete();
-        }
         $this->showModal = false;
         $this->resetForm();
     }
 
+    /**
+     * Action de sauvegarde (Création).
+     */
+    public function store(SaveMemberAction $saveAction)
+    {
+        $this->authorize('create', User::class);
+        $data = $this->validate();
+        
+        $saveAction->execute($data);
+
+        $this->closeModal();
+        $this->notifyToast('success', 'Le membre a été créé avec succès.', 'Nouveau Membre');
+    }
+
+    /**
+     * Action de mise à jour.
+     */
+    public function update(SaveMemberAction $saveAction)
+    {
+        $this->authorize('update', $this->selectedMember);
+        $data = $this->validate();
+        
+        $saveAction->execute($data, $this->selectedMember);
+
+        $this->closeModal();
+        $this->notifyToast('success', 'Les informations du membre ont été mises à jour.', 'Mise à jour');
+    }
+
+    /**
+     * Action de suppression.
+     */
+    public function delete(DeleteMemberAction $deleteAction)
+    {
+        $this->authorize('delete', $this->selectedMember);
+        
+        $deleteAction->execute($this->selectedMember);
+        
+        $this->closeModal();
+        $this->notifyToast('success', 'Le membre a été supprimé de l\'organisation.', 'Suppression effectuée');
+    }
+
+    /**
+     * Réinitialise les champs du formulaire.
+     */
     private function resetForm()
     {
-        $this->name = $this->email = $this->password = $this->telephone = $this->sexe =
-        $this->numero_identification = $this->pays = $this->ville = $this->role = $this->department = $this->image = null;
-        $this->selectedMember = null;
+        $this->reset(['name', 'email', 'password', 'telephone', 'sexe', 'numero_identification', 'pays', 'ville', 'role', 'department', 'image', 'selectedMember']);
     }
 
-    public function render()
+    /**
+     * Rendu de la vue avec injection du service de requête.
+     */
+    public function render(MemberQueryService $queryService)
     {
-        $members = User::query()
-            ->when($this->search, fn($q) =>
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%')
-            )
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-
         return view('livewire.v-beta.admin.member.member-management-livewire', [
-            'members' => $members,
+            'members' => $queryService->list(
+                search: $this->search,
+                sortField: $this->sortField,
+                sortDirection: $this->sortDirection,
+            ),
         ]);
     }
 }

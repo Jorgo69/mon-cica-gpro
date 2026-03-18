@@ -39,7 +39,7 @@ class GlobalSearchService
                     'type' => 'Projet',
                     'title' => $project->title,
                     'subtitle' => $project->project_code . ' - ' . ($project->status?->label() ?? 'État inconnu'),
-                    'url' => route('management', ['projectId' => $project->id]),
+                    'url' => route('project.dashboard', ['projectId' => $project->id]),
                     'icon' => 'folder-kanban',
                 ];
             });
@@ -55,7 +55,7 @@ class GlobalSearchService
                     'type' => 'Activité',
                     'title' => $activity->description,
                     'subtitle' => 'Projet: ' . ($activity->project?->short_title ?? 'N/A'),
-                    'url' => route('management', ['projectId' => $activity->project?->id]), // Link to project management
+                    'url' => route('project.dashboard', ['projectId' => $activity->project?->id]), // Link to project management
                     'icon' => 'activity',
                 ];
             });
@@ -74,7 +74,7 @@ class GlobalSearchService
                     'type' => 'Membre',
                     'title' => $user->name,
                     'subtitle' => $user->email,
-                    'url' => route('admin.it.member.list'), // Redirect to members list
+                    'url' => route('admin.member.list'), // Redirect to members list
                     'icon' => 'users',
                 ];
             });

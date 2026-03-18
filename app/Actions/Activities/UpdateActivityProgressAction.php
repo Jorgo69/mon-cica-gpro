@@ -29,8 +29,8 @@ class UpdateActivityProgressAction
             $notification = new \App\Notifications\ActivityProgressUpdatedNotification($activity, $activity->progress_percentage);
             
             // On notifie le responsable s'il est différent de l'auteur de la mise à jour
-            if ($activity->responsible && $activity->responsible->id !== auth()->id()) {
-                $activity->responsible->notify($notification);
+            if ($activity->responsibleUser && $activity->responsibleUser->id !== auth()->id()) {
+                $activity->responsibleUser->notify($notification);
             }
 
             // On notifie le créateur du projet

@@ -166,7 +166,7 @@ class ProjectTypeFormLivewire extends Component
             }
 
             session()->flash('message', 'Type de projet sauvegardé avec succès !');
-            return redirect()->route('admin.it.type.of.project');
+            return redirect()->route('admin.type.of.project');
 
         } catch (\Exception $e) {
             session()->flash('error', 'Une erreur est survenue : ' . $e->getMessage());

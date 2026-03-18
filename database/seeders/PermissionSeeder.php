@@ -39,8 +39,10 @@ class PermissionSeeder extends Seeder
             'view-budgets',
             'manage-budgets',
             
-            // System
+            // System & Config
             'access-admin-panel',
+            'manage-system-config',
+            'view-audit-logs',
         ];
 
         foreach ($permissions as $permission) {

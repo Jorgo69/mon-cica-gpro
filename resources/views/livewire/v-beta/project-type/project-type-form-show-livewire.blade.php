@@ -74,7 +74,7 @@
         </div>
         
         <div class="flex justify-end mt-6">
-            <a href="{{ route('admin.it.project.types.edit', ['projectTypeId' => $projectType->id]) }}" class="px-6 py-3 bg-indigo-600 text-black font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+            <a href="{{ route('admin.project.types.edit', ['projectTypeId' => $projectType->id]) }}" class="px-6 py-3 bg-indigo-600 text-black font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
                 Modifier le type de projet
             </a>
         </div>

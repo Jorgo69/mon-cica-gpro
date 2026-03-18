@@ -3,24 +3,22 @@
     'maxWidth' => 'max-w-2xl',
     'show' => false,
     'id' => null,
+    'closeAction' => 'closeModal', // Méthode Livewire à appeler pour fermer (par défaut: closeModal)
+    'dismissable' => true,          // Si true, cliquer sur l'overlay ou Escape ferme le modal
 ])
 
 @php
-    $id = $id ?? md5($attributes->get('wire:model') ?? $title);
+    $id = $id ?? md5($title ?: 'modal-default');
 @endphp
 
 <div 
     wire:key="modal-{{ $id }}"
-    x-data="{ 
-        show: @entangle($attributes->wire('show')).live,
-        close() { 
-            this.show = false;
-            $dispatch('close-modal');
-        }
-    }"
+    x-data="{ show: false }"
+    x-init="setTimeout(() => show = true, 50)"
     x-show="show"
-    x-on:keydown.escape.window="close()"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    x-on:keydown.escape.window="@if($dismissable) $wire.{{ $closeAction }}() @endif"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
     style="display: none;"
 >
     {{-- Overlay --}}
@@ -32,8 +30,8 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm"
-        @click="close()"
+        class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm pointer-events-auto"
+        @if($dismissable) @click="$wire.{{ $closeAction }}()" @endif
     ></div>
 
     {{-- Content --}}
@@ -45,12 +43,12 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-        class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full {{ $maxWidth }} max-h-[90vh] flex flex-col overflow-hidden"
+        class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full {{ $maxWidth }} max-h-[90vh] flex flex-col overflow-hidden pointer-events-auto"
     >
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
             <h2 class="text-[15px] font-bold text-slate-800 dark:text-slate-100 tracking-tight">{{ $title }}</h2>
-            <button type="button" @click="close()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <button type="button" wire:click="{{ $closeAction }}" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                 <x-lucide-x class="w-4 h-4" />
             </button>
         </div>

@@ -2,7 +2,7 @@
 
     <x-ui.page-header title="Types de Projets" subtitle="Configurez les catégories et champs dynamiques de vos projets">
         <x-slot:actions>
-            <x-ui.button tag="a" :href="route('admin.it.project.types.create')" variant="accent" icon="plus" size="lg">
+            <x-ui.button tag="a" :href="route('admin.project.types.create')" variant="accent" icon="plus" size="lg">
                 Créer un nouveau type
             </x-ui.button>
         </x-slot:actions>
@@ -17,7 +17,7 @@
                 <div class="flex items-center justify-between">
                     <x-ui.badge variant="accent" size="sm" icon="tag">{{ $type->category ?? 'N/A' }}</x-ui.badge>
                     <div class="flex items-center gap-1.5">
-                        <x-ui.button tag="a" :href="route('admin.it.project.types.edit', ['projectTypeId' => $type->id])" variant="ghost" icon="pencil" size="sm" />
+                        <x-ui.button tag="a" :href="route('admin.project.types.edit', ['projectTypeId' => $type->id])" variant="ghost" icon="pencil" size="sm" />
                         <x-ui.button 
                             wire:click="deleteProjectType('{{ $type->id }}')" 
                             onclick="confirm('Êtes-vous sûr de vouloir supprimer ce type de projet ?') || event.stopImmediatePropagation()"
