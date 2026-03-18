@@ -29,7 +29,11 @@
         </label>
     @endif
 
-    <div class="relative group">
+    <div class="relative group" 
+        @if($type === 'password') 
+            x-data="{ show: false }" 
+        @endif
+    >
         @if($icon)
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none group-focus-within:text-accent transition-colors">
                 <x-dynamic-component :component="'lucide-' . $icon" class="h-4 w-4 text-slate-300 group-focus-within:text-accent" />
@@ -37,18 +41,27 @@
         @endif
 
         <input 
-            type="{{ $type }}" 
+            @if($type === 'password') 
+                :type="show ? 'text' : 'password'" 
+            @else
+                type="{{ $type }}" 
+            @endif
             name="{{ $name }}" 
             id="{{ $name }}"
             @if(!$hasWireModel) value="{{ $inputValue }}" @endif
             placeholder="{{ $placeholder }}"
             @if($required) required @endif
             {{ $attributes->merge([
-                'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all ' . ($icon ? 'pl-11' : 'pl-4') . ' ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '')
+                'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all ' . ($icon ? 'pl-11' : 'pl-4') . ' ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '') . ' ' . ($type === 'password' ? 'pr-11' : 'pr-4')
             ]) }}
         >
         
-        @if($error)
+        @if($type === 'password')
+            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-300 hover:text-accent transition-colors">
+                <x-lucide-eye x-show="!show" class="h-4 w-4" />
+                <x-lucide-eye-off x-show="show" class="h-4 w-4" />
+            </button>
+        @elseif($error)
             <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                 <x-lucide-alert-circle class="h-4 w-4 text-rose-500" />
             </div>

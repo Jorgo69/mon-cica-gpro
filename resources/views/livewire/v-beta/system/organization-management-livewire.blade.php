@@ -46,9 +46,9 @@
                             <div class="flex items-center justify-end gap-1">
                                 <x-ui.button variant="ghost" size="sm" icon="edit" wire:click="openOrganizationModal('{{ $org->id }}')" />
                                 @if($org->users()->count() === 0)
-                                    <x-ui.button variant="ghost" size="sm" icon="trash-2" class="text-rose-500" 
+                                    <x-ui.button variant="ghost" size="sm" icon="trash-2" class="text-rose-500 hover:bg-rose-50" 
                                         wire:click="deleteOrg('{{ $org->id }}')"
-                                        wire:confirm="ACTION CRITIQUE : Souhaitez-vous vraiment supprimer définitivement cette organisation ? Toutes les données liées seront perdues." />
+                                        onclick="return confirm('ACTION CRITIQUE : Souhaitez-vous vraiment supprimer définitivement cette organisation ? Toutes les données liées seront perdues.')" />
                                 @endif
                             </div>
                         </x-ui.table.td>

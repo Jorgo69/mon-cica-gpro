@@ -1,5 +1,5 @@
 <div x-data="toastHandler()" 
-     @toast-notification.window="addToast($event.detail.data)"
+     @toast-notification.window="addToast($event.detail)"
      class="fixed top-24 right-5 z-[9999] flex flex-col gap-3 pointer-events-none">
     
     <template x-for="toast in toasts" :key="toast.id">

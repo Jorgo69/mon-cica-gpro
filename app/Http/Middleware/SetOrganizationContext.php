@@ -21,20 +21,30 @@ class SetOrganizationContext
         if (auth()->check()) {
             $user = auth()->user();
 
-            // 1. Les Admins IT ont accès à tout, pas besoin de contexte restrictif
-            if ($user->role === \App\Enums\AccountType::ADMIN) {
+            // 1. Les Admins IT ont accès à tout, pas besoin de contexte restrictif (bypass global)
+            // Note: On utilise le nom constant de l'Enum si possible
+            if ($user->role->value === \App\Enums\AccountType::ADMIN->value) {
                 return $next($request);
             }
 
-            // 2. Si l'organisation est suspendue ou inactive, on bloque l'accès
+            // 2. Gestion de l'Onboarding (Si aucune organisation rattachée)
+            if (!$user->organization_id) {
+                $onboardingRoutes = ['onboarding', 'logout'];
+                if (!$request->routeIs($onboardingRoutes)) {
+                    return redirect()->route('onboarding');
+                }
+                return $next($request);
+            }
+
+            // 3. Si l'organisation est suspendue ou inactive, on bloque l'accès
             $organization = $user->organization;
             if ($organization && $organization->status === \App\Enums\OrganizationStatus::SUSPENDED) {
                 auth()->logout();
                 return redirect()->route('login')->with('error', 'Votre organisation est suspendue. Contactez l\'administrateur.');
             }
 
-            // 3. (Optionnel) Ici on pourrait injecter l'ID de l'organisation dans la session 
-            // pour des besoins de reporting globaux.
+            // 4. On s'assure que le context Spatie est fixé pour cet utilisateur
+            setPermissionsTeamId($user->organization_id);
         }
 
         return $next($request);
