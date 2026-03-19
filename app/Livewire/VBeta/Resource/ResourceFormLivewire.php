@@ -5,11 +5,14 @@ namespace App\Livewire\VBeta\Resource;
 use Livewire\Component;
 use App\Models\Resource;
 use App\Models\User;
+use App\Livewire\Traits\WithToastNotifications;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ResourceFormLivewire extends Component
 {
+    use WithToastNotifications;
+
     public $activityId;
     public $resourceToEditId = null; // Reçoit l'ID de la ressource à éditer
     public $users;
@@ -30,7 +33,7 @@ class ResourceFormLivewire extends Component
             'resourcesData.*.unit_cost' => 'nullable|numeric|min:0',
             'resourcesData.*.total_cost' => 'nullable|numeric|min:0',
             'resourcesData.*.category' => 'nullable|string|max:100',
-            'resourcesData.*.responsible_user_id' => 'nullable|uuid|exists:users,id',
+            'resourcesData.*.responsible_user_id' => 'nullable|exists:users,id',
         ];
     }
 
@@ -88,7 +91,9 @@ class ResourceFormLivewire extends Component
         $parts = explode('.', $propertyName);
         if (count($parts) === 3 && ($parts[2] === 'quantity' || $parts[2] === 'unit_cost')) {
             $index = $parts[1];
-            $this->resourcesData[$index]['total_cost'] = $this->resourcesData[$index]['quantity'] * $this->resourcesData[$index]['unit_cost'];
+            $qty = (float)($this->resourcesData[$index]['quantity'] ?? 0);
+            $cost = (float)($this->resourcesData[$index]['unit_cost'] ?? 0);
+            $this->resourcesData[$index]['total_cost'] = $qty * $cost;
         }
     }
 
@@ -102,7 +107,6 @@ class ResourceFormLivewire extends Component
             DB::beginTransaction();
     
             foreach ($this->resourcesData as $data) {
-                // Détecte s'il s'agit d'une mise à jour ou d'une création
                 Resource::updateOrCreate(
                     ['id' => $data['id'] ?? null],
                     array_merge($data, ['activity_id' => $this->activityId])
@@ -111,15 +115,13 @@ class ResourceFormLivewire extends Component
             DB::commit();
     
             $this->dispatch('resourceSaved');
-    
-            // Réinitialiser le formulaire après la sauvegarde
             $this->resetForm();
 
-            session()->flash('success-resource', 'Sous activite ajouter avec success');
+            $this->notifyToast('success', 'Ressource(s) enregistrée(s) avec succès');
     
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', "Une erreur est survenue lors de la sauvegarde : " . $e->getMessage());
+            $this->notifyToast('error', "Une erreur est survenue : " . $e->getMessage());
         }
     }
 

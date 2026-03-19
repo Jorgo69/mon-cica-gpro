@@ -96,17 +96,35 @@
         
         {{-- Boutons d'action --}}
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-            @if(!$editing)
-            <x-ui.button type="button" variant="outline" icon="plus" wire:click="addBlankResource">
-                Ajouter une autre ressource
-            </x-ui.button>
-            @else
-            <div></div> {{-- Spacer --}}
-            @endif
+            <div>
+                @if(!$editing)
+                    <x-ui.button type="button" variant="ghost" size="sm" icon="plus" wire:click="addBlankResource">
+                        Ajouter une autre
+                    </x-ui.button>
+                @endif
+            </div>
 
-            <x-ui.button type="submit" variant="primary" icon="save" size="lg" loadingTarget="saveResources">
-                {{ $editing ? 'Mettre à jour la ressource' : 'Enregistrer les ressources' }}
-            </x-ui.button>
+            <div class="flex items-center gap-3">
+                <x-ui.button 
+                    type="button" 
+                    variant="ghost" 
+                    size="md" 
+                    wire:click="$parent.closeModal"
+                >
+                    Annuler
+                </x-ui.button>
+                <x-ui.button 
+                    type="submit" 
+                    variant="accent" 
+                    icon="save" 
+                    size="md" 
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove>{{ $editing ? 'Mettre à jour' : 'Enregistrer' }}</span>
+                    <span wire:loading>Traitement...</span>
+                </x-ui.button>
+            </div>
         </div>
     </form>
 </div>
+

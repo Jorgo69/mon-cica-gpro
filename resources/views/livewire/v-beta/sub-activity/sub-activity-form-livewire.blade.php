@@ -1,153 +1,115 @@
-<div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-    <form wire:submit.prevent="saveSubActivities">
+<div class="space-y-6">
+    <form wire:submit.prevent="saveSubActivities" class="space-y-6">
+        <div class="space-y-4">
+            @foreach ($subActivitiesData as $index => $subActivityData)
+                <x-ui.card class="relative overflow-visible border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                    {{-- Remove Button --}}
+                    @if(count($subActivitiesData) > 1 && !$editing)
+                        <button 
+                            type="button" 
+                            wire:click="removeSubActivity({{ $index }})"
+                            class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors z-10"
+                        >
+                            <x-lucide-x class="w-3.5 h-3.5" />
+                        </button>
+                    @endif
 
-        @if($editing)
-            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Modifier la sous-activité</h3>
-        @else
-            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Ajouter une ou plusieurs sous-activités</h3>
-        @endif
-
-        @foreach ($subActivitiesData as $index => $subActivityData)
-            <div class="relative p-5 border border-gray-200 dark:border-gray-600 rounded-lg mb-5 bg-gray-50 dark:bg-gray-700 shadow-sm">
-                
-                <!-- Bouton suppression (si plusieurs) -->
-                @if(count($subActivitiesData) > 1 && !$editing)
-                    <button 
-                        type="button" 
-                        wire:click="removeSubActivity({{ $index }})"
-                        class="absolute top-3 right-3 text-red-500 hover:text-red-700 dark:hover:text-red-400 focus:outline-none"
-                        aria-label="Supprimer cette sous-activité">
-                        <i class="fas fa-times-circle text-lg"></i>
-                    </button>
-                @endif
-
-                <!-- Grid : 2 colonnes sur md+, 1 sur mobile -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                    <!-- Description (pleine largeur) -->
-                    <div class="md:col-span-2">
-                        <label for="description-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Description
-                        </label>
-                        <textarea 
-                            id="description-{{ $index }}" 
-                            wire:model.defer="subActivitiesData.{{ $index }}.description"
-                            rows="3"
-                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition ease-in-out duration-150"
-                            placeholder="Décrivez cette sous-activité...">
-                        </textarea>
-                        @error('subActivitiesData.'.$index.'.description') 
-                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span> 
-                        @enderror
-                    </div>
-
-                    
-                    <!-- Date de début -->
-                    <div>
-                        <label for="start_date-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Date de début
-                        </label>
-                        <input 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- Description --}}
+                        <div class="md:col-span-2">
+                            <x-ui.input 
+                                label="Description"
+                                wire:model.defer="subActivitiesData.{{ $index }}.description"
+                                placeholder="Décrivez cette sous-activité..."
+                                required
+                            />
+                            @error('subActivitiesData.'.$index.'.description') 
+                                <p class="text-[10px] text-red-500 mt-1 font-medium">{{ $message }}</p> 
+                            @enderror
+                        </div>
+                        
+                        {{-- Date de début --}}
+                        <x-ui.input 
                             type="date" 
-                            id="start_date-{{ $index }}" 
+                            label="Date de début"
                             wire:model.live="subActivitiesData.{{ $index }}.start_date"
                             min="{{ $activityStartDate }}"
                             max="{{ $activityEndDate }}"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        >
-                        @error('subActivitiesData.'.$index.'.start_date') 
-                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span> 
-                        @enderror
-                    </div>
+                            required
+                        />
 
-                    <!-- Date de fin -->
-                    <div>
-                        <label for="end_date-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Date de fin
-                        </label>
-                        <input 
+                        {{-- Date de fin --}}
+                        <x-ui.input 
                             type="date"
-                            id="end_date-{{ $index }}" 
+                            label="Date de fin"
                             wire:model.live="subActivitiesData.{{ $index }}.end_date"
                             min="{{ $activityStartDate }}"
                             max="{{ $activityEndDate }}"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        >
-                        @error('subActivitiesData.'.$index.'.end_date') 
-                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span> 
-                        @enderror
-                    </div>
+                            required
+                        />
 
-                    <!-- Important (Switch Toggle) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Important
-                        </label>
-                        <div 
-                            wire:click="toggleMilestone({{ $index }})"
-                            x-data="{ on: @entangle('subActivitiesData.' . $index . '.is_milestone').live }"
-                            role="checkbox"
-                            :aria-checked="on"
-                            class="relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            :class="{ 'bg-blue-600': on, 'bg-gray-300': !on }"
-                        >
-                            <span 
-                                class="inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform" 
-                                :class="{ 'translate-x-6': on, 'translate-x-1': !on }"
-                            ></span>
-                        </div>
-                        <input 
-                            type="hidden" 
-                            wire:model.defer="subActivitiesData.{{ $index }}.is_milestone"
-                        >
-                        @error('subActivitiesData.'.$index.'.is_milestone') 
-                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span> 
-                        @enderror
-                    </div>
-
-                    <!-- Responsable -->
-                    {{-- <div class="md:col-span-2"> --}}
-                        <div>
-                        <label for="responsible_user_id-{{ $index }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Responsable
-                        </label>
-                        <select 
-                            id="responsible_user_id-{{ $index }}" 
+                        {{-- Responsable --}}
+                        <x-ui.select 
+                            label="Responsable"
                             wire:model.defer="subActivitiesData.{{ $index }}.responsible_user_id"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
                             <option value="">Sélectionner un responsable</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
-                        </select>
-                        @error('subActivitiesData.'.$index.'.responsible_user_id') 
-                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span> 
-                        @enderror
+                        </x-ui.select>
+
+                        {{-- Important (Milestone) --}}
+                        <div class="flex items-center gap-3 pt-6">
+                            <button 
+                                type="button"
+                                wire:click="toggleMilestone({{ $index }})"
+                                class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $subActivitiesData[$index]['is_milestone'] ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700' }}"
+                            >
+                                <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $subActivitiesData[$index]['is_milestone'] ? 'translate-x-4' : 'translate-x-0' }}"></span>
+                            </button>
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Marquer comme jalon (important)</span>
+                        </div>
                     </div>
+                </x-ui.card>
+            @endforeach
+        </div>
 
-                </div>
+        {{-- Form Actions --}}
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+            <div>
+                @if(!$editing)
+                    <x-ui.button 
+                        type="button" 
+                        wire:click="addBlankSubActivity"
+                        variant="ghost" 
+                        size="sm" 
+                        icon="plus"
+                    >
+                        Ajouter une autre
+                    </x-ui.button>
+                @endif
             </div>
-        @endforeach
 
-        <!-- Boutons -->
-        <div class="flex flex-col sm:flex-row justify-between gap-3 mt-6">
-            @if(!$editing)
-                <button 
-                    type="button" 
-                    wire:click="addBlankSubActivity"
-                    class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded-md shadow hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition ease-in-out duration-150"
+            <div class="flex items-center gap-2">
+                <x-ui.button 
+                    type="button"
+                    wire:click="$parent.closeModalForSubActivity"
+                    variant="ghost"
+                    size="md"
                 >
-                    <i class="fas fa-plus mr-2"></i> Ajouter une sous-activité
-                </button>
-            @endif
-
-            <button 
-                type="submit"
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150"
-            >
-                {{ $editing ? 'Mettre à jour' : 'Sauvegarder les sous-activités' }}
-            </button>
+                    Annuler
+                </x-ui.button>
+                <x-ui.button 
+                    type="submit"
+                    variant="accent"
+                    size="md"
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove>{{ $editing ? 'Mettre à jour' : 'Enregistrer' }}</span>
+                    <span wire:loading>Traitement...</span>
+                </x-ui.button>
+            </div>
         </div>
     </form>
 </div>
