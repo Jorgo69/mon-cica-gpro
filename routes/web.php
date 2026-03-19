@@ -28,6 +28,7 @@ Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
 
 // --- Domain Driven Routes ---
 
+require __DIR__.'/domains/system.php';
 require __DIR__.'/domains/admin.php';
 require __DIR__.'/domains/project.php';
 require __DIR__.'/domains/resource.php';

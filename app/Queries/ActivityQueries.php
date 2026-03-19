@@ -18,6 +18,17 @@ class ActivityQueries
      * @param int $perPage
      * @return LengthAwarePaginator
      */
+    public function findActivityWithDetails(string $id): Activity
+    {
+        return Activity::with([
+            'responsibleUser',
+            'result.specificObjective.logicalFramework.project.creator',
+            'resources.responsibleUser',
+            'children.responsibleUser'
+        ])->findOrFail($id);
+    }
+
+
     public function getPaginatedActivitiesForUser(
         User $user,
         array $filters = [],

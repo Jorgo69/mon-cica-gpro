@@ -25,11 +25,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
-        return $user->organization_id === $activity->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**
@@ -37,6 +37,10 @@ class ActivityPolicy
      */
     public function create(User $user): bool
     {
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
+        }
+
         return $user->hasPermissionTo('manage-activities');
     }
 
@@ -49,11 +53,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $activity->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**
@@ -65,11 +69,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $activity->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**
@@ -81,11 +85,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $activity->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**

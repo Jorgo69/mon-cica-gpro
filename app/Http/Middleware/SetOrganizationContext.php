@@ -23,7 +23,7 @@ class SetOrganizationContext
 
             // 1. Les Admins IT ont accès à tout, pas besoin de contexte restrictif (bypass global)
             // Note: On utilise le nom constant de l'Enum si possible
-            if ($user->role->value === \App\Enums\AccountType::ADMIN->value) {
+            if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
                 return $next($request);
             }
 

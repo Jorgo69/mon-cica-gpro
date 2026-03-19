@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
+    use \Illuminate\Auth\Access\HandlesAuthorization;
     /**
      * Determine whether the user can view any models.
      */
@@ -25,11 +26,12 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
+        // Le SYSTEM_ADMIN peut tout voir pour le support technique
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
 
     /**
@@ -37,6 +39,11 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
+        // Interdire la création au SYSTEM_ADMIN sur les données d'organisations
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
+        }
+
         return $user->hasPermissionTo('create-projects');
     }
 
@@ -49,11 +56,12 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        // Le SYSTEM_ADMIN ne doit pas modifier les données privées des organisations
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
 
     /**
@@ -65,11 +73,12 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        // Le SYSTEM_ADMIN ne doit pas supprimer les données privées des organisations
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
     
     /**
@@ -81,11 +90,11 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
 
     /**
@@ -97,11 +106,11 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
 
     /**
@@ -113,10 +122,10 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->hasRole('IT_ADMIN')) {
-            return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false;
         }
 
-        return $user->organization_id === $project->organization_id;
+        return (string) $user->organization_id === (string) $project->organization_id;
     }
 }

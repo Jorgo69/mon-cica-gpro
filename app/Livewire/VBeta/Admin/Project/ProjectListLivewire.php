@@ -76,7 +76,7 @@ class ProjectListLivewire extends Component
         // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
         // Si admin, il voit tout (enlevé la restriction du Dashboard pour la liste globale si c'est la vue Admin)
         // Mais ici c'est ProjectListLivewire dans Admin, donc on garde la logique de visibilité demandée ou on l'élargit
-        $isAdmin = $user->role === \App\Enums\AccountType::ADMIN;
+        $isAdmin = in_array($user->role, [\App\Enums\AccountType::SYSTEM_ADMIN, \App\Enums\AccountType::ORG_ADMIN]);
 
         if (!$isAdmin) {
             $projects->where(function ($query) use ($user) {

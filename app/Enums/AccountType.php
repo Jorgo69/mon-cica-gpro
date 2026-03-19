@@ -4,38 +4,38 @@ namespace App\Enums;
 
 enum AccountType: string
 {
-    case ADMIN = 'admin';
-    case SUPERVISOR = 'supervisor';
-    case MANAGER = 'manager';
-    case MEMBER = 'member';
+    case SYSTEM_ADMIN = 'system_admin'; // Root / Super Admin
+    case ORG_ADMIN = 'org_admin';       // Propriétaire d'espace
+    case ORG_USER = 'org_user';         // Collaborateur (Manager, Membre, etc.)
+    case INDEPENDENT = 'independent';     // Utilisateur seul
 
     public function label(): string
     {
         return match($this) {
-            self::ADMIN => 'Administrateur IT',
-            self::SUPERVISOR => 'Superviseur',
-            self::MANAGER => 'Responsable de Projet',
-            self::MEMBER => 'Membre / Agent de terrain',
+            self::SYSTEM_ADMIN => 'Administrateur Système',
+            self::ORG_ADMIN => 'Administrateur Espace',
+            self::ORG_USER => 'Collaborateur',
+            self::INDEPENDENT => 'Indépendant',
         };
     }
 
     public function color(): string
     {
         return match($this) {
-            self::ADMIN => 'rose',
-            self::SUPERVISOR => 'indigo',
-            self::MANAGER => 'amber',
-            self::MEMBER => 'emerald',
+            self::SYSTEM_ADMIN => 'rose',
+            self::ORG_ADMIN => 'indigo',
+            self::ORG_USER => 'emerald',
+            self::INDEPENDENT => 'amber',
         };
     }
 
     public function icon(): string
     {
         return match($this) {
-            self::ADMIN => 'shield-check',
-            self::SUPERVISOR => 'eye',
-            self::MANAGER => 'briefcase',
-            self::MEMBER => 'user',
+            self::SYSTEM_ADMIN => 'shield-alert',
+            self::ORG_ADMIN => 'shield-check',
+            self::ORG_USER => 'users',
+            self::INDEPENDENT => 'user',
         };
     }
 }

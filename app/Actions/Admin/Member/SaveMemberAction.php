@@ -82,10 +82,10 @@ class SaveMemberAction
     protected function mapAccountTypeToSpatieRole(AccountType $type): string
     {
         return match($type) {
-            AccountType::ADMIN => 'IT_ADMIN',
-            AccountType::SUPERVISOR => 'SUPERVISOR',
-            AccountType::MANAGER => 'MANAGER',
-            AccountType::MEMBER => 'MEMBER',
+            AccountType::SYSTEM_ADMIN => 'IT_ADMIN',
+            AccountType::ORG_ADMIN => 'ORG_ADMIN',
+            AccountType::ORG_USER => 'MEMBER',
+            AccountType::INDEPENDENT => 'MEMBER',
             default => 'MEMBER',
         };
     }

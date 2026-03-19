@@ -3,16 +3,17 @@
 namespace App\Livewire\VBeta\SubActivity;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Activity;
+use App\Livewire\Traits\WithToastNotifications;
 use Livewire\Component;
-use App\Models\SubActivity;
 use Illuminate\Support\Facades\DB;
 
 class SubActivityFormLivewire extends Component
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, WithToastNotifications;
     public $activityId, $activityStartDate, $activityEndDate;
     public $subActivityToEditId = null; // Reçoit l'ID de la ressource à éditer
     public $users;
@@ -52,7 +53,8 @@ class SubActivityFormLivewire extends Component
         $this->subActivityToEditId = $subActivityToEditId;
 
         // Charger les dates de l'activité parente
-        $activity = \App\Models\Activity::findOrFail($activityId);
+        $activity = Activity::findOrFail($activityId);
+        $this->activity = $activity;
         $this->activityStartDate = $activity->start_date;
         $this->activityEndDate = $activity->end_date;
 
@@ -67,7 +69,7 @@ class SubActivityFormLivewire extends Component
 
     public function loadSubActivityForEdit(string $subActivityId)
     {
-        $subActivity = SubActivity::findOrFail($subActivityId);
+        $subActivity = Activity::findOrFail($subActivityId);
         $this->subActivitiesData = [
             0 => [
                 'id' => $subActivity->id,
@@ -172,18 +174,21 @@ class SubActivityFormLivewire extends Component
                     'is_milestone'        => $data['is_milestone'] == "1",
                     'start_date'          => $data['start_date'],
                     'end_date'            => $data['end_date'],
-                    'responsible_user_id' => $data['responsible_user_id']?: null,
-                    'activity_id'         => $this->activityId,
-                    'status'              => 'En Cours', // 👈 valeur par défaut
+                    'responsible_user_id' => $data['responsible_user_id'] ?: null,
+                    'parent_id'           => $this->activityId,
+                    'organization_id'     => $this->activity->organization_id,
+                    'result_id'           => $this->activity->result_id,
+                    'status'              => \App\Enums\ActivityStatus::ONGOING->value,
                 ];
 
                 if (!empty($data['id'])) {
                     // update
-                    SubActivity::where('id', $data['id'])->update($subActivityData);
+                    Activity::where('id', $data['id'])->update($subActivityData);
                     \Log::info('Updated subActivity', ['id' => $data['id']]);
                 } else {
                     // create
-                    $created = SubActivity::create($subActivityData);
+                    $subActivityData['creator_user_id'] = auth()->id();
+                    $created = Activity::create($subActivityData);
                     \Log::info('Created subActivity', ['id' => $created->id]);
                 }
             }
@@ -192,11 +197,11 @@ class SubActivityFormLivewire extends Component
             $this->dispatch('subActivitySaved');
             $this->resetForm();
 
-            session()->flash('success-sub-activity', 'Sous activite ajouter avec success');
+            $this->notifyToast('success', 'Sous-activité ajoutée avec succès');
 
         } catch (\Exception $e) {
             \Log::error('Erreur saveSubActivities', ['error' => $e->getMessage()]);
-            session()->flash('error-sub-activity', "Erreur lors de la sauvegarde : " . $e->getMessage());
+            $this->notifyToast('error', "Erreur lors de la sauvegarde : " . $e->getMessage());
         }
     }
 

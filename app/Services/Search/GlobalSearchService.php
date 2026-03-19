@@ -22,10 +22,21 @@ class GlobalSearchService
             return collect();
         }
 
+        $user = auth()->user();
+        $isSystemAdmin = $user && $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        $orgId = $user?->organization_id;
+
         $results = collect();
 
         // Search Projects
-        $projects = Project::query()
+        $projectsQuery = Project::query();
+        if (!$isSystemAdmin && $orgId) {
+            $projectsQuery->where('organization_id', $orgId);
+        } else if (!$isSystemAdmin) {
+            return collect(); // Sécurité : pas d'org et pas admin système = pas de résultats
+        }
+
+        $projects = $projectsQuery
             ->where(function ($query) use ($term) {
                 $query->where('title', 'like', "%{$term}%")
                     ->orWhere('project_code', 'like', "%{$term}%")
@@ -46,7 +57,12 @@ class GlobalSearchService
         $results = $results->concat($projects);
 
         // Search Activities
-        $activities = Activity::query()
+        $activitiesQuery = Activity::query();
+        if (!$isSystemAdmin && $orgId) {
+            $activitiesQuery->where('organization_id', $orgId);
+        }
+
+        $activities = $activitiesQuery
             ->where('description', 'like', "%{$term}%")
             ->limit($limit)
             ->get()
@@ -55,14 +71,19 @@ class GlobalSearchService
                     'type' => 'Activité',
                     'title' => $activity->description,
                     'subtitle' => 'Projet: ' . ($activity->project?->short_title ?? 'N/A'),
-                    'url' => route('project.dashboard', ['projectId' => $activity->project?->id]), // Link to project management
+                    'url' => route('project.dashboard', ['projectId' => $activity->project?->id]), 
                     'icon' => 'activity',
                 ];
             });
         $results = $results->concat($activities);
 
-        // Search Users
-        $users = User::query()
+        // Search Users (Membres)
+        $usersQuery = User::query();
+        if (!$isSystemAdmin && $orgId) {
+            $usersQuery->where('organization_id', $orgId);
+        }
+
+        $users = $usersQuery
             ->where(function ($query) use ($term) {
                 $query->where('name', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%");
@@ -74,7 +95,7 @@ class GlobalSearchService
                     'type' => 'Membre',
                     'title' => $user->name,
                     'subtitle' => $user->email,
-                    'url' => route('admin.member.list'), // Redirect to members list
+                    'url' => route('admin.member.list'), 
                     'icon' => 'users',
                 ];
             });

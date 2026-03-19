@@ -1,28 +1,12 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
-/**
- * ── SYSTEM MANAGEMENT (SUPER ADMIN / IT_ADMIN ONLY) ──
- * Routes globales pour la configuration du système, rôles, permissions et organisations.
- */
-Route::middleware(['auth'])->prefix('v_beta/system')->name('system.')->group(function () {
-    // Rôles & Permissions
-    Route::view('/roles', 'v_beta.system.roles.index')->name('roles');
-    Route::view('/permissions', 'v_beta.system.permissions.index')->name('permissions');
-    
-    // Organisations
-    Route::view('/organizations', 'v_beta.system.organizations.index')->name('organizations');
-
-    // Audit Logs (Global)
-    Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
-});
 
 /**
  * ── ORGANIZATION ADMINISTRATION (ORG_ADMIN & AUTHORIZED USERS) ──
  * Routes pour la gestion quotidienne au sein d'une organisation.
+ * Utilisable uniquement par les Admins d'Espace ou le Root.
  */
-Route::middleware(['auth'])->prefix('v_beta/admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'account_type:org_admin,system_admin'])->prefix('v_beta/admin')->name('admin.')->group(function () {
     // Projets & Configuration métier
     Route::view('/project/list', 'v_beta.admin.project.index')->name('project.list');
     Route::view('/type_of_project', 'v_beta.admin.type_of_project.index')->name('type.of.project');

@@ -119,12 +119,14 @@
                 @endcan
 
                 {{-- Sub-Activity Modal --}}
-                <x-ui.modal :show="$showModalForSubActivity" title="Sous-Activité" wire:close="closeModalForSubActivity">
-                    @livewire('v-beta.sub-activity.sub-activity-form-livewire', [
-                        'activityId' => $activity->id,
-                        'subActivityToEditId' => $editingSubActivityId,
-                    ])
-                </x-ui.modal>
+                @if($showModalForSubActivity)
+                    <x-ui.modal :show="true" title="Sous-Activité" closeAction="closeModalForSubActivity">
+                        @livewire('v-beta.sub-activity.sub-activity-form-livewire', [
+                            'activityId' => $activity->id,
+                            'subActivityToEditId' => $editingSubActivityId,
+                        ], key('modal-sub-' . ($editingSubActivityId ?? 'new')))
+                    </x-ui.modal>
+                @endif
 
                 @include('messages.index', ['context' => 'sub-activity'])
                 @include('livewire.v-beta.sub-activity.include.sub-activity')
@@ -141,12 +143,14 @@
                 @endcan
 
                 {{-- Resource Modal --}}
-                <x-ui.modal :show="$showModal" title="Ressource" wire:close="closeModal">
-                    @livewire('v-beta.resource.resource-form-livewire', [
-                        'activityId' => $activity->id,
-                        'resourceToEditId' => $editingResourceId,
-                    ])
-                </x-ui.modal>
+                @if($showModal)
+                    <x-ui.modal :show="true" title="Ressource" closeAction="closeModal">
+                        @livewire('v-beta.resource.resource-form-livewire', [
+                            'activityId' => $activity->id,
+                            'resourceToEditId' => $editingResourceId,
+                        ], key('modal-res-' . ($editingResourceId ?? 'new')))
+                    </x-ui.modal>
+                @endif
 
                 @include('messages.index', ['context' => 'resource'])
                 @include('livewire.v-beta.resource.include.resource')

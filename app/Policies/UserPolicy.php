@@ -14,7 +14,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->hasRole('IT_ADMIN')) return true;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return true;
         return $user->hasPermissionTo('manage-users');
     }
 
@@ -23,8 +23,8 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->hasRole('IT_ADMIN')) return true;
-        return $user->hasPermissionTo('manage-users') && $user->organization_id === $model->organization_id;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return true;
+        return $user->hasPermissionTo('manage-users') && (string) $user->organization_id === (string) $model->organization_id;
     }
 
     /**
@@ -32,7 +32,9 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->hasRole('IT_ADMIN')) return true;
+        // Interdire au SYSTEM_ADMIN de créer des utilisateurs dans les organisations
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return false;
+        
         return $user->hasPermissionTo('manage-users');
     }
 
@@ -41,8 +43,9 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->hasRole('IT_ADMIN')) return true;
-        return $user->hasPermissionTo('manage-users') && $user->organization_id === $model->organization_id;
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return false;
+        
+        return $user->hasPermissionTo('manage-users') && (string) $user->organization_id === (string) $model->organization_id;
     }
 
     /**
@@ -50,8 +53,8 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($user->hasRole('IT_ADMIN')) {
-            return $user->id !== $model->id; // Empêcher l'auto-suppression même pour IT_ADMIN
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            return false; // Le Root ne doit pas supprimer d'utilisateurs directement
         }
 
         // Empêcher de se supprimer soi-même
@@ -59,6 +62,6 @@ class UserPolicy
             return false;
         }
 
-        return $user->hasPermissionTo('manage-users') && $user->organization_id === $model->organization_id;
+        return $user->hasPermissionTo('manage-users') && (string) $user->organization_id === (string) $model->organization_id;
     }
 }

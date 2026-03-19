@@ -21,11 +21,11 @@ class OrganizationPolicy
      */
     public function view(User $user, Organization $organization): bool
     {
-        if ($user->hasRole('IT_ADMIN')) {
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
-        return $user->organization_id === $organization->id;
+        return (string) $user->organization_id === (string) $organization->id;
     }
 
     /**
@@ -33,8 +33,8 @@ class OrganizationPolicy
      */
     public function create(User $user): bool
     {
-        // Seul l'IT_ADMIN peut créer de nouvelles organisations dans le système global
-        return $user->hasRole('IT_ADMIN');
+        // Seul le SYSTEM_ADMIN peut créer de nouvelles organisations
+        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
     }
 
     /**
@@ -42,7 +42,7 @@ class OrganizationPolicy
      */
     public function update(User $user, Organization $organization): bool
     {
-        if ($user->hasRole('IT_ADMIN')) {
+        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
@@ -50,7 +50,7 @@ class OrganizationPolicy
             return false;
         }
 
-        return $user->organization_id === $organization->id;
+        return (string) $user->organization_id === (string) $organization->id;
     }
 
     /**
@@ -58,7 +58,7 @@ class OrganizationPolicy
      */
     public function delete(User $user, Organization $organization): bool
     {
-        return $user->hasRole('IT_ADMIN');
+        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
     }
 
     /**
@@ -66,7 +66,7 @@ class OrganizationPolicy
      */
     public function restore(User $user, Organization $organization): bool
     {
-        return $user->hasRole('IT_ADMIN');
+        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
     }
 
     /**
@@ -74,6 +74,6 @@ class OrganizationPolicy
      */
     public function forceDelete(User $user, Organization $organization): bool
     {
-        return $user->hasRole('IT_ADMIN');
+        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
     }
 }

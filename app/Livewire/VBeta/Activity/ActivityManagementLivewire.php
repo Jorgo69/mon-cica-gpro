@@ -2,39 +2,60 @@
 
 namespace App\Livewire\VBeta\Activity;
 
-use App\Models\GeneralAdministration;
 use App\Models\Activity;
-use App\Models\Resource;
 use App\Models\SubActivity;
+use App\Models\Resource;
+use App\Queries\ActivityQueries;
+use App\Actions\SubActivities\UpdateSubActivityStatusAction;
+use App\DTOs\SubActivityDTO;
+use App\Livewire\Traits\WithToastNotifications;
 use Livewire\Component;
+use Illuminate\Support\Facades\Gate;
 
 class ActivityManagementLivewire extends Component
 {
+    use WithToastNotifications;
+
     public string $activityId;
     public $activity;
     public $resources, $subActivities;
-    public $showModal, $showModalForSubActivity = false;
-    public $editingResourceId, $editingSubActivityId = null; // ID de la ressource en cours d'édition
-    public $projectCategories,$generalAdministration, $projectTypes = [];
+    public $showModal = false;
+    public $showModalForSubActivity = false;
+    public $editingResourceId = null;
+    public $editingSubActivityId = null;
     public $subActivityStatuses = [];
 
-
-    // Écouteur pour l'événement 'resourceSaved'
     protected $listeners = [
         'resourceSaved' => 'closeModalAndRefresh',
         'subActivitySaved' => 'closeModalAndRefreshForSubActivity',
-        
     ];
 
-    public function mount($activityId)
+    /**
+     * Mount the component and load activity details via Query.
+     */
+    public function mount(string $activityId, ActivityQueries $queries)
     {
-        $this->activity = Activity::with('responsibleUser', 'result.specificObjective.logicalFramework.project', 'resources.responsibleUser')->findOrFail($activityId);
-        $this->resources = $this->activity->resources;
-        $this->subActivities = $this->activity->subActivities;
+        $this->activityId = $activityId;
+        $this->loadActivity($queries);
+    }
+
+    /**
+     * Load activity and its relations.
+     */
+    private function loadActivity(ActivityQueries $queries)
+    {
+        $this->activity = $queries->findActivityWithDetails($this->activityId);
         
-        // Pré-remplir les statuts pour wire:model
+        // Authorization check
+        Gate::authorize('view', $this->activity);
+
+        $this->resources = $this->activity->resources;
+        $this->subActivities = $this->activity->children;
+        
         foreach ($this->subActivities as $sub) {
-             $this->subActivityStatuses[$sub->id] = $sub->status instanceof \App\Enums\ActivityStatus ? $sub->status->value : $sub->status;
+            $this->subActivityStatuses[$sub->id] = $sub->status instanceof \App\Enums\ActivityStatus 
+                ? $sub->status->value 
+                : (string) $sub->status;
         }
     }
 
@@ -43,10 +64,6 @@ class ActivityManagementLivewire extends Component
         return \App\Enums\ActivityStatus::cases();
     }
 
-    /**
-     * Ouvre la modale pour la création ou l'édition d'une ressource.
-     * @param string|null $resourceId L'ID de la ressource à éditer, si applicable.
-     */
     public function openModal(?string $resourceId = null)
     {
         $this->editingResourceId = $resourceId;
@@ -59,9 +76,6 @@ class ActivityManagementLivewire extends Component
         $this->showModalForSubActivity = true;
     }
 
-    /**
-     * Ferme la modale et réinitialise l'état.
-     */
     public function closeModal()
     {
         $this->showModal = false;
@@ -74,59 +88,62 @@ class ActivityManagementLivewire extends Component
         $this->editingSubActivityId = null;
     }
 
-    /**
-     * Ferme la modale et rafraîchit la liste des ressources.
-     */
-    public function closeModalAndRefresh()
+    public function closeModalAndRefresh(ActivityQueries $queries)
     {
         $this->closeModal();
-        $this->refreshResources();
-        session()->flash('success-resource', 'Ressource(s) sauvegardée(s) avec succès !');
+        $this->loadActivity($queries);
+        $this->notifyToast('success', 'Ressource sauvegardée avec succès !');
     }
 
-    public function closeModalAndRefreshForSubActivity()
+    public function closeModalAndRefreshForSubActivity(ActivityQueries $queries)
     {
         $this->closeModalForSubActivity();
-        $this->refreshSubActivities();
-        session()->flash('success-sub-activity', 'Sous Activities sauvegardée(s) avec succès !');
-    }
-
-    public function refreshResources()
-    {
-        // Recharge la relation pour mettre à jour la liste des ressources
-        $this->resources = $this->activity->resources()->with('responsibleUser')->get();
-    }
-
-    public function refreshSubActivities()
-    {
-        // Recharge la relation pour mettre à jour la liste des ressources
-        $this->subActivities = $this->activity->subActivities()->with('responsibleUser')->get();
-    }
-
-    public function updatedSubActivityStatuses($value, $subActivityId)
-    {
-        $subActivity = SubActivity::find($subActivityId);
-
-        if ($subActivity) {
-            $subActivity->update(['status' => $value]);
-            // Optionnel : émettre un événement pour prévenir que le statut a changé
-            $this->dispatch('projectStatusUpdated', subActivityId: $subActivityId, status: $value);
-        }
-        session()->flash('info-sub-activity', 'Status change');
+        $this->loadActivity($queries);
+        $this->notifyToast('success', 'Sous-activité sauvegardée avec succès !');
     }
 
     /**
-     * Supprimer la ressource
-     * @param string|null $resourceId L'ID de la ressource à éditer, si applicable.
+     * Update sub-activity status using Action and DTO.
      */
-    public function deleteResource(?string $resourceId = null)
+    public function updatedSubActivityStatuses($value, $subActivityId, UpdateSubActivityStatusAction $action, ActivityQueries $queries)
     {
-        session()->flash('success-resource', 'Ressource supprimer avec success');
+        $subActivity = Activity::findOrFail($subActivityId);
         
+        // Authorization check
+        Gate::authorize('update', $subActivity);
+
+        $dto = SubActivityDTO::fromArray([
+            'id' => $subActivityId,
+            'status' => $value
+        ]);
+
+        try {
+            $action->execute($dto);
+            $this->notifyToast('success', 'Statut de la sous-activité mis à jour.');
+            $this->loadActivity($queries);
+        } catch (\Exception $e) {
+            $this->notifyToast('error', 'Erreur lors de la mise à jour : ' . $e->getMessage());
+        }
     }
 
-    
-    
+    /**
+     * Supprimer la ressource.
+     */
+    public function deleteResource(string $resourceId, ActivityQueries $queries)
+    {
+        $resource = Resource::findOrFail($resourceId);
+        
+        Gate::authorize('delete', $resource);
+
+        try {
+            $resource->delete();
+            $this->notifyToast('success', 'Ressource supprimée avec succès.');
+            $this->loadActivity($queries);
+        } catch (\Exception $e) {
+            $this->notifyToast('error', 'Erreur lors de la suppression.');
+        }
+    }
+
     public function render()
     {
         return view('livewire.v-beta.activity.activity-management-livewire');

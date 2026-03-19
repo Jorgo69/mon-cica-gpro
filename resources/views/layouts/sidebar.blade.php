@@ -23,29 +23,35 @@
         </a>
 
         {{-- Projets --}}
+        @can('view-projects')
         <a href="{{ route('project.list') }}" 
            class="nav-item @if(Route::is('creator.proposal.project*') || Route::is('project*')) nav-item-active @endif">
             <x-lucide-folder-kanban class="nav-icon" />
             <span class="nav-label">{{ __('navigation.sidebar.Project') }}</span>
         </a>
+        @endcan
 
         {{-- Ressources --}}
+        @can('view-projects')
         <a href="{{ route('resource.index') }}" 
            class="nav-item @if(Route::is('resource*')) nav-item-active @endif">
             <x-lucide-boxes class="nav-icon" />
             <span class="nav-label">{{ __('Ressource') }}</span>
         </a>
+        @endcan
 
         {{-- Activités --}}
+        @can('view-projects')
         <a href="{{ route('activity.index') }}" 
            class="nav-item @if(Route::is('activity*')) nav-item-active @endif">
             <x-lucide-list-checks class="nav-icon" />
             <span class="nav-label">{{ __('navigation.sidebar.Activity') }}</span>
         </a>
+        @endcan
 
 
-        {{-- ── SYSTÈME (SUPER ADMIN / IT_ADMIN) ── --}}
-        @if (auth()->user()->hasRole('IT_ADMIN'))
+        {{-- ── SYSTÈME (ROOT / SYSTEM_ADMIN) ── --}}
+        @if (auth()->user()->role === \App\Enums\AccountType::SYSTEM_ADMIN)
         <p class="sidebar-section-title">Système</p>
 
         <div x-data="{ open: {{ Route::is('system*') ? 'true' : 'false' }} }">
@@ -76,7 +82,8 @@
 
         {{-- ── ADMINISTRATION (ORG ADMIN & ADMINS) ── --}}
         @php
-            $isAdmin = auth()->user()->hasAnyRole(['IT_ADMIN', 'ORG_ADMIN']) || auth()->user()->hasPermissionTo('manage-users');
+            $isAdmin = in_array(auth()->user()->role, [\App\Enums\AccountType::SYSTEM_ADMIN, \App\Enums\AccountType::ORG_ADMIN]) 
+                        || auth()->user()->hasPermissionTo('manage-users');
         @endphp
 
         @if ($isAdmin)

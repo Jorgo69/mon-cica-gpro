@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Builder;
 trait Multitenantable
 {
     /**
+     * Cache pour éviter la récursion infinie lors de la résolution de l'utilisateur.
+     */
+    protected static bool $isApplyingMultitenantScope = false;
+
+    /**
      * Boot the multitenantable trait.
      * Automatically applies a global scope and sets organization_id on creation.
      */
@@ -14,19 +19,32 @@ trait Multitenantable
     {
         // 1. Scope Global : Filtrer toutes les requêtes par l'organisation de l'utilisateur connecté
         static::addGlobalScope('organization', function (Builder $builder) {
-            // Empêcher la récursion si on est déjà en train de résoudre l'utilisateur
-            // ou si on est en train de charger un modèle User (le User ne doit pas se filtrer lui-même via auth()->user())
-            if (static::$isAuthResolutionInProgress ?? false) {
+            // Empêcher la récursion infinie (notamment sur le modèle User)
+            if (static::$isApplyingMultitenantScope) {
                 return;
             }
 
-            if (auth()->check()) {
-                $user = auth()->user();
-                
-                // Si l'utilisateur n'est pas Admin IT et est rattaché à une organisation, on filtre
-                if ($user && $user->role !== \App\Enums\AccountType::ADMIN && $user->organization_id) {
-                    $builder->where($builder->getQuery()->from . '.organization_id', $user->organization_id);
+            // Marquer le début du scope
+            static::$isApplyingMultitenantScope = true;
+
+            try {
+                if (auth()->check()) {
+                    $user = auth()->user();
+                    
+                    // SEUL le SYSTEM_ADMIN (Root) bypass l'isolation.
+                    if ($user && $user->role !== \App\Enums\AccountType::SYSTEM_ADMIN) {
+                        // Si l'utilisateur appartient à une organisation, on l'isole strictement
+                        if ($user->organization_id) {
+                            $builder->where($builder->getQuery()->from . '.organization_id', $user->organization_id);
+                        } else if (!$user->is_independent) {
+                            // Si pas d'organisation et pas indépendant, on bloque par défaut
+                            $builder->whereRaw('1 = 0');
+                        }
+                    }
                 }
+            } finally {
+                // Toujours libérer le verrou
+                static::$isApplyingMultitenantScope = false;
             }
         });
 
