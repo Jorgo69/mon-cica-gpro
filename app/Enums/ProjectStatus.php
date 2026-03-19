@@ -34,4 +34,16 @@ enum ProjectStatus: string
             self::CANCELLED => 'error',
         };
     }
+
+    public function hex(): string
+    {
+        return match($this) {
+            self::DRAFT => '#94a3b8',   // Slate 400
+            self::PENDING => '#F59E0B', // Amber 500
+            self::ACTIVE => '#0f172a',  // Slate 900 (Primary)
+            self::ON_HOLD => '#3B82F6', // Blue 500
+            self::COMPLETED => '#0d9488', // Teal 600 (Success)
+            self::CANCELLED => '#be123c', // Rose 700 (Error)
+        };
+    }
 }

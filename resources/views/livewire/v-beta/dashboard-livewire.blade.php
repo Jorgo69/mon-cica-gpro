@@ -1,21 +1,54 @@
 <div>
     <x-ui.page-layout>
         {{-- En-tête de la page --}}
-        <x-ui.page-header :title="__('Dashboard')" :subtitle="__('Overview of project performance')">
+        <x-ui.page-header :title="__('Tableau de Bord')" :subtitle="__('Vue d\'ensemble de la performance des projets')">
             <x-slot:actions>
-                <x-ui.button tag="a" :href="route('project.create')" variant="accent" icon="plus" size="lg" wire:navigate>
-                    {{ __('Create project') }}
+                <div class="flex items-center gap-2 mr-4 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                    @foreach(['all' => 'Global', 'month' => 'Mois', 'quarter' => 'Trimestre', 'year' => 'Année'] as $key => $label)
+                        <button 
+                            wire:click="setPeriod('{{ $key }}')"
+                            class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all {{ $currentPeriod === $key ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}"
+                        >
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+                <x-ui.button tag="a" :href="route('project.create')" variant="accent" icon="plus" size="md" wire:navigate>
+                    {{ __('Nouveau Projet') }}
                 </x-ui.button>
             </x-slot:actions>
         </x-ui.page-header>
 
+        {{-- Alertes Critiques --}}
+        @if($overdueActivities->isNotEmpty())
+            <div class="mb-8 p-4 rounded-2xl bg-error/5 border border-error/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+                        <x-lucide-alert-circle class="w-5 h-5 text-error" />
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-error uppercase tracking-wider">Activités en retard</h3>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">Vous avez {{ $overdueActivities->count() }} activités qui nécessitent une attention immédiate.</p>
+                    </div>
+                </div>
+                <div class="flex -space-x-2">
+                    @foreach($overdueActivities as $activity)
+                        <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 border-2 border-slate-50 dark:border-slate-800 flex items-center justify-center" title="{{ $activity->project->title }}">
+                            <span class="text-[10px] font-bold text-error">!</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Statistiques Globales --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <x-ui.stat-card :label="__('Total Projects')" :value="$totalProjects" variant="default" icon="folder" />
-            <x-ui.stat-card :label="__('Active')" :value="$projectsInProgress" variant="success" icon="play-circle" />
-            <x-ui.stat-card :label="__('Completed')" :value="$projectsCompleted" variant="accent" icon="check-circle" />
-            <x-ui.stat-card :label="__('Cancelled')" :value="$projectsCanceled" variant="error" icon="x-circle" />
+            <x-ui.stat-card :label="__('Projets Totaux')" :value="$totalProjects" variant="default" icon="folder" />
+            <x-ui.stat-card :label="__('En cours')" :value="$projectsInProgress" variant="success" icon="play-circle" />
+            <x-ui.stat-card :label="__('Terminés')" :value="$projectsCompleted" variant="accent" icon="check-circle" />
+            <x-ui.stat-card :label="__('Annulés')" :value="$projectsCanceled" variant="error" icon="x-circle" />
         </div>
+
 
         {{-- Section Analytique : Graphiques --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

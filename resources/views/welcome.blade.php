@@ -1,273 +1,341 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }} - Conception et Gestion de Projets Simplifiées</title>
+    <title>{{ config('app.name') }} - Pilotage de Développement & Expertise Méthodologique</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .futuristic-card {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm" x-data="{ open: false }">
+<body 
+    class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans selection:bg-accent/20 selection:text-accent"
+    x-data="{ scrolled: false }"
+    @scroll.window="scrolled = (window.pageYOffset > 20)"
+>
+    
+    <!-- Premium Geometric Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-accent/5 dark:bg-accent/10 blur-[120px]"></div>
+        <div class="absolute top-[20%] -right-[5%] w-[30%] h-[30%] rounded-full bg-primary/5 dark:bg-primary/20 blur-[100px]"></div>
+        <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-accent/5 dark:bg-accent/10 blur-[150px]"></div>
+    </div>
+
+    <!-- Navigation Area -->
+    <nav 
+        class="sticky top-0 z-50 transition-all duration-300 border-b"
+        x-bind:class="scrolled ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-slate-200 dark:border-slate-800 py-2' : 'bg-transparent border-transparent py-4'"
+        x-data="{ mobileMenu: false }"
+    >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center">
-                        <h1 class="text-xl font-bold text-indigo-600">{{ config('app.name') }}</h1>
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-primary dark:bg-slate-800 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                        <span class="text-white font-black text-xl">C</span>
                     </div>
+                    <h1 class="text-xl font-black tracking-tighter text-primary dark:text-white">{{ config('app.name') }}</h1>
                 </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-gray-600 hover:text-indigo-600 transition-colors">Fonctionnalités</a>
-                    <a href="#why-us" class="text-gray-600 hover:text-indigo-600 transition-colors">Pourquoi nous choisir</a>
-                    <a href="#methodologies" class="text-gray-600 hover:text-indigo-600 transition-colors">Méthodologies</a>
-                    <a href="{{ route('login') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors">Se connecter</a>
+
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#solutions" class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-accent transition-colors">Solutions</a>
+                    <a href="#expertise" class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-accent transition-colors">Expertise</a>
+                    <a href="#process" class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-accent transition-colors">Processus</a>
+                    <a href="#faq" class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-accent transition-colors">FAQ</a>
+                    <a href="#contact" class="px-4 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-accent transition-colors">Contact</a>
+                    
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-4"></div>
+                    
+                    @auth
+                        <x-ui.button tag="a" :href="route('dashboard')" variant="primary" size="md">
+                            Mon Espace
+                        </x-ui.button>
+                    @else
+                        <a href="{{ route('login') }}" class="px-6 py-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors">Connexion</a>
+                        <x-ui.button tag="a" :href="route('register')" variant="accent" size="md">
+                            Débuter
+                        </x-ui.button>
+                    @endauth
                 </div>
-                <div class="md:hidden flex items-center">
-                    <button @click="open = !open" class="text-gray-600 hover:text-indigo-600">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+
+                <!-- Mobile toggle -->
+                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-slate-500 dark:text-slate-400">
+                    <x-lucide-menu x-show="!mobileMenu" class="w-6 h-6" />
+                    <x-lucide-x x-show="mobileMenu" class="w-6 h-6" />
+                </button>
             </div>
         </div>
-        <!-- Mobile menu -->
-        <div x-show="open" class="md:hidden bg-white border-t">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="#features" class="block px-3 py-2 text-gray-600 hover:text-indigo-600">Fonctionnalités</a>
-                <a href="#why-us" class="block px-3 py-2 text-gray-600 hover:text-indigo-600">Pourquoi nous choisir</a>
-                <a href="#methodologies" class="block px-3 py-2 text-gray-600 hover:text-indigo-600">Méthodologies</a>
-                <a href="{{ route('login') }}" class="block px-3 py-2 text-indigo-600 font-medium">Se connecter</a>
+        
+        <!-- Mobile Dropdown -->
+        <div x-show="mobileMenu" x-transition class="md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 space-y-2">
+            @foreach(['solutions' => 'Solutions', 'expertise' => 'Expertise', 'process' => 'Processus', 'faq' => 'FAQ'] as $id => $label)
+                <a href="#{{ $id }}" @click="mobileMenu = false" class="block px-4 py-3 text-lg font-bold text-slate-600 dark:text-slate-300">{{ $label }}</a>
+            @endforeach
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-3">
+                <a href="{{ route('login') }}" class="text-center py-3 font-bold text-slate-600 dark:text-slate-400">Connexion</a>
+                <x-ui.button tag="a" :href="route('register')" variant="accent" size="lg" class="w-full">
+                    Débuter l'expérience
+                </x-ui.button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="gradient-bg text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h1 class="text-4xl md:text-5xl font-bold mb-6">Concevez et gérez vos projets de développement avec expertise</h1>
-                    <p class="text-xl mb-8 opacity-90">{{ config('app.name') }} rend les méthodologies complexes accessibles grâce à une interface intuitive guidée par IA.</p>
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-6 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors text-center">
-                            Commencer maintenant
+    <main>
+        <!-- Hero Section -->
+        <section class="relative pt-12 pb-24 md:pt-24 md:pb-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-8">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-accent">Ingénierie de Projet Certifiée</span>
+                    </div>
+                    
+                    <h2 class="text-5xl md:text-8xl font-black tracking-tightest text-primary dark:text-white mb-8 max-w-5xl mx-auto leading-[0.9]">
+                        Concevez avec Rigueur. <br> Gérez avec <span class="text-accent underline decoration-accent/30 underline-offset-8">Expertise</span>.
+                    </h2>
+                    
+                    <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+                        L'outil de référence pour les professionnels exigeant une conformité absolue aux cadres logiques internationaux et une gestion rigoureuse des performances.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <x-ui.button tag="a" :href="route('register')" variant="primary" size="xl" icon="zap" class="w-full sm:w-auto">
+                            Initialiser un projet
+                        </x-ui.button>
+                        <x-ui.button tag="a" href="#solutions" variant="ghost" size="xl" icon-right="chevron-right" class="w-full sm:w-auto">
+                            Explorer les solutions
+                        </x-ui.button>
+                    </div>
+
+                    <!-- App Preview Mockup -->
+                    <div class="mt-20 relative px-4 md:px-0">
+                        <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-2xl shadow-primary/20 max-w-5xl mx-auto overflow-hidden">
+                            <div class="bg-slate-100 dark:bg-slate-800 rounded-xl aspect-[16/9] flex items-center justify-center">
+                                <x-lucide-activity class="w-20 h-20 text-accent/40 animate-pulse" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solutions Section -->
+        <section id="solutions" class="py-24 bg-white dark:bg-slate-900/50 border-y border-slate-100 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">Solutions d'Ingénierie</h3>
+                        <h4 class="text-4xl md:text-5xl font-black tracking-tight text-primary dark:text-white mb-6">Un écosystème conçu pour la haute performance.</h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-lg mb-10 leading-relaxed">
+                            Chaque module est calibré pour répondre aux standards de l'Approche du Cadre Logique (ACL) et de la Gestion Axée sur les Résultats (GAR).
+                        </p>
+                        
+                        <div class="space-y-6">
+                            @foreach([
+                                ['brain', 'Analyse Environnementale', 'Définissez vos parties prenantes et vos arbres de problèmes avec une rigueur systématique.'],
+                                ['layout', 'Matrice de Cadre Logique', 'Générez des matrices robustes avec indicateurs, sources de vérification et hypothèses.'],
+                                ['calculator', 'Pilotage Budgétaire', 'Associez chaque activité à ses ressources pour un suivi financier en temps réel.']
+                            ] as $feat)
+                            <div class="flex gap-4 p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                                <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                    <x-dynamic-component :component="'lucide-' . $feat[0]" class="w-6 h-6 text-accent" />
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-primary dark:text-white mb-1">{{ $feat[1] }}</h5>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ $feat[2] }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4 pt-12">
+                            <div class="glass-card p-6 rounded-3xl h-64 border-accent/20">
+                                <x-lucide-trending-up class="w-10 h-10 text-accent mb-4" />
+                                <p class="font-black text-xl text-primary dark:text-white">Suivi KPI</p>
+                                <p class="text-xs text-slate-500 mt-2 italic">Visualisation dynamique des indicateurs clés.</p>
+                            </div>
+                            <div class="bg-primary p-6 rounded-3xl h-48">
+                                <p class="text-white font-black text-4xl">100%</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">Conformité Standards</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-accent p-6 rounded-3xl h-48">
+                                <x-lucide-award class="text-white w-10 h-10" />
+                                <p class="text-white font-bold mt-4 uppercase text-[10px] tracking-widest">Expertise Intégrée</p>
+                            </div>
+                            <div class="glass-card p-6 rounded-3xl h-64 border-slate-200">
+                                <x-lucide-shield-check class="w-10 h-10 text-primary dark:text-accent mb-4" />
+                                <p class="font-black text-xl text-primary dark:text-white">Sécurité Totale</p>
+                                <p class="text-xs text-slate-500 mt-2">Isolation multi-tenant de niveau entreprise.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section id="process" class="py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">Le Processus</h3>
+                    <h4 class="text-3xl md:text-5xl font-black text-primary dark:text-white">Concevoir n'a jamais été aussi <span class="italic">ordonné</span>.</h4>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    @foreach([
+                        ['01', 'Analyse', 'Identification des problèmes et objectifs stratégiques.', 'search'],
+                        ['02', 'Planification', 'Élaboration de la matrice et du plan d\'action.', 'list-todo'],
+                        ['03', 'Exécution', 'Activités, ressources et suivi au quotidien.', 'play'],
+                        ['04', 'Reporting', 'Génération de rapports d\'étape et bilan.', 'file-pie-chart']
+                    ] as $step)
+                    <div class="relative p-8 rounded-[2rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-accent group transition-all">
+                        <span class="absolute -top-4 left-8 bg-accent text-white font-black text-xs px-3 py-1 rounded-full">{{ $step[0] }}</span>
+                        <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mb-6 text-slate-400 group-hover:text-accent transition-colors">
+                            <x-dynamic-component :component="'lucide-' . $step[3]" class="w-6 h-6" />
+                        </div>
+                        <h5 class="font-bold text-primary dark:text-white mb-2">{{ $step[1] }}</h5>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ $step[2] }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 bg-slate-100 dark:bg-slate-950/50">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">FAQ</h3>
+                    <h4 class="text-3xl font-black text-primary dark:text-white">Questions Fréquentes</h4>
+                </div>
+                
+                <div class="space-y-4" x-data="{ active: null }">
+                    @foreach([
+                        ['Qu\'est-ce que l\'Approche du Cadre Logique (ACL) ?', 'L\'ACL est une méthodologie participative utilisée pour concevoir, exécuter et évaluer des projets. Elle permet de structurer les objectifs et les activités de manière cohérente.'],
+                        ['Est-ce adapté aux petites structures ?', 'Absolument. La plateforme est conçue pour guider les novices tout en offrant la rigueur nécessaire aux grandes organisations internationales.'],
+                        ['Puis-je exporter mes rapports de projet ?', 'Oui, tous vos cadres logiques et rapports d\'avancement peuvent être exportés dans des formats standards pour vos partenaires financiers.'],
+                        ['Mes données sont-elles sécurisées ?', 'Nous utilisons une architecture multi-tenant stricte. Chaque organisation possède son propre espace de données hermétique et chiffré.']
+                    ] as $index => $faq)
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <button 
+                            @click="active = (active === {{ $index }} ? null : {{ $index }})"
+                            class="w-full px-6 py-5 text-left flex justify-between items-center group"
+                        >
+                            <span class="font-bold text-slate-700 dark:text-slate-200 group-hover:text-accent transition-colors">{{ $faq[0] }}</span>
+                            <x-lucide-chevron-down 
+                                class="w-5 h-5 text-slate-400 transition-transform duration-300"
+                                x-bind:class="active === {{ $index }} ? 'rotate-180' : ''"
+                            />
+                        </button>
+                        <div 
+                            x-show="active === {{ $index }}" 
+                            x-collapse
+                            class="px-6 pb-5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed"
+                        >
+                            {{ $faq[1] }}
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Professional -->
+        <section class="py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative bg-primary dark:bg-slate-900 rounded-[3rem] px-8 py-20 md:p-24 overflow-hidden shadow-2xl shadow-primary/40 dark:shadow-black">
+                    <!-- Decor -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-accent/20 blur-[100px]"></div>
+                    <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/10 blur-[100px]"></div>
+                    
+                    <div class="relative text-center max-w-3xl mx-auto">
+                        <h3 class="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight">
+                            Excellence et Rigueur Opérationnelle.
+                        </h3>
+                        <p class="text-slate-300 dark:text-slate-400 mb-12 text-lg">
+                            Rejoignez les experts qui utilisent {{ config('app.name') }} pour maximiser l'impact de leurs projets de développement.
+                        </p>
+                        <x-ui.button tag="a" :href="route('register')" variant="accent" size="xl" icon="arrow-right">
+                            Initialiser mon espace
+                        </x-ui.button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact" class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 bg-primary dark:bg-slate-800 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-black text-sm">C</span>
+                        </div>
+                        <h1 class="text-lg font-black tracking-tight text-primary dark:text-white">{{ config('app.name') }}</h1>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs leading-relaxed">
+                        Plateforme dédiée à l'ingénierie et au pilotage stratégique de projets de développement. Réduisez les risques, maximisez les impacts.
+                    </p>
+                    <div class="mt-8 flex gap-4">
+                        <a href="mailto:contact@{{ strtolower(config('app.name')) }}.com" class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-accent transition-colors shadow-sm">
+                            <x-lucide-mail class="w-5 h-5" />
                         </a>
-                        <a href="#features" class="border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white hover:bg-opacity-10 transition-colors text-center">
-                            En savoir plus
+                        <a href="#" class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-accent transition-colors shadow-sm">
+                            <x-lucide-phone class="w-5 h-5" />
                         </a>
                     </div>
                 </div>
-                <div class="flex justify-center">
-                    <div class="futuristic-card rounded-2xl p-8 max-w-md w-full">
-                        <div class="text-center mb-6">
-                            <svg class="w-16 h-16 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-4 text-center">Plateforme guidée pour novices</h3>
-                        <p class="text-center opacity-90">Interface questions-réponses intuitive avec assistance IA pour créer des projets de haute qualité alignés sur les meilleures pratiques.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Fonctionnalités principales</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Découvrez comment {{ config('app.name') }} simplifie la conception et la gestion de vos projets</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3">Assistance IA</h3>
-                    <p class="text-gray-600">Corrections et suggestions d'amélioration par intelligence artificielle pour optimiser votre projet.</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3">Interface intuitive</h3>
-                    <p class="text-gray-600">Approche guidée par questions-réponses pour une prise en main facile, même sans expérience préalable.</p>
-                </div>
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-3">Export standardisé</h3>
-                    <p class="text-gray-600">Générez et exportez vos projets dans des formats standards reconnus par les organismes de développement.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Choose Us Section -->
-    <section id="why-us" class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Pourquoi choisir {{ config('app.name') }} ?</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Notre plateforme est spécialement conçue pour les personnes et organisations novices en gestion de projet</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <div class="space-y-8">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold">Guidance pas à pas</h3>
-                                <p class="text-gray-600 mt-1">Nous vous accompagnons à chaque étape de la conception de votre projet, de l'analyse de l'environnement à la planification détaillée.</p>
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold">Méthodologies éprouvées</h3>
-                                <p class="text-gray-600 mt-1">Notre plateforme intègre les approches reconnues comme l'ACL, le Cadre Logique, la GCP et la GAR pour garantir la qualité de vos projets.</p>
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold">Analyse environnementale intégrée</h3>
-                                <p class="text-gray-600 mt-1">L'Approche du Cadre Logique (ACL) vous aide à analyser systématiquement l'environnement de votre projet et à identifier les parties prenantes clés.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-lg">
-                    <div class="aspect-w-16 aspect-h-9 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-8 flex items-center justify-center">
-                        <div class="text-center">
-                            <svg class="w-16 h-16 text-indigo-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            <h3 class="text-xl font-semibold text-gray-800">Augmentez vos chances de succès</h3>
-                            <p class="text-gray-600 mt-2">Avec {{ config('app.name') }}, structurez vos projets selon les meilleures pratiques et maximisez leur impact.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Methodologies Section -->
-    <section id="methodologies" class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Méthodologies intégrées</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">{{ config('app.name') }} s'appuie sur des approches reconnues en gestion de projet</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
-                    <h3 class="text-lg font-semibold text-indigo-800 mb-3">Approche du Cadre Logique (ACL)</h3>
-                    <p class="text-gray-700">Méthode participative pour concevoir les éléments clés d'un projet avec analyse étape par étape de l'environnement du projet.</p>
-                </div>
-                <div class="bg-purple-50 p-6 rounded-xl border border-purple-100">
-                    <h3 class="text-lg font-semibold text-purple-800 mb-3">Cadre Logique (Logframe)</h3>
-                    <p class="text-gray-700">Outil de gestion présentant les informations du projet dans une matrice 4x4 pour une conception et un suivi efficaces.</p>
-                </div>
-                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                    <h3 class="text-lg font-semibold text-blue-800 mb-3">Gestion du Cycle de Projet (GCP)</h3>
-                    <p class="text-gray-700">Approche permettant d'améliorer la qualité des projets au fil du temps via un cycle d'apprentissage continu.</p>
-                </div>
-                <div class="bg-green-50 p-6 rounded-xl border border-green-100">
-                    <h3 class="text-lg font-semibold text-green-800 mb-3">Gestion Axée sur les Résultats (GAR)</h3>
-                    <p class="text-gray-700">Évolution des approches de cadre logique avec des outils pour une conception réellement participative.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-16 gradient-bg text-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold mb-6">Prêt à créer des projets de développement de qualité ?</h2>
-            <p class="text-xl mb-8 opacity-90">Rejoignez {{ config('app.name') }} dès aujourd'hui et bénéficiez d'un accompagnement expert pour la conception et la gestion de vos projets.</p>
-            <a href="{{ route('login') }}" class="bg-white text-indigo-600 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors inline-block">
-                Commencer maintenant
-            </a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">{{ config('app.name') }}</h3>
-                    <p class="text-gray-400">Plateforme de conception et gestion de projets de développement pour novices.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Navigation</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Fonctionnalités</a></li>
-                        <li><a href="#why-us" class="text-gray-400 hover:text-white transition-colors">Pourquoi nous choisir</a></li>
-                        <li><a href="#methodologies" class="text-gray-400 hover:text-white transition-colors">Méthodologies</a></li>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Plateforme</h6>
+                    <ul class="space-y-4">
+                        <li><a href="#solutions" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Solutions</a></li>
+                        <li><a href="#expertise" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Expertise</a></li>
+                        <li><a href="{{ route('login') }}" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Portail Client</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4">Liens utiles</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ route('login') }}" class="text-gray-400 hover:text-white transition-colors">Connexion</a></li>
-                        <li><a href="{{ route('register') }}" class="text-gray-400 hover:text-white transition-colors">Inscription</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Contact</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li>Email: contact@{{ config('app.name') }}.com</li>
-                        <li>Téléphone: +XX XXX XXX XXX</li>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Ressources</h6>
+                    <ul class="space-y-4">
+                        <li><a href="#faq" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Aide & FAQ</a></li>
+                        <li><a href="#" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Confidentialité</a></li>
+                        <li><a href="#" class="text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-accent transition-colors">Conditions</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 {{ config('app.name') }}. Tous droits réservés.</p>
+            
+            <div class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">© 2024 {{ config('app.name') }}. Tous droits réservés.</p>
+                <button 
+                    @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-primary dark:hover:text-accent transition-colors"
+                >
+                    Retour en haut 
+                    <x-lucide-arrow-up class="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
+                </button>
             </div>
         </div>
     </footer>
+
+    <!-- Back to top sticky button -->
+    <div 
+        class="fixed bottom-8 right-8 z-[60] transition-all duration-500"
+        x-bind:class="scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'"
+    >
+        <button 
+            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="w-12 h-12 bg-primary dark:bg-accent text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+        >
+            <x-lucide-arrow-up class="w-6 h-6" />
+        </button>
+    </div>
+
 </body>
 </html>

@@ -54,4 +54,19 @@ enum ActivityStatus: string
             self::OVERDUE => 'alert-circle',
         };
     }
+
+    public function hex(): string
+    {
+        return match($this) {
+            self::DRAFT => '#94a3b8',
+            self::ABANDONED => '#be123c',
+            self::STOPPED => '#be123c',
+            self::PENDING => '#F59E0B',
+            self::ONGOING => '#0f172a',
+            self::SUSPENDED => '#F59E0B',
+            self::COMPLETED => '#0d9488',
+            self::OVERDUE => '#be123c',
+        };
+    }
 }
+

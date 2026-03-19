@@ -5,11 +5,15 @@ namespace App\Livewire\VBeta;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Services\Queries\ProjectStatsQueryService;
+use App\Enums\AccountType;
+use App\Models\Activity;
 use Livewire\Attributes\Lazy;
 
 #[Lazy]
 class DashboardLivewire extends Component
 {
+    public string $period = 'all'; // all, month, quarter, year
+
     public function render(ProjectStatsQueryService $queryService)
     {
         /** @var \App\Models\User $user */
@@ -19,13 +23,47 @@ class DashboardLivewire extends Component
             abort(403, 'Unauthorized. Please log in.');
         }
 
-        $stats = $queryService->getDashboardStats($user);
-        $isAdmin = $user->hasRole(['IT_ADMIN', 'ORG_ADMIN', 'MANAGER']);
+        [$startDate, $endDate] = $this->getDateRange();
+        
+        $stats = $queryService->getDashboardStats($user, $startDate, $endDate);
+        $isAdmin = in_array($user->role, [AccountType::SYSTEM_ADMIN->value, AccountType::ORG_ADMIN->value]);
 
-        $viewData = array_merge(['isAdmin' => $isAdmin], $stats);
+        // Proactive Alerts: Overdue activities for this user/org
+        $overdueActivities = Activity::query()
+            ->where('status', \App\Enums\ActivityStatus::OVERDUE)
+            ->where('organization_id', $user->organization_id)
+            ->when($user->role === AccountType::ORG_USER->value, fn($q) => $q->where('responsible_user_id', $user->id))
+            ->with('project:id,title')
+            ->limit(3)
+            ->get();
+
+        $viewData = array_merge([
+            'isAdmin' => $isAdmin,
+            'overdueActivities' => $overdueActivities,
+            'currentPeriod' => $this->period,
+        ], $stats);
 
         return view('livewire.v-beta.dashboard-livewire', $viewData);
     }
+
+    public function setPeriod(string $period)
+    {
+        if (in_array($period, ['all', 'month', 'quarter', 'year'])) {
+            $this->period = $period;
+        }
+    }
+
+    private function getDateRange(): array
+    {
+        $now = now();
+        return match ($this->period) {
+            'month' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            'quarter' => [$now->copy()->startOfQuarter(), $now->copy()->endOfQuarter()],
+            'year' => [$now->copy()->startOfYear(), $now->copy()->endOfYear()],
+            default => [null, null],
+        };
+    }
+
 
     public function placeholder()
     {
