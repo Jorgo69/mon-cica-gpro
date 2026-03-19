@@ -7,12 +7,13 @@ use Livewire\Component;
 use App\Models\Activity;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
+use App\Queries\ActivityQueries;
 
 class ActivityListLivewire extends Component
 {
     use WithPagination;
 
-   public $search = '';
+    public $search = '';
     public $statusFilter = '';
     public $responsibleUserFilter = '';
     public $sortField = 'created_at';
@@ -30,40 +31,37 @@ class ActivityListLivewire extends Component
         $this->sortField = $field;
     }
 
-    public function render()
+    public function render(ActivityQueries $activityQueries)
     {
         $user = Auth::user();
-        $activities = Activity::with('responsibleUser', 'result.specificObjective.logicalFramework.project')
-                              ->orderBy($this->sortField, $this->sortDirection);
 
-        // Filtre de permission: Afficher les activités où l'utilisateur est le responsable
-        $activities->where('responsible_user_id', $user->id);
+        $filters = [
+            'search' => $this->search,
+            'statusFilter' => $this->statusFilter,
+            'responsibleUserFilter' => $this->responsibleUserFilter,
+        ];
 
-        // Appliquer la recherche textuelle sur le projet lié
-        if ($this->search) {
-            $activities->whereHas('result.specificObjective.logicalFramework.project', function ($query) {
-                $query->where('description', 'like', '%' . $this->search . '%')
-                      ->orWhere('short_title', 'like', '%' . $this->search . '%')
-                      ->orWhere('project_code', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        // Appliquer le filtre de statut (champ sur la table 'activities')
-        if ($this->statusFilter) {
-            $activities->where('status', $this->statusFilter);
-        }
-
-        // Appliquer le filtre par responsable (champ sur la table 'activities')
-        if ($this->responsibleUserFilter) {
-            $activities->where('responsible_user_id', $this->responsibleUserFilter);
+        try {
+            $activities = $activityQueries->getPaginatedActivitiesForUser(
+                $user,
+                $filters,
+                $this->sortField,
+                $this->sortDirection,
+                10
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[ActivityList] Error fetching activities: ' . $e->getMessage());
+            $this->dispatch('notify', ['type' => 'error', 'message' => 'Erreur lors du chargement des activités.']);
+            $activities = collect(); // Avoid crashing the view
         }
 
         // Obtenir les options pour les filtres
         $availableUsers = User::orderBy('name')->get();
-        $activityStatuses = Activity::select('status')->distinct()->pluck('status');
+        // Optionnel: utiliser des enums si dispo, sinon la requête de statuts existants
+        $activityStatuses = Activity::select('status')->whereNotNull('status')->distinct()->pluck('status');
 
         return view('livewire.v-beta.activity.activity-list-livewire', [
-            'activities' => $activities->paginate(10),
+            'activities' => $activities,
             'availableUsers' => $availableUsers,
             'activityStatuses' => $activityStatuses,
         ]);

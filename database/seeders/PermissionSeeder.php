@@ -49,10 +49,47 @@ class PermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
-        // 2. Créer le rôle IT_ADMIN (Global - organization_id = null)
+        // 2. Créer les Rôles Globaux (organization_id = null)
+        
+        // IT_ADMIN : Accès total
         $itAdmin = Role::firstOrCreate(
             ['name' => 'IT_ADMIN', 'guard_name' => 'web', 'organization_id' => null]
         );
         $itAdmin->syncPermissions($permissions);
+
+        // ORG_ADMIN : Administrateur d'organisation
+        $orgAdmin = Role::firstOrCreate(
+            ['name' => 'ORG_ADMIN', 'guard_name' => 'web', 'organization_id' => null]
+        );
+        $orgAdmin->syncPermissions([
+            'manage-organization', 'manage-users', 'manage-roles', 
+            'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
+            'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets'
+        ]);
+
+        // MANAGER : Gestionnaire de projets
+        $manager = Role::firstOrCreate(
+            ['name' => 'MANAGER', 'guard_name' => 'web', 'organization_id' => null]
+        );
+        $manager->syncPermissions([
+            'view-projects', 'create-projects', 'edit-projects', 
+            'manage-activities', 'track-progress', 'view-budgets'
+        ]);
+
+        // MEMBER : Membre d'équipe
+        $member = Role::firstOrCreate(
+            ['name' => 'MEMBER', 'guard_name' => 'web', 'organization_id' => null]
+        );
+        $member->syncPermissions([
+            'view-projects', 'track-progress'
+        ]);
+
+        // SUPERVISOR : Superviseur / Bailleur
+        $supervisor = Role::firstOrCreate(
+            ['name' => 'SUPERVISOR', 'guard_name' => 'web', 'organization_id' => null]
+        );
+        $supervisor->syncPermissions([
+            'view-projects', 'track-progress', 'view-budgets', 'validate-projects'
+        ]);
     }
 }
