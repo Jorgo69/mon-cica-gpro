@@ -23,7 +23,7 @@ class ProjectExportController extends Controller
 
     
     // // 1. Construire ton HTML avec Blade
-    // $html = view('v_beta.pdf.index', [
+    // $html = view('pdf.export', [
     //     'project' => $project,
     // ])->render();
 

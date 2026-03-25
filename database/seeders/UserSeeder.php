@@ -5,15 +5,14 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Organization;
+use App\Enums\AccountType;
+use App\Enums\OrgMemberRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $organization = Organization::where('slug', 'cica-pro')->first();
@@ -23,126 +22,134 @@ class UserSeeder extends Seeder
 
         $orgId = $organization->id;
 
-        // Activer le contexte de l'organisation pour Spatie Teams
+        // Rôles Spatie scopés à l'organisation (teams)
         setPermissionsTeamId($orgId);
 
-        // 1. Créer les Rôles spécifiques à cette organisation
-        $roles = [
+        $rolesPermissions = [
             'ORG_ADMIN' => [
-                'manage-organization', 'manage-users', 'manage-roles', 
+                'manage-organization', 'manage-users', 'manage-roles',
                 'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
-                'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets'
+                'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets',
             ],
             'MANAGER' => [
-                'view-projects', 'create-projects', 'edit-projects', 
-                'manage-activities', 'track-progress', 'view-budgets'
+                'view-projects', 'create-projects', 'edit-projects',
+                'manage-activities', 'track-progress', 'view-budgets',
             ],
             'MEMBER' => [
-                'view-projects', 'track-progress'
+                'view-projects', 'track-progress',
             ],
             'SUPERVISOR' => [
-                'view-projects', 'track-progress', 'view-budgets', 'validate-projects'
+                'view-projects', 'track-progress', 'view-budgets', 'validate-projects',
             ],
         ];
 
-        foreach ($roles as $roleName => $permissions) {
+        foreach ($rolesPermissions as $roleName => $permissions) {
             $role = Role::firstOrCreate([
-                'name' => $roleName,
-                'guard_name' => 'web',
-                'organization_id' => $orgId
+                'name'            => $roleName,
+                'guard_name'      => 'web',
+                'organization_id' => $orgId,
             ]);
             $role->syncPermissions($permissions);
         }
 
-        // 2. Créer les Utilisateurs et assigner les rôles
-
-        // IT Admin
-        // On s'assure que le contexte d'organisation est nul pour l'attribution globale
+        // System Admin (pas de contexte d'org)
         setPermissionsTeamId(null);
 
-        $itAdmin = User::firstOrCreate(
+        $systemAdmin = User::firstOrCreate(
             ['email' => 'admin@cave-tech.com'],
             [
-                'name' => 'Jean Dupont',
-                'password' => Hash::make('password'),
+                'name'             => 'Jean Dupont',
+                'password'         => Hash::make('password'),
                 'email_verified_at' => now(),
-                'organization_id' => null, // Super Admin Global
-                'sexe' => 'Homme',
-                'role' => \App\Enums\AccountType::SYSTEM_ADMIN,
-                'department' => 'Informatique & Systèmes',
-                'telephone' => '+229 97 00 01 02',
-                'pays' => 'Bénin',
-                'ville' => 'Cotonou',
+                'account_type'     => AccountType::SYSTEM_ADMIN,
+                'country'          => 'BJ',
+                'location'         => ['ville' => 'Cotonou'],
+                'telephone'        => '+229 97 00 01 02',
             ]
         );
-        $itAdmin->assignRole('IT_ADMIN'); 
+        $systemAdmin->assignRole('IT_ADMIN');
 
-        // On remet le contexte pour la suite du seeding
+        // Membres de l'organisation
         setPermissionsTeamId($orgId);
 
-        // Org Admin (Superviseurs dans le seed original)
-        $supervisors = [
-            ['name' => 'Alice Dossou', 'email' => 'alice.d@cpro.org', 'sexe' => 'Femme'],
+        $members = [
+            [
+                'email'        => 'alice.d@cpro.org',
+                'name'         => 'Alice Dossou',
+                'account_type' => AccountType::ORG_ADMIN,
+                'org_role'     => OrgMemberRole::ORG_ADMIN,
+                'spatie_role'  => 'ORG_ADMIN',
+                'country'      => 'BJ',
+                'location'     => ['ville' => 'Porto-Novo'],
+            ],
+            [
+                'email'        => 'p.manager@cpro.org',
+                'name'         => 'Sophie Koumé',
+                'account_type' => AccountType::ORG_MEMBER,
+                'org_role'     => OrgMemberRole::MEMBER,
+                'spatie_role'  => 'MANAGER',
+                'country'      => 'BJ',
+                'location'     => ['ville' => 'Abomey-Calavi'],
+                'telephone'    => '+229 96 11 22 33',
+            ],
+            [
+                'email'        => 'idriss.g@cpro.org',
+                'name'         => 'Idriss Gnonlon',
+                'account_type' => AccountType::ORG_MEMBER,
+                'org_role'     => OrgMemberRole::MEMBER,
+                'spatie_role'  => 'MEMBER',
+                'country'      => 'BJ',
+                'location'     => ['ville' => 'Parakou'],
+            ],
+            [
+                'email'        => 'carine.s@cpro.org',
+                'name'         => 'Carine Sika',
+                'account_type' => AccountType::ORG_MEMBER,
+                'org_role'     => OrgMemberRole::MEMBER,
+                'spatie_role'  => 'MEMBER',
+                'country'      => 'BJ',
+                'location'     => ['ville' => 'Parakou'],
+            ],
         ];
 
-        foreach ($supervisors as $supervisor) {
+        foreach ($members as $data) {
             $user = User::firstOrCreate(
-                ['email' => $supervisor['email']],
+                ['email' => $data['email']],
                 [
-                    'name' => $supervisor['name'],
-                    'password' => Hash::make('password'),
+                    'name'             => $data['name'],
+                    'password'         => Hash::make('password'),
                     'email_verified_at' => now(),
-                    'organization_id' => $orgId,
-                    'sexe' => $supervisor['sexe'],
-                    'role' => \App\Enums\AccountType::ORG_ADMIN,
-                    'department' => 'Direction stratégique',
-                    'pays' => 'Bénin',
-                    'ville' => 'Porto-Novo',
+                    'account_type'     => $data['account_type'],
+                    'country'          => $data['country'],
+                    'location'         => $data['location'],
+                    'telephone'        => $data['telephone'] ?? null,
                 ]
             );
-            $user->assignRole('SUPERVISOR');
+
+            // Lier à l'organisation via pivot
+            $user->organizations()->syncWithoutDetaching([
+                $orgId => [
+                    'role'      => $data['org_role']->value,
+                    'status'    => 'active',
+                    'joined_at' => now(),
+                ],
+            ]);
+
+            $user->assignRole($data['spatie_role']);
         }
 
-        // Project Manager
-        $manager = User::firstOrCreate(
-            ['email' => 'p.manager@cpro.org'],
+        // Indépendant (pas d'org, workspace personnel)
+        User::firstOrCreate(
+            ['email' => 'indie@test.com'],
             [
-                'name' => 'Sophie Koumé',
-                'password' => Hash::make('password'),
+                'name'              => 'Marc Indépendant',
+                'password'          => Hash::make('password'),
                 'email_verified_at' => now(),
-                'organization_id' => $orgId,
-                'sexe' => 'Femme',
-                'role' => \App\Enums\AccountType::ORG_USER,
-                'department' => 'Gestion de Projets',
-                'telephone' => '+229 96 11 22 33',
-                'pays' => 'Bénin',
-                'ville' => 'Abomey-Calavi',
+                'account_type'      => AccountType::INDEPENDENT,
+                'country'           => 'FR',
+                'location'          => ['ville' => 'Lyon', 'quartier' => 'Part-Dieu'],
+                'telephone'         => '+33 6 12 34 56 78',
             ]
         );
-        $manager->assignRole('MANAGER');
-
-        // Membres
-        $members = [
-            ['name' => 'Idriss Gnonlon', 'email' => 'idriss.g@cpro.org', 'sexe' => 'Homme'],
-            ['name' => 'Carine Sika', 'email' => 'carine.s@cpro.org', 'sexe' => 'Femme'],
-        ];
-
-        foreach ($members as $member) {
-            $user = User::firstOrCreate(
-                ['email' => $member['email']],
-                [
-                    'name' => $member['name'],
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                    'organization_id' => $orgId,
-                    'sexe' => $member['sexe'],
-                    'role' => \App\Enums\AccountType::ORG_USER,
-                    'department' => 'Terrain & Opérations',
-                    'pays' => 'Bénin',
-                    'ville' => 'Parakou',
-                ]
-            );
-            $user->assignRole('MEMBER');
-        }
     }
 }

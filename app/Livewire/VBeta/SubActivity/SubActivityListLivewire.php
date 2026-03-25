@@ -11,7 +11,7 @@ class SubActivityListLivewire extends Component
     {
         $subActivities = Activity::whereNotNull('parent_id')->get();
 
-        return view('livewire.v-beta.sub-activity.sub-activity-list-livewire', [
+        return view('livewire.sub-activity.list', [
             'subActivities' => $subActivities,
         ]);
     }

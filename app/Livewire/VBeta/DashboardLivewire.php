@@ -24,15 +24,15 @@ class DashboardLivewire extends Component
         }
 
         [$startDate, $endDate] = $this->getDateRange();
-        
-        $stats = $queryService->getDashboardStats($user, $startDate, $endDate);
-        $isAdmin = in_array($user->role, [AccountType::SYSTEM_ADMIN->value, AccountType::ORG_ADMIN->value]);
 
-        // Proactive Alerts: Overdue activities for this user/org
+        $stats = $queryService->getDashboardStats($user, $startDate, $endDate);
+        $isAdmin = $user->account_type === AccountType::SYSTEM_ADMIN;
+
+        // Proactive Alerts: Overdue activities scoped via project → org
+        $orgId = session('current_organization_id');
         $overdueActivities = Activity::query()
             ->where('status', \App\Enums\ActivityStatus::OVERDUE)
-            ->where('organization_id', $user->organization_id)
-            ->when($user->role === AccountType::ORG_USER->value, fn($q) => $q->where('responsible_user_id', $user->id))
+            ->when($orgId, fn($q) => $q->whereHas('project', fn($pq) => $pq->where('organization_id', $orgId)))
             ->with('project:id,title')
             ->limit(3)
             ->get();
@@ -43,7 +43,7 @@ class DashboardLivewire extends Component
             'currentPeriod' => $this->period,
         ], $stats);
 
-        return view('livewire.v-beta.dashboard-livewire', $viewData);
+        return view('livewire.dashboard.index', $viewData);
     }
 
     public function setPeriod(string $period)
@@ -63,7 +63,6 @@ class DashboardLivewire extends Component
             default => [null, null],
         };
     }
-
 
     public function placeholder()
     {

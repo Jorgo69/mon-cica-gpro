@@ -25,11 +25,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
-        return (string) $user->organization_id === (string) $activity->organization_id;
+        return session('current_organization_id') === (string) $activity->project?->organization_id;
     }
 
     /**
@@ -37,7 +37,7 @@ class ActivityPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
@@ -53,11 +53,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $activity->organization_id;
+        return session('current_organization_id') === (string) $activity->project?->organization_id;
     }
 
     /**
@@ -69,11 +69,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $activity->organization_id;
+        return session('current_organization_id') === (string) $activity->project?->organization_id;
     }
 
     /**
@@ -85,11 +85,11 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $activity->organization_id;
+        return session('current_organization_id') === (string) $activity->project?->organization_id;
     }
 
     /**

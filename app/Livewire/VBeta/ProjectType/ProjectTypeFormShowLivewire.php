@@ -17,6 +17,6 @@ class ProjectTypeFormShowLivewire extends Component
     }
     public function render()
     {
-        return view('livewire.v-beta.project-type.project-type-form-show-livewire');
+        return view('livewire.project-type.form-show');
     }
 }

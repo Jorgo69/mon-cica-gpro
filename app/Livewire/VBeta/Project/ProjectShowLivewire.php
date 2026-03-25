@@ -5,7 +5,6 @@ namespace App\Livewire\VBeta\Project;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use App\Models\Project;
-use App\Models\ProjectContext;
 use App\Models\ProjectDocument;
 use App\Models\LogicalFramework;
 use App\Models\SpecificObjective;
@@ -78,6 +77,6 @@ class ProjectShowLivewire extends Component
      */
     public function render()
     {
-        return view('livewire.v-beta.project.project-show-livewire');
+        return view('livewire.project.show');
     }
 }

@@ -23,7 +23,7 @@ class GlobalSearchService
         }
 
         $user = auth()->user();
-        $isSystemAdmin = $user && $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        $isSystemAdmin = $user && $user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN;
         $orgId = $user?->organization_id;
 
         $results = collect();

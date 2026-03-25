@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Category;
 
-use App\Models\GeneralAdministration;
+use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 
 class SaveCategoryAction
@@ -17,7 +17,7 @@ class SaveCategoryAction
     public function execute(array $data, ?string $categoryId = null): GeneralAdministration
     {
         return DB::transaction(function () use ($data, $categoryId) {
-            return GeneralAdministration::updateOrCreate(
+            return Category::updateOrCreate(
                 ['id' => $categoryId],
                 [
                     'name'        => $data['name'],

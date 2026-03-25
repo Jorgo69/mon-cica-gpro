@@ -3,7 +3,7 @@
 namespace App\Livewire\VBeta\Admin\Category;
 
 use App\Actions\Admin\Category\SaveCategoryAction;
-use App\Models\GeneralAdministration;
+use App\Models\Category;
 use Livewire\Component;
 
 class CategoryModalFormLivewire extends Component
@@ -27,7 +27,7 @@ class CategoryModalFormLivewire extends Component
 
         if ($this->editingCategoryId) {
             $this->editing = true;
-            $category = GeneralAdministration::findOrFail($this->editingCategoryId);
+            $category = Category::findOrFail($this->editingCategoryId);
             $this->name = $category->name;
             $this->description = $category->description;
         }
@@ -55,6 +55,6 @@ class CategoryModalFormLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.admin.category.category-modal-form-livewire');
+        return view('livewire.admin.category.modal-form');
     }
 }

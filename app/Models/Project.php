@@ -1,142 +1,117 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Support\Str;
+
+use App\Traits\HasUuid;
+use App\Traits\Multitenantable;
+use App\Enums\ProjectStatus;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
-/**
- * @OA\Schema(
- *     schema="Project",
- *     title="Project",
- *     description="Project model",
- *     @OA\Property(property="id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
- *     @OA\Property(property="organization_id", type="string", format="uuid"),
- *     @OA\Property(property="title", type="string", example="Construction d'un complexe scolaire"),
- *     @OA\Property(property="project_code", type="string", example="PRJ-2026-001"),
- *     @OA\Property(property="status", type="string", enum={"draft", "proposed", "approved", "rejected"}),
- *     @OA\Property(property="start_date", type="string", format="date"),
- *     @OA\Property(property="end_date", type="string", format="date")
- * )
- */
 class Project extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasFactory, SoftDeletes, Multitenantable, LogsActivity, HasUuid;
+
     protected $fillable = [
         'organization_id',
-        'creator_user_id',
         'project_type_id',
+        'creator_user_id',
         'project_code',
         'title',
         'short_title',
         'description',
+        'problem_analysis',
+        'strategy',
+        'justification',
+        'context_description',
+        'ai_analysis_result',
         'general_objectives',
         'status',
         'start_date',
         'end_date',
+        'created_by_user_id',
+        'updated_by_user_id',
     ];
 
     protected $casts = [
-        'status' => \App\Enums\ProjectStatus::class,
-        'start_date' => 'date', 
-        'end_date' => 'date',
+        'status'             => ProjectStatus::class,
+        'start_date'         => 'date',
+        'end_date'           => 'date',
         'general_objectives' => 'array',
     ];
 
-    protected static function boot()
+    public function getActivitylogOptions(): LogOptions
     {
-        parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+        return LogOptions::defaults()->logAll()->logOnlyDirty()->dontSubmitEmptyLogs();
     }
 
-    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName): void
     {
-        return \Spatie\Activitylog\LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+        $activity->organization_id = $this->organization_id;
     }
 
-    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
+    // Relations
+
+    public function organization()
     {
-        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function projectType()
+    {
+        return $this->belongsTo(ProjectType::class);
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id');
     }
-    public function projectType()
-    {
-        return $this->belongsTo(ProjectType::class, 'project_type_id', 'id');
-    }
-    public function contexts()
-    {
-        return $this->hasMany(ProjectContext::class, 'project_id', 'id');
-    }
-    public function documents()
-    {
-        return $this->hasMany(ProjectDocument::class, 'project_id', 'id');
-    }
+
     public function logicalFramework()
     {
-        return $this->hasOne(LogicalFramework::class, 'project_id', 'id');
-    }
-    public function budgets()
-    {
-        return $this->hasMany(Budget::class, 'project_id', 'id');
-    }
-    public function progressTrackers()
-    {
-        return $this->hasMany(ProgressTracker::class, 'project_id', 'id');
-    }
-    public function qualitativeEvaluations()
-    {
-        return $this->hasMany(QualitativeEvaluation::class, 'project_id', 'id');
+        return $this->hasOne(LogicalFramework::class);
     }
 
-    // Autres relations et méthodes...
-    public function projectContext()
+    public function activities()
     {
-        return $this->hasOne(ProjectContext::class);
+        return $this->hasMany(Activity::class);
     }
 
-    public function projectDocuments()
+    public function documents()
     {
         return $this->hasMany(ProjectDocument::class);
     }
 
-    public function getAllActivities(): Collection
+    public function budgets()
     {
-        $activities = collect([]);
-        // Eager load logical framework and its descendants to minimize queries
-        $this->loadMissing('logicalFramework.specificObjectives.results.activities');
-
-        if ($this->logicalFramework) {
-            foreach ($this->logicalFramework->specificObjectives as $specificObjective) {
-                foreach ($specificObjective->results as $result) {
-                    $activities = $activities->merge($result->activities);
-                }
-            }
-        }
-
-        return $activities;
+        return $this->hasMany(Budget::class);
     }
 
+    public function updates()
+    {
+        return $this->hasMany(ProjectUpdate::class);
+    }
 
-    /**
-     * Calculate the overall progress percentage of the project.
-     * This is based on the average progress of all its activities.
-     *
-     * @return float
-     */
-    
+    // Méthodes métier
 
-    public function calculateProjectProgress(): float
+    public function getAllActivities(): Collection
+    {
+        $this->loadMissing('logicalFramework.specificObjectives.results.activities');
+
+        if (!$this->logicalFramework) {
+            return collect();
+        }
+
+        return $this->logicalFramework->specificObjectives
+            ->flatMap(fn ($obj) => $obj->results)
+            ->flatMap(fn ($result) => $result->activities);
+    }
+
+    public function calculateProgress(): float
     {
         $activities = $this->getAllActivities();
 
@@ -144,10 +119,6 @@ class Project extends Model
             return 0.0;
         }
 
-        $totalProgress = $activities->sum->calculateProgress(); // magie de Laravel : sum sur méthode
-        // ou : $activities->sum(fn($a) => $a->calculateProgress());
-
-        return round($totalProgress / $activities->count(), 2);
+        return round($activities->sum->calculateProgress() / $activities->count(), 2);
     }
-    
 }

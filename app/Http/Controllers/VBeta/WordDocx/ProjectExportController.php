@@ -266,7 +266,7 @@ class ProjectExportController extends Controller
         ])->findOrFail($projectId);
 
         // 2. Construire le HTML via une vue Blade (pratique & maintenable)
-        $html = view('v_beta.word_template', compact('project'))->render();
+        $html = view('pdf.word-template', compact('project'))->render();
 
         // 3. Appel API externe (apisamedi)
         $endpoint = 'https://apisamedi.onrender.com/generator/word';

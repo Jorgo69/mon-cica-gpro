@@ -104,7 +104,7 @@ class ProjectListLivewire extends Component
         $projectStatuses = Project::select('status')->distinct()->get()->pluck('status');
 
 
-        return view('livewire.v-beta.project.project-list-livewire', [
+        return view('livewire.project.list', [
             'projects' => $projects->paginate(10),
             'availableUsers' => $availableUsers,
             'projectStatuses' => $projectStatuses,

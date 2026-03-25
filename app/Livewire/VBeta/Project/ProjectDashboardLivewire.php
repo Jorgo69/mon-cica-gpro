@@ -116,7 +116,7 @@ class ProjectDashboardLivewire extends Component
         
         $allActivities = (clone $activitiesQuery)->get();
         
-        return view('livewire.v-beta.project.project-dashboard-livewire', [
+        return view('livewire.project.dashboard', [
             'activities' => $activitiesQuery->with('responsibleUser')->paginate($this->perPage),
             'allActivities' => $allActivities,
             'availableUsers' => $availableUsers,

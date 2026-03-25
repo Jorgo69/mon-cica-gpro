@@ -16,6 +16,10 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
-        "@alpinejs/collapse": "^3.15.8"
+        "@alpinejs/collapse": "^3.15.8",
+        "@tiptap/core": "^2.0.0",
+        "@tiptap/starter-kit": "^2.0.0",
+        "@tiptap/extension-placeholder": "^2.0.0",
+        "@tiptap/extension-underline": "^2.0.0"
     }
 }

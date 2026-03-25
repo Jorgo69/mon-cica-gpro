@@ -172,6 +172,78 @@
     .dark header {
         @apply shadow-lg shadow-black/20 border-slate-800/50;
     }
+
+    /* ── Rich Editor (TipTap) ── */
+    .rich-editor-content .ProseMirror {
+        outline: none;
+    }
+
+    .rich-editor-content .ProseMirror > * + * {
+        margin-top: 0.5rem;
+    }
+
+    .rich-editor-content .ProseMirror p {
+        line-height: 1.6;
+        color: rgb(30 41 59); /* slate-800 */
+    }
+
+    .dark .rich-editor-content .ProseMirror p {
+        color: rgb(226 232 240); /* slate-200 */
+    }
+
+    .rich-editor-content .ProseMirror h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: rgb(15 23 42);
+    }
+
+    .rich-editor-content .ProseMirror h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: rgb(15 23 42);
+    }
+
+    .dark .rich-editor-content .ProseMirror h1,
+    .dark .rich-editor-content .ProseMirror h2 {
+        color: rgb(241 245 249); /* slate-100 */
+    }
+
+    .rich-editor-content .ProseMirror strong { font-weight: 700; }
+    .rich-editor-content .ProseMirror em { font-style: italic; }
+    .rich-editor-content .ProseMirror u { text-decoration: underline; }
+    .rich-editor-content .ProseMirror s { text-decoration: line-through; }
+
+    .rich-editor-content .ProseMirror ul,
+    .rich-editor-content .ProseMirror ol {
+        padding-left: 1.25rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rich-editor-content .ProseMirror ul { list-style-type: disc; }
+    .rich-editor-content .ProseMirror ol { list-style-type: decimal; }
+
+    .rich-editor-content .ProseMirror li { margin-top: 0.125rem; }
+
+    .rich-editor-content .ProseMirror blockquote {
+        border-left: 3px solid rgb(14 116 144); /* accent */
+        padding-left: 0.75rem;
+        color: rgb(100 116 139); /* slate-500 */
+        font-style: italic;
+    }
+
+    /* Placeholder */
+    .rich-editor-content .ProseMirror p.is-editor-empty:first-child::before {
+        content: attr(data-placeholder);
+        color: rgb(148 163 184); /* slate-400 */
+        pointer-events: none;
+        float: left;
+        height: 0;
+    }
+
+    .dark .rich-editor-content .ProseMirror p.is-editor-empty:first-child::before {
+        color: rgb(100 116 139); /* slate-500 */
+    }
 }
 
 @layer utilities {

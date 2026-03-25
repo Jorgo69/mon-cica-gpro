@@ -3,8 +3,8 @@
 namespace App\Livewire\VBeta\Audit;
 
 use Livewire\Component;
-
 use Livewire\WithPagination;
+use App\Enums\AccountType;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityHistoryLivewire extends Component
@@ -26,15 +26,14 @@ class ActivityHistoryLivewire extends Component
     public function render()
     {
         $user = auth()->user();
-        $query = Activity::query()
-            ->latest();
+        $query = Activity::query()->latest();
 
-        // Si ce n'est pas un Super Admin (Root), on filtre par organisation
-        // On considère Root un IT_ADMIN sans organization_id
-        $isRoot = $user->hasRole('IT_ADMIN') && is_null($user->organization_id);
-
-        if (!$isRoot) {
-            $query->where('organization_id', $user->organization_id);
+        // system_admin voit tout, les autres filtrés par org active
+        if ($user->account_type !== AccountType::SYSTEM_ADMIN) {
+            $orgId = session('current_organization_id');
+            if ($orgId) {
+                $query->where('organization_id', $orgId);
+            }
         }
 
         if ($this->subjectId && $this->subjectType) {
@@ -42,7 +41,7 @@ class ActivityHistoryLivewire extends Component
                   ->where('subject_type', $this->subjectType);
         }
 
-        return view('livewire.v-beta.audit.activity-history-livewire', [
+        return view('livewire.audit.activity-history', [
             'activities' => $query->paginate($this->perPage)
         ]);
     }

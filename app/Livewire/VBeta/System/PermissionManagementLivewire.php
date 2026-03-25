@@ -73,7 +73,7 @@ class PermissionManagementLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.system.permission-management-livewire', [
+        return view('livewire.system.permissions', [
             'permissions' => Permission::query()
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
                 ->orderBy('name')

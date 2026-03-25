@@ -28,6 +28,6 @@ class GlobalSearchLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.search.global-search-livewire');
+        return view('livewire.search.global-search');
     }
 }

@@ -40,6 +40,6 @@ class NotificationCenterLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.notifications.notification-center-livewire');
+        return view('livewire.notifications.notification-center');
     }
 }

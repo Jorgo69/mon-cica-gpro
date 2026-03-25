@@ -32,7 +32,7 @@ class ProjectTypeListLivewire extends Component
     // La méthode render retourne la vue associée au composant
     public function render()
     {
-        return view('livewire.v-beta.project-type.project-type-list-livewire');
+        return view('livewire.project-type.list');
     }
 }
 

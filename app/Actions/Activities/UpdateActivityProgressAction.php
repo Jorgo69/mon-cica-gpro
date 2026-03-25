@@ -3,7 +3,7 @@
 namespace App\Actions\Activities;
 
 use App\Models\Activity;
-use App\Models\ProgressTracker;
+use App\Models\ProjectUpdate;
 use Illuminate\Support\Facades\DB;
 
 class UpdateActivityProgressAction

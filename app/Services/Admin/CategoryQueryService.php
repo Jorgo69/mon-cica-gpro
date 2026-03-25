@@ -2,7 +2,7 @@
 
 namespace App\Services\Admin;
 
-use App\Models\GeneralAdministration;
+use App\Models\Category;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CategoryQueryService
@@ -22,7 +22,7 @@ class CategoryQueryService
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        $query = GeneralAdministration::query()
+        $query = Category::query()
             ->where('type', 'project_type_category');
 
         if (!empty($search)) {

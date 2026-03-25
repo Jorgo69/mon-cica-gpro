@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Project;
-use App\Models\ProjectContext;
 use App\Models\ProjectDocument;
 use App\Models\LogicalFramework;
 use App\Models\SpecificObjective;
@@ -297,7 +296,7 @@ class EditProjectDesignLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.project-design.edit-project-design-livewire', [
+        return view('livewire.project-design.edit', [
             'users' => $this->users,
         ]);
     }

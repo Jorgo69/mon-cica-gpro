@@ -44,6 +44,6 @@ class ProjectDashboardActivityShowLivewire extends Component
      */
     public function render()
     {
-        return view('livewire.v-beta.project.project-dashboard-activity-show-livewire');
+        return view('livewire.project.dashboard-activity-show');
     }
 }

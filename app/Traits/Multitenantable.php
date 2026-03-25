@@ -4,75 +4,70 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Scope global multi-tenant par organisation.
+ * À utiliser uniquement sur les modèles ayant une colonne organization_id directe :
+ * Project, ProjectType, DynamicProjectField, Category, Department.
+ *
+ * Les modèles enfants (Activity, Resource, etc.) sont sécurisés par la chaîne FK.
+ * L'organisation active est lue depuis session('current_organization_id').
+ */
 trait Multitenantable
 {
-    /**
-     * Cache pour éviter la récursion infinie lors de la résolution de l'utilisateur.
-     */
     protected static bool $isApplyingMultitenantScope = false;
 
-    /**
-     * Boot the multitenantable trait.
-     * Automatically applies a global scope and sets organization_id on creation.
-     */
     protected static function bootMultitenantable(): void
     {
-        // 1. Scope Global : Filtrer toutes les requêtes par l'organisation de l'utilisateur connecté
         static::addGlobalScope('organization', function (Builder $builder) {
-            // Empêcher la récursion infinie (notamment sur le modèle User)
             if (static::$isApplyingMultitenantScope) {
                 return;
             }
 
-            // Marquer le début du scope
             static::$isApplyingMultitenantScope = true;
 
             try {
-                if (auth()->check()) {
-                    $user = auth()->user();
-                    
-                    // SEUL le SYSTEM_ADMIN (Root) bypass l'isolation.
-                    if ($user && $user->role !== \App\Enums\AccountType::SYSTEM_ADMIN) {
-                        // Si l'utilisateur appartient à une organisation, on l'isole strictement
-                        if ($user->organization_id) {
-                            $builder->where($builder->getQuery()->from . '.organization_id', $user->organization_id);
-                        } else if (!$user->is_independent) {
-                            // Si pas d'organisation et pas indépendant, on bloque par défaut
-                            $builder->whereRaw('1 = 0');
-                        }
-                    }
+                if (!auth()->check()) {
+                    return;
+                }
+
+                $user = auth()->user();
+
+                // system_admin voit tout, sans restriction
+                if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
+                    return;
+                }
+
+                $orgId = session('current_organization_id');
+
+                if ($orgId) {
+                    $builder->where($builder->getQuery()->from . '.organization_id', $orgId);
+                } else {
+                    // Aucune organisation active en session → sécurité : bloquer
+                    $builder->whereRaw('1 = 0');
                 }
             } finally {
-                // Toujours libérer le verrou
                 static::$isApplyingMultitenantScope = false;
             }
         });
 
-        // 2. Assignation Automatique : Définir organization_id et creator_user_id à la création
         static::creating(function ($model) {
-            if (auth()->check()) {
-                $user = auth()->user();
-                
-                // Assignation de l'organisation
-                if ($user->organization_id && empty($model->organization_id)) {
-                    $model->organization_id = $user->organization_id;
-                }
+            if (!auth()->check()) {
+                return;
+            }
 
-                // Assignation du créateur si la colonne existe
-                if (empty($model->creator_user_id)) {
-                    // Vérifier si le modèle a la colonne creator_user_id (standardisé)
-                    // Note: Schema::hasColumn est coûteux, on peut juste tenter l'assignation si c'est dans $fillable
-                    if (in_array('creator_user_id', $model->getFillable())) {
-                        $model->creator_user_id = $user->id;
-                    }
+            if (empty($model->organization_id)) {
+                $orgId = session('current_organization_id');
+                if ($orgId) {
+                    $model->organization_id = $orgId;
                 }
+            }
+
+            if (empty($model->creator_user_id) && in_array('creator_user_id', $model->getFillable())) {
+                $model->creator_user_id = auth()->id();
             }
         });
     }
 
-    /**
-     * Relation vers l'organisation.
-     */
     public function organization()
     {
         return $this->belongsTo(\App\Models\Organization::class);

@@ -137,6 +137,6 @@ class ResourceFormLivewire extends Component
     
     public function render()
     {
-        return view('livewire.v-beta.resource.resource-form-livewire');
+        return view('livewire.resource.form');
     }
 }

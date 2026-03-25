@@ -4,20 +4,29 @@ namespace Database\Seeders;
 
 use App\Models\Organization;
 use App\Enums\OrganizationStatus;
+use App\Enums\OrganizationType;
 use Illuminate\Database\Seeder;
 
 class OrganizationSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         Organization::firstOrCreate(
             ['slug' => 'cica-pro'],
             [
-                'name' => 'CICA PRO',
-                'status' => OrganizationStatus::ACTIVE,
+                'name'    => 'CICA PRO',
+                'type'    => OrganizationType::HEADQUARTERS,
+                'status'  => OrganizationStatus::ACTIVE,
+                'country' => 'BJ',
+                'location' => [
+                    'city'    => 'Cotonou',
+                    'region'  => 'Littoral',
+                    'adresse' => 'Boulevard Saint-Michel',
+                ],
+                'contact' => [
+                    'email'   => 'contact@cica-pro.org',
+                    'website' => 'https://cica-pro.org',
+                ],
             ]
         );
 

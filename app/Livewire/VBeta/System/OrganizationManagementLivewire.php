@@ -99,7 +99,7 @@ class OrganizationManagementLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.system.organization-management-livewire', [
+        return view('livewire.system.organizations', [
             'organizations' => Organization::query()
                 ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%')->orWhere('slug', 'like', '%' . $this->search . '%'))
                 ->orderBy('name')

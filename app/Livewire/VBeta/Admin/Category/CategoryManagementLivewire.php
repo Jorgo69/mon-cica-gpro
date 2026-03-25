@@ -71,7 +71,7 @@ class CategoryManagementLivewire extends Component
 
     public function render(CategoryQueryService $queryService)
     {
-        return view('livewire.v-beta.admin.category.category-management-livewire', [
+        return view('livewire.admin.category.management', [
             'categories' => $queryService->list(
                 search: $this->search,
                 sortField: $this->sortField,

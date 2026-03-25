@@ -1,25 +1,25 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Traits\HasUuid;
+use App\Traits\Multitenantable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Department extends Model
 {
-    use HasFactory;
-    
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $fillable = ['id', 'name', 'description'];
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
-    }
+    use HasFactory, SoftDeletes, Multitenantable, HasUuid;
+
+    protected $fillable = [
+        'organization_id',
+        'name',
+        'description',
+    ];
+
     public function users()
     {
-        return $this->hasMany(User::class, 'department_id', 'id');
+        return $this->hasMany(User::class);
     }
 }

@@ -106,7 +106,7 @@ class RoleManagementLivewire extends Component
             ->orderBy('name')
             ->paginate(10);
 
-        return view('livewire.v-beta.system.role-management-livewire', [
+        return view('livewire.system.roles', [
             'roles' => $roles,
             'organizations' => Organization::all(),
             'permissions' => Permission::orderBy('name')->get(),

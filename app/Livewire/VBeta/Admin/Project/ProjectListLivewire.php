@@ -7,7 +7,7 @@ use App\Models\Project;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
-use App\Models\GeneralAdministration;
+use App\Models\Category;
 
 class ProjectListLivewire extends Component
 {
@@ -76,7 +76,7 @@ class ProjectListLivewire extends Component
         // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
         // Si admin, il voit tout (enlevé la restriction du Dashboard pour la liste globale si c'est la vue Admin)
         // Mais ici c'est ProjectListLivewire dans Admin, donc on garde la logique de visibilité demandée ou on l'élargit
-        $isAdmin = in_array($user->role, [\App\Enums\AccountType::SYSTEM_ADMIN, \App\Enums\AccountType::ORG_ADMIN]);
+        $isAdmin = $user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN;
 
         if (!$isAdmin) {
             $projects->where(function ($query) use ($user) {
@@ -114,7 +114,7 @@ class ProjectListLivewire extends Component
         
         $projectStatuses = \App\Enums\ProjectStatus::cases();
         
-        return view('livewire.v-beta.admin.project.project-list-livewire', [
+        return view('livewire.admin.project.list', [
             'projects' => $projects->paginate(12),
             'availableUsers' => $availableUsers,
             'projectStatuses' => $projectStatuses,

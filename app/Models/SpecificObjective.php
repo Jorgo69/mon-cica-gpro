@@ -1,46 +1,38 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SpecificObjective extends Model
 {
-    use HasFactory, \App\Traits\Multitenantable;
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasFactory, SoftDeletes, HasUuid;
 
     protected $fillable = [
-        'id', 'organization_id', 'logical_framework_id', 'creator_user_id', 'description', 'indicators',
-        'verification_sources', 'assumptions',
+        'logical_framework_id',
+        'creator_user_id',
+        'description',
+        'indicators',
+        'verification_sources',
+        'assumptions',
+        'order',
     ];
 
-    protected $dateFormat = 'Y-m-d H:i:s';
-    
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
-    }
-    
     public function logicalFramework()
     {
-        return $this->belongsTo(LogicalFramework::class, 'logical_framework_id', 'id');
+        return $this->belongsTo(LogicalFramework::class);
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id');
     }
 
     public function results()
     {
-        return $this->hasMany(Result::class, 'specific_objective_id', 'id');
+        return $this->hasMany(Result::class)->orderBy('order');
     }
 }

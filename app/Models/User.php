@@ -3,150 +3,98 @@
 namespace App\Models;
 
 use App\Enums\AccountType;
-use Illuminate\Support\Str;
+use App\Traits\HasUuid;
 use Laravel\Sanctum\HasApiTokens;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
-/**
- * @OA\Schema(
- *     schema="User",
- *     title="User",
- *     description="User model",
- *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="name", type="string", example="Jean Dupont"),
- *     @OA\Property(property="email", type="string", format="email", example="jean.dupont@example.com"),
- *     @OA\Property(property="organization_id", type="string", format="uuid")
- * )
- */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles, LogsActivity, HasUuid;
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, SoftDeletes;
-
-    public $incrementing = false;
-    protected $keyType = 'string';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
-        'role',
-        'organization_id',
-        'is_independent',
-        'sexe',
+        'password',
+        'image',
         'telephone',
         'numero_identification',
-        'pays',
-        'ville',
-        'department',
-        'password',
+        'country',
+        'location',
+        'account_type',
+        'department_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'role' => AccountType::class,
+        'password'          => 'hashed',
+        'account_type'      => AccountType::class,
+        'location'          => 'array',
     ];
 
-    protected static function boot()
+    public function getActivitylogOptions(): LogOptions
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            // Génère un UUID et l'assigne à la clé primaire si elle n'est pas déjà définie
-            $model->{$model->getKeyName()} = (string) Str::uuid();
-        });
-    }
-
-    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
-    {
-        return \Spatie\Activitylog\LogOptions::defaults()
+        return LogOptions::defaults()
             ->logAll()
             ->logOnlyDirty()
             ->dontLogIfAttributesChangedOnly(['password', 'remember_token'])
             ->dontSubmitEmptyLogs();
     }
 
-    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
+    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName): void
     {
-        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
+        $activity->organization_id = session('current_organization_id');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relations
-    |--------------------------------------------------------------------------
-    */
+    // Relations
 
-    // Relationship removed in favor of Enum-based roles as requested by the user
-    // public function role(): BelongsTo
-    // {
-    //     return $this->belongsTo(Role::class, 'role_id', 'id');
-    // }
-    public function department(): BelongsTo
+    public function department()
     {
-        return $this->belongsTo(Department::class, 'department_id', 'id');
-    }
-    public function createdProjects(): HasMany
-    {
-        return $this->hasMany(Project::class, 'creator_user_id', 'id');
-    }
-    public function uploadedDocuments(): HasMany
-    {
-        return $this->hasMany(ProjectDocument::class, 'creator_user_id', 'id');
-    }
-    public function responsibleActivities(): HasMany
-    {
-        return $this->hasMany(Activity::class, 'responsible_user_id', 'id');
-    }
-    public function responsibleResources(): HasMany
-    {
-        return $this->hasMany(Resource::class, 'responsible_user_id', 'id');
-    }
-    public function responsibleBudgets(): HasMany
-    {
-        return $this->hasMany(Budget::class, 'responsible_user_id', 'id');
-    }
-    public function progressUpdates(): HasMany
-    {
-        return $this->hasMany(ProgressTracker::class, 'creator_user_id', 'id');
-    }
-    public function qualitativeEvaluations(): HasMany
-    {
-        return $this->hasMany(QualitativeEvaluation::class, 'evaluator_id', 'id');
+        return $this->belongsTo(Department::class);
     }
 
-    public function organization(): BelongsTo
+    public function organizations()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsToMany(Organization::class)
+            ->withPivot('role', 'status', 'joined_at')
+            ->withTimestamps();
+    }
+
+    public function currentOrganization(): ?Organization
+    {
+        $orgId = session('current_organization_id');
+        return $orgId ? $this->organizations()->find($orgId) : null;
+    }
+
+    public function createdProjects()
+    {
+        return $this->hasMany(Project::class, 'creator_user_id');
+    }
+
+    public function uploadedDocuments()
+    {
+        return $this->hasMany(ProjectDocument::class, 'creator_user_id');
+    }
+
+    public function responsibleActivities()
+    {
+        return $this->hasMany(Activity::class, 'responsible_user_id');
+    }
+
+    public function responsibleResources()
+    {
+        return $this->hasMany(Resource::class, 'responsible_user_id');
+    }
+
+    public function projectUpdates()
+    {
+        return $this->hasMany(ProjectUpdate::class, 'creator_user_id');
     }
 }

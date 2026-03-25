@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system')->name('system.')->group(function () {
     // Rôles & Permissions
-    Route::view('/roles', 'v_beta.system.roles.index')->name('roles');
-    Route::view('/permissions', 'v_beta.system.permissions.index')->name('permissions');
+    Route::view('/roles', 'pages.system.roles.index')->name('roles');
+    Route::view('/permissions', 'pages.system.permissions.index')->name('permissions');
     
     // Organisations
-    Route::view('/organizations', 'v_beta.system.organizations.index')->name('organizations');
+    Route::view('/organizations', 'pages.system.organizations.index')->name('organizations');
 
     // Audit Logs (Global)
-    Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
+    Route::view('/audit/logs', 'pages.admin.audit.index')->name('audit.logs');
 });

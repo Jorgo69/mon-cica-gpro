@@ -101,7 +101,7 @@ class TrashManagementLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.admin.trash.trash-management-livewire', [
+        return view('livewire.admin.trash.management', [
             'trashedUsers' => User::onlyTrashed()->paginate(5, ['*'], 'users'),
             'trashedProjects' => Project::onlyTrashed()->paginate(5, ['*'], 'projects'),
             'trashedProjectTypes' => ProjectType::onlyTrashed()->paginate(5, ['*'], 'project_types'),

@@ -176,7 +176,7 @@ class SubActivityFormLivewire extends Component
                     'end_date'            => $data['end_date'],
                     'responsible_user_id' => $data['responsible_user_id'] ?: null,
                     'parent_id'           => $this->activityId,
-                    'organization_id'     => $this->activity->organization_id,
+                    'project_id'          => $this->activity->project_id,
                     'result_id'           => $this->activity->result_id,
                     'status'              => \App\Enums\ActivityStatus::ONGOING->value,
                 ];
@@ -218,6 +218,6 @@ class SubActivityFormLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.sub-activity.sub-activity-form-livewire');
+        return view('livewire.sub-activity.form');
     }
 }

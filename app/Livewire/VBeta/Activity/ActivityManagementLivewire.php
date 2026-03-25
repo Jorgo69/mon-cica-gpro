@@ -146,6 +146,6 @@ class ActivityManagementLivewire extends Component
 
     public function render()
     {
-        return view('livewire.v-beta.activity.activity-management-livewire');
+        return view('livewire.activity.management');
     }
 }

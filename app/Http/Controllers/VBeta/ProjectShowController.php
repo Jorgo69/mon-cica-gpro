@@ -9,7 +9,7 @@ class ProjectShowController extends Controller
 {
     public function index(string $projectId){
 
-        return view('v_beta.project-show', [
+        return view('pages.project.show', [
             'projectId' => $projectId,
         ]);
     }

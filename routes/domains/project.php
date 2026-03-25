@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth'])->prefix('v_beta')->group(function () {
     // Proposition de projet
     Route::prefix('/creator-proposal')->name('creator.proposal.project.')->group(function () {
-        Route::view('/proposal-project/create', 'v_beta.proposal-project.form')->name('create');
-        Route::view('/proposal-project/{projectId}/edit', 'v_beta.proposal-project.form')->name('edit');
+        Route::view('/proposal-project/create', 'pages.project.proposal-form')->name('create');
+        Route::view('/proposal-project/{projectId}/edit', 'pages.project.proposal-form')->name('edit');
     });
 
     // Alias pour project.create (utilisé dans les vues existantes)
@@ -15,9 +15,9 @@ Route::middleware(['auth'])->prefix('v_beta')->group(function () {
     })->middleware(['auth'])->name('project.create');
 
     // Gestion Centrale Projet
-    Route::view('/project-list', 'v_beta.project-list')->name('project.list');
+    Route::view('/project-list', 'pages.project.list')->name('project.list');
     Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');
-    Route::view('/project-dashboard/{projectId}/management', 'v_beta.project-dashboard')->name('project.dashboard');
+    Route::view('/project-dashboard/{projectId}/management', 'pages.project.dashboard')->name('project.dashboard');
 
     // Exports
     Route::get('/projects/{id}/export-word', [App\Http\Controllers\VBeta\WordDocx\ProjectExportController::class, 'exportWord'])->name('projects.export.word');

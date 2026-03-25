@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Project;
-use App\Models\ProjectContext;
 use App\Models\ProjectDocument;
 use App\Models\EnvironmentAnalysis; // Modèle corrigé
 use App\Models\Stakeholder;
@@ -232,12 +231,8 @@ class CreateProjectDesignLivewire extends Component
                 'updated_by_user_id' => auth()->id(),
             ]);
 
-            // Save ProjectContext
-            ProjectContext::create([
-                'id' => (string) Str::uuid(),
-                'project_id' => $project->id,
-                'description' => $this->contextDescription,
-            ]);
+            // Contexte stocké directement dans le projet
+            $project->update(['context_description' => $this->contextDescription]);
 
             // Save EnvironmentAnalysis
             EnvironmentAnalysis::create([
@@ -349,7 +344,7 @@ class CreateProjectDesignLivewire extends Component
      */
     public function render()
     {
-        return view('livewire.v-beta.project-design.create-project-design-livewire', [
+        return view('livewire.project-design.create', [
             'users' => User::all(['id', 'name']),
         ]);
     }

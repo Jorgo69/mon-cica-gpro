@@ -60,7 +60,7 @@ class ActivityListLivewire extends Component
         // Optionnel: utiliser des enums si dispo, sinon la requête de statuts existants
         $activityStatuses = Activity::select('status')->whereNotNull('status')->distinct()->pluck('status');
 
-        return view('livewire.v-beta.activity.activity-list-livewire', [
+        return view('livewire.activity.list', [
             'activities' => $activities,
             'availableUsers' => $availableUsers,
             'activityStatuses' => $activityStatuses,

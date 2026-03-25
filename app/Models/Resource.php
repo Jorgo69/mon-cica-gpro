@@ -1,70 +1,52 @@
 <?php
-namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
-/**
- * @OA\Schema(
- *     schema="Resource",
- *     title="Resource",
- *     description="Resource model",
- *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="name", type="string", example="Ciment"),
- *     @OA\Property(property="type", type="string"),
- *     @OA\Property(property="quantity", type="number"),
- *     @OA\Property(property="unit_cost", type="number", format="float"),
- *     @OA\Property(property="total_cost", type="number", format="float")
- * )
- */
+namespace App\Models;
+
+use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 class Resource extends Model
 {
-    use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    
+    use HasFactory, SoftDeletes, LogsActivity, HasUuid;
+
     protected $fillable = [
-        'id', 'organization_id', 'activity_id', 'creator_user_id', 'name', 'type', 'quantity',
-        'unit_cost', 'total_cost', 'category', 'responsible_user_id',
+        'activity_id',
+        'creator_user_id',
+        'responsible_user_id',
+        'name',
+        'type',
+        'category',
+        'quantity',
+        'unit_cost',
+        'total_cost',
     ];
 
     protected $casts = [
-        'unit_cost' => 'decimal:2',
+        'unit_cost'  => 'decimal:2',
         'total_cost' => 'decimal:2',
     ];
 
-    protected static function boot()
+    public function getActivitylogOptions(): LogOptions
     {
-        parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+        return LogOptions::defaults()->logAll()->logOnlyDirty()->dontSubmitEmptyLogs();
     }
 
-    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
-    {
-        return \Spatie\Activitylog\LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
-    }
-
-    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
-    {
-        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
-    }
-    
     public function activity()
     {
-        return $this->belongsTo(Activity::class, 'activity_id', 'id');
+        return $this->belongsTo(Activity::class);
     }
-    
+
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id', 'id');
+        return $this->belongsTo(User::class, 'creator_user_id');
     }
 
     public function responsibleUser()
     {
-        return $this->belongsTo(User::class, 'responsible_user_id', 'id');
+        return $this->belongsTo(User::class, 'responsible_user_id');
     }
 }

@@ -47,7 +47,13 @@
                             {{ auth()->user()->name ?? 'Utilisateur' }}
                         </div>
                         <div class="text-[11px] text-slate-400 dark:text-slate-500 leading-tight">
-                            {{ auth()->user()->role ?? 'Aucun rôle' }}
+                            @php
+                                $pivotRole = auth()->user()->organizations()
+                                    ->where('organizations.id', session('current_organization_id'))
+                                    ->first()?->pivot?->role;
+                                $roleLabel = $pivotRole ? \App\Enums\OrgMemberRole::tryFrom($pivotRole)?->label() : null;
+                            @endphp
+                            {{ $roleLabel ?? auth()->user()->account_type?->label() ?? 'Aucun rôle' }}
                         </div>
                     </div>
                     <x-lucide-chevron-down class="w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />

@@ -14,7 +14,7 @@ class ResourceListLivewire extends Component
 
         $resources = Resource::query();
 
-        return view('livewire.v-beta.resource.resource-list-livewire', [
+        return view('livewire.resource.list', [
             'resources' => $resources->paginate(10),
         ]);
     }

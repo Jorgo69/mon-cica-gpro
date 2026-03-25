@@ -27,11 +27,11 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN peut tout voir pour le support technique
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return true;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
 
     /**
@@ -40,7 +40,7 @@ class ProjectPolicy
     public function create(User $user): bool
     {
         // Interdire la création au SYSTEM_ADMIN sur les données d'organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
@@ -57,11 +57,11 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN ne doit pas modifier les données privées des organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
 
     /**
@@ -74,11 +74,11 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN ne doit pas supprimer les données privées des organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
     
     /**
@@ -90,11 +90,11 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
 
     /**
@@ -106,11 +106,11 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
 
     /**
@@ -122,10 +122,10 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
             return false;
         }
 
-        return (string) $user->organization_id === (string) $project->organization_id;
+        return session('current_organization_id') === (string) $project->organization_id;
     }
 }
