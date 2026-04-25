@@ -8,10 +8,15 @@ use App\Models\LogicalFramework;
 use App\Models\SpecificObjective;
 use App\Models\Result;
 use App\Models\Activity;
+use App\Models\User;
+use App\Notifications\ActivityAssignedNotification;
+use App\Traits\SyncsIndicators;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CreateLogicalFrameworkAction
 {
+    use SyncsIndicators;
     /**
      * Crée l'arbre complet du cadre logique pour un projet.
      * 
@@ -44,12 +49,17 @@ class CreateLogicalFrameworkAction
                 $logicalFrameworkData
             ));
 
+            // Sync indicateurs du cadre logique (objectif general)
+            if (!empty($logicalFrameworkData['indicators_list'])) {
+                $this->syncIndicators($logicalFramework, $logicalFrameworkData['indicators_list']);
+            }
+
             // 🔹 2. Créer les objectifs spécifiques
             $createdObjectives = [];
             foreach ($specificObjectivesData as $objData) {
                 if (empty(trim($objData['description'] ?? ''))) continue;
 
-                $createdObjectives[] = SpecificObjective::create([
+                $objective = SpecificObjective::create([
                     'id'                   => (string) Str::uuid(),
                     'logical_framework_id' => $logicalFramework->id,
                     'description'          => $objData['description'],
@@ -57,6 +67,12 @@ class CreateLogicalFrameworkAction
                     'verification_sources' => $objData['verification_sources'] ?? null,
                     'assumptions'          => $objData['assumptions'] ?? null,
                 ]);
+
+                if (!empty($objData['indicators_list'])) {
+                    $this->syncIndicators($objective, $objData['indicators_list']);
+                }
+
+                $createdObjectives[] = $objective;
             }
 
             // Si aucun objectif n'est créé, créer un objectif par défaut pour lier les résultats
@@ -76,11 +92,17 @@ class CreateLogicalFrameworkAction
                 $objectiveIndex = $index % count($createdObjectives);
                 $objective = $createdObjectives[$objectiveIndex];
 
-                $createdResults[] = Result::create([
+                $result = Result::create([
                     'id'                   => (string) Str::uuid(),
                     'specific_objective_id'=> $objective->id,
                     'description'          => $resData['description'],
                 ]);
+
+                if (!empty($resData['indicators_list'])) {
+                    $this->syncIndicators($result, $resData['indicators_list']);
+                }
+
+                $createdResults[] = $result;
             }
 
             // Si aucun résultat n'est créé, créer un résultat par défaut pour lier les activités
@@ -99,7 +121,7 @@ class CreateLogicalFrameworkAction
                 $resultIndex = $index % count($createdResults);
                 $result = $createdResults[$resultIndex];
 
-                Activity::create([
+                $activity = Activity::create([
                     'id'        => (string) Str::uuid(),
                     'result_id' => $result->id,
                     'description'=> $actData['description'],
@@ -109,6 +131,15 @@ class CreateLogicalFrameworkAction
                     'start_date'=> !empty($actData['start_date']) ? Carbon::parse($actData['start_date'])->format('Y-m-d') : null,
                     'end_date'  => !empty($actData['end_date']) ? Carbon::parse($actData['end_date'])->format('Y-m-d') : null,
                 ]);
+
+                // Notifier le responsable assigné
+                $responsibleId = $actData['responsible_user_id'] ?? null;
+                if ($responsibleId && $responsibleId !== Auth::id()) {
+                    $responsible = User::find($responsibleId);
+                    if ($responsible) {
+                        $responsible->notify(new ActivityAssignedNotification($activity, Auth::user()));
+                    }
+                }
             }
 
             return $logicalFramework;

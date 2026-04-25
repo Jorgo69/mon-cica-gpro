@@ -9,17 +9,21 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectService
 {
+    private const RICH_TEXT_FIELDS = ['description', 'problem_analysis', 'strategy', 'justification'];
+
     /**
      * Create a new project.
      */
     public function create(array $data): Project
     {
+        $data = $this->purifyRichText($data);
+
         return DB::transaction(function () use ($data) {
             $project = Project::create([
                 'id' => (string) Str::uuid(),
                 'title' => $data['title'],
                 'project_code' => $data['project_code'] ?? $this->generateProjectCode(),
-                'project_type_id' => $data['project_type_id'],
+                'project_type_id' => $data['project_type_id'] ?? null,
                 'creator_user_id' => auth()->id(),
                 'status' => $data['status'] ?? ProjectStatus::DRAFT->value,
                 'short_title' => $data['short_title'] ?? null,
@@ -41,8 +45,23 @@ class ProjectService
      */
     public function update(Project $project, array $data): Project
     {
+        $data = $this->purifyRichText($data);
         $project->update($data);
         return $project;
+    }
+
+    /**
+     * Sanitize rich text fields to prevent XSS.
+     */
+    private function purifyRichText(array $data): array
+    {
+        foreach (self::RICH_TEXT_FIELDS as $field) {
+            if (isset($data[$field]) && is_string($data[$field])) {
+                $data[$field] = clean($data[$field]);
+            }
+        }
+
+        return $data;
     }
 
     /**

@@ -43,4 +43,9 @@ class LogicalFramework extends Model
     {
         return $this->hasMany(SpecificObjective::class, 'logical_framework_id', 'id');
     }
+
+    public function indicators()
+    {
+        return $this->morphMany(Indicator::class, 'indicatorable')->orderBy('order');
+    }
 }

@@ -20,7 +20,7 @@ class RegisterUserAction
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'organization_id' => null, // Explicitement nul au départ pour le flux onboarding
+            'organization_id' => null,
         ]);
 
         event(new Registered($user));

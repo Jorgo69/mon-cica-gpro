@@ -4,9 +4,11 @@ namespace App\Livewire\VBeta\System;
 
 use App\Models\Permission;
 use App\Livewire\Traits\WithToastNotifications;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Lazy]
 class PermissionManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;
@@ -69,6 +71,12 @@ class PermissionManagementLivewire extends Component
 
         $permission->delete();
         $this->notifyToast('success', 'La permission a été supprimée définitivement.', 'Action effectuée');
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

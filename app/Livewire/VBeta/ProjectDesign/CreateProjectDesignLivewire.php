@@ -74,7 +74,7 @@ class CreateProjectDesignLivewire extends Component
         'projectStartDate' => 'required|date',
         'projectEndDate' => 'required|date|after_or_equal:projectStartDate',
         'contextDescription' => 'nullable|string',
-        'uploadedDocuments.*' => 'nullable|file|max:50000', // 50MB max
+        'uploadedDocuments.*' => 'nullable|file|max:50000|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,csv,txt,zip',
         'environmentAnalysisText' => 'nullable|string',
         'stakeholders.*.name' => 'required|string',
         'stakeholders.*.role' => 'nullable|string',

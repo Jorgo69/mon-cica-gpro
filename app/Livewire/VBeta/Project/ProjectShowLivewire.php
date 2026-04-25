@@ -14,6 +14,7 @@ use App\Models\Activity;
 use App\Models\Risk;
 use App\Models\Budget;
 use App\Models\DynamicProjectField;
+use App\Enums\LogframeDisplayFormat;
 
 class ProjectShowLivewire extends Component
 {
@@ -23,10 +24,18 @@ class ProjectShowLivewire extends Component
     public $project;
     public $dynamicFormFields = [];
     public $activeTab = 'overview'; // [overview, logframe, documents, history]
+    public $logframeFormat = 'cards'; // default format
 
     public function switchTab($tab)
     {
         $this->activeTab = $tab;
+    }
+
+    public function setLogframeFormat(string $format)
+    {
+        if (LogframeDisplayFormat::tryFrom($format)) {
+            $this->logframeFormat = $format;
+        }
     }
 
     /**
@@ -57,7 +66,10 @@ class ProjectShowLivewire extends Component
             'projectContext',
             'documents',
             'budgets',
-            'logicalFramework.specificObjectives.results.activities', // La hiérarchie correcte
+            'logicalFramework.indicators',
+            'logicalFramework.specificObjectives.indicators',
+            'logicalFramework.specificObjectives.results.indicators',
+            'logicalFramework.specificObjectives.results.activities',
             'creator',
         ])->findOrFail($this->projectId);
 

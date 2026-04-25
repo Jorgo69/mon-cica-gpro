@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <title>{{ $title ?? config('app.name') }}</title>
     @livewireStyles
     @stack('alpine-js')
@@ -109,6 +107,7 @@
     
     @livewire('v-beta.search.global-search-livewire')
     <x-ui.toast-notifications />
+    <x-ui.offline-banner />
 
     @livewireScripts
     @stack('scripts')

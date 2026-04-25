@@ -4,7 +4,7 @@
         <!-- En-tête de la page -->
         <div class="mb-6 animate-fade-in">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-                <i class="fas fa-cog mr-3 text-primary-500"></i>
+                <x-dynamic-component component="lucide-settings" class="w-6 h-6 mr-3 text-primary-500" />
                 {{ __('Paramètres') }}
             </h1>
             <p class="text-gray-600 dark:text-gray-400 mt-2">
@@ -28,7 +28,7 @@
                             }"
                             class="w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center"
                         >
-                            <i class="fas fa-palette mr-3"></i>
+                            <x-dynamic-component component="lucide-palette" class="w-5 h-5 mr-3" />
                             {{ __('Apparence') }}
                         </button>
                         <button 
@@ -39,7 +39,7 @@
                             }"
                             class="w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center"
                         >
-                            <i class="fas fa-language mr-3"></i>
+                            <x-dynamic-component component="lucide-languages" class="w-5 h-5 mr-3" />
                             {{ __('Langue') }}
                         </button>
                         <button 
@@ -50,7 +50,7 @@
                             }"
                             class="w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center"
                         >
-                            <i class="fas fa-bell mr-3"></i>
+                            <x-dynamic-component component="lucide-bell" class="w-5 h-5 mr-3" />
                             {{ __('Notifications') }}
                         </button>
                         <button 
@@ -61,7 +61,7 @@
                             }"
                             class="w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center"
                         >
-                            <i class="fas fa-shield-alt mr-3"></i>
+                            <x-dynamic-component component="lucide-shield" class="w-5 h-5 mr-3" />
                             {{ __('Confidentialité') }}
                         </button>
                     </nav>
@@ -75,7 +75,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
-                                <i class="fas fa-palette mr-3 text-primary-500"></i>
+                                <x-dynamic-component component="lucide-palette" class="w-5 h-5 mr-3 text-primary-500" />
                                 {{ __('Apparence') }}
                             </h2>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -153,7 +153,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
-                                <i class="fas fa-language mr-3 text-primary-500"></i>
+                                <x-dynamic-component component="lucide-languages" class="w-5 h-5 mr-3 text-primary-500" />
                                 {{ __('Langue et région') }}
                             </h2>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -211,7 +211,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
-                                <i class="fas fa-bell mr-3 text-primary-500"></i>
+                                <x-dynamic-component component="lucide-bell" class="w-5 h-5 mr-3 text-primary-500" />
                                 {{ __('Notifications') }}
                             </h2>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -269,7 +269,7 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
-                                <i class="fas fa-shield-alt mr-3 text-primary-500"></i>
+                                <x-dynamic-component component="lucide-shield" class="w-5 h-5 mr-3 text-primary-500" />
                                 {{ __('Confidentialité et sécurité') }}
                             </h2>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -312,11 +312,11 @@
                                 <div class="space-y-3">
                                     <button class="w-full text-left px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between">
                                         <span>{{ __('Télécharger mes données') }}</span>
-                                        <i class="fas fa-download"></i>
+                                        <x-dynamic-component component="lucide-download" class="w-4 h-4" />
                                     </button>
                                     <button class="w-full text-left px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-between">
                                         <span>{{ __('Supprimer mon compte') }}</span>
-                                        <i class="fas fa-trash-alt"></i>
+                                        <x-dynamic-component component="lucide-trash-2" class="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>

@@ -15,10 +15,11 @@ use App\Models\SpecificObjective;
 use App\Models\Result;
 use App\Models\Activity;
 use App\Models\User;
+use App\Traits\SyncsIndicators;
 
 class EditProjectDesignLivewire extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, SyncsIndicators;
 
     public $projectId;
     public $project;
@@ -51,7 +52,8 @@ class EditProjectDesignLivewire extends Component
 
     // Logical Framework
     public $generalGoal;
-    public $specificObjectives = [['description' => '', 'results' => [['description' => '', 'indicators' => '', 'activities' => [['description' => '', 'responsible' => '']]]]]];
+    public $logframeIndicators = [];
+    public $specificObjectives = [['description' => '', 'indicators_list' => [], 'results' => [['description' => '', 'indicators' => '', 'indicators_list' => [], 'activities' => [['description' => '', 'responsible' => '']]]]]];
 
     public $users;
 
@@ -100,7 +102,10 @@ class EditProjectDesignLivewire extends Component
         $this->project = Project::with([
             'projectContext',
             'projectDocuments',
-            'logicalFramework.specificObjectives.results.activities' // Charger les activités via les résultats
+            'logicalFramework.indicators',
+            'logicalFramework.specificObjectives.indicators',
+            'logicalFramework.specificObjectives.results.indicators',
+            'logicalFramework.specificObjectives.results.activities',
         ])->findOrFail($this->projectId);
 
         $this->projectTitle = $this->project->title;
@@ -123,26 +128,31 @@ class EditProjectDesignLivewire extends Component
         $this->existingDocuments = $this->project->projectDocuments->toArray();
 
         if ($this->project->logicalFramework) {
-            $this->generalGoal = $this->project->logicalFramework->general_goal;
-            if ($this->project->logicalFramework->specificObjectives->isNotEmpty()) {
-                $this->specificObjectives = $this->project->logicalFramework->specificObjectives->map(function ($objective) {
+            $lf = $this->project->logicalFramework;
+            $this->generalGoal = $lf->general_goal;
+            $this->logframeIndicators = $lf->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+
+            if ($lf->specificObjectives->isNotEmpty()) {
+                $this->specificObjectives = $lf->specificObjectives->map(function ($objective) {
                     return [
                         'description' => $objective->description,
+                        'indicators_list' => $objective->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
                         'results' => $objective->results->map(function($result) {
                             return [
                                 'description' => $result->description,
-                                'indicators' => $result->indicators,
+                                'indicators_list' => $result->getRelation('indicators')->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
                                 'activities' => $result->activities->map(fn($a) => ['description' => $a->description, 'responsible' => $a->responsible_user_id])->toArray()
                             ];
                         })->toArray()
                     ];
                 })->toArray();
             } else {
-                $this->specificObjectives = [['description' => '', 'results' => [['description' => '', 'indicators' => '', 'activities' => [['description' => '', 'responsible' => '']]]]]];
+                $this->specificObjectives = [['description' => '', 'indicators_list' => [], 'results' => [['description' => '', 'indicators' => '', 'indicators_list' => [], 'activities' => [['description' => '', 'responsible' => '']]]]]];
             }
         } else {
             $this->generalGoal = '';
-            $this->specificObjectives = [['description' => '', 'results' => [['description' => '', 'indicators' => '', 'activities' => [['description' => '', 'responsible' => '']]]]]];
+            $this->logframeIndicators = [];
+            $this->specificObjectives = [['description' => '', 'indicators_list' => [], 'results' => [['description' => '', 'indicators' => '', 'indicators_list' => [], 'activities' => [['description' => '', 'responsible' => '']]]]]];
         }
     }
 
@@ -167,10 +177,38 @@ class EditProjectDesignLivewire extends Component
     }
 
     // Logical Framework methods
-    public function addObjective() { $this->specificObjectives[] = ['description' => '', 'results' => [['description' => '', 'indicators' => '', 'activities' => [['description' => '', 'responsible' => '']]]]]; }
+    public function addObjective() { $this->specificObjectives[] = ['description' => '', 'indicators_list' => [], 'results' => [['description' => '', 'indicators_list' => [], 'activities' => [['description' => '', 'responsible' => '']]]]]; }
     public function removeObjective($index) { unset($this->specificObjectives[$index]); $this->specificObjectives = array_values($this->specificObjectives); }
-    public function addResult($objectiveIndex) { $this->specificObjectives[$objectiveIndex]['results'][] = ['description' => '', 'indicators' => '', 'activities' => [['description' => '', 'responsible' => '']]]; }
+    public function addResult($objectiveIndex) { $this->specificObjectives[$objectiveIndex]['results'][] = ['description' => '', 'indicators_list' => [], 'activities' => [['description' => '', 'responsible' => '']]]; }
     public function removeResult($objectiveIndex, $resultIndex) { unset($this->specificObjectives[$objectiveIndex]['results'][$resultIndex]); $this->specificObjectives[$objectiveIndex]['results'] = array_values($this->specificObjectives[$objectiveIndex]['results']); }
+
+    // Indicator methods
+    public function addIndicator(string $level, ?int $objIndex = null, ?int $resIndex = null)
+    {
+        $indicator = ['id' => null, 'description' => '', 'verification_source' => '', 'assumption' => ''];
+
+        if ($level === 'logframe') {
+            $this->logframeIndicators[] = $indicator;
+        } elseif ($level === 'objective' && $objIndex !== null) {
+            $this->specificObjectives[$objIndex]['indicators_list'][] = $indicator;
+        } elseif ($level === 'result' && $objIndex !== null && $resIndex !== null) {
+            $this->specificObjectives[$objIndex]['results'][$resIndex]['indicators_list'][] = $indicator;
+        }
+    }
+
+    public function removeIndicator(string $level, ?int $objIndex, ?int $resIndex, int $iIndex)
+    {
+        if ($level === 'logframe') {
+            unset($this->logframeIndicators[$iIndex]);
+            $this->logframeIndicators = array_values($this->logframeIndicators);
+        } elseif ($level === 'objective' && $objIndex !== null) {
+            unset($this->specificObjectives[$objIndex]['indicators_list'][$iIndex]);
+            $this->specificObjectives[$objIndex]['indicators_list'] = array_values($this->specificObjectives[$objIndex]['indicators_list']);
+        } elseif ($level === 'result' && $objIndex !== null && $resIndex !== null) {
+            unset($this->specificObjectives[$objIndex]['results'][$resIndex]['indicators_list'][$iIndex]);
+            $this->specificObjectives[$objIndex]['results'][$resIndex]['indicators_list'] = array_values($this->specificObjectives[$objIndex]['results'][$resIndex]['indicators_list']);
+        }
+    }
     
     // Nested Activity methods
     public function addActivity($objectiveIndex, $resultIndex) { $this->specificObjectives[$objectiveIndex]['results'][$resultIndex]['activities'][] = ['description' => '', 'responsible' => '']; }
@@ -254,21 +292,33 @@ class EditProjectDesignLivewire extends Component
                     'id' => Str::uuid(),
                     'general_goal' => $this->generalGoal,
                 ]);
+
+                if (!empty($this->logframeIndicators)) {
+                    $this->syncIndicators($logicalFramework, $this->logframeIndicators);
+                }
+
                 foreach ($this->specificObjectives as $objectiveData) {
                     if (!empty($objectiveData['description'])) {
                         $objective = $logicalFramework->specificObjectives()->create([
                             'id' => Str::uuid(),
                             'description' => $objectiveData['description'],
                         ]);
+
+                        if (!empty($objectiveData['indicators_list'])) {
+                            $this->syncIndicators($objective, $objectiveData['indicators_list']);
+                        }
+
                         foreach ($objectiveData['results'] as $resultData) {
                             if (!empty($resultData['description'])) {
                                 $result = $objective->results()->create([
                                     'id' => Str::uuid(),
                                     'description' => $resultData['description'],
-                                    'indicators' => $resultData['indicators'],
                                 ]);
-                                
-                                // ACTIVITIES (hasMany on Result model)
+
+                                if (!empty($resultData['indicators_list'])) {
+                                    $this->syncIndicators($result, $resultData['indicators_list']);
+                                }
+
                                 foreach ($resultData['activities'] as $activityData) {
                                     if (!empty($activityData['description'])) {
                                         $result->activities()->create([

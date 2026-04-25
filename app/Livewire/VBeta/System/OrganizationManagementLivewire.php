@@ -5,9 +5,11 @@ namespace App\Livewire\VBeta\System;
 use App\Models\Organization;
 use App\Livewire\Traits\WithToastNotifications;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Lazy]
 class OrganizationManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;
@@ -95,6 +97,12 @@ class OrganizationManagementLivewire extends Component
 
         $org->delete();
         $this->notifyToast('success', "L'organisation a été supprimée définitivement du système.", 'Organisation retirée');
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

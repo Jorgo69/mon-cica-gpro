@@ -4,7 +4,17 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Configurez votre environnement de travail professionnel.</p>
     </div>
 
-    <div x-show="step === 'choice'" 
+    <div class="text-center">
+        <form method="POST" action="{{ route('logout') }}" class="inline">
+            @csrf
+            <button type="submit" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <x-lucide-log-out class="w-3.5 h-3.5" />
+                Se déconnecter
+            </button>
+        </form>
+    </div>
+
+    <div x-show="step === 'choice'"
          x-transition:enter="transition ease-out duration-300 delay-150" 
          x-transition:enter-start="opacity-0 translate-y-4" 
          x-transition:enter-end="opacity-100 translate-y-0"

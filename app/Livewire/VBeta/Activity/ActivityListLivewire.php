@@ -3,12 +3,14 @@
 namespace App\Livewire\VBeta\Activity;
 
 use App\Models\User;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use App\Models\Activity;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use App\Queries\ActivityQueries;
 
+#[Lazy]
 class ActivityListLivewire extends Component
 {
     use WithPagination;

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('numero_identification', 100)->unique()->nullable();
             $table->string('pays', 100)->nullable();
             $table->string('ville', 100)->nullable();
-            $table->string('role')->default('member');
+            $table->string('role')->nullable();
             $table->foreignUuid('organization_id')
                   ->nullable()
                   ->constrained('organizations')

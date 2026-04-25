@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Enums\AccountType;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rules\Enum;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Livewire\Traits\WithToastNotifications;
 
+#[Lazy]
 class MemberManagementLivewire extends Component
 {
     use WithPagination, WithFileUploads, AuthorizesRequests, WithToastNotifications;

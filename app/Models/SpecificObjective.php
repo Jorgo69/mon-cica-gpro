@@ -43,4 +43,9 @@ class SpecificObjective extends Model
     {
         return $this->hasMany(Result::class, 'specific_objective_id', 'id');
     }
+
+    public function indicators()
+    {
+        return $this->morphMany(Indicator::class, 'indicatorable')->orderBy('order');
+    }
 }

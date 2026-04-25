@@ -18,7 +18,7 @@
                             </h3>
                             <button wire:click="closeModal" type="button" class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
                                 <span class="sr-only">Close modal</span>
-                                <i class="fas fa-times text-xl"></i>
+                                <x-dynamic-component component="lucide-x" class="w-5 h-5" />
                             </button>
                         </div>
                         
@@ -61,7 +61,11 @@
                                 @else
                                     <p class="text-sm italic text-gray-400 dark:text-gray-500 mt-4">Aucune ressource associée à cette activité.</p>
                                 @endif
-                                
+
+                                {{-- Historique de progression --}}
+                                <h4 class="text-md font-bold mt-6 mb-2 text-gray-900 dark:text-white">Historique de progression</h4>
+                                @livewire('v-beta.activity.activity-progress-history-livewire', ['activityId' => $activity->id], key('history-' . $activity->id))
+
                             </div>
                         @else
                             <p class="text-center text-sm italic text-gray-400 dark:text-gray-500">

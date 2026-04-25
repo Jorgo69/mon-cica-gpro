@@ -2,9 +2,11 @@
 
 namespace App\Livewire\VBeta\ProjectType;
 
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use App\Models\ProjectType;
 
+#[Lazy]
 class ProjectTypeListLivewire extends Component
 {
     // Propriété pour stocker la liste des types de projets
@@ -30,6 +32,12 @@ class ProjectTypeListLivewire extends Component
     }
 
     // La méthode render retourne la vue associée au composant
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         return view('livewire.v-beta.project-type.project-type-list-livewire');

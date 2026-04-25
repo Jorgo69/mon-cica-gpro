@@ -13,23 +13,26 @@ class ProjectApiController extends Controller
      *     path="/api/projects",
      *     summary="Liste tous les projets de l'organisation",
      *     tags={"Projects"},
+     *     @OA\Parameter(name="per_page", in="query", required=false, @OA\Schema(type="integer", default=15)),
+     *     @OA\Parameter(name="search", in="query", required=false, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="status", in="query", required=false, @OA\Schema(type="string")),
      *     @OA\Response(
      *         response=200,
-     *         description="Liste des projets récupérée avec succès",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Project")
-     *         )
+     *         description="Liste des projets paginée"
      *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Non authentifié"
-     *     )
+     *     @OA\Response(response=401, description="Non authentifié")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all();
+        $perPage = min((int) $request->input('per_page', 15), 100);
+
+        $projects = Project::query()
+            ->when($request->input('search'), fn ($q, $search) => $q->where('title', 'like', "%{$search}%"))
+            ->when($request->input('status'), fn ($q, $status) => $q->where('status', $status))
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
         return response()->json($projects);
     }
 
@@ -45,20 +48,18 @@ class ProjectApiController extends Controller
      *         description="ID du projet",
      *         @OA\Schema(type="string", format="uuid")
      *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Détails du projet",
-     *         @OA\JsonContent(ref="#/components/schemas/Project")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Projet non trouvé"
-     *     )
+     *     @OA\Response(response=200, description="Détails du projet"),
+     *     @OA\Response(response=404, description="Projet non trouvé")
      * )
      */
     public function show($id)
     {
-        $project = Project::findOrFail($id);
+        $project = Project::with([
+            'logicalFramework.specificObjectives.results.activities',
+            'budgets',
+            'creator',
+        ])->findOrFail($id);
+
         return response()->json($project);
     }
 }

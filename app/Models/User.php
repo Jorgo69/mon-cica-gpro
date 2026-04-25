@@ -82,8 +82,14 @@ class User extends Authenticatable
         parent::boot();
 
         static::creating(function ($model) {
-            // Génère un UUID et l'assigne à la clé primaire si elle n'est pas déjà définie
             $model->{$model->getKeyName()} = (string) Str::uuid();
+        });
+
+        // Protéger contre les strings vides dans role (le cast enum plante sur "")
+        static::saving(function ($model) {
+            if ($model->role === '' || $model->getRawOriginal('role') === '') {
+                $model->role = null;
+            }
         });
     }
 

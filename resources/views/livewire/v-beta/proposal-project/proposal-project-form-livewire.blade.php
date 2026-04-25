@@ -63,7 +63,7 @@
             <div class="mb-6 p-5 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-3xl animate-bounce-subtle">
                 <div class="flex items-start gap-4">
                     <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/30">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <x-dynamic-component component="lucide-alert-triangle" class="w-5 h-5" />
                     </div>
                     <div>
                         <h3 class="text-sm font-black text-rose-800 dark:text-rose-300 uppercase tracking-tight">Oups ! Action Requise</h3>
@@ -103,8 +103,8 @@
                                             'step-future': (index + 1) > currentStep && !step.has_error,
                                             'bg-rose-100 text-rose-600 border border-rose-200 dark:bg-rose-900/30 dark:border-rose-800 dark:text-rose-400 shadow-sm': step.has_error
                                         }">
-                                        <template x-if="(index + 1) < currentStep && !step.has_error"><i class="fas fa-check text-xs"></i></template>
-                                        <template x-if="step.has_error"><i class="fas fa-exclamation text-xs"></i></template>
+                                        <template x-if="(index + 1) < currentStep && !step.has_error"><x-dynamic-component component="lucide-check" class="w-3 h-3" /></template>
+                                        <template x-if="step.has_error"><x-dynamic-component component="lucide-alert-circle" class="w-3 h-3" /></template>
                                         <template x-if="(index + 1) >= currentStep && !step.has_error"><span x-text="index + 1"></span></template>
                                     </div>
 
@@ -162,7 +162,7 @@
                     <div class="mt-16 pt-10 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         @if ($currentStep > 1)
                             <button type="button" wire:click="previousStep" class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-indigo-600 transition-all flex items-center gap-2">
-                                <i class="fas fa-arrow-left"></i> Précédent
+                                <x-dynamic-component component="lucide-arrow-left" class="w-4 h-4" /> Précédent
                             </button>
                         @else
                             <div></div>

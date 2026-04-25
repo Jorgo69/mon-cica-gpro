@@ -4,11 +4,13 @@ namespace App\Livewire\VBeta\Admin\Project;
 
 use App\Models\User;
 use App\Models\Project;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GeneralAdministration;
 
+#[Lazy]
 class ProjectListLivewire extends Component
 {
 
@@ -65,6 +67,12 @@ class ProjectListLivewire extends Component
             // Optionnel : émettre un événement pour prévenir que le statut a changé
             $this->dispatch('projectStatusUpdated', projectId: $projectId, status: $value);
         }
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

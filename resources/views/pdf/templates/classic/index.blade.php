@@ -49,11 +49,27 @@
                     <tbody>
                         @foreach($project->logicalFramework->specificObjectives as $obj)
                             <tr>
-                                <td class="border border-slate-200 p-3 align-top font-bold">{{ $obj->description }}</td>
+                                <td class="border border-slate-200 p-3 align-top font-bold">
+                                    {{ $obj->description }}
+                                    @if($obj->indicators->isNotEmpty())
+                                        <div class="mt-2 font-normal text-slate-600">
+                                            @foreach($obj->indicators as $indicator)
+                                                <p class="text-xs mb-1">• {{ $indicator->description }}@if($indicator->verification_source) <em>({{ $indicator->verification_source }})</em>@endif</p>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </td>
                                 <td class="border border-slate-200 p-3 align-top">
                                     @foreach($obj->results as $res)
                                         <div class="mb-3">
                                             <p class="font-bold underline mb-1">Résultat : {{ $res->description }}</p>
+                                            @if($res->indicators->isNotEmpty())
+                                                <div class="mb-2 text-slate-600">
+                                                    @foreach($res->indicators as $indicator)
+                                                        <p class="text-xs mb-0.5">↳ {{ $indicator->description }}@if($indicator->verification_source) <em>({{ $indicator->verification_source }})</em>@endif</p>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                             <ul class="list-disc list-inside">
                                                 @foreach($res->activities as $act)
                                                     <li>{{ $act->description }} ({{ number_format($act->budget, 0, ',', ' ') }} FCFA)</li>

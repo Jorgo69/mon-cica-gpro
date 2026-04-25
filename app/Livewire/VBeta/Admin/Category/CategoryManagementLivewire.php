@@ -4,9 +4,11 @@ namespace App\Livewire\VBeta\Admin\Category;
 
 use App\Services\Admin\CategoryQueryService;
 use Livewire\WithPagination;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\Attributes\On;
 
+#[Lazy]
 class CategoryManagementLivewire extends Component
 {
     use WithPagination;

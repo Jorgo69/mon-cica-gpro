@@ -82,6 +82,7 @@ class ProposalProjectFormLivewire extends Component
         'general_obj_indicators' => '',
         'general_obj_verification_sources' => '',
         'assumptions' => '',
+        'indicators_list' => [],
     ];
     public $specificObjectives = [];
     public $expectedResults = [];
@@ -109,12 +110,12 @@ class ProposalProjectFormLivewire extends Component
             'projectTitle' => 'required|string|max:255',
             'projectStartDate' => 'required|date',
             'projectEndDate' => 'required|date|after_or_equal:projectStartDate',
-            'selectedProjectTypeId' => 'required|uuid|exists:project_types,id',
+            'selectedProjectTypeId' => 'nullable|uuid|exists:project_types,id',
             'contextDescription' => 'nullable|string',
             'problemAnalysis' => 'nullable|string',
             'strategy' => 'nullable|string',
             'justification' => 'nullable|string',
-            'uploadedDocuments.*' => 'nullable|file|max:50000', // 50MB max
+            'uploadedDocuments.*' => 'nullable|file|max:50000|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,csv,txt,zip',
 
             // Logical Framework Basic
             'initialLogicalFramework.general_objective' => 'required|string',
@@ -241,6 +242,8 @@ class ProposalProjectFormLivewire extends Component
     {
         $project = Project::with([
             'projectDocuments',
+            'logicalFramework.indicators',
+            'logicalFramework.specificObjectives.indicators',
             'logicalFramework.specificObjectives.results.activities',
             'budgets',
             'projectType'
@@ -279,8 +282,15 @@ class ProposalProjectFormLivewire extends Component
 
         // Logical Framework
         if ($project->logicalFramework) {
-            $this->initialLogicalFramework = $project->logicalFramework->toArray();
-            $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
+            $lf = $project->logicalFramework;
+            $this->initialLogicalFramework = array_merge($lf->toArray(), [
+                'indicators_list' => $lf->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+            ]);
+            $this->specificObjectives = $lf->specificObjectives->map(function ($obj) {
+                $data = $obj->toArray();
+                $data['indicators_list'] = $obj->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+                return $data;
+            })->toArray();
             
             $this->expectedResults = [];
             $this->activities = [];
@@ -487,7 +497,14 @@ class ProposalProjectFormLivewire extends Component
 
     public function addSpecificObjective()
     {
-        $this->specificObjectives[] = ['id' => Str::uuid()->toString(), 'description' => '', 'indicators' => '', 'verification_sources' => '', 'assumptions' => ''];
+        $this->specificObjectives[] = [
+            'id' => Str::uuid()->toString(),
+            'description' => '',
+            'indicators' => '',
+            'verification_sources' => '',
+            'assumptions' => '',
+            'indicators_list' => [],
+        ];
     }
 
     public function removeSpecificObjective($index)
@@ -519,6 +536,33 @@ class ProposalProjectFormLivewire extends Component
     {
         unset($this->activities[$index]);
         $this->activities = array_values($this->activities);
+    }
+
+    public function addIndicator(string $level, ?int $parentIndex = null)
+    {
+        $indicator = [
+            'id' => null,
+            'description' => '',
+            'verification_source' => '',
+            'assumption' => '',
+        ];
+
+        if ($level === 'logframe') {
+            $this->initialLogicalFramework['indicators_list'][] = $indicator;
+        } elseif ($level === 'objective' && $parentIndex !== null) {
+            $this->specificObjectives[$parentIndex]['indicators_list'][] = $indicator;
+        }
+    }
+
+    public function removeIndicator(string $level, ?int $parentIndex, int $indicatorIndex)
+    {
+        if ($level === 'logframe') {
+            unset($this->initialLogicalFramework['indicators_list'][$indicatorIndex]);
+            $this->initialLogicalFramework['indicators_list'] = array_values($this->initialLogicalFramework['indicators_list']);
+        } elseif ($level === 'objective' && $parentIndex !== null) {
+            unset($this->specificObjectives[$parentIndex]['indicators_list'][$indicatorIndex]);
+            $this->specificObjectives[$parentIndex]['indicators_list'] = array_values($this->specificObjectives[$parentIndex]['indicators_list']);
+        }
     }
 
     public function addBudget()
@@ -606,16 +650,31 @@ class ProposalProjectFormLivewire extends Component
         try {
             DB::beginTransaction();
 
+            $project = null;
             if ($this->projectId) {
                 \Log::info('SUBMIT_FORM_BRANCH: Updating existing project.', ['projectId' => $this->projectId]);
                 $this->updateProject($projectDataPayload);
+                $project = Project::find($this->projectId);
             } else {
                 \Log::info('SUBMIT_FORM_BRANCH: Creating new project.');
-                $this->createProject($projectDataPayload);
+                $project = $this->createProject($projectDataPayload);
             }
 
             DB::commit();
             \Log::info('SUBMIT_FORM_SUCCESS: Transaction committed successfully.');
+
+            // Notifier les org_admin de la soumission du projet
+            if ($project) {
+                $orgAdmins = User::where('organization_id', $project->organization_id)
+                    ->where('role', \App\Enums\AccountType::ORG_ADMIN)
+                    ->where('id', '!=', Auth::id())
+                    ->get();
+
+                foreach ($orgAdmins as $admin) {
+                    $admin->notify(new \App\Notifications\ProjectSubmittedNotification($project, Auth::user()));
+                }
+            }
+
             $this->notifyToast('success', 'Projet enregistré avec succès.');
             return redirect()->route('project.list');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -676,6 +735,8 @@ class ProposalProjectFormLivewire extends Component
         );
         
         \Log::info('CREATE_PROJECT_END: Logical framework attached successfully.');
+
+        return $project;
     }
 
     private function cleanHtml($content)

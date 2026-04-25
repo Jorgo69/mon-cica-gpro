@@ -1,7 +1,7 @@
 @if($activity->resources->count() > 0)
     <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-            <i class="fas fa-hand-holding-usd mr-3 text-blue-600"></i> Ressources allouées
+            <x-dynamic-component component="lucide-hand-coins" class="w-6 h-6 mr-3 text-blue-600 inline" /> Ressources allouées
         </h2>
         
         <div class="overflow-x-auto">
@@ -57,7 +57,7 @@
 @else
     <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-            <i class="fas fa-hand-holding-usd mr-3 text-blue-600"></i> Ressources allouées
+            <x-dynamic-component component="lucide-hand-coins" class="w-6 h-6 mr-3 text-blue-600 inline" /> Ressources allouées
         </h2>
         <p class="text-gray-700 dark:text-gray-300">Aucune ressource n'a encore été ajoutée à cette activité.</p>
     </div>

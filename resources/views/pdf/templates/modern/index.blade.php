@@ -69,14 +69,38 @@
                     <div class="card bg-white">
                         <div class="flex items-start gap-4 mb-6">
                             <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-500 shrink-0">OS</span>
-                            <p class="text-base font-bold text-slate-800">{{ $obj->description }}</p>
+                            <div>
+                                <p class="text-base font-bold text-slate-800">{{ $obj->description }}</p>
+                                @if($obj->indicators->isNotEmpty())
+                                    <div class="mt-2 space-y-1">
+                                        @foreach($obj->indicators as $indicator)
+                                            <div class="text-xs text-slate-600 pl-2 border-l-2 border-emerald-200">
+                                                <span class="font-semibold">{{ $indicator->description }}</span>
+                                                @if($indicator->verification_source) <span class="text-slate-400">· Source : {{ $indicator->verification_source }}</span> @endif
+                                                @if($indicator->assumption) <span class="text-slate-400">· Hyp. : {{ $indicator->assumption }}</span> @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                        
+
                         <div class="ml-12 space-y-4">
                             @foreach($obj->results as $res)
-                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-slate-600 text-sm">
+                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-slate-600 text-sm">
                                     <span class="text-[9px] font-black uppercase tracking-widest text-accent block mb-1">Résultat</span>
-                                    {{ $res->description }}
+                                    <span class="italic">{{ $res->description }}</span>
+                                    @if($res->indicators->isNotEmpty())
+                                        <div class="mt-2 space-y-1 not-italic">
+                                            @foreach($res->indicators as $indicator)
+                                                <div class="text-xs pl-2 border-l-2 border-emerald-200">
+                                                    <span class="font-semibold">{{ $indicator->description }}</span>
+                                                    @if($indicator->verification_source) <span class="text-slate-400">· Source : {{ $indicator->verification_source }}</span> @endif
+                                                    @if($indicator->assumption) <span class="text-slate-400">· Hyp. : {{ $indicator->assumption }}</span> @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                                 
                                 <div class="grid grid-cols-1 gap-3 mt-3">

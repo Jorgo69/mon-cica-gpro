@@ -162,6 +162,30 @@
                                         @error('generalGoal') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                                     </div>
 
+                                    {{-- Indicateurs du But Général --}}
+                                    <div class="mb-6 ml-4 border-l-2 border-emerald-300 pl-4">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Indicateurs du But Général</h4>
+                                            <button type="button" wire:click="addIndicator('logframe')" class="text-xs text-emerald-600 hover:text-emerald-800 font-semibold">+ Ajouter un indicateur</button>
+                                        </div>
+                                        @forelse ($logframeIndicators as $iIdx => $indicator)
+                                            <div wire:key="lf-ind-{{ $iIdx }}" class="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 mb-2 relative">
+                                                <button type="button" wire:click="removeIndicator('logframe', null, null, {{ $iIdx }})" class="absolute top-1 right-1 text-red-400 hover:text-red-600">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                </button>
+                                                <div class="pr-6 space-y-2">
+                                                    <input type="text" wire:model.defer="logframeIndicators.{{ $iIdx }}.description" placeholder="Description de l'indicateur" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                    <div class="grid grid-cols-2 gap-2">
+                                                        <input type="text" wire:model.defer="logframeIndicators.{{ $iIdx }}.verification_source" placeholder="Source de vérification" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                        <input type="text" wire:model.defer="logframeIndicators.{{ $iIdx }}.assumption" placeholder="Hypothèse" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <p class="text-xs text-gray-400 italic">Aucun indicateur. Cliquez sur "Ajouter" ci-dessus.</p>
+                                        @endforelse
+                                    </div>
+
                                     {{-- Objectifs Spécifiques et Résultats --}}
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Objectifs Spécifiques</h3>
                                     @foreach ($specificObjectives as $objIndex => $objective)
@@ -169,10 +193,34 @@
                                             <div class="flex items-center space-x-2 mb-2">
                                                 <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.description" placeholder="Description de l'objectif spécifique" class="form-input flex-grow rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200">
                                                 <button type="button" wire:click="removeObjective({{ $objIndex }})" class="text-red-500 hover:text-red-700">
-                                                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 100 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm8-1a1 1 0 011 1v6a1 1 0 11-2 0V8a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                                    <x-lucide-trash-2 class="h-5 w-5" />
                                                 </button>
                                             </div>
                                             @error("specificObjectives.$objIndex.description") <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+
+                                            {{-- Indicateurs de l'objectif --}}
+                                            <div class="ml-4 border-l-2 border-emerald-300 pl-3 mt-3 mb-4">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <h5 class="text-xs font-medium text-gray-600 dark:text-gray-400">Indicateurs</h5>
+                                                    <button type="button" wire:click="addIndicator('objective', {{ $objIndex }})" class="text-xs text-emerald-600 hover:text-emerald-800 font-semibold">+ Ajouter</button>
+                                                </div>
+                                                @forelse ($objective['indicators_list'] ?? [] as $iIdx => $indicator)
+                                                    <div wire:key="obj-{{ $objIndex }}-ind-{{ $iIdx }}" class="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 mb-2 relative">
+                                                        <button type="button" wire:click="removeIndicator('objective', {{ $objIndex }}, null, {{ $iIdx }})" class="absolute top-1 right-1 text-red-400 hover:text-red-600">
+                                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                        </button>
+                                                        <div class="pr-6 space-y-2">
+                                                            <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.indicators_list.{{ $iIdx }}.description" placeholder="Description de l'indicateur" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                            <div class="grid grid-cols-2 gap-2">
+                                                                <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.indicators_list.{{ $iIdx }}.verification_source" placeholder="Source de vérification" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                                <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.indicators_list.{{ $iIdx }}.assumption" placeholder="Hypothèse" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @empty
+                                                    <p class="text-xs text-gray-400 italic">Aucun indicateur.</p>
+                                                @endforelse
+                                            </div>
 
                                             {{-- Résultats --}}
                                             <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mt-4 mb-2">Résultats</h4>
@@ -181,11 +229,34 @@
                                                     <div class="flex items-center space-x-2 mb-2">
                                                         <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.description" placeholder="Description du résultat" class="form-input flex-grow rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200">
                                                         <button type="button" wire:click="removeResult({{ $objIndex }}, {{ $resIndex }})" class="text-red-500 hover:text-red-700">
-                                                            <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 100 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm8-1a1 1 0 011 1v6a1 1 0 11-2 0V8a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                                            <x-lucide-trash-2 class="h-4 w-4" />
                                                         </button>
                                                     </div>
-                                                    <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.indicators" placeholder="Indicateurs de succès" class="form-input w-full rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-200">
-                                                    
+
+                                                    {{-- Indicateurs du résultat --}}
+                                                    <div class="ml-4 border-l-2 border-emerald-300 pl-3 mt-2 mb-3">
+                                                        <div class="flex items-center justify-between mb-2">
+                                                            <h6 class="text-xs font-medium text-gray-600 dark:text-gray-400">Indicateurs</h6>
+                                                            <button type="button" wire:click="addIndicator('result', {{ $objIndex }}, {{ $resIndex }})" class="text-xs text-emerald-600 hover:text-emerald-800 font-semibold">+ Ajouter</button>
+                                                        </div>
+                                                        @forelse ($result['indicators_list'] ?? [] as $iIdx => $indicator)
+                                                            <div wire:key="res-{{ $objIndex }}-{{ $resIndex }}-ind-{{ $iIdx }}" class="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 mb-2 relative">
+                                                                <button type="button" wire:click="removeIndicator('result', {{ $objIndex }}, {{ $resIndex }}, {{ $iIdx }})" class="absolute top-1 right-1 text-red-400 hover:text-red-600">
+                                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                </button>
+                                                                <div class="pr-6 space-y-2">
+                                                                    <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.indicators_list.{{ $iIdx }}.description" placeholder="Description de l'indicateur" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                                    <div class="grid grid-cols-2 gap-2">
+                                                                        <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.indicators_list.{{ $iIdx }}.verification_source" placeholder="Source de vérification" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                                        <input type="text" wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.indicators_list.{{ $iIdx }}.assumption" placeholder="Hypothèse" class="form-input w-full rounded-md shadow-sm dark:bg-gray-600 dark:text-gray-200 text-sm">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @empty
+                                                            <p class="text-xs text-gray-400 italic">Aucun indicateur.</p>
+                                                        @endforelse
+                                                    </div>
+
                                                     {{-- Activités imbriquées --}}
                                                     <h5 class="text-sm font-medium text-gray-600 dark:text-gray-400 mt-4 mb-2">Activités</h5>
                                                     @foreach ($result['activities'] as $actIndex => $activity)
@@ -202,7 +273,7 @@
                                                                 </select>
                                                             </div>
                                                             <button type="button" wire:click="removeActivity({{ $objIndex }}, {{ $resIndex }}, {{ $actIndex }})" class="text-red-500 hover:text-red-700">
-                                                                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 100 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm8-1a1 1 0 011 1v6a1 1 0 11-2 0V8a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                                                <x-lucide-trash-2 class="h-4 w-4" />
                                                             </button>
                                                         </div>
                                                     @endforeach

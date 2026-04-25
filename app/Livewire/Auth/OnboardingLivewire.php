@@ -97,6 +97,7 @@ class OnboardingLivewire extends Component
         try {
             DB::transaction(function () {
                 auth()->user()->update([
+                    'role' => \App\Enums\AccountType::INDEPENDENT,
                     'is_independent' => true,
                 ]);
             });

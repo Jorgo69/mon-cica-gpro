@@ -3,12 +3,14 @@
 namespace App\Livewire\VBeta\Project;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+#[Lazy]
 class ProjectListLivewire extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -55,10 +57,18 @@ class ProjectListLivewire extends Component
 
     public function deleteProject($projectId)
     {
-        $this->authorize('delete', $this->projectId);
-        dd($projectId);
+        $project = Project::findOrFail($projectId);
+        $this->authorize('delete', $project);
 
-        Project::find($projectId)->delete();
+        $project->delete();
+
+        session()->flash('success', __('Le projet a été supprimé avec succès.'));
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

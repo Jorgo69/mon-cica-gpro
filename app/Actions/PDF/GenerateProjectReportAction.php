@@ -26,6 +26,9 @@ class GenerateProjectReportAction
         $project = Project::with([
             'creator',
             'projectType.dynamicFields',
+            'logicalFramework.indicators',
+            'logicalFramework.specificObjectives.indicators',
+            'logicalFramework.specificObjectives.results.indicators',
             'logicalFramework.specificObjectives.results.activities.subActivities',
             'budgets.responsibleUser',
             'documents',

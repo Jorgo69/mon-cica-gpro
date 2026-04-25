@@ -6,9 +6,11 @@ use App\Models\Project;
 use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Lazy]
 class ProjectDashboardLivewire extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -88,6 +90,12 @@ class ProjectDashboardLivewire extends Component
      *
      * @return \Illuminate\View\View
      */
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $activitiesQuery = Activity::query();

@@ -39,7 +39,12 @@
                 Analyses
                 @if($activeTab === 'analytics') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
-            <button wire:click="switchTab('history')" 
+            <button wire:click="switchTab('tracking')"
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'tracking' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                Suivi
+                @if($activeTab === 'tracking') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('history')"
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
                 Historique
                 @if($activeTab === 'history') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
@@ -176,109 +181,22 @@
                     {{-- Section 4: Cadre Logique --}}
                     @if($project->logicalFramework)
 
-                        {{-- Objectif Général --}}
-                        <x-ui.section title="Objectif Général" icon="target">
-                            <div class="overflow-x-auto -mx-6">
-                                <table class="w-full text-sm">
-                                    <thead>
-                                        <tr class="border-b border-slate-100 dark:border-slate-800">
-                                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest w-48">Champs</th>
-                                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Valeur</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
-                                        <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Description</td><td class="px-6 py-3 text-justify">{!! $project->logicalFramework->general_objective !!}</td></tr>
-                                        <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Indicateurs</td><td class="px-6 py-3 text-justify">{!! $project->logicalFramework->general_obj_indicators !!}</td></tr>
-                                        <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Sources de vérification</td><td class="px-6 py-3 text-justify">{!! $project->logicalFramework->general_obj_verification_sources !!}</td></tr>
-                                        <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Hypothèses</td><td class="px-6 py-3 text-justify">{!! $project->logicalFramework->assumptions !!}</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </x-ui.section>
+                        {{-- Selecteur de format --}}
+                        <div class="flex items-center gap-2 mb-6">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Format :</span>
+                            @foreach(\App\Enums\LogframeDisplayFormat::cases() as $format)
+                                <button type="button"
+                                    wire:click="setLogframeFormat('{{ $format->value }}')"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $logframeFormat === $format->value ? 'bg-accent text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700' }}">
+                                    <x-dynamic-component :component="'lucide-' . $format->icon()" class="w-3.5 h-3.5" />
+                                    {{ $format->label() }}
+                                </button>
+                            @endforeach
+                        </div>
 
-                        {{-- Objectifs Spécifiques --}}
-                        @if($project->logicalFramework->specificObjectives->isNotEmpty())
-                            <x-ui.section title="Objectifs Spécifiques" icon="list-ordered">
-                                <div class="overflow-x-auto -mx-6">
-                                    <table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b border-slate-100 dark:border-slate-800">
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Champs</th>
-                                                @foreach($project->logicalFramework->specificObjectives as $obj)
-                                                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Objectif {{ $loop->iteration }}</th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
-                                            <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Description</td>@foreach($project->logicalFramework->specificObjectives as $obj)<td class="px-6 py-3">{!! $obj->description !!}</td>@endforeach</tr>
-                                            <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Indicateurs</td>@foreach($project->logicalFramework->specificObjectives as $obj)<td class="px-6 py-3">{!! $obj->indicators !!}</td>@endforeach</tr>
-                                            <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Sources</td>@foreach($project->logicalFramework->specificObjectives as $obj)<td class="px-6 py-3">{!! $obj->verification_sources !!}</td>@endforeach</tr>
-                                            <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Hypothèses</td>@foreach($project->logicalFramework->specificObjectives as $obj)<td class="px-6 py-3">{!! $obj->assumptions !!}</td>@endforeach</tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </x-ui.section>
-                        @endif
+                        {{-- Contenu selon le format choisi --}}
+                        @include('livewire.v-beta.project.logframe.format-' . $logframeFormat)
 
-                        {{-- Résultats Attendus --}}
-                        @php
-                            $results = collect();
-                            foreach($project->logicalFramework->specificObjectives as $obj){
-                                $results = $results->merge($obj->results);
-                            }
-                        @endphp
-                        @if($results->isNotEmpty())
-                            <x-ui.section title="Résultats Attendus" icon="check-square">
-                                <div class="overflow-x-auto -mx-6">
-                                    <table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b border-slate-100 dark:border-slate-800">
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Champs</th>
-                                                @foreach($results as $result)
-                                                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Résultat {{ $loop->iteration }}</th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
-                                            <tr><td class="px-6 py-3 font-semibold text-slate-700 dark:text-slate-200">Description</td>@foreach($results as $result)<td class="px-6 py-3">{!! $result->description !!}</td>@endforeach</tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </x-ui.section>
-                        @endif
-
-                        {{-- Activités --}}
-                        @php $activities = $project->getAllActivities(); @endphp
-                        @if($activities->isNotEmpty())
-                            <x-ui.section title="Liste des Activités" icon="list-checks">
-                                <div class="overflow-x-auto -mx-6">
-                                    <table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b border-slate-100 dark:border-slate-800">
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</th>
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Début</th>
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Fin</th>
-                                                <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Statut</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
-                                            @foreach($activities as $activity)
-                                                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                                    <td class="px-6 py-3">{!! $activity->description !!}</td>
-                                                    <td class="px-6 py-3">{{ $activity->responsibleUser->name ?? 'N/A' }}</td>
-                                                    <td class="px-6 py-3">{{ $activity->start_date ?? 'N/A' }}</td>
-                                                    <td class="px-6 py-3">{{ $activity->end_date ?? 'N/A' }}</td>
-                                                    <td class="px-6 py-3">
-                                                        <x-ui.badge variant="slate" size="sm">{{ $activity->status ?? 'N/A' }}</x-ui.badge>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </x-ui.section>
-                        @endif
                     @endif
 
                 @endif
@@ -341,6 +259,11 @@
                             </div>
                         </x-ui.section>
                     </div>
+                @endif
+
+                @if($activeTab === 'tracking')
+                    {{-- Section: Suivi de progression --}}
+                    @livewire('v-beta.project.project-progress-comparison-livewire', ['projectId' => $project->id])
                 @endif
 
                 @if($activeTab === 'history')

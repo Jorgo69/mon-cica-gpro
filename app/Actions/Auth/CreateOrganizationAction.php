@@ -35,7 +35,7 @@ class CreateOrganizationAction
             // 2. Rattacher l'utilisateur à l'organisation
             $user->update([
                 'organization_id' => $organization->id,
-                'role' => 'admin',
+                'role' => \App\Enums\AccountType::ORG_ADMIN,
             ]);
 
             Log::info('[Action] CreateOrganization - Utilisateur rattaché');

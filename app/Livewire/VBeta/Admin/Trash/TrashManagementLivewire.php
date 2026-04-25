@@ -2,12 +2,14 @@
 
 namespace App\Livewire\VBeta\Admin\Trash;
 
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\ProjectType;
 
+#[Lazy]
 class TrashManagementLivewire extends Component
 {
     use WithPagination;
@@ -97,6 +99,12 @@ class TrashManagementLivewire extends Component
         $this->selectedItem = null;
         $this->selectedModel = null;
         $this->showModal = false;
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

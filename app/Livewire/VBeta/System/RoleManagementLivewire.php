@@ -6,9 +6,11 @@ use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Organization;
 use App\Livewire\Traits\WithToastNotifications;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Lazy]
 class RoleManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;
@@ -95,6 +97,12 @@ class RoleManagementLivewire extends Component
     private function resetForm()
     {
         $this->reset(['name', 'org_id', 'rolePermissions', 'selectedRole', 'modalType']);
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

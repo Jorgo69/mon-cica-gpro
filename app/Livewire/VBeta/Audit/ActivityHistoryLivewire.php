@@ -2,11 +2,13 @@
 
 namespace App\Livewire\VBeta\Audit;
 
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
+#[Lazy]
 class ActivityHistoryLivewire extends Component
 {
     use WithPagination;
@@ -21,6 +23,12 @@ class ActivityHistoryLivewire extends Component
             $this->subjectId = $subject->id;
             $this->subjectType = get_class($subject);
         }
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();// Clé primaire UUID
             $table->uuid('organization_id')->nullable();// Unité d'isolation
             $table->uuid('creator_user_id');// Créateur du projet
-            $table->uuid('project_type_id');
+            $table->uuid('project_type_id')->nullable();
             $table->string('project_code')->unique();// Code unique du projet (ex: PRJ-001)
 
             $table->string('title');

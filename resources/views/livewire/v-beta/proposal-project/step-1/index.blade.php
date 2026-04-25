@@ -2,12 +2,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {{-- Project Type --}}
         <div class="md:col-span-2">
-            <x-ui.select 
-                label="{{ __('project.step_1.form.input_1') }}" 
+            <x-ui.select
+                label="{{ __('project.step_1.form.input_1') }}"
                 wire:model.live="selectedProjectTypeId"
                 icon="layers"
                 :error="$errors->first('selectedProjectTypeId')"
-                required
             >
                 <option value="">{{ __('project.step_1.form.option') }}</option>
                 @foreach($allProjectTypes as $type)
