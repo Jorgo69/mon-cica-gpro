@@ -2,11 +2,27 @@
 
 ## En cours
 
-(Aucune tache en cours)
+- [ ] Phase 6 : Service OrgContext + corrections globales
+  - [x] Creer le service OrgContext (singleton, methodes statiques)
+  - [x] Brancher Multitenantable sur OrgContext (creating event)
+  - [x] Fix MemberManagement ($id avant $queryService)
+  - [x] Retirer #[Lazy] de tous les composants (fix Snapshot missing)
+  - [x] Nettoyer routes de test + debug login
+  - [ ] Reorganiser les routes (root.php, admin.php, project.php) -- a valider
+  - [x] Fix MemberManagement : modal Ajouter (injection $id/$queryService)
+  - [x] Retirer #[Lazy] de TOUS les 16 composants (fix Snapshot missing global)
+  - [ ] Fix lang/fr/validation.php (contient anglais au lieu de francais)
+  - [ ] Table user_preferences + persister theme/langue/densite en DB
+  - [ ] Enrichir page Settings (sauvegarder en DB, pas juste localStorage)
+  - [ ] Fix toast notification vide (session residuelle ou dispatch fantome)
+  - [ ] Fix corbeille (selectAllUsers/selectAllTypes/selectAllProjects manquants)
+  - [ ] Tester tous les flows org_admin, org_user, independent
 
 ## A faire
 
-(Aucune tache planifiee)
+- [ ] Phase 7 : Systeme d'invitation end-to-end (mail SMTP Gmail, flow complet)
+- [ ] Phase 8 : Preparation SaaS (plans, limites, billing Stripe/Cashier)
+- [ ] Phase 9 : Multi-plateforme (NativePHP desktop, mobile)
 
 ## Termine
 - [x] Setup initial Laravel 10 avec Breeze (auth, profil, password reset)
@@ -119,3 +135,14 @@
 - Phase 5.7 : Page Emails ROOT -- RootEmailSuppressionLivewire (suppression list, stats bounced/unsubscribed/complained, ajout/retrait manuel).
 - Phase 5.8 : Audit ROOT -- integre dans OrgSwitchController (Spatie Activity Log sur chaque enter/leave, visible par l'org_admin).
 - **Phase 5 complete** -- Refonte experience ROOT (sidebar dediee, impersonation org, 4 pages admin).
+
+### Session 8 (2026-04-26)
+- Fix auth bloquee : double-hash password (cast `hashed` + Hash::make = double hash), sessions corrompues par acting_as_organization_id residuel.
+- Fix Multitenantable : ROOT en impersonation se faisait exclure des queries User (organization_id=null vs acting org). Ajout orWhere pour ROOT lui-meme.
+- Fix Gate::before : ROOT perdait hasRole('IT_ADMIN') dans contexte Spatie team org. Remplacement par check direct enum AccountType::ROOT.
+- OrgSwitchController : passe de POST a GET (evite problemes CSRF/Livewire).
+- Retrait #[Lazy] de TOUS les composants (16) : cause racine des erreurs "Snapshot missing" et "Could not find component in DOM tree".
+- Service OrgContext cree : source unique de verite pour contexte org (orgId, isRoot, isImpersonating, mustFilter, canBypass, contextData).
+- Multitenantable refactore : utilise OrgContext dans le creating event.
+- Fix MemberManagement : parametre $id avant $queryService (injection Livewire).
+- Phase 6 en cours : corrections globales, reorganisation routes, enrichissement Settings.

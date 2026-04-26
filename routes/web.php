@@ -40,6 +40,9 @@ require __DIR__.'/domains/resource.php';
 Route::get('lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'fr'])) {
         session(['locale' => $locale]);
+        if (auth()->check()) {
+            \App\Services\UserMeta::set('locale', $locale);
+        }
     }
     return back();
 });

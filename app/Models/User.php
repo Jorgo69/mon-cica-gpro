@@ -54,6 +54,7 @@ class User extends Authenticatable
         'ville',
         'department',
         'password',
+        'meta',
     ];
 
     /**
@@ -75,6 +76,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'role' => AccountType::class,
+        'meta' => 'array',
     ];
 
     protected static function boot()

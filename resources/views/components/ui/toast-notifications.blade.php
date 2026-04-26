@@ -65,6 +65,10 @@
                 @endif
             },
             addToast(data) {
+                // Livewire dispatch peut encapsuler dans un array
+                if (Array.isArray(data)) data = data[0];
+                if (!data || !data.message) return;
+
                 const toast = {
                     id: Date.now() + Math.random().toString(36).substr(2, 9),
                     visible: true,

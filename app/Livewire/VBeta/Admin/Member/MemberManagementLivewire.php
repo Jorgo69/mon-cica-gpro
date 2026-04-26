@@ -81,7 +81,7 @@ class MemberManagementLivewire extends Component
     /**
      * Ouvre le modal spécifié.
      */
-    public function openModal($type, $id = null, MemberQueryService $queryService)
+    public function openModal($type, $id = null)
     {
         $this->authorize('viewAny', User::class);
         
@@ -91,7 +91,7 @@ class MemberManagementLivewire extends Component
         $this->showModal = true;
 
         if ($id) {
-            $this->selectedMember = $queryService->findById($id);
+            $this->selectedMember = app(MemberQueryService::class)->findById($id);
             if ($this->selectedMember) {
                 $this->authorize('view', $this->selectedMember);
                 $this->fill($this->selectedMember->toArray());
