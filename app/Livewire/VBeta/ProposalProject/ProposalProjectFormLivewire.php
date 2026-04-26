@@ -40,6 +40,7 @@ class ProposalProjectFormLivewire extends Component
     public $currentStep = 1;
     public $totalSteps = 6;
     public $stepDetails = [];
+    public bool $isSubmitting = false;
 
     // =========================================================================
     // PROPERTIES: Main Project Data (projects table)
@@ -133,17 +134,19 @@ class ProposalProjectFormLivewire extends Component
             // Results and Activities
             'expectedResults.*.description' => 'required|string',
             'activities.*.description' => 'required|string',
-            'activities.*.responsible_user_id' => 'required|uuid|exists:users,id',
+            'activities.*.responsible_user_id' => [
+                'required', 'uuid',
+                Rule::exists('users', 'id')->where('organization_id', \App\Services\OrgContext::orgId()),
+            ],
             'activities.*.start_date' => [
-                'required', 
-                'date', 
-                'after_or_equal:projectStartDate', 
+                'required',
+                'date',
+                'after_or_equal:projectStartDate',
                 'before_or_equal:projectEndDate'
             ],
             'activities.*.end_date' => [
-                'required', 
-                'date', 
-                'after_or_equal:activities.*.start_date', 
+                'required',
+                'date',
                 'before_or_equal:projectEndDate'
             ],
             'activities.*.status' => 'nullable|string|in:En cours,Terminée,En attente,En retard',
@@ -421,7 +424,12 @@ class ProposalProjectFormLivewire extends Component
                     $stepRules["activities.{$index}.description"] = $allRules['activities.*.description'];
                     $stepRules["activities.{$index}.responsible_user_id"] = $allRules['activities.*.responsible_user_id'];
                     $stepRules["activities.{$index}.start_date"] = $allRules['activities.*.start_date'];
-                    $stepRules["activities.{$index}.end_date"] = $allRules['activities.*.end_date'];
+                    $stepRules["activities.{$index}.end_date"] = [
+                        'required',
+                        'date',
+                        "after_or_equal:activities.{$index}.start_date",
+                        'before_or_equal:projectEndDate',
+                    ];
                 }
                 break;
             case 6:
@@ -623,9 +631,15 @@ class ProposalProjectFormLivewire extends Component
 
     public function submitForm()
     {
+        if ($this->isSubmitting) {
+            return;
+        }
+        $this->isSubmitting = true;
+
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->isSubmitting = false;
             \Illuminate\Support\Facades\Log::error('INITIAL_VALIDATION_FAILED: Form validation failed before processing payload.', ['errors' => $e->errors()]);
             $this->notifyToast('error', 'Il y a des erreurs de validation sur le formulaire. Veuillez vérifier vos saisies.', 'Action Requise');
             throw $e;
@@ -680,11 +694,13 @@ class ProposalProjectFormLivewire extends Component
             return redirect()->route('project.list');
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+            $this->isSubmitting = false;
             \Log::error('SUBMIT_FORM_VALIDATION_ERROR: Validation failed.', ['errors' => $e->errors()]);
             $this->notifyToast('error', 'La validation a échoué. Veuillez vérifier tous les onglets.');
             throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->isSubmitting = false;
             \Log::error('SUBMIT_FORM_FATAL_ERROR: Exception thrown during submission.', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
