@@ -3,14 +3,13 @@
 namespace App\Livewire\VBeta\Admin\Project;
 
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use App\Models\Project;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GeneralAdministration;
 
-#[Lazy]
 class ProjectListLivewire extends Component
 {
 
@@ -84,7 +83,7 @@ class ProjectListLivewire extends Component
         // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
         // Si admin, il voit tout (enlevé la restriction du Dashboard pour la liste globale si c'est la vue Admin)
         // Mais ici c'est ProjectListLivewire dans Admin, donc on garde la logique de visibilité demandée ou on l'élargit
-        $isAdmin = in_array($user->role, [\App\Enums\AccountType::SYSTEM_ADMIN, \App\Enums\AccountType::ORG_ADMIN]);
+        $isAdmin = in_array($user->role, [\App\Enums\AccountType::ROOT, \App\Enums\AccountType::ORG_ADMIN]);
 
         if (!$isAdmin) {
             $projects->where(function ($query) use ($user) {
@@ -118,7 +117,7 @@ class ProjectListLivewire extends Component
         $projects->orderBy($this->sortField, $this->sortDirection);
 
         // Obtenir les options pour les filtres
-        $availableUsers = User::orderBy('name')->get();
+        $availableUsers = UserQueryService::forCurrentOrg()->orderBy('name')->get();
         
         $projectStatuses = \App\Enums\ProjectStatus::cases();
         

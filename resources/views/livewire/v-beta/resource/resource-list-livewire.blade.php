@@ -20,34 +20,34 @@
             @else
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                        <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Désignation</span>
-                            </th>
-                            <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Désignation</span>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quantité</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Type</span>
+                            </th>
+                            <th class="px-6 py-3 text-left">
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Quantité</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Coût Unitaire</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Coût Unitaire</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Total</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Actions</span>
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @foreach ($resources as $resource)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors group">
                                 <td class="px-6 py-4">
                                     <div class="max-w-xs">
-                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-accent transition-colors">{{ $resource->name }}</p>
-                                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">{{ $resource->category ?: 'Sans catégorie' }}</p>
+                                        <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors">{{ $resource->name }}</p>
+                                        <p class="text-[10px] text-muted mt-0.5 truncate">{{ $resource->category ?: 'Sans catégorie' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -64,13 +64,13 @@
                                     </x-ui.badge>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ $resource->quantity }}</span>
+                                    <span class="text-sm font-bold text-subtle">{{ $resource->quantity }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <span class="text-xs font-mono text-slate-500">{{ number_format($resource->unit_cost, 2, ',', ' ') }}</span>
+                                    <span class="text-xs font-mono text-subtle">{{ number_format($resource->unit_cost, 2, ',', ' ') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <span class="text-sm font-black text-slate-800 dark:text-slate-100">{{ number_format($resource->total_cost, 2, ',', ' ') }}</span>
+                                    <span class="text-sm font-black text-heading">{{ number_format($resource->total_cost, 2, ',', ' ') }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

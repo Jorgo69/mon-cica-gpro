@@ -43,7 +43,7 @@
         @yield('content')
         
         {{-- Footer --}}
-        <div class="absolute bottom-0 w-full p-8 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div class="absolute bottom-0 w-full p-8 border-t border-border-light flex justify-between items-center text-[10px] font-bold text-muted uppercase tracking-widest">
             <div>Généré par CICA-GPRO Intelligent Engine</div>
             <div>Page <span class="pageNumber"></span></div>
         </div>

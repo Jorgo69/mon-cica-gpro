@@ -15,11 +15,13 @@ use App\Models\SpecificObjective;
 use App\Models\Result;
 use App\Models\Activity;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use App\Traits\SyncsIndicators;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EditProjectDesignLivewire extends Component
 {
-    use WithFileUploads, SyncsIndicators;
+    use WithFileUploads, SyncsIndicators, AuthorizesRequests;
 
     public $projectId;
     public $project;
@@ -91,7 +93,7 @@ class EditProjectDesignLivewire extends Component
 
     public function mount($projectId)
     {
-        $this->users = User::orderBy('name')->get();
+        $this->users = UserQueryService::forCurrentOrg()->orderBy('name')->get();
         $this->projectId = $projectId;
         $this->loadProjectData();
     }
@@ -107,6 +109,8 @@ class EditProjectDesignLivewire extends Component
             'logicalFramework.specificObjectives.results.indicators',
             'logicalFramework.specificObjectives.results.activities',
         ])->findOrFail($this->projectId);
+
+        $this->authorize('update', $this->project);
 
         $this->projectTitle = $this->project->title;
         $this->projectCode = $this->project->project_code;

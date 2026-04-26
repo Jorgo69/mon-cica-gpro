@@ -31,32 +31,32 @@
             @else
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer group" wire:click="sortBy('title')">
+                        <tr class="border-b border-border-light dark:border-surface-alt">
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('title')">
                                 <div class="flex items-center gap-1">Titre @if ($sortField === 'title') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer group" wire:click="sortBy('project_code')">
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('project_code')">
                                 <div class="flex items-center gap-1">Code @if ($sortField === 'project_code') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer group" wire:click="sortBy('status')">
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('status')">
                                 <div class="flex items-center gap-1">Statut @if ($sortField === 'status') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer group" wire:click="sortBy('start_date')">
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('start_date')">
                                 <div class="flex items-center gap-1">Début @if ($sortField === 'start_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer group" wire:click="sortBy('end_date')">
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('end_date')">
                                 <div class="flex items-center gap-1">Fin @if ($sortField === 'end_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @foreach ($projects as $project)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td class="px-6 py-4 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $project->title }}</td>
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                                <td class="px-6 py-4 text-sm font-semibold text-heading">{{ $project->title }}</td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span>
+                                    <span class="text-xs font-mono font-bold text-subtle bg-surface-alt px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @php $status = $project->status; @endphp
@@ -64,9 +64,9 @@
                                         {{ $status?->label() ?? $project->status }}
                                     </x-ui.badge>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $project->creator->name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 text-sm text-subtle">{{ $project->creator->name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 text-sm text-subtle">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 text-sm text-subtle">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1">
                                         @include('livewire.v-beta.project.include.link-project-list')

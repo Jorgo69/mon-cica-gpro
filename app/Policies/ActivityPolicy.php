@@ -25,7 +25,7 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
@@ -37,7 +37,7 @@ class ActivityPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -53,7 +53,7 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -69,7 +69,7 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -85,7 +85,7 @@ class ActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 

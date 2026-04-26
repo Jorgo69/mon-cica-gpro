@@ -14,7 +14,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return true;
+        if ($user->role === \App\Enums\AccountType::ROOT) return true;
         return $user->hasPermissionTo('manage-users');
     }
 
@@ -23,7 +23,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return true;
+        if ($user->role === \App\Enums\AccountType::ROOT) return true;
         return $user->hasPermissionTo('manage-users') && (string) $user->organization_id === (string) $model->organization_id;
     }
 
@@ -33,7 +33,7 @@ class UserPolicy
     public function create(User $user): bool
     {
         // Interdire au SYSTEM_ADMIN de créer des utilisateurs dans les organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return false;
+        if ($user->role === \App\Enums\AccountType::ROOT) return false;
         
         return $user->hasPermissionTo('manage-users');
     }
@@ -43,7 +43,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) return false;
+        if ($user->role === \App\Enums\AccountType::ROOT) return false;
         
         return $user->hasPermissionTo('manage-users') && (string) $user->organization_id === (string) $model->organization_id;
     }
@@ -53,7 +53,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false; // Le Root ne doit pas supprimer d'utilisateurs directement
         }
 

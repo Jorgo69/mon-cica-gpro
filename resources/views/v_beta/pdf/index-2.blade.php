@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Fiche de projet - {{ $project->title }}</title>
 </head>
-<body class="font-sans text-gray-800">
+<body class="font-sans text-heading">
 
     {{-- PAGE DE GARDE --}}
     <div class="h-screen flex flex-col justify-center items-center text-center bg-blue-50">
@@ -20,15 +20,15 @@
             FICHE DE PROJET
         </h1>
 
-        <p class="text-lg text-gray-600 mb-8">
+        <p class="text-lg text-subtle mb-8">
             Document de référence – {{ now()->format('d/m/Y') }}
         </p>
 
-        <div class="text-left bg-white shadow-lg rounded-lg p-8 w-2/3 border border-gray-200">
-            <p><strong class="text-gray-700">Titre du projet :</strong> {{ $project->title }}</p>
-            <p><strong class="text-gray-700">Code :</strong> {{ $project->project_code }}</p>
-            <p><strong class="text-gray-700">Type :</strong> {{ $project->projectType->name ?? '—' }}</p>
-            <p><strong class="text-gray-700">Promoteur :</strong> {{ $project->creator->name ?? '—' }}</p>
+        <div class="text-left bg-white shadow-lg rounded-lg p-8 w-2/3 border border-border">
+            <p><strong class="text-body">Titre du projet :</strong> {{ $project->title }}</p>
+            <p><strong class="text-body">Code :</strong> {{ $project->project_code }}</p>
+            <p><strong class="text-body">Type :</strong> {{ $project->projectType->name ?? '—' }}</p>
+            <p><strong class="text-body">Promoteur :</strong> {{ $project->creator->name ?? '—' }}</p>
         </div>
 
         {{-- Forcer saut de page --}}
@@ -56,12 +56,12 @@
         {{-- OBJECTIFS --}}
         <h2 class="text-2xl font-semibold text-blue-700 mb-4">Objectifs spécifiques</h2>
         @forelse($project->logicalFramework->specificObjectives ?? [] as $objective)
-            <div class="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50">
+            <div class="mb-6 p-4 border border-border rounded-lg bg-surface">
                 <p><strong>Description :</strong> {{ $objective->specific_obj_desc }}</p>
 
                 {{-- Résultats --}}
                 @if($objective->results->count())
-                    <h3 class="text-lg font-semibold mt-4 text-blue-600">Résultats attendus</h3>
+                    <h3 class="text-lg font-semibold mt-4 text-accent">Résultats attendus</h3>
                     <ul class="list-disc pl-6">
                         @foreach($objective->results as $result)
                             <li class="mb-2">
@@ -74,13 +74,13 @@
                                         @foreach($result->activities as $activity)
                                             <li>
                                                 {{ $activity->activity_desc }}
-                                                <span class="text-gray-500 text-sm">
+                                                <span class="text-subtle text-sm">
                                                     (Budget : {{ number_format($activity->budget, 0, ',', ' ') }} FCFA)
                                                 </span>
 
                                                 {{-- Sous-activités --}}
                                                 @if($activity->subActivities->count())
-                                                    <ul class="list-disc pl-6 text-sm text-gray-700">
+                                                    <ul class="list-disc pl-6 text-sm text-body">
                                                         @foreach($activity->subActivities as $sub)
                                                             <li>{{ $sub->sub_activity_desc }}</li>
                                                         @endforeach
@@ -96,7 +96,7 @@
                 @endif
             </div>
         @empty
-            <p class="text-gray-500">Aucun objectif défini.</p>
+            <p class="text-subtle">Aucun objectif défini.</p>
         @endforelse
 
         {{-- DOCUMENTS --}}
@@ -108,7 +108,7 @@
                 @endforeach
             </ul>
         @else
-            <p class="text-gray-500">Aucun document disponible.</p>
+            <p class="text-subtle">Aucun document disponible.</p>
         @endif
     </div>
 </body>

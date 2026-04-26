@@ -2,13 +2,11 @@
 
 namespace App\Livewire\VBeta\Audit;
 
-use Livewire\Attributes\Lazy;
+use App\Enums\AccountType;
 use Livewire\Component;
-
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
-#[Lazy]
 class ActivityHistoryLivewire extends Component
 {
     use WithPagination;
@@ -37,12 +35,13 @@ class ActivityHistoryLivewire extends Component
         $query = Activity::query()
             ->latest();
 
-        // Si ce n'est pas un Super Admin (Root), on filtre par organisation
-        // On considère Root un IT_ADMIN sans organization_id
-        $isRoot = $user->hasRole('IT_ADMIN') && is_null($user->organization_id);
-
-        if (!$isRoot) {
-            $query->where('organization_id', $user->organization_id);
+        // ROOT voit tout, INDEPENDENT voit ses propres logs, les autres voient leur org
+        if ($user->role === AccountType::ROOT) {
+            // pas de filtre
+        } elseif ($user->role === AccountType::INDEPENDENT) {
+            $query->where('causer_id', $user->id);
+        } else {
+            $query->where('properties->organization_id', $user->organization_id);
         }
 
         if ($this->subjectId && $this->subjectType) {

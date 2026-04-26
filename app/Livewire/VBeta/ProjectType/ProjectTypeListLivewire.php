@@ -2,11 +2,9 @@
 
 namespace App\Livewire\VBeta\ProjectType;
 
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use App\Models\ProjectType;
 
-#[Lazy]
 class ProjectTypeListLivewire extends Component
 {
     // Propriété pour stocker la liste des types de projets

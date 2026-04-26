@@ -5,21 +5,21 @@
     <div class="overflow-x-auto -mx-6">
         <table class="w-full text-sm">
             <thead>
-                <tr class="border-b border-slate-100 dark:border-slate-800">
-                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
-                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Début</th>
-                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Fin</th>
-                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</th>
-                    <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Statut</th>
+                <tr class="border-b border-border-light dark:border-surface-alt">
+                    <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Description</th>
+                    <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Début</th>
+                    <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Fin</th>
+                    <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>
+                    <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Statut</th>
                     @can('update', $activity)
-                    <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                    <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                     @endcan
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50 text-slate-600 dark:text-slate-300">
+            <tbody class="divide-y divide-border-light dark:divide-surface-alt/50 text-body">
                 @foreach($subActivities as $subActivity)
-                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors {{ $subActivity->is_milestone ? 'bg-amber-50/50 dark:bg-amber-900/10' : '' }}">
-                        <td class="px-6 py-4 font-medium text-slate-700 dark:text-slate-200">
+                    <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors {{ $subActivity->is_milestone ? 'bg-amber-50/50 dark:bg-amber-900/10' : '' }}">
+                        <td class="px-6 py-4 font-medium text-body">
                             {{ $subActivity->description }}
                             @if($subActivity->is_milestone)
                                 <x-ui.badge variant="warning" size="xs" class="ml-2">Jalon</x-ui.badge>
@@ -38,7 +38,7 @@
                                     @endforeach
                                 </x-ui.select>
                                 <br/>
-                                <span class="text-[10px] text-slate-400">Statut actuel: {{ $subActivity->status?->label() ?? $subActivity->status }}</span>
+                                <span class="text-[10px] text-muted">Statut actuel: {{ $subActivity->status?->label() ?? $subActivity->status }}</span>
                             @else
                                 @php $subStatus = $subActivity->status; @endphp
                                 <x-ui.badge :variant="$subStatus?->color() ?? 'slate'" size="sm">

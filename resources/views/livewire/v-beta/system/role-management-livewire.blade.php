@@ -11,8 +11,8 @@
             </div>
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <x-ui.select wire:model.live="organizationId" icon="building">
-                    <option value="">-- Tous les rôles --</option>
-                    <option value="null">Rôles Système (Globaux)</option>
+                    <option value="">Tous les rôles</option>
+                    <option value="global">Rôles Système (Globaux)</option>
                     @foreach($organizations as $org)
                         <option value="{{ $org->id }}">{{ $org->name }}</option>
                     @endforeach
@@ -34,9 +34,9 @@
                     <x-ui.table.row>
                         <x-ui.table.td font="bold">
                             <div class="flex items-center gap-2">
-                                <span class="text-slate-800 dark:text-slate-100">{{ $role->name }}</span>
+                                <span class="text-heading">{{ $role->name }}</span>
                                 @if(in_array($role->name, ['IT_ADMIN', 'ORG_ADMIN']))
-                                    <x-lucide-award class="w-3 h-3 text-amber-500" />
+                                    <x-lucide-award class="w-3 h-3 text-warning" />
                                 @endif
                             </div>
                         </x-ui.table.td>
@@ -44,7 +44,7 @@
                             @if($role->organization_id)
                                 <div class="flex items-center gap-2">
                                     <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">{{ $role->organization?->name ?? 'Org Inconnue' }}</span>
+                                    <span class="text-xs font-bold text-body">{{ $role->organization?->name ?? 'Org Inconnue' }}</span>
                                 </div>
                             @else
                                 <div class="flex items-center gap-2">
@@ -55,7 +55,7 @@
                         </x-ui.table.td>
                         <x-ui.table.td>
                             <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] font-black bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 uppercase tracking-tighter">
+                                <span class="text-[10px] font-black bg-surface-alt px-2 py-0.5 rounded text-subtle uppercase tracking-tighter">
                                     {{ $role->permissions->count() }} Perms
                                 </span>
                             </div>
@@ -80,7 +80,7 @@
                 @endforelse
             </x-ui.table>
             
-            <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30">
+            <div class="p-4 border-t border-border-light bg-surface/30 dark:bg-surface/30">
                 {{ $roles->links() }}
             </div>
         </x-ui.section>
@@ -119,21 +119,21 @@
                 </div>
 
                 <div class="space-y-3">
-                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">
+                    <label class="block text-[11px] font-black text-subtle uppercase tracking-wider ml-1">
                         Attribution des Permissions
                     </label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 max-h-80 overflow-y-auto custom-scrollbar">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-4 rounded-2xl bg-surface dark:bg-primary-dark border border-border-light max-h-80 overflow-y-auto custom-scrollbar">
                         @foreach($permissions as $permission)
-                            <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-900 transition-all cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-800 shadow-sm hover:shadow-md group">
+                            <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-surface transition-all cursor-pointer border border-transparent hover:border-border shadow-sm hover:shadow-md group">
                                 <div class="relative flex items-center justify-center">
                                     <input type="checkbox" wire:model="rolePermissions" value="{{ $permission->id }}" 
-                                           class="w-4 h-4 rounded border-slate-300 text-accent focus:ring-accent/20 transition-all">
+                                           class="w-4 h-4 rounded border-border text-accent focus:ring-accent/20 transition-all">
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 capitalize group-hover:text-accent transition-colors">
+                                    <span class="text-[11px] font-bold text-body capitalize group-hover:text-accent transition-colors">
                                         {{ str_replace(['-', '_'], ' ', $permission->name) }}
                                     </span>
-                                    <span class="text-[9px] text-slate-400 font-medium uppercase tracking-tighter">
+                                    <span class="text-[9px] text-muted font-medium uppercase tracking-tighter">
                                         {{ $permission->guard_name }}
                                     </span>
                                 </div>

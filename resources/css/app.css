@@ -8,36 +8,72 @@
 
 :root {
     /* Foundation Palette - Architectural & Rigorous */
-    --primary: 15 23 42;      /* #0f172a - Slate 900 */
-    --primary-dark: 2 6 23;   /* #020617 - Slate 950 */
-    
-    --accent: 14 116 144;     /* #0e7490 - Cyan 700 (Petroleum Teal) */
-    --accent-dark: 21 94 117;  /* #155e75 - Cyan 800 */
-    
-    --success: 13 148 136;    /* #0d9488 - Teal 600 */
-    --success-dark: 17 94 89;  /* #115e59 - Teal 700 */
-    
-    --error: 190 18 60;       /* #be123c - Rose 700 */
-    --error-dark: 159 18 57;   /* #9f1239 - Rose 800 */
-    
-    --surface: 248 250 252;   /* #f8fafc - Slate 50 */
-    --border: 226 232 240;    /* #e2e8f0 - Slate 200 */
+    --primary: 15 23 42;        /* #0f172a - Slate 900 */
+    --primary-dark: 2 6 23;     /* #020617 - Slate 950 */
+
+    --accent: 14 116 144;       /* #0e7490 - Cyan 700 (Petroleum Teal) */
+    --accent-dark: 21 94 117;   /* #155e75 - Cyan 800 */
+
+    --success: 13 148 136;      /* #0d9488 - Teal 600 */
+    --success-dark: 17 94 89;   /* #115e59 - Teal 700 */
+
+    --error: 190 18 60;         /* #be123c - Rose 700 */
+    --error-dark: 159 18 57;    /* #9f1239 - Rose 800 */
+
+    --warning: 245 158 11;      /* #f59e0b - Amber 500 */
+    --warning-dark: 217 119 6;  /* #d97706 - Amber 600 */
+
+    --info: 59 130 246;         /* #3b82f6 - Blue 500 */
+    --info-dark: 37 99 235;     /* #2563eb - Blue 600 */
+
+    /* Surfaces */
+    --surface: 248 250 252;     /* #f8fafc - Slate 50 */
+    --surface-alt: 241 245 249; /* #f1f5f9 - Slate 100 */
+    --card: 255 255 255;        /* #ffffff - White */
+
+    /* Text */
+    --heading: 15 23 42;        /* #0f172a - Slate 900 */
+    --body: 51 65 85;           /* #334155 - Slate 700 */
+    --subtle: 100 116 139;      /* #64748b - Slate 500 */
+    --muted: 148 163 184;       /* #94a3b8 - Slate 400 */
+
+    /* Borders */
+    --border: 226 232 240;      /* #e2e8f0 - Slate 200 */
+    --border-light: 241 245 249;/* #f1f5f9 - Slate 100 */
 }
 
 .dark {
-    --primary: 241 245 249;   /* #f1f5f9 - Slate 100 on dark */
-    --primary-dark: 255 255 255; 
-    
-    --accent: 34 211 238;     /* #22d3ee - Cyan 400 */
+    --primary: 241 245 249;     /* #f1f5f9 - Slate 100 */
+    --primary-dark: 255 255 255;
+
+    --accent: 34 211 238;       /* #22d3ee - Cyan 400 */
     --accent-dark: 103 232 249; /* #67e8f9 - Cyan 300 */
-    
-    --surface: 15 23 42;      /* Slate 900 */
-    --border: 30 41 59;       /* Slate 800 */
+
+    --warning: 251 191 36;      /* #fbbf24 - Amber 400 */
+    --warning-dark: 245 158 11; /* #f59e0b - Amber 500 */
+
+    --info: 96 165 250;         /* #60a5fa - Blue 400 */
+    --info-dark: 59 130 246;    /* #3b82f6 - Blue 500 */
+
+    /* Surfaces */
+    --surface: 15 23 42;        /* #0f172a - Slate 900 */
+    --surface-alt: 30 41 59;    /* #1e293b - Slate 800 */
+    --card: 30 41 59;           /* #1e293b - Slate 800 */
+
+    /* Text */
+    --heading: 241 245 249;     /* #f1f5f9 - Slate 100 */
+    --body: 203 213 225;        /* #cbd5e1 - Slate 300 */
+    --subtle: 148 163 184;      /* #94a3b8 - Slate 400 */
+    --muted: 100 116 139;       /* #64748b - Slate 500 */
+
+    /* Borders */
+    --border: 30 41 59;         /* #1e293b - Slate 800 */
+    --border-light: 51 65 85;   /* #334155 - Slate 700 */
 }
 
 @layer base {
     body {
-        @apply text-slate-900 dark:text-slate-100 antialiased;
+        @apply text-heading antialiased;
         letter-spacing: -0.01em; 
     }
     
@@ -51,10 +87,10 @@
     /* ── Navigation Item (Sidebar & Navbar) ── */
     .nav-item {
         @apply flex items-center gap-3 px-3 py-2.5 rounded-lg
-               text-slate-600 dark:text-slate-400
+               text-subtle
                transition-all duration-150 ease-in-out
-               hover:bg-slate-100 dark:hover:bg-slate-800/60
-               hover:text-slate-900 dark:hover:text-slate-100;
+               hover:bg-surface-alt
+               hover:text-heading;
     }
 
     .nav-item-active {
@@ -83,24 +119,24 @@
     /* ── Sidebar Section Title ── */
     .sidebar-section-title {
         @apply text-[10px] font-bold uppercase tracking-[0.12em]
-               text-slate-400 dark:text-slate-500
+               text-muted
                px-3 pt-5 pb-1.5 select-none;
     }
 
     /* ── Sidebar Submenu ── */
     .nav-submenu {
         @apply ml-[22px] mt-0.5 space-y-0.5
-               border-l border-slate-200 dark:border-slate-700/50
+               border-l border-border
                pl-3;
     }
 
     .nav-submenu-item {
         @apply block px-2.5 py-1.5 rounded-md
                text-[12.5px] font-medium
-               text-slate-500 dark:text-slate-400
+               text-subtle
                transition-all duration-150
-               hover:text-slate-800 dark:hover:text-slate-200
-               hover:bg-slate-100/80 dark:hover:bg-slate-800/40;
+               hover:text-heading
+               hover:bg-surface-alt/80;
     }
 
     .nav-submenu-item-active {
@@ -111,19 +147,19 @@
     /* ── Dropdown (Navbar profile, etc.) ── */
     .nav-dropdown {
         @apply absolute right-0 mt-1.5 w-52 py-1.5
-               bg-white dark:bg-slate-800
-               rounded-xl shadow-lg shadow-slate-200/60 dark:shadow-black/40
-               border border-slate-100 dark:border-slate-700/60
+               bg-card
+               rounded-xl shadow-lg shadow-border/60 dark:shadow-black/40
+               border border-border-light
                ring-1 ring-black/[0.04];
     }
 
     .nav-dropdown-item {
         @apply flex items-center gap-2.5 px-3.5 py-2
                text-[13px] font-medium
-               text-slate-600 dark:text-slate-400
+               text-subtle
                transition-colors duration-100
-               hover:bg-slate-50 dark:hover:bg-slate-700/50
-               hover:text-slate-900 dark:hover:text-slate-100;
+               hover:bg-surface
+               hover:text-heading;
     }
 
     .nav-dropdown-item .nav-icon {
@@ -131,7 +167,7 @@
     }
 
     .nav-dropdown-divider {
-        @apply my-1 border-t border-slate-100 dark:border-slate-700/50;
+        @apply my-1 border-t border-border-light;
     }
 
     /* ── Notification Badge ── */
@@ -154,10 +190,10 @@
     /* ── Navbar Action Button ── */
     .navbar-action {
         @apply relative p-2 rounded-lg
-               text-slate-500 dark:text-slate-400
+               text-subtle
                transition-all duration-150
-               hover:bg-slate-100 dark:hover:bg-slate-800
-               hover:text-slate-700 dark:hover:text-slate-200;
+               hover:bg-surface-alt
+               hover:text-body;
     }
 
     .navbar-action .nav-icon {
@@ -170,7 +206,7 @@
     }
 
     .dark header {
-        @apply shadow-lg shadow-black/20 border-slate-800/50;
+        @apply shadow-lg shadow-black/20 border-surface-alt/50;
     }
 }
 
@@ -197,9 +233,9 @@
 
     /* ── Glassmorphism Card ── */
     .glass-card {
-        @apply bg-white/70 dark:bg-slate-900/60 
+        @apply bg-white/70 dark:bg-surface/60
                backdrop-blur-xl
-               border border-white/20 dark:border-slate-800/50
+               border border-white/20 dark:border-surface-alt/50
                shadow-[0_8px_32px_0_rgba(15,23,42,0.08)]
                dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)];
     }

@@ -15,10 +15,10 @@
             </x-ui.select>
             
             @if ($selectedProjectTypeId)
-                <div class="mt-3 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] text-slate-500 italic flex gap-3">
+                <div class="mt-3 p-4 bg-surface dark:bg-surface-alt/50 border border-border rounded-xl text-[10px] text-subtle italic flex gap-3">
                     <x-lucide-info class="w-4 h-4 text-accent flex-shrink-0" />
                     <div>
-                        <span class="font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 not-italic mr-1">Note :</span>
+                        <span class="font-black uppercase tracking-widest text-body not-italic mr-1">Note :</span>
                         {{ $allProjectTypes->where('id', $selectedProjectTypeId)->first()->description ?? 'N/A' }}
                     </div>
                 </div>
@@ -78,7 +78,7 @@
     </div>
     
     {{-- Dynamic Fields --}}
-    <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
+    <div class="mt-8 pt-8 border-t border-border-light dark:border-surface-alt">
         @include('livewire.v-beta.proposal-project.dynamic-fields-section')
     </div>
 </div>

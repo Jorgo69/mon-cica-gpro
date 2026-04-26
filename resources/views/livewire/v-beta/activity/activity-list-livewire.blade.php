@@ -37,54 +37,54 @@
             @else
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                        <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('description')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.description') }}</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.description') }}</span>
                                     @if ($sortField === 'description')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ __('table.budget') }}</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('table.budget') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('status')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.statut') }}</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.statut') }}</span>
                                     @if ($sortField === 'status')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ __('table.responsible') }}</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('table.responsible') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('start_date')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">Période</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Période</span>
                                     @if ($sortField === 'start_date' || $sortField === 'end_date')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-300 uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-body uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @foreach ($activities as $activity)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors group">
                                 <td class="px-6 py-4">
                                     <div class="max-w-xs md:max-w-sm">
-                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-accent transition-colors" title="{{ $activity->description }}">
+                                        <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors" title="{{ $activity->description }}">
                                             {{ excerpt_words($activity->description, 10). ' ...' }}
                                         </p>
-                                        <p class="text-[10px] text-slate-400 italic mt-0.5 truncate">
+                                        <p class="text-[10px] text-muted italic mt-0.5 truncate">
                                             Projet: {{ $activity->result?->specificObjective?->logicalFramework?->project?->short_title ?? 'N/A' }}
                                         </p>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                <td class="px-6 py-4 text-sm font-medium text-body">
                                     {{ is_numeric($activity->budget) ? number_format($activity->budget, 0, ',', ' ') : ($activity->budget ?? 'N/A') }}
                                 </td>
                                 <td class="px-6 py-4">
@@ -104,32 +104,32 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-[10px]">
+                                        <div class="w-7 h-7 rounded-lg bg-surface-alt flex items-center justify-center text-subtle font-bold text-[10px]">
                                             {{ strtoupper(substr($activity->responsibleUser->name ?? '?', 0, 1)) }}
                                         </div>
-                                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">{{ $activity->responsibleUser->name ?? 'N/A' }}</span>
+                                        <span class="text-xs font-semibold text-subtle">{{ $activity->responsibleUser->name ?? 'N/A' }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="space-y-0.5">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-slate-300 uppercase">Du</span>
-                                            <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('d/m/Y') : 'N/A' }}</span>
+                                            <span class="text-[9px] font-black text-body uppercase">Du</span>
+                                            <span class="text-[11px] font-semibold text-subtle">{{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('d/m/Y') : 'N/A' }}</span>
                                         </div>
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-slate-300 uppercase">Au</span>
-                                            <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('d/m/Y') : 'N/A' }}</span>
+                                            <span class="text-[9px] font-black text-body uppercase">Au</span>
+                                            <span class="text-[11px] font-semibold text-subtle">{{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('d/m/Y') : 'N/A' }}</span>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @if($activity->result?->specificObjective?->logicalFramework?->project_id)
-                                            <a href="{{ route('project.show', $activity->result->specificObjective->logicalFramework->project_id) }}" class="text-xs font-semibold text-slate-400 hover:text-blue-600 transition-colors" title="{{ __('table.preview') }}">
+                                            <a href="{{ route('project.show', $activity->result->specificObjective->logicalFramework->project_id) }}" class="text-xs font-semibold text-muted hover:text-accent transition-colors" title="{{ __('table.preview') }}">
                                                 <x-lucide-eye class="w-4 h-4" />
                                             </a>
                                         @endif
-                                        <a href="{{ route('activity.management', $activity->id) }}" class="text-xs font-semibold text-slate-400 hover:text-accent transition-colors" title="{{ __('table.manage') }}">
+                                        <a href="{{ route('activity.management', $activity->id) }}" class="text-xs font-semibold text-muted hover:text-accent transition-colors" title="{{ __('table.manage') }}">
                                             <x-lucide-settings class="w-4 h-4" />
                                         </a>
                                     </div>

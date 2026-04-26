@@ -27,7 +27,7 @@ class SubActivityPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
@@ -41,7 +41,7 @@ class SubActivityPolicy
      */
     public function create(User $user, Activity $activity): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -57,7 +57,7 @@ class SubActivityPolicy
      */
     public function update(User $user, Activity $activity, Activity $subActivity): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -73,7 +73,7 @@ class SubActivityPolicy
      */
     public function delete(User $user, Activity $subActivity): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -89,8 +89,11 @@ class SubActivityPolicy
      */
     public function restore(User $user, Activity $subActivity): bool
     {
-         // La restauration suit généralement les mêmes règles que la suppression/mise à jour.
-        return $user->role === 'Administrateur' || $user->id === $subActivity->activity->responsible_user_id;
+        if (!$user->hasPermissionTo('manage-activities')) {
+            return false;
+        }
+
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 
     /**
@@ -98,7 +101,10 @@ class SubActivityPolicy
      */
     public function forceDelete(User $user, Activity $subActivity): bool
     {
-        // La suppression forcée est généralement une opération réservée à l'administrateur.
-        return $user->role === 'Administrateur';
+        if ($user->role !== \App\Enums\AccountType::ORG_ADMIN) {
+            return false;
+        }
+
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 }

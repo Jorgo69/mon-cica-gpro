@@ -18,34 +18,34 @@
         </x-ui.page-header>
 
         {{-- Tabs Navigation --}}
-        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 mb-6 overflow-x-auto no-scrollbar">
+        <div class="flex items-center gap-2 border-b border-border-light mb-6 overflow-x-auto no-scrollbar">
             <button wire:click="switchTab('overview')" 
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'overview' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'overview' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Aperçu
                 @if($activeTab === 'overview') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('logframe')" 
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'logframe' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'logframe' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Cadre Logique
                 @if($activeTab === 'logframe') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('documents')" 
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'documents' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'documents' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Documents
                 @if($activeTab === 'documents') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('analytics')" 
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'analytics' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'analytics' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Analyses
                 @if($activeTab === 'analytics') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('tracking')"
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'tracking' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'tracking' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Suivi
                 @if($activeTab === 'tracking') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('history')"
-                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-slate-500 hover:text-slate-700' }}">
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 Historique
                 @if($activeTab === 'history') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
@@ -59,17 +59,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Titre</span>
-                                <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $project->title }}</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Titre</span>
+                                <span class="font-semibold text-heading">{{ $project->title }}</span>
                             </div>
                             @if($project->short_title)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Titre court</span>
-                                <span class="text-slate-600 dark:text-slate-300">{{ $project->short_title }}</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Titre court</span>
+                                <span class="text-body">{{ $project->short_title }}</span>
                             </div>
                             @endif
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Statut</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Statut</span>
                                 @php
                                     $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                     $badgeVariant = $statusEnum ? $statusEnum->color() : 'slate';
@@ -77,30 +77,30 @@
                                 <x-ui.badge :variant="$badgeVariant">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Période</span>
-                                <span class="text-slate-600 dark:text-slate-300">
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Période</span>
+                                <span class="text-body">
                                     {{ $project->start_date?->format('d/m/Y') }} → {{ $project->end_date?->format('d/m/Y') }}
                                 </span>
                             </div>
                         </div>
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Créé le</span>
-                                <span class="text-slate-600 dark:text-slate-300">{{ $project->created_at?->format('d/m/Y H:i') }}</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Créé le</span>
+                                <span class="text-body">{{ $project->created_at?->format('d/m/Y H:i') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Mis à jour</span>
-                                <span class="text-slate-600 dark:text-slate-300">{{ $project->updated_at?->format('d/m/Y H:i') }}</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Mis à jour</span>
+                                <span class="text-body">{{ $project->updated_at?->format('d/m/Y H:i') }}</span>
                             </div>
                             @if($project->creator)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Créé par</span>
-                                <span class="text-slate-600 dark:text-slate-300">{{ $project->creator->name }}</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Créé par</span>
+                                <span class="text-body">{{ $project->creator->name }}</span>
                             </div>
                             @endif
                             @if($project->projectType)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-28">Type</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Type</span>
                                 <x-ui.badge variant="accent" size="sm">{{ $project->projectType->name }}</x-ui.badge>
                             </div>
                             @endif
@@ -108,9 +108,9 @@
                     </div>
 
                     @if($project->description)
-                        <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Description</p>
-                            <div class="prose prose-sm dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl text-sm leading-relaxed">
+                        <div class="mt-6 pt-5 border-t border-border-light">
+                            <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">Description</p>
+                            <div class="prose prose-sm dark:prose-invert max-w-none text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-sm leading-relaxed">
                                 {!! $project->description !!}
                             </div>
                         </div>
@@ -123,26 +123,26 @@
                         <div class="space-y-4">
                             @if($project->projectContext->context_description)
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description du contexte</p>
-                                <p class="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl text-justify leading-relaxed">{{ $project->projectContext->context_description }}</p>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Description du contexte</p>
+                                <p class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-justify leading-relaxed">{{ $project->projectContext->context_description }}</p>
                             </div>
                             @endif
                             @if($project->justification)
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Justification</p>
-                                <div class="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl leading-relaxed">{!! $project->justification !!}</div>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Justification</p>
+                                <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->justification !!}</div>
                             </div>
                             @endif
                             @if($project->strategy)
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Stratégie</p>
-                                <div class="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl leading-relaxed">{!! $project->strategy !!}</div>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Stratégie</p>
+                                <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->strategy !!}</div>
                             </div>
                             @endif
                             @if($project->problem_analysis)
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Analyse du problème</p>
-                                <div class="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl leading-relaxed">{!! $project->problem_analysis !!}</div>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Analyse du problème</p>
+                                <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->problem_analysis !!}</div>
                             </div>
                             @endif
                         </div>
@@ -167,8 +167,8 @@
                                     @endphp
                                     @if($value)
                                         <div>
-                                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{{ $fieldDef['question_text'] }}</p>
-                                            <p class="text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl leading-relaxed">{{ $value }}</p>
+                                            <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">{{ $fieldDef['question_text'] }}</p>
+                                            <p class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{{ $value }}</p>
                                         </div>
                                     @endif
                                 @endforeach
@@ -183,11 +183,11 @@
 
                         {{-- Selecteur de format --}}
                         <div class="flex items-center gap-2 mb-6">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Format :</span>
+                            <span class="text-[10px] font-black text-muted uppercase tracking-widest">Format :</span>
                             @foreach(\App\Enums\LogframeDisplayFormat::cases() as $format)
                                 <button type="button"
                                     wire:click="setLogframeFormat('{{ $format->value }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $logframeFormat === $format->value ? 'bg-accent text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700' }}">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $logframeFormat === $format->value ? 'bg-accent text-white shadow-sm' : 'bg-surface-alt text-subtle hover:bg-border dark:hover:bg-surface-alt' }}">
                                     <x-dynamic-component :component="'lucide-' . $format->icon()" class="w-3.5 h-3.5" />
                                     {{ $format->label() }}
                                 </button>
@@ -209,9 +209,9 @@
                                 @foreach($project->documents as $document)
                                     <li>
                                         <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" 
-                                        class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                                        class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface dark:hover:bg-surface-alt/50 transition-colors group">
                                             <x-lucide-file class="w-4 h-4 text-accent opacity-60" />
-                                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-accent transition-colors">
+                                            <span class="text-sm font-medium text-body group-hover:text-accent transition-colors">
                                                 {{ $document->file_name }}
                                             </span>
                                             <x-ui.badge variant="slate" size="sm">{{ strtoupper($document->file_mime_type) }}</x-ui.badge>
@@ -249,13 +249,13 @@
                         <x-ui.section title="Santé Budgétaire" icon="banknote">
                             <div class="flex flex-col items-center justify-center h-[300px] space-y-4">
                                 <div class="text-center">
-                                    <p class="text-xs text-slate-500 uppercase font-black tracking-widest">Budget Total</p>
+                                    <p class="text-xs text-subtle uppercase font-black tracking-widest">Budget Total</p>
                                     <p class="text-3xl font-black text-primary">{{ number_format($project->resources->sum('total_cost'), 0, ',', ' ') }} FCFA</p>
                                 </div>
-                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-4 rounded-full overflow-hidden">
+                                <div class="w-full bg-surface-alt h-4 rounded-full overflow-hidden">
                                     <div class="bg-accent h-full" style="width: 100%"></div>
                                 </div>
-                                <p class="text-xs text-slate-500 italic">Consommation du budget : 100% planifié</p>
+                                <p class="text-xs text-subtle italic">Consommation du budget : 100% planifié</p>
                             </div>
                         </x-ui.section>
                     </div>

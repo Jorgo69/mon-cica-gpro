@@ -1,7 +1,7 @@
 <div class="space-y-8">
     {{-- BUT GENERAL --}}
     <x-ui.card :noPadding="false">
-        <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1 mb-4">But Général du Projet</label>
+        <label class="block text-[11px] font-black text-subtle uppercase tracking-[0.15em] ml-1 mb-4">But Général du Projet</label>
         <div class="space-y-6">
             <x-ui.input
                 label="Objectif Général"
@@ -15,7 +15,7 @@
             {{-- INDICATEURS REPETABLES - Niveau Cadre Logique --}}
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Indicateurs</label>
+                    <label class="block text-[11px] font-black text-subtle uppercase tracking-[0.15em] ml-1">Indicateurs</label>
                     <button type="button" wire:click="addIndicator('logframe')"
                         class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent/80 transition-colors">
                         <x-lucide-plus-circle class="w-4 h-4" />
@@ -24,9 +24,9 @@
                 </div>
 
                 @forelse($initialLogicalFramework['indicators_list'] ?? [] as $iIdx => $indicator)
-                    <div wire:key="lf-indicator-{{ $iIdx }}" class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
+                    <div wire:key="lf-indicator-{{ $iIdx }}" class="relative bg-surface rounded-xl p-4 border border-border-light">
                         <button type="button" wire:click="removeIndicator('logframe', null, {{ $iIdx }})"
-                            class="absolute top-2 right-2 text-rose-400 hover:text-rose-600 transition-colors">
+                            class="absolute top-2 right-2 text-error/70 hover:text-error transition-colors">
                             <x-lucide-x class="w-4 h-4" />
                         </button>
 
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">
+                    <div class="text-center py-6 text-muted text-sm">
                         <x-lucide-bar-chart-3 class="w-8 h-8 mx-auto mb-2 opacity-40" />
                         <p>Aucun indicateur ajouté.</p>
                         <p class="text-xs mt-1">Cliquez sur "Ajouter un indicateur" pour commencer.</p>
@@ -66,9 +66,9 @@
     </x-ui.card>
 
     {{-- OBJECTIFS SPECIFIQUES --}}
-    <div class="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
+    <div class="pt-8 border-t border-border-light space-y-6">
         <div class="flex items-center justify-between px-1">
-            <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em]">Objectifs Spécifiques</label>
+            <label class="block text-[11px] font-black text-subtle uppercase tracking-[0.15em]">Objectifs Spécifiques</label>
             <x-ui.button type="button" variant="ghost" size="sm" icon="plus-circle" wire:click="addSpecificObjective">
                 Ajouter
                 </x-ui.button>
@@ -78,12 +78,12 @@
             @foreach($specificObjectives as $index => $objective)
                 <x-ui.card wire:key="spec-obj-{{ $index }}-{{ $objective['id'] ?? $loop->index }}" class="relative overflow-visible" :noPadding="false">
                     <button type="button" wire:click="removeSpecificObjective({{ $index }})"
-                            class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all z-10">
+                            class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-card shadow-md border border-border-light flex items-center justify-center text-error hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all z-10">
                         <x-lucide-trash-2 class="w-4 h-4" />
                     </button>
 
                     <div class="flex gap-5">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center font-black text-accent text-xs shadow-inner border border-slate-100 dark:border-slate-700">{{ $index + 1 }}</div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-surface flex items-center justify-center font-black text-accent text-xs shadow-inner border border-border-light">{{ $index + 1 }}</div>
                         <div class="flex-1 space-y-6">
                             <input type="hidden" wire:model="specificObjectives.{{ $index }}.id">
 
@@ -99,7 +99,7 @@
                             {{-- INDICATEURS REPETABLES - Niveau Objectif Spécifique --}}
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">Indicateurs</label>
+                                    <label class="block text-[11px] font-black text-subtle uppercase tracking-[0.15em] ml-1">Indicateurs</label>
                                     <button type="button" wire:click="addIndicator('objective', {{ $index }})"
                                         class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent/80 transition-colors">
                                         <x-lucide-plus-circle class="w-4 h-4" />
@@ -108,9 +108,9 @@
                                 </div>
 
                                 @forelse($objective['indicators_list'] ?? [] as $iIdx => $indicator)
-                                    <div wire:key="obj-{{ $index }}-indicator-{{ $iIdx }}" class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
+                                    <div wire:key="obj-{{ $index }}-indicator-{{ $iIdx }}" class="relative bg-surface rounded-xl p-4 border border-border-light">
                                         <button type="button" wire:click="removeIndicator('objective', {{ $index }}, {{ $iIdx }})"
-                                            class="absolute top-2 right-2 text-rose-400 hover:text-rose-600 transition-colors">
+                                            class="absolute top-2 right-2 text-error/70 hover:text-error transition-colors">
                                             <x-lucide-x class="w-4 h-4" />
                                         </button>
 
@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="text-center py-3 text-slate-400 dark:text-slate-500 text-xs">Aucun indicateur. Cliquez sur "Ajouter" ci-dessus.</p>
+                                    <p class="text-center py-3 text-muted text-xs">Aucun indicateur. Cliquez sur "Ajouter" ci-dessus.</p>
                                 @endforelse
                             </div>
                         </div>

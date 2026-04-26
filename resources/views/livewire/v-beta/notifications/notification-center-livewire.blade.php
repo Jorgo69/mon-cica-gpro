@@ -1,6 +1,6 @@
 <div x-data="{ open: false }" @click.outside="open = false" class="relative">
     {{-- Bouton cloche --}}
-    <button @click="open = !open" class="relative p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+    <button @click="open = !open" class="relative p-2 rounded-xl text-muted hover:text-subtle dark:hover:text-heading hover:bg-surface-alt transition-all">
         <x-lucide-bell class="w-5 h-5" />
         @if($unreadCount > 0)
             <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-error text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
@@ -17,12 +17,12 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 translate-y-1"
-         class="absolute right-0 mt-2 w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden"
+         class="absolute right-0 mt-2 w-96 bg-card rounded-2xl shadow-xl border border-border z-50 overflow-hidden"
          style="display: none;">
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100 dark:border-slate-800">
-            <h3 class="text-sm font-black text-slate-700 dark:text-slate-200">Notifications</h3>
+        <div class="flex items-center justify-between px-5 py-3 border-b border-border-light dark:border-surface-alt">
+            <h3 class="text-sm font-black text-body">Notifications</h3>
             @if($unreadCount > 0)
                 <button wire:click="markAllAsRead" class="text-[10px] font-bold text-accent hover:text-accent/80 uppercase tracking-widest transition-colors">
                     Tout marquer lu
@@ -31,7 +31,7 @@
         </div>
 
         {{-- Liste --}}
-        <div class="max-h-80 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/50">
+        <div class="max-h-80 overflow-y-auto divide-y divide-border-light dark:divide-surface-alt/50">
             @forelse($notifications as $notification)
                 @php
                     $data = $notification->data;
@@ -39,10 +39,10 @@
                 @endphp
                 <a href="{{ $data['action_url'] ?? '#' }}"
                    wire:click="markAsRead('{{ $notification->id }}')"
-                   class="block px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors {{ $isUnread ? 'bg-accent/5' : '' }}">
+                   class="block px-5 py-3 hover:bg-surface dark:hover:bg-surface-alt/50 transition-colors {{ $isUnread ? 'bg-accent/5' : '' }}">
                     <div class="flex items-start gap-3">
                         {{-- Icone selon le type --}}
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $isUnread ? 'bg-accent/10 text-accent' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' }}">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $isUnread ? 'bg-accent/10 text-accent' : 'bg-surface-alt text-muted' }}">
                             @if(str_contains($notification->type, 'ProjectStatus'))
                                 <x-lucide-refresh-cw class="w-4 h-4" />
                             @elseif(str_contains($notification->type, 'ActivityProgress'))
@@ -57,13 +57,13 @@
                         </div>
 
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-bold text-slate-700 dark:text-slate-200 {{ $isUnread ? '' : 'font-medium' }}">
+                            <p class="text-xs font-bold text-body {{ $isUnread ? '' : 'font-medium' }}">
                                 {{ $data['title'] ?? 'Notification' }}
                             </p>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">
+                            <p class="text-[11px] text-subtle mt-0.5 line-clamp-2">
                                 {{ $data['message'] ?? '' }}
                             </p>
-                            <p class="text-[10px] text-slate-400 mt-1">
+                            <p class="text-[10px] text-muted mt-1">
                                 {{ $notification->created_at->diffForHumans() }}
                             </p>
                         </div>
@@ -75,8 +75,8 @@
                 </a>
             @empty
                 <div class="px-5 py-10 text-center">
-                    <x-lucide-bell-off class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
-                    <p class="text-sm text-slate-400 dark:text-slate-500">Aucune notification</p>
+                    <x-lucide-bell-off class="w-8 h-8 mx-auto text-body dark:text-subtle mb-2" />
+                    <p class="text-sm text-muted">Aucune notification</p>
                 </div>
             @endforelse
         </div>

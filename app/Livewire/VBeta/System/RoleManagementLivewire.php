@@ -6,18 +6,16 @@ use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Organization;
 use App\Livewire\Traits\WithToastNotifications;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Lazy]
 class RoleManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;
 
     // Filtres
     public $search = '';
-    public $organizationId = null; // null = rôles globaux
+    public $organizationId = ''; // '' = tous, 'global' = système, uuid = org spécifique
 
     // Gestion de la modale
     public $showModal = false;
@@ -109,7 +107,8 @@ class RoleManagementLivewire extends Component
     {
         $roles = Role::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
-            ->when($this->organizationId !== null, fn($q) => $q->where('organization_id', $this->organizationId))
+            ->when($this->organizationId === 'global', fn($q) => $q->whereNull('organization_id'))
+            ->when($this->organizationId && $this->organizationId !== 'global', fn($q) => $q->where('organization_id', $this->organizationId))
             ->orderBy('organization_id')
             ->orderBy('name')
             ->paginate(10);

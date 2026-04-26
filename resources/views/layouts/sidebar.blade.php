@@ -8,7 +8,7 @@
        x-transition:leave-start="translate-x-0 opacity-100"
        x-transition:leave-end="-translate-x-full opacity-0"
        :class="{ '-translate-x-full': isMobile && !sidebarOpen, 'translate-x-0': !isMobile || sidebarOpen }"
-       class="fixed left-0 top-14 w-60 h-[calc(100vh-3.5rem)] bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 z-40 overflow-y-auto">
+       class="fixed left-0 top-14 w-60 h-[calc(100vh-3.5rem)] bg-card border-r border-border/80 dark:border-surface-alt z-40 overflow-y-auto">
     
     <nav class="px-3 py-4 pb-20">
 
@@ -51,7 +51,7 @@
 
 
         {{-- ── SYSTÈME (ROOT / SYSTEM_ADMIN) ── --}}
-        @if (auth()->user()->role === \App\Enums\AccountType::SYSTEM_ADMIN)
+        @if (auth()->user()->role === \App\Enums\AccountType::ROOT)
         <p class="sidebar-section-title">Système</p>
 
         <div x-data="{ open: {{ Route::is('system*') ? 'true' : 'false' }} }">
@@ -61,10 +61,13 @@
                     <x-lucide-server class="nav-icon" />
                     <span class="nav-label font-bold text-xs uppercase tracking-tight">Configuration</span>
                 </div>
-                <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
+                <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
+                    <a href="{{ route('system.dashboard') }}" class="nav-submenu-item @if(Route::is('system.dashboard*')) nav-submenu-item-active @endif">
+                        Supervision
+                    </a>
                     <a href="{{ route('system.roles') }}" class="nav-submenu-item @if(Route::is('system.roles*')) nav-submenu-item-active @endif">
                         Rôles & Permissions
                     </a>
@@ -82,7 +85,7 @@
 
         {{-- ── ADMINISTRATION (ORG ADMIN & ADMINS) ── --}}
         @php
-            $isAdmin = in_array(auth()->user()->role, [\App\Enums\AccountType::SYSTEM_ADMIN, \App\Enums\AccountType::ORG_ADMIN]) 
+            $isAdmin = in_array(auth()->user()->role, [\App\Enums\AccountType::ROOT, \App\Enums\AccountType::ORG_ADMIN]) 
                         || auth()->user()->hasPermissionTo('manage-users');
         @endphp
 
@@ -96,7 +99,7 @@
                     <x-lucide-shield-check class="nav-icon text-indigo-500" />
                     <span class="nav-label font-bold text-xs uppercase tracking-tight">Gestion Organisme</span>
                 </div>
-                <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
+                <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
@@ -108,6 +111,9 @@
                     </a>
                     <a href="{{ route('admin.type.of.project') }}" class="nav-submenu-item @if(Route::is('admin.type.of.project*')) nav-submenu-item-active @endif">
                         {{ __('Type de Projet') }}
+                    </a>
+                    <a href="{{ route('admin.invitation.list') }}" class="nav-submenu-item @if(Route::is('admin.invitation.list*')) nav-submenu-item-active @endif">
+                        Invitations
                     </a>
                     <a href="{{ route('admin.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.trash.management*')) nav-submenu-item-active @endif">
                         {{ __('Corbeilles') }}
@@ -128,7 +134,7 @@
                     <x-lucide-settings class="nav-icon" />
                     <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.sidebar.Settings') }}</span>
                 </div>
-                <x-lucide-chevron-right class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
+                <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">

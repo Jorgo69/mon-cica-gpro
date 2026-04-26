@@ -14,6 +14,7 @@ use App\Models\ProjectType;
 use App\Models\Result;
 use App\Models\SpecificObjective;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
@@ -209,7 +210,7 @@ class ProposalProjectFormLivewire extends Component
 
     public function mount($projectId = null)
     {
-        $this->users = User::all();
+        $this->users = UserQueryService::forCurrentOrg()->get();
         $this->allProjectTypes = ProjectType::all();
         $this->initStepDetails();
 

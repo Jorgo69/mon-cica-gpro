@@ -48,9 +48,7 @@ class ProjectShowLivewire extends Component
         
         
         $this->loadProject();
-        
-        // Vérifie que l'utilisateur peut voir ce projet
-        // $this->authorize('view', $this->project);
+        $this->authorize('view', $this->project);
     }
 
     /**

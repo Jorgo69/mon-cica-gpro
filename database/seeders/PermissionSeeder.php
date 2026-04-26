@@ -43,6 +43,10 @@ class PermissionSeeder extends Seeder
             'access-admin-panel',
             'manage-system-config',
             'view-audit-logs',
+
+            // Invitations
+            'invite-users',
+            'manage-invitations',
         ];
 
         foreach ($permissions as $permission) {
@@ -62,9 +66,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'ORG_ADMIN', 'guard_name' => 'web', 'organization_id' => null]
         );
         $orgAdmin->syncPermissions([
-            'manage-organization', 'manage-users', 'manage-roles', 
+            'manage-organization', 'manage-users', 'manage-roles',
             'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
-            'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets'
+            'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets',
+            'invite-users', 'manage-invitations'
         ]);
 
         // MANAGER : Gestionnaire de projets

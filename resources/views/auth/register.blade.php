@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Créer un compte</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Rejoignez CICA-GPRO pour gérer vos projets avec excellence.</p>
+        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">Créer un compte</h2>
+        <p class="text-xs text-subtle font-medium mt-1">Rejoignez CICA-GPRO pour gérer vos projets avec excellence.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-6">
@@ -61,7 +61,7 @@
             </x-ui.button>
         </div>
 
-        <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] pt-4">
+        <p class="text-center text-[10px] font-black text-muted uppercase tracking-[0.2em] pt-4">
             Déjà inscrit ? 
             <a href="{{ route('login') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">Se connecter</a>
         </p>

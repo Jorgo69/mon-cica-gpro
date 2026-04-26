@@ -9,31 +9,34 @@ use Symfony\Component\HttpFoundation\Response;
 class SetOrganizationContext
 {
     /**
-     * Handle an incoming request.
-     * 
-     * Ce middleware garantit que l'utilisateur accède au bon contexte organisationnel.
-     * Pour l'instant, il vérifie simplement que l'utilisateur a une organisation active (sauf admin).
+     * Garantit que l'utilisateur accede au bon contexte organisationnel.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * Pour ROOT : si acting_as_organization_id est en session, on utilise ce contexte.
+     * Sinon ROOT bypass tout (pas de contexte restrictif).
      */
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check()) {
             $user = auth()->user();
 
-            // 1. Les Admins IT ont accès à tout, pas besoin de contexte restrictif (bypass global)
-            // Note: On utilise le nom constant de l'Enum si possible
-            if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+            // 1. ROOT : soit dans une org (impersonation), soit libre
+            if ($user->role === \App\Enums\AccountType::ROOT) {
+                // Nettoyer l'impersonation si la session est corrompue
+                $actingOrgId = session('acting_as_organization_id');
+                if ($actingOrgId) {
+                    $orgExists = \App\Models\Organization::where('id', $actingOrgId)->exists();
+                    if ($orgExists) {
+                        setPermissionsTeamId($actingOrgId);
+                    } else {
+                        session()->forget(['acting_as_organization_id', 'acting_as_organization_name']);
+                    }
+                }
                 return $next($request);
             }
 
-            // 2. Gestion de l'Onboarding (Si aucune organisation rattachée et non indépendant)
+            // 2. Gestion de l'Onboarding (Si aucune organisation rattachee et non independant)
             if (!$user->organization_id && !$user->is_independent) {
                 $onboardingRoutes = ['onboarding', 'logout'];
-
-                // Autoriser les requêtes Livewire (AJAX) depuis la page d'onboarding
-                // Sans cette exception, le middleware redirige /livewire/update en 302
-                // et Livewire crash car il reçoit du HTML au lieu du JSON attendu.
                 $isLivewireRequest = $request->hasHeader('X-Livewire');
 
                 if (!$request->routeIs($onboardingRoutes) && !$isLivewireRequest) {
@@ -42,14 +45,14 @@ class SetOrganizationContext
                 return $next($request);
             }
 
-            // 3. Si l'organisation est suspendue ou inactive, on bloque l'accès
+            // 3. Si l'organisation est suspendue ou inactive, on bloque l'acces
             $organization = $user->organization;
             if ($organization && $organization->status === \App\Enums\OrganizationStatus::SUSPENDED) {
                 auth()->logout();
                 return redirect()->route('login')->with('error', 'Votre organisation est suspendue. Contactez l\'administrateur.');
             }
 
-            // 4. On s'assure que le context Spatie est fixé pour cet utilisateur
+            // 4. On s'assure que le context Spatie est fixe pour cet utilisateur
             setPermissionsTeamId($user->organization_id);
         }
 

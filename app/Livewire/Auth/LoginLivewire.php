@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Actions\Invitation\AcceptInvitationAction;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Livewire\Traits\WithToastNotifications;
 use App\Providers\RouteServiceProvider;
@@ -33,6 +34,18 @@ class LoginLivewire extends Component
         }
 
         session()->regenerate();
+
+        // Si un token d'invitation est en session, accepter apres login
+        $invitationToken = session()->pull('invitation_token');
+        if ($invitationToken) {
+            $invitation = AcceptInvitationAction::findByToken($invitationToken);
+            if ($invitation && !Auth::user()->organization_id) {
+                (new AcceptInvitationAction)->execute($invitation, Auth::user());
+                $orgName = $invitation->organization?->name ?? 'l\'organisation';
+                $this->notifyToastSession('success', "Vous avez rejoint {$orgName} !", 'Bienvenue');
+                return redirect()->route('dashboard');
+            }
+        }
 
         $this->notifyToastSession('success', trans('auth.success'), 'Accès autorisé');
         return redirect()->intended(RouteServiceProvider::HOME);

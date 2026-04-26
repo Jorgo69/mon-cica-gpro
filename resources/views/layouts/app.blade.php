@@ -15,12 +15,6 @@
 
     @stack('message-js')
     
-    <!-- jQuery is required for Summernote -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-    <!-- Summernote -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
     @stack('styles')
 
     <script>
@@ -76,35 +70,21 @@
     </script>
 </head>
 
-{{-- <body class="bg-gray-50 dark:bg-gray-900 font-sans">
-    <div class="min-h-screen transition-colors duration-300">
+<body class="bg-surface font-sans">
+    <x-ui.org-impersonation-banner />
+    <div class="min-h-screen transition-colors duration-300 @if(auth()->user()?->role === \App\Enums\AccountType::ROOT && session('acting_as_organization_id')) pt-8 @endif">
         @include('layouts.navbar')
-        @include('layouts.sidebar')
+        @if(auth()->user()?->role === \App\Enums\AccountType::ROOT && !session('acting_as_organization_id'))
+            @include('layouts.sidebar-root')
+        @else
+            @include('layouts.sidebar')
+        @endif
 
-        <!-- Main Content -->
-        <main class="lg:ml-60 pt-14 min-h-screen">
-            <div class="p-4 sm:p-6 lg:p-8">
-                {{ $slot }}
-            </div>
-        </main>
+        {{-- Le slot est rendu directement — les pages utilisent <x-ui.page-layout>
+             qui fournit deja lg:ml-60 pt-14 --}}
+        {{ $slot }}
     </div>
 
-    @livewire('v-beta.search.global-search-livewire')
-    <x-ui.toast-notifications />
-
-    @livewireScripts
-    @stack('scripts')
-</body> --}}
-
-<body class="bg-gray-50 dark:bg-gray-900 font-sans">
-    
-        @include('layouts.navbar')
-        <!-- Sidebar -->
-        @include('layouts.sidebar')
-
-
-    {{ $slot }}
-    
     @livewire('v-beta.search.global-search-livewire')
     <x-ui.toast-notifications />
     <x-ui.offline-banner />

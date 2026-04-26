@@ -21,6 +21,7 @@ use App\Models\Result;
 use App\Models\Activity;
 use App\Models\Risk;
 use App\Models\User; // Ajout du modèle User si nécessaire pour les responsables
+use App\Services\Queries\UserQueryService;
 
 class CreateProjectDesignLivewire extends Component
 {
@@ -350,7 +351,7 @@ class CreateProjectDesignLivewire extends Component
     public function render()
     {
         return view('livewire.v-beta.project-design.create-project-design-livewire', [
-            'users' => User::all(['id', 'name']),
+            'users' => UserQueryService::forCurrentOrg()->get(['id', 'name']),
         ]);
     }
 }

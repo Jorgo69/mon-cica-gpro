@@ -25,19 +25,19 @@
                     <x-ui.table.row>
                         <x-ui.table.td>
                             <div class="flex flex-col">
-                                <span class="font-bold text-slate-800 dark:text-slate-100">{{ $org->name }}</span>
-                                <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500 uppercase tracking-tight">Slug: {{ $org->slug }}</span>
+                                <span class="font-bold text-heading">{{ $org->name }}</span>
+                                <span class="text-[10px] font-mono text-muted uppercase tracking-tight">Slug: {{ $org->slug }}</span>
                             </div>
                         </x-ui.table.td>
                         <x-ui.table.td>
                             <div class="flex flex-col gap-0.5">
-                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">{{ $org->email ?? 'Aucun email' }}</span>
-                                <span class="text-[10px] text-slate-400 font-medium italic">{{ $org->phone ?? 'Sans contact' }}</span>
+                                <span class="text-xs font-semibold text-body">{{ $org->email ?? 'Aucun email' }}</span>
+                                <span class="text-[10px] text-muted font-medium italic">{{ $org->phone ?? 'Sans contact' }}</span>
                             </div>
                         </x-ui.table.td>
                         <x-ui.table.td>
                             <div class="flex items-center gap-1.5">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-slate-100 dark:bg-slate-800 text-slate-500 uppercase tracking-tighter">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black bg-surface-alt text-subtle uppercase tracking-tighter">
                                     {{ $org->users()->count() }} Membres
                                 </span>
                             </div>
@@ -62,7 +62,7 @@
                 @endforelse
             </x-ui.table>
             
-            <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-900/20">
+            <div class="p-4 border-t border-border-light dark:border-surface-alt bg-surface/20 dark:bg-surface/20">
                 {{ $organizations->links() }}
             </div>
         </x-ui.section>
@@ -118,8 +118,8 @@
                 />
 
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Présentation</label>
-                    <textarea wire:model="description" rows="3" class="block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3.5 px-4 transition-all resize-none" placeholder="Brève description de l'organisation..."></textarea>
+                    <label class="block text-[11px] font-black text-subtle uppercase tracking-wider ml-1">Présentation</label>
+                    <textarea wire:model="description" rows="3" class="block w-full border-border bg-card text-heading rounded-2xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3.5 px-4 transition-all resize-none" placeholder="Brève description de l'organisation..."></textarea>
                 </div>
 
                 <x-slot:footer>

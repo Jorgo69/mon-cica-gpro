@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +23,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // --- Domain Driven Routes ---
@@ -49,5 +51,12 @@ Route::middleware('auth')->group(function () {
 
     Route::view('setting', 'v_beta.settings.index')->name('setting');
 });
+
+// Invitation (route publique, pas besoin d'auth)
+Route::get('/invitation/{token}', InvitationController::class)->name('invitation.accept');
+
+// Email unsubscribe/resubscribe (routes publiques, signees par token)
+Route::get('/email/unsubscribe/{token}', [\App\Http\Controllers\EmailUnsubscribeController::class, 'unsubscribe'])->name('email.unsubscribe');
+Route::get('/email/resubscribe/{token}', [\App\Http\Controllers\EmailUnsubscribeController::class, 'resubscribe'])->name('email.resubscribe');
 
 require __DIR__.'/auth.php';

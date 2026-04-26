@@ -9,13 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 class MemberQueryService
 {
     /**
-     * Récupère la liste des membres filtrée par organisation, recherche et tri.
-     *
-     * @param string $search
-     * @param string $sortField
-     * @param string $sortDirection
-     * @param int $perPage
-     * @return LengthAwarePaginator
+     * Recupere la liste des membres filtree par organisation (via Global Scope), recherche et tri.
      */
     public function list(
         string $search = '',
@@ -23,17 +17,9 @@ class MemberQueryService
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        $user = auth()->user();
-        
+        // Le Global Scope Multitenantable sur User filtre automatiquement par org
         $query = User::query();
 
-        // Scoping par organisation :
-        // Si l'utilisateur n'est PAS IT_ADMIN (Super Admin) et qu'il a une organisation, on filtre.
-        if ($user && !$user->hasRole('IT_ADMIN') && $user->organization_id) {
-            $query->where('organization_id', $user->organization_id);
-        }
-
-        // Recherche
         if (!empty($search)) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -43,7 +29,6 @@ class MemberQueryService
             });
         }
 
-        // Champs de tri autorisés
         $allowedSorts = ['name', 'email', 'created_at', 'department', 'role'];
         if (!in_array($sortField, $allowedSorts)) {
             $sortField = 'created_at';
@@ -55,17 +40,10 @@ class MemberQueryService
     }
 
     /**
-     * Récupère un membre spécifique par son ID, avec respect du scoping.
+     * Recupere un membre specifique par son ID (scope automatique via Multitenantable).
      */
     public function findById(string $id): ?User
     {
-        $user = auth()->user();
-        $query = User::query();
-
-        if ($user && !$user->hasRole('IT_ADMIN') && $user->organization_id) {
-            $query->where('organization_id', $user->organization_id);
-        }
-        
-        return $query->find($id);
+        return User::find($id);
     }
 }

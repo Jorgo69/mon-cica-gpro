@@ -27,7 +27,7 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN peut tout voir pour le support technique
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
@@ -40,7 +40,7 @@ class ProjectPolicy
     public function create(User $user): bool
     {
         // Interdire la création au SYSTEM_ADMIN sur les données d'organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -57,7 +57,7 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN ne doit pas modifier les données privées des organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class ProjectPolicy
         }
 
         // Le SYSTEM_ADMIN ne doit pas supprimer les données privées des organisations
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -90,7 +90,7 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -106,7 +106,7 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -122,7 +122,7 @@ class ProjectPolicy
             return false;
         }
 
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 

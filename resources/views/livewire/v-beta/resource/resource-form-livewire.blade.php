@@ -7,7 +7,7 @@
                 {{-- Bouton de suppression --}}
                 @if(count($resourcesData) > 1 && !$editing)
                 <button type="button" wire:click="removeResource({{ $index }})" 
-                        class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all z-10"
+                        class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-card shadow-md border border-border-light flex items-center justify-center text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all z-10"
                         title="Supprimer cette ressource">
                     <x-lucide-x-circle class="w-5 h-5" />
                 </button>
@@ -70,9 +70,9 @@
 
                     {{-- Coût Total (Lecture seule) --}}
                     <div class="space-y-2 cursor-not-allowed opacity-80">
-                         <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Coût Total</label>
-                         <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-sm font-black text-accent flex items-center gap-2">
-                             <x-lucide-calculator class="w-4 h-4 text-slate-300" />
+                         <label class="block text-[11px] font-black text-subtle uppercase tracking-wider ml-1">Coût Total</label>
+                         <div class="bg-surface dark:bg-surface-alt/50 border border-border rounded-xl py-3 px-4 text-sm font-black text-accent flex items-center gap-2">
+                             <x-lucide-calculator class="w-4 h-4 text-body" />
                              {{ number_format((float)$resourcesData[$index]['total_cost'], 2, ',', ' ') }}
                          </div>
                     </div>
@@ -95,7 +95,7 @@
         </div>
         
         {{-- Boutons d'action --}}
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-border-light dark:border-surface-alt">
             <div>
                 @if(!$editing)
                     <x-ui.button type="button" variant="ghost" size="sm" icon="plus" wire:click="addBlankResource">

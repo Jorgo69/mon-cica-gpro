@@ -3,10 +3,8 @@
 namespace App\Livewire\VBeta\SubActivity;
 
 use App\Models\Activity;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
-#[Lazy]
 class SubActivityListLivewire extends Component
 {
     

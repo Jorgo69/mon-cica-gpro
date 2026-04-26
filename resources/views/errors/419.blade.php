@@ -11,7 +11,7 @@
     <div class="container mx-auto px-4 py-16">
         <div class="max-w-lg mx-auto text-center">
             <div class="mb-8">
-                <svg class="mx-auto h-40 w-40 text-amber-600" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="mx-auto h-40 w-40 text-warning" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="2" fill="none"/>
                     <path d="M50 25V50" stroke="currentColor" stroke-width="2"/>
                     <path d="M50 50L65 65" stroke="currentColor" stroke-width="2"/>
@@ -25,8 +25,8 @@
             </div>
             <h1 class="text-5xl font-bold text-amber-800 mb-4">419</h1>
             <h2 class="text-2xl font-semibold text-amber-700 mb-6">Page Expirée</h2>
-            <p class="text-amber-600 mb-8">Désolé, votre session a expiré. Veuillez rafraîchir la page et réessayer.</p>
-            <a href="/dashboard" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <p class="text-warning mb-8">Désolé, votre session a expiré. Veuillez rafraîchir la page et réessayer.</p>
+            <a href="/dashboard" class="inline-block bg-warning hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 Rafraîchir
             </a>
         </div>

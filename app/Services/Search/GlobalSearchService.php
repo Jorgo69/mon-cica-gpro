@@ -22,21 +22,11 @@ class GlobalSearchService
             return collect();
         }
 
-        $user = auth()->user();
-        $isSystemAdmin = $user && $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
-        $orgId = $user?->organization_id;
-
         $results = collect();
 
-        // Search Projects
-        $projectsQuery = Project::query();
-        if (!$isSystemAdmin && $orgId) {
-            $projectsQuery->where('organization_id', $orgId);
-        } else if (!$isSystemAdmin) {
-            return collect(); // Sécurité : pas d'org et pas admin système = pas de résultats
-        }
-
-        $projects = $projectsQuery
+        // Le Global Scope Multitenantable filtre automatiquement par org/creator
+        // ROOT voit tout, org_user voit son org, INDEPENDENT voit ses propres donnees
+        $projects = Project::query()
             ->where(function ($query) use ($term) {
                 $query->where('title', 'like', "%{$term}%")
                     ->orWhere('project_code', 'like', "%{$term}%")
@@ -57,12 +47,7 @@ class GlobalSearchService
         $results = $results->concat($projects);
 
         // Search Activities
-        $activitiesQuery = Activity::query();
-        if (!$isSystemAdmin && $orgId) {
-            $activitiesQuery->where('organization_id', $orgId);
-        }
-
-        $activities = $activitiesQuery
+        $activities = Activity::query()
             ->where('description', 'like', "%{$term}%")
             ->limit($limit)
             ->get()
@@ -78,12 +63,7 @@ class GlobalSearchService
         $results = $results->concat($activities);
 
         // Search Users (Membres)
-        $usersQuery = User::query();
-        if (!$isSystemAdmin && $orgId) {
-            $usersQuery->where('organization_id', $orgId);
-        }
-
-        $users = $usersQuery
+        $users = User::query()
             ->where(function ($query) use ($term) {
                 $query->where('name', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%");

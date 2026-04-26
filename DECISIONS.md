@@ -58,3 +58,21 @@ Format : date, decision, raison, alternatives ecartees.
 **Raison :** Le client (Projexia) demande plusieurs formats de presentation du cadre logique. Les 3 formats couvrent les besoins : matrice standard ONG, vue hierarchique, et vue fiches detaillees.
 **Alternatives ecartees :** Composant Livewire dedie par format (overhead pour du pur affichage), template Blade unique avec conditions (illisible avec 3 formats), configuration par organisation dans la DB (premature, aucun besoin multi-tenant pour ca).
 **Impact :** L'ajout d'un nouveau format = 1 case dans l'enum + 1 partial Blade. Le selecteur est cote client (pas de requete serveur sauf Livewire re-render). Les exports PDF gardent leurs propres templates independants.
+
+### [2026-04-26] Standardisation des verifications de role : AccountType enum ONLY
+**Decision :** Utiliser exclusivement l'enum `AccountType` ($user->role) pour identifier le type de compte (ROOT, ORG_ADMIN, ORG_USER, INDEPENDENT). Ne jamais utiliser `$user->hasRole('IT_ADMIN')` pour cette verification. Spatie Permission est reserve aux permissions granulaires (manage-users, edit-projects, etc.).
+**Raison :** L'audit multi-tenancy a revele de multiples bugs causes par le melange enum/Spatie : comparaisons cassees (enum vs string), logique incoherente entre composants, bypass de securite potentiel via le Gate::before.
+**Alternatives ecartees :** Tout migrer vers Spatie (risque de perdre le typage fort de l'enum), garder le melange (trop de bugs).
+**Impact :** Grep global pour `hasRole('IT_ADMIN')` remplace par `$user->role === AccountType::ROOT`. Gate::before renforce avec double-verification enum + Spatie.
+
+### [2026-04-26] Roles assignables via AccountType::assignableRoles()
+**Decision :** Chaque AccountType definit les roles qu'il peut assigner a d'autres. ROOT peut assigner org_admin/org_user/independent. ORG_ADMIN peut assigner org_admin/org_user. Les autres ne peuvent rien assigner.
+**Raison :** Faille critique decouverte : un org_admin pouvait creer un ROOT via le formulaire membre. La validation se fait a 3 niveaux : enum (assignableRoles), validation Livewire (closure), et SaveMemberAction (exception).
+**Alternatives ecartees :** Permission Spatie `promote-members` (trop granulaire pour un premier fix), niveaux hierarchiques (over-engineering).
+**Impact :** Le select de role dans le formulaire membre n'affiche que les roles assignables. Toute tentative d'assigner un role non autorise leve une exception.
+
+### [2026-04-26] Email suppression list (bounce + unsubscribe)
+**Decision :** Table `email_suppressions` avec model, listener sur MessageSending pour bloquer les envois, et routes signees HMAC pour unsubscribe/resubscribe.
+**Raison :** Bonne pratique email deliverability. Evite de spammer des adresses invalides ou des gens qui ne veulent plus recevoir de mails.
+**Alternatives ecartees :** Package externe (laravel-email-supression, etc.) -- trop lourd pour le besoin simple.
+**Impact :** Tout mail envoye via Laravel est automatiquement verifie contre la suppression list. Lien de desabonnement dans chaque notification.

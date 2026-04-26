@@ -64,7 +64,7 @@
 
                 @foreach ($categories as $category)
                     <x-ui.table.row>
-                        <x-ui.table.td class="font-semibold text-slate-800 dark:text-slate-100">
+                        <x-ui.table.td class="font-semibold text-heading">
                             {{ $category->name }}
                         </x-ui.table.td>
                         
@@ -81,7 +81,7 @@
         @endif
 
         @if($categories->isNotEmpty())
-            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+            <div class="px-6 py-4 border-t border-border-light dark:border-surface-alt">
                 {{ $categories->links() }}
             </div>
         @endif

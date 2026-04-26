@@ -3,14 +3,13 @@
 namespace App\Livewire\VBeta\Project;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use Illuminate\Support\Facades\Auth;
 
-#[Lazy]
 class ProjectListLivewire extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -108,7 +107,7 @@ class ProjectListLivewire extends Component
         $projects->orderBy($this->sortField, $this->sortDirection);
 
         // Obtenir les options pour les filtres (par exemple, tous les utilisateurs disponibles)
-        $availableUsers = User::orderBy('name')->get();
+        $availableUsers = UserQueryService::forCurrentOrg()->orderBy('name')->get();
 
         // Obtenir les statuts de projet uniques (si vous voulez un filtre dynamique)
         $projectStatuses = Project::select('status')->distinct()->get()->pluck('status');

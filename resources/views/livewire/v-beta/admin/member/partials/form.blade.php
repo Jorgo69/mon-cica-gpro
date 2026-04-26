@@ -89,7 +89,7 @@
             :error="$errors->first('role')"
         >
             <option value="">-- Sélectionner un rôle --</option>
-            @foreach(\App\Enums\AccountType::cases() as $type)
+            @foreach($assignableRoles as $type)
                 <option value="{{ $type->value }}">{{ $type->label() }}</option>
             @endforeach
         </x-ui.select>

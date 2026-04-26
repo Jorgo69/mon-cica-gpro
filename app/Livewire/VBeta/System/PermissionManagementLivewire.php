@@ -4,11 +4,9 @@ namespace App\Livewire\VBeta\System;
 
 use App\Models\Permission;
 use App\Livewire\Traits\WithToastNotifications;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Lazy]
 class PermissionManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;

@@ -27,14 +27,8 @@ class ProjectStatsQueryService
         $budgetQuery = Budget::query();
         $progressQuery = ProgressTracker::query();
 
-        // Strict Multi-tenancy Isolation
-        if ($role !== AccountType::SYSTEM_ADMIN->value) {
-            $projectQuery->where('organization_id', $orgId);
-            $activityQuery->where('organization_id', $orgId);
-            $progressQuery->where('organization_id', $orgId);
-            // Assuming Budget is linked to project
-            $budgetQuery->whereHas('project', fn($q) => $q->where('organization_id', $orgId));
-        }
+        // Le Global Scope Multitenantable filtre deja par org pour les non-ROOT.
+        // Pas besoin de filtrer manuellement ici.
 
         // Apply Date Filtering
         if ($startDate && $endDate) {
@@ -44,7 +38,7 @@ class ProjectStatsQueryService
         }
 
         // Additional filter for regular users (Collaborators)
-        if ($role === AccountType::ORG_USER->value) {
+        if ($role === AccountType::ORG_USER) {
             $this->applyUserFilters($user, $projectQuery, $activityQuery);
         }
 
@@ -97,11 +91,17 @@ class ProjectStatsQueryService
                                            ->limit(5)
                                            ->get(['id', 'title', 'status', 'created_at', 'creator_user_id']);
 
+        $budgetByProject = Budget::query()
+            ->selectRaw('project_id, SUM(total_cost) as total')
+            ->whereIn('project_id', (clone $projects)->limit(10)->pluck('id'))
+            ->groupBy('project_id')
+            ->pluck('total', 'project_id');
+
         $budgetByProject = (clone $projects)->limit(10)
             ->get(['id', 'title'])
             ->map(fn($p) => [
-                'label' => \Illuminate\Support\Str::limit($p->title, 20), 
-                'value' => Budget::where('project_id', $p->id)->sum('total_cost')
+                'label' => \Illuminate\Support\Str::limit($p->title, 20),
+                'value' => $budgetByProject[$p->id] ?? 0,
             ])
             ->toArray();
 

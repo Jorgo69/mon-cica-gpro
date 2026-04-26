@@ -21,7 +21,7 @@ class OrganizationPolicy
      */
     public function view(User $user, Organization $organization): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
@@ -34,7 +34,7 @@ class OrganizationPolicy
     public function create(User $user): bool
     {
         // Seul le SYSTEM_ADMIN peut créer de nouvelles organisations
-        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        return $user->role === \App\Enums\AccountType::ROOT;
     }
 
     /**
@@ -42,7 +42,7 @@ class OrganizationPolicy
      */
     public function update(User $user, Organization $organization): bool
     {
-        if ($user->role === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
@@ -58,7 +58,7 @@ class OrganizationPolicy
      */
     public function delete(User $user, Organization $organization): bool
     {
-        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        return $user->role === \App\Enums\AccountType::ROOT;
     }
 
     /**
@@ -66,7 +66,7 @@ class OrganizationPolicy
      */
     public function restore(User $user, Organization $organization): bool
     {
-        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        return $user->role === \App\Enums\AccountType::ROOT;
     }
 
     /**
@@ -74,6 +74,6 @@ class OrganizationPolicy
      */
     public function forceDelete(User $user, Organization $organization): bool
     {
-        return $user->role === \App\Enums\AccountType::SYSTEM_ADMIN;
+        return $user->role === \App\Enums\AccountType::ROOT;
     }
 }

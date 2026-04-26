@@ -10,10 +10,16 @@ Route::middleware(['auth', 'account_type:org_admin,system_admin'])->prefix('v_be
     // Projets & Configuration métier
     Route::view('/project/list', 'v_beta.admin.project.index')->name('project.list');
     Route::view('/type_of_project', 'v_beta.admin.type_of_project.index')->name('type.of.project');
+    Route::view('/type_of_project/create', 'v_beta.admin.type_of_project.form')->name('project.types.create');
+    Route::view('/type_of_project/{projectTypeId}/edit', 'v_beta.admin.type_of_project.form')->name('project.types.edit');
+    Route::view('/type_of_project/{projectTypeId}/show', 'v_beta.admin.type_of_project.show')->name('project.types.show');
     
     // Gestion des ressources humaines et taxonomies
     Route::view('/members/list', 'v_beta.admin.member.index')->name('member.list');
     Route::view('/categories/list', 'v_beta.admin.category.index')->name('category.list');
+
+    // Invitations
+    Route::view('/invitations', 'v_beta.admin.invitation.index')->name('invitation.list');
 
     // Utilitaires
     Route::view('/trash/management', 'v_beta.admin.trash.index')->name('trash.management');

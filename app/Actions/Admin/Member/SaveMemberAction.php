@@ -42,12 +42,27 @@ class SaveMemberAction
             $user->ville = $data['ville'] ?? null;
             $user->department = $data['department'] ?? null;
             
-            // Enum Role (AccountType)
-            $user->role = $data['role'] instanceof AccountType ? $data['role'] : AccountType::from($data['role']);
+            // Enum Role (AccountType) — avec verification des roles assignables
+            $targetRole = $data['role'] instanceof AccountType ? $data['role'] : AccountType::from($data['role']);
+
+            if ($currentUser && !in_array($targetRole, $currentUser->role->assignableRoles())) {
+                throw new \InvalidArgumentException("Vous n'avez pas le droit d'assigner le rôle {$targetRole->label()}.");
+            }
+
+            $user->role = $targetRole;
             
-            // multi-tenant : on force l'organisation de l'admin créateur si c'est une création
-            if ($isCreation && $currentUser && $currentUser->organization_id) {
-                $user->organization_id = $currentUser->organization_id;
+            // multi-tenant : on force l'organisation si c'est une création
+            if ($isCreation && $currentUser) {
+                $orgId = $currentUser->organization_id;
+
+                // ROOT en impersonation : utilise l'org cible
+                if ($currentUser->role === AccountType::ROOT && session('acting_as_organization_id')) {
+                    $orgId = session('acting_as_organization_id');
+                }
+
+                if ($orgId) {
+                    $user->organization_id = $orgId;
+                }
             }
 
             // Gestion de l'image
@@ -62,14 +77,14 @@ class SaveMemberAction
             $user->save();
 
             // --- Synchronisation Spatie Roles ---
-            // On mappe l'AccountType vers le nom de rôle Spatie
-            $roleName = $this->mapAccountTypeToSpatieRole($user->role);
-            
+            // Si un rôle Spatie est explicitement fourni, on l'utilise ; sinon on déduit depuis AccountType
+            $roleName = $data['spatie_role'] ?? $this->mapAccountTypeToSpatieRole($user->role);
+
             // On s'assure d'être dans le contexte de l'organisation pour assigner le rôle
             if ($user->organization_id) {
                 setPermissionsTeamId($user->organization_id);
             }
-            
+
             $user->syncRoles([$roleName]);
 
             return $user;
@@ -82,7 +97,7 @@ class SaveMemberAction
     protected function mapAccountTypeToSpatieRole(AccountType $type): string
     {
         return match($type) {
-            AccountType::SYSTEM_ADMIN => 'IT_ADMIN',
+            AccountType::ROOT => 'IT_ADMIN',
             AccountType::ORG_ADMIN => 'ORG_ADMIN',
             AccountType::ORG_USER => 'MEMBER',
             AccountType::INDEPENDENT => 'MEMBER',

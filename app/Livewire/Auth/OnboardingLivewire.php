@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Actions\Auth\CreateOrganizationAction;
+use App\Actions\Invitation\AcceptInvitationAction;
 use App\Livewire\Traits\WithToastNotifications;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -121,11 +122,39 @@ class OnboardingLivewire extends Component
     }
 
     /**
-     * Action : Rejoindre (Placeholder pour Phase 2.2).
+     * Action : Rejoindre une organisation via code d'invitation.
      */
     public function joinOrganization()
     {
-        $this->notifyToast('warning', 'Le système d\'invitation par code arrive très prochainement.', 'Bientôt disponible');
+        $this->validate([
+            'inviteCode' => 'required|string|min:6|max:8',
+        ], [
+            'inviteCode.required' => 'Veuillez saisir votre code d\'invitation.',
+        ]);
+
+        $invitation = AcceptInvitationAction::findByCode($this->inviteCode);
+
+        if (!$invitation) {
+            $this->notifyToast('error', 'Code invalide ou expiré. Vérifiez auprès de votre administrateur.', 'Code invalide');
+            return;
+        }
+
+        try {
+            (new AcceptInvitationAction)->execute($invitation, auth()->user());
+
+            $orgName = $invitation->organization?->name ?? 'l\'organisation';
+            $this->notifyToastSession('success', "Vous avez rejoint {$orgName} avec succès !", 'Bienvenue');
+
+            return redirect()->route('dashboard');
+        } catch (\Throwable $e) {
+            Log::error('[Onboarding] joinOrganization - ÉCHEC', [
+                'user_id' => auth()->id(),
+                'code' => $this->inviteCode,
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->notifyToast('error', $e->getMessage(), 'Erreur');
+        }
     }
 
     public function render()

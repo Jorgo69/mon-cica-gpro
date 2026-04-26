@@ -2,27 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Organization;
-use App\Enums\OrganizationStatus;
 use Illuminate\Database\Seeder;
 
 class OrganizationSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Les organisations de test sont creees directement dans UserSeeder
+     * pour garantir la coherence org <-> users.
      */
     public function run(): void
     {
-        Organization::firstOrCreate(
-            ['slug' => 'cica-pro'],
-            [
-                'name' => 'CICA PRO',
-                'status' => OrganizationStatus::ACTIVE,
-            ]
-        );
-
-        if (app()->environment('local', 'testing')) {
-            Organization::factory()->count(3)->create();
-        }
+        // Gere par UserSeeder
     }
 }

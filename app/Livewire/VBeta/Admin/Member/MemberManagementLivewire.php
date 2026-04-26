@@ -9,13 +9,11 @@ use App\Models\User;
 use App\Enums\AccountType;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rules\Enum;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Livewire\Traits\WithToastNotifications;
 
-#[Lazy]
 class MemberManagementLivewire extends Component
 {
     use WithPagination, WithFileUploads, AuthorizesRequests, WithToastNotifications;
@@ -53,7 +51,13 @@ class MemberManagementLivewire extends Component
             'numero_identification' => 'nullable|string|max:100|unique:users,numero_identification' . ($this->selectedMember ? ',' . $this->selectedMember->id : ''),
             'pays' => 'nullable|string|max:100',
             'ville' => 'nullable|string|max:100',
-            'role' => ['required', new Enum(AccountType::class)],
+            'role' => ['required', new Enum(AccountType::class), function ($attribute, $value, $fail) {
+                $assignable = auth()->user()->role->assignableRoles();
+                $target = AccountType::tryFrom($value);
+                if (!$target || !in_array($target, $assignable)) {
+                    $fail("Vous ne pouvez pas assigner ce rôle.");
+                }
+            }],
             'department' => 'nullable|string|max:100',
             'image' => 'nullable|image|max:2048',
         ];
@@ -158,6 +162,11 @@ class MemberManagementLivewire extends Component
     /**
      * Rendu de la vue avec injection du service de requête.
      */
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render(MemberQueryService $queryService)
     {
         return view('livewire.v-beta.admin.member.member-management-livewire', [
@@ -166,6 +175,7 @@ class MemberManagementLivewire extends Component
                 sortField: $this->sortField,
                 sortDirection: $this->sortDirection,
             ),
+            'assignableRoles' => auth()->user()->role->assignableRoles(),
         ]);
     }
 }

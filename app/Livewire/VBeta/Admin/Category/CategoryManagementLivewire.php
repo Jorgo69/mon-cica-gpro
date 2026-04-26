@@ -4,11 +4,9 @@ namespace App\Livewire\VBeta\Admin\Category;
 
 use App\Services\Admin\CategoryQueryService;
 use Livewire\WithPagination;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\Attributes\On;
 
-#[Lazy]
 class CategoryManagementLivewire extends Component
 {
     use WithPagination;
@@ -69,6 +67,11 @@ class CategoryManagementLivewire extends Component
     {
         $this->closeModal();
         $this->resetPage();
+    }
+
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render(CategoryQueryService $queryService)

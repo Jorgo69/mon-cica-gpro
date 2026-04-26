@@ -5,11 +5,9 @@ namespace App\Livewire\VBeta\System;
 use App\Models\Organization;
 use App\Livewire\Traits\WithToastNotifications;
 use Illuminate\Support\Str;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Lazy]
 class OrganizationManagementLivewire extends Component
 {
     use WithPagination, WithToastNotifications;

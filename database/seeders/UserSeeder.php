@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Organization;
+use App\Enums\AccountType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
@@ -12,137 +13,185 @@ use Spatie\Permission\PermissionRegistrar;
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed des comptes de test couvrant tous les types de comptes et scenarios.
+     *
+     * Mot de passe universel : password
+     *
+     * COMPTES :
+     * ┌──────────────────────────┬─────────────┬───────────────────────┬──────────────┐
+     * │ Email                    │ Type        │ Organisation          │ Role Spatie  │
+     * ├──────────────────────────┼─────────────┼───────────────────────┼──────────────┤
+     * │ root@cica-gpro.com       │ ROOT        │ Aucune (supervise)    │ IT_ADMIN     │
+     * │ admin@projexia.org       │ ORG_ADMIN   │ Projexia International│ ORG_ADMIN    │
+     * │ manager@projexia.org     │ ORG_USER    │ Projexia International│ MANAGER      │
+     * │ membre@projexia.org      │ ORG_USER    │ Projexia International│ MEMBER       │
+     * │ admin@ong-espoir.org     │ ORG_ADMIN   │ ONG Espoir            │ ORG_ADMIN    │
+     * │ membre@ong-espoir.org    │ ORG_USER    │ ONG Espoir            │ MEMBER       │
+     * │ solo@independant.com     │ INDEPENDENT │ Aucune (solo)         │ MEMBER       │
+     * └──────────────────────────┴─────────────┴───────────────────────┴──────────────┘
      */
     public function run(): void
     {
-        $organization = Organization::where('slug', 'cica-pro')->first();
-        if (!$organization) {
-            return;
-        }
+        // ══════════════════════════════════════════════════════════
+        // ORGANISATION 1 : Projexia International (client test)
+        // ══════════════════════════════════════════════════════════
+        $org1 = Organization::firstOrCreate(
+            ['slug' => 'projexia-international'],
+            [
+                'name' => 'Projexia International',
+                'status' => \App\Enums\OrganizationStatus::ACTIVE,
+            ]
+        );
 
-        $orgId = $organization->id;
+        // ══════════════════════════════════════════════════════════
+        // ORGANISATION 2 : ONG Espoir (pour tester isolation cross-org)
+        // ══════════════════════════════════════════════════════════
+        $org2 = Organization::firstOrCreate(
+            ['slug' => 'ong-espoir'],
+            [
+                'name' => 'ONG Espoir',
+                'status' => \App\Enums\OrganizationStatus::ACTIVE,
+            ]
+        );
 
-        // Activer le contexte de l'organisation pour Spatie Teams
-        setPermissionsTeamId($orgId);
-
-        // 1. Créer les Rôles spécifiques à cette organisation
-        $roles = [
-            'ORG_ADMIN' => [
-                'manage-organization', 'manage-users', 'manage-roles', 
-                'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
-                'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets'
-            ],
-            'MANAGER' => [
-                'view-projects', 'create-projects', 'edit-projects', 
-                'manage-activities', 'track-progress', 'view-budgets'
-            ],
-            'MEMBER' => [
-                'view-projects', 'track-progress'
-            ],
-            'SUPERVISOR' => [
-                'view-projects', 'track-progress', 'view-budgets', 'validate-projects'
-            ],
-        ];
-
-        foreach ($roles as $roleName => $permissions) {
-            $role = Role::firstOrCreate([
-                'name' => $roleName,
-                'guard_name' => 'web',
-                'organization_id' => $orgId
-            ]);
-            $role->syncPermissions($permissions);
-        }
-
-        // 2. Créer les Utilisateurs et assigner les rôles
-
-        // IT Admin
-        // On s'assure que le contexte d'organisation est nul pour l'attribution globale
+        // ══════════════════════════════════════════════════════════
+        // ROOT : Super Admin plateforme (pas d'org)
+        // ══════════════════════════════════════════════════════════
         setPermissionsTeamId(null);
 
-        $itAdmin = User::firstOrCreate(
-            ['email' => 'admin@cave-tech.com'],
+        $root = User::firstOrCreate(
+            ['email' => 'root@cica-gpro.com'],
             [
-                'name' => 'Jean Dupont',
-                'password' => Hash::make('password'),
+                'name' => 'Root Admin',
+                'password' => 'password',
                 'email_verified_at' => now(),
-                'organization_id' => null, // Super Admin Global
+                'organization_id' => null,
+                'role' => AccountType::ROOT,
                 'sexe' => 'Homme',
-                'role' => \App\Enums\AccountType::SYSTEM_ADMIN,
-                'department' => 'Informatique & Systèmes',
-                'telephone' => '+229 97 00 01 02',
+                'department' => 'Plateforme',
+                'telephone' => '+229 97 00 00 00',
                 'pays' => 'Bénin',
                 'ville' => 'Cotonou',
             ]
         );
-        $itAdmin->assignRole('IT_ADMIN'); 
+        $root->syncRoles(['IT_ADMIN']);
 
-        // On remet le contexte pour la suite du seeding
-        setPermissionsTeamId($orgId);
+        // ══════════════════════════════════════════════════════════
+        // PROJEXIA : org_admin + manager + membre
+        // ══════════════════════════════════════════════════════════
+        setPermissionsTeamId($org1->id);
 
-        // Org Admin (Superviseurs dans le seed original)
-        $supervisors = [
-            ['name' => 'Alice Dossou', 'email' => 'alice.d@cpro.org', 'sexe' => 'Femme'],
-        ];
+        $org1Admin = User::firstOrCreate(
+            ['email' => 'admin@projexia.org'],
+            [
+                'name' => 'Alice Dossou',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'organization_id' => $org1->id,
+                'role' => AccountType::ORG_ADMIN,
+                'sexe' => 'Femme',
+                'department' => 'Direction',
+                'telephone' => '+229 97 11 22 33',
+                'pays' => 'Bénin',
+                'ville' => 'Cotonou',
+            ]
+        );
+        $org1Admin->syncRoles(['ORG_ADMIN']);
 
-        foreach ($supervisors as $supervisor) {
-            $user = User::firstOrCreate(
-                ['email' => $supervisor['email']],
-                [
-                    'name' => $supervisor['name'],
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                    'organization_id' => $orgId,
-                    'sexe' => $supervisor['sexe'],
-                    'role' => \App\Enums\AccountType::ORG_ADMIN,
-                    'department' => 'Direction stratégique',
-                    'pays' => 'Bénin',
-                    'ville' => 'Porto-Novo',
-                ]
-            );
-            $user->assignRole('SUPERVISOR');
-        }
-
-        // Project Manager
-        $manager = User::firstOrCreate(
-            ['email' => 'p.manager@cpro.org'],
+        $org1Manager = User::firstOrCreate(
+            ['email' => 'manager@projexia.org'],
             [
                 'name' => 'Sophie Koumé',
-                'password' => Hash::make('password'),
+                'password' => 'password',
                 'email_verified_at' => now(),
-                'organization_id' => $orgId,
+                'organization_id' => $org1->id,
+                'role' => AccountType::ORG_USER,
                 'sexe' => 'Femme',
-                'role' => \App\Enums\AccountType::ORG_USER,
                 'department' => 'Gestion de Projets',
                 'telephone' => '+229 96 11 22 33',
                 'pays' => 'Bénin',
                 'ville' => 'Abomey-Calavi',
             ]
         );
-        $manager->assignRole('MANAGER');
+        $org1Manager->syncRoles(['MANAGER']);
 
-        // Membres
-        $members = [
-            ['name' => 'Idriss Gnonlon', 'email' => 'idriss.g@cpro.org', 'sexe' => 'Homme'],
-            ['name' => 'Carine Sika', 'email' => 'carine.s@cpro.org', 'sexe' => 'Femme'],
-        ];
+        $org1Member = User::firstOrCreate(
+            ['email' => 'membre@projexia.org'],
+            [
+                'name' => 'Idriss Gnonlon',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'organization_id' => $org1->id,
+                'role' => AccountType::ORG_USER,
+                'sexe' => 'Homme',
+                'department' => 'Terrain & Opérations',
+                'telephone' => '+229 96 44 55 66',
+                'pays' => 'Bénin',
+                'ville' => 'Parakou',
+            ]
+        );
+        $org1Member->syncRoles(['MEMBER']);
 
-        foreach ($members as $member) {
-            $user = User::firstOrCreate(
-                ['email' => $member['email']],
-                [
-                    'name' => $member['name'],
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                    'organization_id' => $orgId,
-                    'sexe' => $member['sexe'],
-                    'role' => \App\Enums\AccountType::ORG_USER,
-                    'department' => 'Terrain & Opérations',
-                    'pays' => 'Bénin',
-                    'ville' => 'Parakou',
-                ]
-            );
-            $user->assignRole('MEMBER');
-        }
+        // ══════════════════════════════════════════════════════════
+        // ONG ESPOIR : org_admin + membre (isolation cross-org)
+        // ══════════════════════════════════════════════════════════
+        setPermissionsTeamId($org2->id);
+
+        $org2Admin = User::firstOrCreate(
+            ['email' => 'admin@ong-espoir.org'],
+            [
+                'name' => 'Marie Adjo',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'organization_id' => $org2->id,
+                'role' => AccountType::ORG_ADMIN,
+                'sexe' => 'Femme',
+                'department' => 'Direction',
+                'telephone' => '+229 96 70 80 90',
+                'pays' => 'Bénin',
+                'ville' => 'Porto-Novo',
+            ]
+        );
+        $org2Admin->syncRoles(['ORG_ADMIN']);
+
+        $org2Member = User::firstOrCreate(
+            ['email' => 'membre@ong-espoir.org'],
+            [
+                'name' => 'Paul Koffi',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'organization_id' => $org2->id,
+                'role' => AccountType::ORG_USER,
+                'sexe' => 'Homme',
+                'department' => 'Programmes',
+                'telephone' => '+229 96 33 44 55',
+                'pays' => 'Bénin',
+                'ville' => 'Porto-Novo',
+            ]
+        );
+        $org2Member->syncRoles(['MEMBER']);
+
+        // ══════════════════════════════════════════════════════════
+        // INDEPENDENT : utilisateur solo sans organisation
+        // ══════════════════════════════════════════════════════════
+        setPermissionsTeamId(null);
+
+        $independent = User::firstOrCreate(
+            ['email' => 'solo@independant.com'],
+            [
+                'name' => 'Marc Consultant',
+                'password' => 'password',
+                'email_verified_at' => now(),
+                'organization_id' => null,
+                'role' => AccountType::INDEPENDENT,
+                'is_independent' => true,
+                'sexe' => 'Homme',
+                'department' => 'Conseil',
+                'telephone' => '+229 96 99 88 77',
+                'pays' => 'Bénin',
+                'ville' => 'Cotonou',
+            ]
+        );
+        $independent->syncRoles(['MEMBER']);
     }
 }
