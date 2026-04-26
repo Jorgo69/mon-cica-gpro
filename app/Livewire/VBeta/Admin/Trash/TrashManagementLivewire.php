@@ -17,6 +17,9 @@ class TrashManagementLivewire extends Component
     public $modalType = '';
     public $selectedItem = null;
     public $selectedModel = null; // "user", "project", "project_type"
+    public $selectAllUsers = false;
+    public $selectAllProjects = false;
+    public $selectAllTypes = false;
 
     // Ouvrir modal
     public function openModal($type, $model, $id = null)
