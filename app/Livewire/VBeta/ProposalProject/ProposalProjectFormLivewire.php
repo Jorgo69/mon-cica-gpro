@@ -638,7 +638,7 @@ class ProposalProjectFormLivewire extends Component
             'start_date'         => $this->projectStartDate ? Carbon::parse($this->projectStartDate)->format('Y-m-d') : null,
             'end_date'           => $this->projectEndDate ? Carbon::parse($this->projectEndDate)->format('Y-m-d') : null,
             'status'             => $this->projectStatus,
-            'project_type_id'    => $this->selectedProjectTypeId,
+            'project_type_id'    => $this->selectedProjectTypeId ?: null,
             'general_objectives' => $this->dynamicFieldValues,
             'description'        => $this->cleanHtml($this->contextDescription),
             'problem_analysis'   => $this->cleanHtml($this->problemAnalysis),
