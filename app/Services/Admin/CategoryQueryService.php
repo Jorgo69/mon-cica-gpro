@@ -23,7 +23,8 @@ class CategoryQueryService
         int $perPage = 10
     ): LengthAwarePaginator {
         $query = GeneralAdministration::query()
-            ->where('type', 'project_type_category');
+            ->where('type', 'project_type_category')
+            ->where('is_active', true);
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {

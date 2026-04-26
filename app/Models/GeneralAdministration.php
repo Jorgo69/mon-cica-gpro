@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class GeneralAdministration extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
-    
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \App\Traits\HasVisibilityScope;
+
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -21,7 +21,14 @@ class GeneralAdministration extends Model
         'creator_user_id',
         'name',
         'description',
-        'type'
+        'type',
+        'is_system',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_system' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     protected static function boot()

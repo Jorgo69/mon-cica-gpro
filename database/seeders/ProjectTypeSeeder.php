@@ -61,6 +61,8 @@ class ProjectTypeSeeder extends Seeder
                     'id' => (string) \Illuminate\Support\Str::uuid(),
                     'description' => $typeData['description'],
                     'category' => $typeData['category'],
+                    'is_system' => true,
+                    'is_active' => true,
                 ]
             );
 

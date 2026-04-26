@@ -7,11 +7,18 @@ use Illuminate\Support\Str;
 
 class ProjectType extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \App\Traits\HasVisibilityScope;
+
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['id', 'organization_id', 'creator_user_id', 'name', 'description', 'category'];
+
+    protected $fillable = ['id', 'organization_id', 'creator_user_id', 'name', 'description', 'category', 'is_system', 'is_active'];
+
+    protected $casts = [
+        'is_system' => 'boolean',
+        'is_active' => 'boolean',
+    ];
     protected static function boot()
     {
         parent::boot();

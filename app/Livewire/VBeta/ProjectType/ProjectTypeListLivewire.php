@@ -20,10 +20,14 @@ class ProjectTypeListLivewire extends Component
     public function deleteProjectType($id)
     {
         try {
-            ProjectType::destroy($id);
-            // Recharger la liste après la suppression
+            $type = ProjectType::findOrFail($id);
+            if ($type->is_system) {
+                session()->flash('error', 'Les types systeme ne peuvent pas etre supprimes.');
+                return;
+            }
+            $type->delete();
             $this->projectTypes = ProjectType::orderBy('name')->get();
-            session()->flash('message', 'Le type de projet a été supprimé avec succès.');
+            session()->flash('message', 'Le type de projet a ete supprime avec succes.');
         } catch (\Exception $e) {
             session()->flash('error', 'Impossible de supprimer le type de projet.');
         }

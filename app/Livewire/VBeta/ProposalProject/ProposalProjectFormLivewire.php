@@ -211,7 +211,7 @@ class ProposalProjectFormLivewire extends Component
     public function mount($projectId = null)
     {
         $this->users = UserQueryService::forCurrentOrg()->get();
-        $this->allProjectTypes = ProjectType::all();
+        $this->allProjectTypes = ProjectType::visibleForOrg(\App\Services\OrgContext::orgId())->get();
         $this->initStepDetails();
 
         if ($projectId) {

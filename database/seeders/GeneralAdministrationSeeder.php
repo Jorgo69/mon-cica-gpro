@@ -42,6 +42,8 @@ class GeneralAdministrationSeeder extends Seeder
                 [
                     'id'          => (string) Str::uuid(),
                     'description' => $description,
+                    'is_system'   => true,
+                    'is_active'   => true,
                 ]
             );
         }
@@ -54,6 +56,8 @@ class GeneralAdministrationSeeder extends Seeder
                 [
                     'id'          => (string) Str::uuid(),
                     'description' => $description,
+                    'is_system'   => true,
+                    'is_active'   => true,
                 ]
             );
         }
