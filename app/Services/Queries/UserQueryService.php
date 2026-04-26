@@ -4,13 +4,14 @@ namespace App\Services\Queries;
 
 use App\Enums\AccountType;
 use App\Models\User;
+use App\Services\OrgContext;
 use Illuminate\Database\Eloquent\Builder;
 
 class UserQueryService
 {
     /**
      * Retourne un query builder User scope a l'organisation courante.
-     * ROOT voit tout, org_admin/org_user voient leur org, independent ne voit que soi.
+     * Utilise OrgContext pour respecter l'impersonation ROOT.
      */
     public static function forCurrentOrg(): Builder
     {
@@ -20,7 +21,12 @@ class UserQueryService
             return User::query()->whereRaw('1 = 0');
         }
 
+        // ROOT : si en impersonation, filtre par org cible ; sinon voit tout
         if ($user->role === AccountType::ROOT) {
+            $actingOrgId = OrgContext::orgId();
+            if ($actingOrgId && OrgContext::isImpersonating()) {
+                return User::query()->where('organization_id', $actingOrgId);
+            }
             return User::query();
         }
 
