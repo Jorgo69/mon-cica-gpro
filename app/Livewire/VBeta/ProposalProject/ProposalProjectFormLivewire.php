@@ -743,7 +743,7 @@ class ProposalProjectFormLivewire extends Component
     private function cleanHtml($content)
     {
         if (empty($content)) return null;
-        return strip_tags($content, '<p><br><strong><em><u><ul><ol><li><a><img>');
+        return clean($content);
     }
 
     private function updateStepErrorStates()

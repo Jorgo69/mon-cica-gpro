@@ -39,7 +39,12 @@ class OrgContext
 
         // ROOT en impersonation
         if ($user->role === AccountType::ROOT) {
-            return session('acting_as_organization_id');
+            $actingId = session('acting_as_organization_id');
+            if ($actingId && !\Illuminate\Support\Str::isUuid($actingId)) {
+                session()->forget('acting_as_organization_id');
+                return null;
+            }
+            return $actingId;
         }
 
         // Tous les autres : leur org

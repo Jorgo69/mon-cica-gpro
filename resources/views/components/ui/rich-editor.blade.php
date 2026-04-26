@@ -25,7 +25,7 @@
     {{-- Editor container — Livewire ne touche pas ce bloc --}}
     <div
         wire:ignore
-        x-data="richEditor({ uniqueId: '{{ $uid }}', content: {{ Js::from($value ?? '') }}, placeholder: '{{ $placeholder }}' })"
+        x-data="richEditor({ uniqueId: '{{ $uid }}', content: {{ Js::from($value ?? '') }}, placeholder: {{ Js::from($placeholder) }} })"
         class="rounded-xl overflow-hidden border {{ $borderClass }} shadow-sm bg-white dark:bg-slate-900"
     >
         {{-- Barre d'outils --}}
@@ -96,7 +96,7 @@
         <div x-ref="editorContent" style="min-height: {{ $height }}px"></div>
     </div>
 
-    {{-- Textarea cachée hors de wire:ignore — Livewire lit la valeur via wire:model.defer --}}
+    {{-- Textarea cachée hors de wire:ignore — Livewire lit la valeur via wire:model (deferred par defaut en v3) --}}
     <textarea
         id="{{ $uid }}"
         wire:model="{{ $name }}"
