@@ -13,8 +13,8 @@
 
 <div
     wire:key="modal-{{ $id }}"
-    x-data="{ show: false }"
-    x-init="setTimeout(() => { show = true; $nextTick(() => $refs.modalContent?.focus()) }, 50)"
+    x-data="{ show: true }"
+    x-init="$nextTick(() => $refs.modalContent?.focus())"
     x-show="show"
     x-on:keydown.escape.window="@if($dismissable) $wire.{{ $closeAction }}() @endif"
     x-cloak

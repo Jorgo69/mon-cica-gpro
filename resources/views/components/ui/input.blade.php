@@ -29,9 +29,10 @@
         </label>
     @endif
 
-    <div class="relative group" 
-        @if($type === 'password') 
-            x-data="{ show: false }" 
+    <div class="relative group"
+        @if($type === 'password')
+            wire:ignore.self
+            x-data="{ show: false }"
         @endif
     >
         @if($icon)

@@ -185,7 +185,7 @@
                         </div>
 
                         {{-- Fenêtre 2 : Analyse Initiale de l'Environnement --}}
-                        <div x-show="currentStep === 2" class="space-y-6">
+                        <div x-show="currentStep === 2" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Contexte Environnemental du Projet</h2>
                             <p class="text-body mb-6">Évaluez les facteurs externes et internes qui peuvent influencer votre projet (PESTEL, SWOT).</p>
 
@@ -204,7 +204,7 @@
                         </div>
 
                         {{-- Fenêtre 3 : Acteurs Clés du Projet --}}
-                        <div x-show="currentStep === 3" class="space-y-6">
+                        <div x-show="currentStep === 3" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Identification des Parties Prenantes</h2>
                             <p class="text-body mb-6">Listez les individus ou groupes qui seront affectés par le projet, ou qui l'affecteront.</p>
 
@@ -244,7 +244,7 @@
                         </div>
 
                         {{-- Fenêtre 4 : Problématique Cible --}}
-                        <div x-show="currentStep === 4" class="space-y-6">
+                        <div x-show="currentStep === 4" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Analyse Détaillée du Problème</h2>
                             <p class="text-body mb-6">Décrivez précisément le problème que votre projet vise à résoudre, en étayant avec des faits ou des données.</p>
 
@@ -263,7 +263,7 @@
                         </div>
 
                         {{-- Fenêtre 5 : Stratégie & Approche --}}
-                        <div x-show="currentStep === 5" class="space-y-6">
+                        <div x-show="currentStep === 5" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Définition de la Stratégie</h2>
                             <p class="text-body mb-6">Élaborez l'approche globale que votre projet adoptera pour atteindre ses objectifs.</p>
 
@@ -282,7 +282,7 @@
                         </div>
 
                         {{-- Fenêtre 6 : But Général & Objectifs Spécifiques --}}
-                        <div x-show="currentStep === 6" class="space-y-6">
+                        <div x-show="currentStep === 6" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Buts et Objectifs du Projet</h2>
                             <p class="text-body mb-6">Énoncez le but global et les objectifs spécifiques (SMART) qui guideront votre projet.</p>
 
@@ -324,7 +324,7 @@
                         </div>
 
                         {{-- Fenêtre 7 : Résultats Concrets & Mesures --}}
-                        <div x-show="currentStep === 7" class="space-y-6">
+                        <div x-show="currentStep === 7" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Résultats Attendus et Indicateurs</h2>
                             <p class="text-body mb-6">Définissez les livrables concrets et les indicateurs qui prouveront que les résultats ont été atteints.</p>
 
@@ -365,7 +365,7 @@
                         </div>
 
                         {{-- Fenêtre 8 : Plan d'Action --}}
-                        <div x-show="currentStep === 8" class="space-y-6">
+                        <div x-show="currentStep === 8" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Activités du Projet</h2>
                             <p class="text-body mb-6">Listez les actions principales nécessaires pour réaliser les résultats attendus.</p>
 
@@ -407,7 +407,7 @@
                         </div>
 
                         {{-- Fenêtre 9 : Gestion des Incertitudes --}}
-                        <div x-show="currentStep === 9" class="space-y-6">
+                        <div x-show="currentStep === 9" x-cloak class="space-y-6">
                             <h2 class="text-2xl font-semibold text-heading mb-4">Analyse et Stratégie des Risques</h2>
                             <p class="text-body mb-6">Identifiez les risques potentiels pour votre projet, leur impact et leur probabilité.</p>
 

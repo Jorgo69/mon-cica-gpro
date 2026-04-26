@@ -33,7 +33,7 @@
         <x-ui.section title="Champs Dynamiques" icon="puzzle">
             <div class="space-y-4">
                 @foreach ($fields as $index => $field)
-                    <div class="p-4 border border-border rounded-xl bg-surface/50 dark:bg-surface-alt/30 relative">
+                    <div wire:key="field-{{ $index }}" class="p-4 border border-border rounded-xl bg-surface/50 dark:bg-surface-alt/30 relative">
                         <button type="button" wire:click="removeField({{ $index }})" class="absolute top-3 right-3 p-1 rounded-lg text-muted hover:text-error hover:bg-error/5 transition-all">
                             <x-lucide-x class="w-4 h-4" />
                         </button>

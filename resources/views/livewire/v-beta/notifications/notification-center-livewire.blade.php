@@ -1,4 +1,4 @@
-<div x-data="{ open: false }" @click.outside="open = false" class="relative">
+<div wire:ignore.self x-data="{ open: false }" @click.outside="open = false" class="relative">
     {{-- Bouton cloche --}}
     <button @click="open = !open" class="relative p-2 rounded-xl text-muted hover:text-subtle dark:hover:text-heading hover:bg-surface-alt transition-all">
         <x-lucide-bell class="w-5 h-5" />

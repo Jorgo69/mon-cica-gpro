@@ -1,5 +1,5 @@
 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-    <div x-data="{ open: false }" @click.away="open = false" class="relative inline-block">
+    <div wire:ignore.self x-data="{ open: false }" @click.away="open = false" class="relative inline-block">
         <!-- Bouton avec les trois points -->
         <button
             type="button"

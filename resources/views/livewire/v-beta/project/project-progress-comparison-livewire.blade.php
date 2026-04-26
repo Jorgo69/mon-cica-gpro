@@ -47,7 +47,7 @@
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @foreach($activities as $act)
-                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                            <tr wire:key="act-{{ $act['id'] ?? $loop->index }}" class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
                                 <td class="px-4 py-3 text-heading max-w-xs truncate">{{ $act['description'] }}</td>
                                 <td class="px-4 py-3 text-subtle text-xs">{{ $act['responsible'] }}</td>
                                 <td class="px-4 py-3">
