@@ -18,6 +18,8 @@ class ProjectTypeFormLivewire extends Component
     public $projectCategories = [];
 
     // Méthode de montage, appelée à l'initialisation du composant.
+    public bool $isSystem = false;
+
     public function mount($projectTypeId = null)
     {
         if ($projectTypeId) {
@@ -26,8 +28,8 @@ class ProjectTypeFormLivewire extends Component
             $this->name = $projectType->name;
             $this->description = $projectType->description;
             $this->category = $projectType->category;
+            $this->isSystem = $projectType->is_system;
             $this->fields = $projectType->dynamicFields->map(function ($field) {
-                // S'il s'agit d'une liste déroulante, on décode les options JSON en tableau.
                 if ($field->input_type === 'select') {
                     $field->options = json_decode($field->options, true) ?? [];
                 }
@@ -37,7 +39,9 @@ class ProjectTypeFormLivewire extends Component
             $this->addField();
         }
 
-        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')->get();
+        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')
+            ->where('is_active', true)
+            ->get();
     }
 
     // Ajoute un nouveau champ dynamique au formulaire
@@ -112,17 +116,23 @@ class ProjectTypeFormLivewire extends Component
         try {
             if ($this->projectTypeId) {
                 $projectType = ProjectType::findOrFail($this->projectTypeId);
-                $projectType->update([
-                    'name' => $this->name,
+
+                $updateData = [
                     'description' => $this->description,
                     'category' => $this->category,
-                ]);
+                ];
+                if (!$projectType->is_system) {
+                    $updateData['name'] = $this->name;
+                }
+                $projectType->update($updateData);
             } else {
                 $projectType = ProjectType::create([
                     'id' => (string) Str::uuid(),
                     'name' => $this->name,
                     'description' => $this->description,
                     'category' => $this->category,
+                    'organization_id' => \App\Services\OrgContext::orgId(),
+                    'creator_user_id' => auth()->id(),
                 ]);
                 $this->projectTypeId = $projectType->id;
             }
