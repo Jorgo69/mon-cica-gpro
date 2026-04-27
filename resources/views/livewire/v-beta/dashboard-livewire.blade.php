@@ -122,8 +122,8 @@
                                     <x-lucide-user class="w-5 h-5 text-muted" />
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-heading truncate">{{ $update->project->title }}</p>
-                                    <p class="text-xs text-subtle truncate">{{ $update->activity->description }}</p>
+                                    <p class="text-sm font-bold text-heading truncate">{{ $update->project?->title ?? 'Projet inconnu' }}</p>
+                                    <p class="text-xs text-subtle truncate">{{ $update->activity?->description ?? 'Activite supprimee' }}</p>
                                 </div>
                                 <div class="text-right shrink-0">
                                     <p class="text-[10px] font-black text-muted uppercase text-right">{{ $update->date->diffForHumans() }}</p>

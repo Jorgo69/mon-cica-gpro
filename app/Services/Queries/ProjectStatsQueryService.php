@@ -81,7 +81,8 @@ class ProjectStatsQueryService
         $budgetVariance = $totalPlannedBudget - $totalActualBudget;
 
         // Minimal payload: only select necessary columns
-        $recentProgressUpdates = $progress->with(['project:id,title', 'activity:id,description', 'creator:id,name'])
+        $recentProgressUpdates = $progress->whereNotNull('activity_id')
+                                          ->with(['project:id,title', 'activity:id,description', 'creator:id,name'])
                                           ->orderBy('date', 'desc')
                                           ->limit(5)
                                           ->get(['id', 'project_id', 'activity_id', 'creator_user_id', 'date', 'progress_percentage']);
