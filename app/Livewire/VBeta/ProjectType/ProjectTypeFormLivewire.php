@@ -30,10 +30,15 @@ class ProjectTypeFormLivewire extends Component
             $this->category = $projectType->category;
             $this->isSystem = $projectType->is_system;
             $this->fields = $projectType->dynamicFields->map(function ($field) {
-                if ($field->input_type === 'select') {
-                    $field->options = json_decode($field->options, true) ?? [];
+                $arr = $field->toArray();
+                // options deja decode par le cast JSON — forcer array si string residuel
+                if (is_string($arr['options'] ?? null)) {
+                    $arr['options'] = json_decode($arr['options'], true) ?? [];
                 }
-                return $field->toArray();
+                $arr['options'] = $arr['options'] ?? [];
+                $arr['is_required'] = (bool) ($arr['is_required'] ?? false);
+                $arr['input_type'] = $field->input_type?->value ?? $arr['input_type'];
+                return $arr;
             })->toArray();
         } else {
             $this->addField();
@@ -157,9 +162,9 @@ class ProjectTypeFormLivewire extends Component
 
                 $fieldData['section'] = trim($fieldData['section'] ?? '') ?: 'general';
                 
-                // Gérer la sérialisation des options en JSON si c'est un 'select'
+                // Le cast 'json' du model gere la serialisation — passer l'array directement
                 if ($fieldData['input_type'] === 'select') {
-                    $fieldData['options'] = json_encode($fieldData['options']);
+                    $fieldData['options'] = is_array($fieldData['options']) ? $fieldData['options'] : [];
                 } else {
                     $fieldData['options'] = null;
                     $fieldData['render_as'] = null;

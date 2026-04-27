@@ -477,10 +477,16 @@ class ProposalProjectFormLivewire extends Component
             ->orderBy('order')
             ->get()
             ->map(function($field) {
-                if ($field->input_type === 'select' && $field->options) {
-                    $field->options = json_decode($field->options, true) ?? [];
+                $arr = $field->toArray();
+                // options est deja decode par le cast JSON du model
+                // s'assurer que c'est bien un array
+                if ($arr['input_type'] === 'select' && is_string($arr['options'] ?? null)) {
+                    $arr['options'] = json_decode($arr['options'], true) ?? [];
                 }
-                return $field;
+                $arr['is_required'] = (bool) $arr['is_required'];
+                // input_type enum -> string value
+                $arr['input_type'] = $field->input_type?->value ?? $arr['input_type'];
+                return $arr;
             })
             ->groupBy('section')
             ->filter(fn($fields, $section) => !empty($section))
