@@ -1,59 +1,43 @@
 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-    <div wire:ignore.self x-data="{ open: false }" @click.away="open = false" class="relative inline-block">
-        <!-- Bouton avec les trois points -->
-        <button
-            type="button"
-            @click="open = !open"
-            class="text-subtle hover:text-body dark:text-muted dark:hover:text-heading focus:outline-none"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01" />
-            </svg>
+    <div wire:ignore.self x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
+        <button type="button" @click="open = !open"
+            class="p-2 rounded-xl text-muted hover:text-heading hover:bg-surface transition-all">
+            <x-lucide-more-horizontal class="w-5 h-5" />
         </button>
 
-        <!-- Menu déroulant qui s'adapte au contenu -->
-        <div
-        x-show="open"
-        x-transition:enter="transition ease-out duration-100"
-        x-transition:enter-start="transform opacity-0 scale-95"
-        x-transition:enter-end="transform opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-75"
-        x-transition:leave-start="transform opacity-100 scale-100"
-        x-transition:leave-end="transform opacity-0 scale-95"
-        class="fixed right-10 top-20 bg-card shadow-lg rounded-md z-50 border dark:border-border"
-    >
-            <div class="py-1">
-                <a href="{{ route('project.show', $project->id) }}" wire:navigate
-                class="block px-4 py-2 text-sm text-body dark:text-heading hover:bg-surface-alt dark:hover:bg-surface-alt">
-                    <x-dynamic-component component="lucide-eye" class="w-4 h-4 mr-2 inline" /> {{ __('table.preview') }}
-                </a>
+        <div x-show="open" x-cloak
+            x-transition:enter="transition ease-out duration-150"
+            x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-100"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-xl border border-border-light z-50 overflow-hidden">
 
-                <a href="{{ route('creator.proposal.project.edit', $project->id) }}" wire:navigate
-                class="block px-4 py-2 text-sm text-body dark:text-heading hover:bg-surface-alt dark:hover:bg-surface-alt">
-                    <x-dynamic-component component="lucide-pencil" class="w-4 h-4 mr-2 inline" /> {{ __('table.update') }}
-                </a>
+            <a href="{{ route('project.show', $project->id) }}"
+                class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-body hover:bg-surface hover:text-accent transition-colors">
+                <x-lucide-eye class="w-4 h-4 text-muted" /> {{ __('table.preview') }}
+            </a>
 
-                {{-- @if (!in_array($project->status, ['draft', 'Brouillon']) || auth()->user()->role->name === 'Administrateur') --}}
+            <a href="{{ route('creator.proposal.project.edit', $project->id) }}"
+                class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-body hover:bg-surface hover:text-accent transition-colors">
+                <x-lucide-pencil class="w-4 h-4 text-muted" /> {{ __('table.update') }}
+            </a>
 
-                
-                <a href="{{ route('project.dashboard', $project->id) }}" wire:navigate
-                class="block px-4 py-2 text-sm text-body dark:text-heading hover:bg-surface-alt dark:hover:bg-surface-alt">
-                    <x-dynamic-component component="lucide-bar-chart-3" class="w-4 h-4 mr-2 inline" /> {{ __('table.dashboard') }}
-                </a>
+            <a href="{{ route('project.dashboard', $project->id) }}"
+                class="flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-body hover:bg-surface hover:text-accent transition-colors">
+                <x-lucide-bar-chart-3 class="w-4 h-4 text-muted" /> {{ __('table.dashboard') }}
+            </a>
 
-                {{-- @endif --}}
-
-                @can('delete', $project)
-                <a href="#"  type="button"
+            @can('delete', $project)
+            <div class="border-t border-border-light"></div>
+            <button type="button"
                 wire:click="deleteProject('{{ $project->id }}')"
-                wire:confirm="Voudrez vous supprimez ce projet?, c'est irreversible"
-                class="block px-4 py-2 text-sm text-body dark:text-heading hover:bg-surface-alt dark:hover:bg-surface-alt">
-                    <x-dynamic-component component="lucide-trash-2" class="w-4 h-4 mr-2 inline" /> {{ __('table.delete') }}
-                </a>
-                @endcan
-            </div>
+                wire:confirm="Voulez-vous supprimer ce projet ? Cette action est irreversible."
+                class="flex items-center gap-3 w-full px-4 py-2.5 text-xs font-bold text-error hover:bg-error/5 transition-colors">
+                <x-lucide-trash-2 class="w-4 h-4" /> {{ __('table.delete') }}
+            </button>
+            @endcan
         </div>
-
-
     </div>
 </td>
