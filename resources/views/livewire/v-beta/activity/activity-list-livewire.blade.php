@@ -13,7 +13,12 @@
             <x-ui.select wire:model.live="statusFilter" icon="filter">
                 <option value="">{{ __('table.status') }}</option>
                 @foreach ($activityStatuses as $status)
-                    <option value="{{ $status }}">{{ Str::ucfirst(str_replace('_', ' ', strtolower($status) == 'draft' ? 'Brouillon' : $status )) }}</option>
+                    @php
+                        $statusEnum = $status instanceof \App\Enums\ActivityStatus ? $status : \App\Enums\ActivityStatus::tryFrom($status);
+                        $val = $statusEnum ? $statusEnum->value : $status;
+                        $label = $statusEnum ? $statusEnum->label() : $status;
+                    @endphp
+                    <option value="{{ $val }}">{{ $label }}</option>
                 @endforeach
             </x-ui.select>
 

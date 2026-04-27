@@ -288,11 +288,11 @@ class ProposalProjectFormLivewire extends Component
         if ($project->logicalFramework) {
             $lf = $project->logicalFramework;
             $this->initialLogicalFramework = array_merge($lf->toArray(), [
-                'indicators_list' => $lf->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+                'indicators_list' => ($lf->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
             ]);
-            $this->specificObjectives = $lf->specificObjectives->map(function ($obj) {
+            $this->specificObjectives = ($lf->specificObjectives ?? collect())->map(function ($obj) {
                 $data = $obj->toArray();
-                $data['indicators_list'] = $obj->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+                $data['indicators_list'] = ($obj->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
                 return $data;
             })->toArray();
             
