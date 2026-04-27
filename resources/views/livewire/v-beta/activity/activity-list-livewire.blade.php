@@ -94,17 +94,11 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
-                                        $statusStr = strtolower($activity->status ?? '');
-                                        $variant = match(true) {
-                                            $statusStr === 'actif' => 'emerald',
-                                            in_array($statusStr, ['draft', 'brouillon']) => 'amber',
-                                            in_array($statusStr, ['terminé', 'termine']) => 'blue',
-                                            $statusStr === 'en attente' => 'yellow',
-                                            default => 'red'
-                                        };
+                                        $actEnum = $activity->status instanceof \App\Enums\ActivityStatus ? $activity->status : \App\Enums\ActivityStatus::tryFrom($activity->status);
+                                        $variant = $actEnum ? $actEnum->color() : 'slate';
                                     @endphp
                                     <x-ui.badge :variant="$variant" size="md">
-                                        {{ Str::ucfirst(str_replace('_', ' ', $statusStr == 'draft' ? 'Brouillon' : ($activity->status ?: 'N/A') )) }}
+                                        {{ $actEnum ? $actEnum->label() : ($activity->status ?? 'N/A') }}
                                     </x-ui.badge>
                                 </td>
                                 <td class="px-6 py-4">
