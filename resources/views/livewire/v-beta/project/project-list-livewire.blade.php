@@ -40,7 +40,7 @@
 
     {{-- Projects Table --}}
     <x-ui.section title="Projets" icon="folder-kanban" :noPadding="false">
-        <div class="overflow-x-auto overflow-y-visible -mx-6">
+        <div class="overflow-x-auto -mx-6">
             @if ($projects->isEmpty())
                 <x-ui.empty-state icon="folder-open" title="Aucun projet trouvé" description="Essayez de modifier vos filtres ou de créer un nouveau projet." />
             @else
