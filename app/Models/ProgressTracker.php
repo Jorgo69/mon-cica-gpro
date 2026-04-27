@@ -11,9 +11,15 @@ class ProgressTracker extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
-        'id', 'organization_id', 'activity_id', 'project_id', 'creator_user_id', 
+        'id', 'organization_id', 'activity_id', 'project_id', 'creator_user_id',
         'date', 'progress_percentage', 'status_update', 'justification',
         'performance_score', 'evaluation_comment'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'progress_percentage' => 'integer',
+        'performance_score' => 'integer',
     ];
 
     protected static function boot()
