@@ -299,10 +299,10 @@ class ProposalProjectFormLivewire extends Component
             $this->expectedResults = [];
             $this->activities = [];
 
-            foreach ($project->logicalFramework->specificObjectives as $obj) {
-                foreach ($obj->results as $res) {
+            foreach ($lf->specificObjectives ?? [] as $obj) {
+                foreach ($obj->results ?? [] as $res) {
                     $this->expectedResults[] = $res->toArray();
-                    foreach ($res->activities as $act) {
+                    foreach ($res->activities ?? [] as $act) {
                         $activity = $act->toArray();
                         if (isset($activity['start_date'])) $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
                         if (isset($activity['end_date'])) $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');

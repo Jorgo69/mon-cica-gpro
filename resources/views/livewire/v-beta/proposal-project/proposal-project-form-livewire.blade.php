@@ -177,12 +177,14 @@
                                     Suivant
                                 </x-ui.button>
                             @else
-                                <x-ui.button type="submit" 
+                                <x-ui.button type="submit"
                                         variant="accent"
                                         size="lg"
                                         icon="check-check"
-                                        loadingTarget="submitForm">
-                                    Soumettre le projet
+                                        loadingTarget="submitForm"
+                                        wire:loading.attr="disabled"
+                                        :disabled="$isSubmitting">
+                                    {{ $isSubmitting ? 'Enregistrement...' : 'Soumettre le projet' }}
                                 </x-ui.button>
                             @endif
                         </div>
