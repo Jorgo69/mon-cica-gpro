@@ -60,8 +60,7 @@ class ProjectShowLivewire extends Component
     public function loadProject()
     {
         $this->project = Project::with([
-            'projectType.dynamicFields', // Charge le type de projet et ses champs dynamiques
-            'projectContext',
+            'projectType.dynamicFields',
             'documents',
             'budgets',
             'logicalFramework.indicators',

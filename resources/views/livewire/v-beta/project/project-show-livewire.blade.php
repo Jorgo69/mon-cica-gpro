@@ -118,13 +118,13 @@
                 </x-ui.section>
 
                 {{-- Section 2: Contexte du projet --}}
-                @if($project->projectContext)
+                @if($project->context_description || $project->problem_analysis || $project->strategy || $project->justification)
                     <x-ui.section title="Contexte du Projet" icon="file-text">
                         <div class="space-y-4">
-                            @if($project->projectContext->context_description)
+                            @if($project->context_description)
                             <div>
                                 <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Description du contexte</p>
-                                <p class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-justify leading-relaxed">{{ $project->projectContext->context_description }}</p>
+                                <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-justify leading-relaxed">{!! clean($project->context_description) !!}</div>
                             </div>
                             @endif
                             @if($project->justification)
@@ -176,8 +176,9 @@
                         </x-ui.section>
                     @endforeach
                 @endif
+            @endif
 
-                @if($activeTab === 'logframe')
+            @if($activeTab === 'logframe')
                     {{-- Section 4: Cadre Logique --}}
                     @if($project->logicalFramework)
 
@@ -272,8 +273,6 @@
                         @livewire('v-beta.audit.activity-history-livewire', ['subject' => $project])
                     </x-ui.section>
                 @endif
-
-            @endif
 
         </div>
     @else
