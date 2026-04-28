@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Organization extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\HasMeta;
 
     protected $primaryKey = 'id';
     public $incrementing = false;
@@ -19,6 +19,7 @@ class Organization extends Model
         'name',
         'slug',
         'status',
+        'meta',
     ];
 
     protected $attributes = [
@@ -27,6 +28,7 @@ class Organization extends Model
 
     protected $casts = [
         'status' => \App\Enums\OrganizationStatus::class,
+        'meta' => 'array',
     ];
 
     protected static function boot()

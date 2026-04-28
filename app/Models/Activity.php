@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
  */
 class Activity extends Model
 {
-    use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
+    use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -25,11 +25,10 @@ class Activity extends Model
     protected $fillable = [
         'id', 'organization_id', 'result_id', 'parent_id', 'creator_user_id',
         'description', 'start_date', 'end_date', 'budget', 'responsible_user_id', 'status',
-        'justification', 'is_milestone', 'progress_percentage',
+        'justification', 'is_milestone', 'progress_percentage', 'meta',
     ];
 
-     protected $dateFormat = 'Y-m-d H:i:s';
-     
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $casts = [
         'status' => \App\Enums\ActivityStatus::class,
@@ -37,6 +36,7 @@ class Activity extends Model
         'is_milestone' => 'boolean',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
+        'meta' => 'array',
     ];
 
     protected static function boot()

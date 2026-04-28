@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Project extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -43,13 +43,15 @@ class Project extends Model
         'status',
         'start_date',
         'end_date',
+        'meta',
     ];
 
     protected $casts = [
         'status' => \App\Enums\ProjectStatus::class,
-        'start_date' => 'date', 
+        'start_date' => 'date',
         'end_date' => 'date',
         'general_objectives' => 'array',
+        'meta' => 'array',
     ];
 
     protected static function boot()

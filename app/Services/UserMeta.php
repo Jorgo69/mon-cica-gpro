@@ -2,82 +2,44 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Arr;
-
+/**
+ * UserMeta — Wrapper statique pour acceder aux meta de l'utilisateur connecte.
+ *
+ * Delegue au trait HasMeta sur le model User.
+ * Utiliser directement dans les controllers, middleware, vues Blade.
+ *
+ * Usage :
+ *   UserMeta::get('theme', 'light')
+ *   UserMeta::set('locale', 'fr')
+ *   UserMeta::set(['theme' => 'dark', 'density' => 'comfortable'])
+ *   UserMeta::forget('old_key')
+ *   UserMeta::has('theme')
+ *   UserMeta::all()
+ */
 class UserMeta
 {
-    /**
-     * Get a meta value (dot notation supported).
-     */
     public static function get(string $key, mixed $default = null): mixed
     {
-        $user = auth()->user();
-        if (!$user) {
-            return $default;
-        }
-
-        return Arr::get($user->meta ?? [], $key, $default);
+        return auth()->user()?->getMeta($key, $default) ?? $default;
     }
 
-    /**
-     * Set one or many meta values (dot notation supported).
-     */
     public static function set(string|array $key, mixed $value = null): void
     {
-        $user = auth()->user();
-        if (!$user) {
-            return;
-        }
-
-        $meta = $user->meta ?? [];
-
-        if (is_array($key)) {
-            foreach ($key as $k => $v) {
-                Arr::set($meta, $k, $v);
-            }
-        } else {
-            Arr::set($meta, $key, $value);
-        }
-
-        $user->meta = $meta;
-        $user->saveQuietly();
+        auth()->user()?->setMeta($key, $value);
     }
 
-    /**
-     * Remove a meta key (dot notation supported).
-     */
     public static function forget(string $key): void
     {
-        $user = auth()->user();
-        if (!$user) {
-            return;
-        }
-
-        $meta = $user->meta ?? [];
-        Arr::forget($meta, $key);
-
-        $user->meta = $meta;
-        $user->saveQuietly();
+        auth()->user()?->forgetMeta($key);
     }
 
-    /**
-     * Get all meta as array.
-     */
-    public static function all(): array
-    {
-        return auth()->user()?->meta ?? [];
-    }
-
-    /**
-     * Check if a meta key exists.
-     */
     public static function has(string $key): bool
     {
-        $user = auth()->user();
-        if (!$user) {
-            return false;
-        }
+        return auth()->user()?->hasMeta($key) ?? false;
+    }
 
-        return Arr::has($user->meta ?? [], $key);
+    public static function all(): array
+    {
+        return auth()->user()?->allMeta() ?? [];
     }
 }

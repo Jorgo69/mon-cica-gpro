@@ -6,21 +6,22 @@ use Illuminate\Support\Str;
 
 class LogicalFramework extends Model
 {
-    use HasFactory, \App\Traits\Multitenantable;
+    use HasFactory, \App\Traits\Multitenantable, \App\Traits\HasMeta;
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'id', 'organization_id', 'project_id', 'creator_user_id', 'general_objective', 'general_obj_indicators',
-        'general_obj_verification_sources', 'assumptions',
+        'general_obj_verification_sources', 'assumptions', 'meta',
     ];
 
     protected $dateFormat = 'Y-m-d H:i:s';
-    
+
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
+        'meta' => 'array',
     ];
 
     protected static function boot()

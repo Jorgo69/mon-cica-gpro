@@ -28,7 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, SoftDeletes;
