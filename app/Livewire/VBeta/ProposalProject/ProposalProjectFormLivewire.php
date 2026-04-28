@@ -127,7 +127,6 @@ class ProposalProjectFormLivewire extends Component
 
             // Specific Objectives
             'specificObjectives.*.description' => 'required|string',
-            'specificObjectives.*.indicators' => 'nullable|string',
             'specificObjectives.*.verification_sources' => 'nullable|string',
             'specificObjectives.*.assumptions' => 'nullable|string',
 
@@ -197,6 +196,25 @@ class ProposalProjectFormLivewire extends Component
             'activities.*.description' => 'description de l\'activité',
             'budgets.*.description' => 'description de la ligne budgétaire',
         ];
+
+        // Dynamic indexed attributes for clear error messages
+        foreach ($this->specificObjectives as $i => $obj) {
+            $n = $i + 1;
+            $attributes["specificObjectives.{$i}.description"] = "description de l'objectif spécifique n°{$n}";
+            $attributes["specificObjectives.{$i}.verification_sources"] = "sources de vérification de l'objectif n°{$n}";
+            $attributes["specificObjectives.{$i}.assumptions"] = "hypothèses de l'objectif n°{$n}";
+        }
+        foreach ($this->expectedResults as $i => $res) {
+            $attributes["expectedResults.{$i}.description"] = "description du résultat attendu n°".($i + 1);
+        }
+        foreach ($this->activities as $i => $act) {
+            $n = $i + 1;
+            $attributes["activities.{$i}.description"] = "description de l'activité n°{$n}";
+            $attributes["activities.{$i}.responsible_user_id"] = "responsable de l'activité n°{$n}";
+            $attributes["activities.{$i}.start_date"] = "date de début de l'activité n°{$n}";
+            $attributes["activities.{$i}.end_date"] = "date de fin de l'activité n°{$n}";
+            $attributes["activities.{$i}.status"] = "statut de l'activité n°{$n}";
+        }
 
         foreach ($this->dynamicFormFields as $section => $fields) {
             foreach ($fields as $field) {
@@ -287,11 +305,14 @@ class ProposalProjectFormLivewire extends Component
         // Logical Framework
         if ($project->logicalFramework) {
             $lf = $project->logicalFramework;
-            $this->initialLogicalFramework = array_merge($lf->toArray(), [
+            $lfData = $lf->toArray();
+            unset($lfData['indicators'], $lfData['specific_objectives']); // Remove eager-loaded relations
+            $this->initialLogicalFramework = array_merge($lfData, [
                 'indicators_list' => ($lf->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
             ]);
             $this->specificObjectives = ($lf->specificObjectives ?? collect())->map(function ($obj) {
                 $data = $obj->toArray();
+                unset($data['indicators']); // Remove eager-loaded relation (replaced by indicators_list)
                 $data['indicators_list'] = ($obj->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
                 return $data;
             })->toArray();
