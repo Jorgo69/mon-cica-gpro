@@ -32,6 +32,7 @@ class Activity extends Model
 
     protected $casts = [
         'status' => \App\Enums\ActivityStatus::class,
+        'start_date' => 'date',
         'end_date' => 'date',
         'is_milestone' => 'boolean',
         'created_at' => 'datetime:Y-m-d H:i:s',

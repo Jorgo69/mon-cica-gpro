@@ -2,50 +2,42 @@
 
 namespace App\Actions\PDF;
 
-use App\Models\Project;
-use App\Services\PDF\PDFTemplateManager;
-use Spatie\Browsershot\Browsershot;
+use App\Services\PDF\PdfDriverFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GenerateProjectReportAction
 {
-    public function __construct(
-        protected PDFTemplateManager $templateManager
-    ) {}
-
-    /**
-     * Generate a PDF report for a project.
-     *
-     * @param string $projectId
-     * @param string|null $templateKey
-     * @return string Path to the generated PDF
-     */
-    public function execute(string $projectId, ?string $templateKey = null): string
+    public function execute(string $projectId, ?string $templateKey = null, ?string $driver = null): string
     {
-        $project = Project::with([
-            'creator',
-            'projectType.dynamicFields',
-            'logicalFramework.indicators',
-            'logicalFramework.specificObjectives.indicators',
-            'logicalFramework.specificObjectives.results.indicators',
-            'logicalFramework.specificObjectives.results.activities.subActivities',
-            'budgets.responsibleUser',
-            'documents',
-        ])->findOrFail($projectId);
+        $project = \App\Services\Queries\LogframeQueryService::forProject($projectId)->project();
 
-        // Select template
-        $template = $templateKey 
-            ? $this->templateManager->getAvailableTemplates()->get($templateKey)
-            : $this->templateManager->getTemplateForOrganization($project->organization_id);
-
-        if (!$template) {
-            throw new \Exception("Modèle PDF non trouvé : {$templateKey}");
+        if (!$project) {
+            throw new \Exception("Projet non trouve : {$projectId}");
         }
 
-        // Prepare Dynamic Fields
+        // Resolve driver and template
+        $driverName = $driver ?? config('gpro.pdf.driver', 'dompdf');
+        $templateKey = $templateKey ?? 'classic';
+        $templates = config('gpro.pdf.templates', []);
+        $templateConfig = $templates[$templateKey] ?? null;
+
+        if (!$templateConfig) {
+            throw new \Exception("Modele PDF non trouve : {$templateKey}");
+        }
+
+        // Resolve view based on driver
+        $viewName = is_array($templateConfig['view'])
+            ? ($templateConfig['view'][$driverName] ?? $templateConfig['view']['dompdf'])
+            : $templateConfig['view'];
+
+        // Prepare dynamic fields
         $dynamicFormFields = [];
-        if ($project->projectType) {
+        if ($project->projectType && $project->projectType->relationLoaded('dynamicFields')) {
+            $dynamicFormFields = $project->projectType->dynamicFields
+                ->groupBy('section')
+                ->toArray();
+        } elseif ($project->projectType) {
             $dynamicFormFields = $project->projectType->dynamicFields()
                 ->orderBy('order')
                 ->get()
@@ -54,29 +46,24 @@ class GenerateProjectReportAction
         }
 
         // Render HTML
-        $html = view($template['view'], [
+        $html = view($viewName, [
             'project' => $project,
             'dynamicFormFields' => $dynamicFormFields,
         ])->render();
 
-        // Define output path
+        // Output path
         $fileName = 'Rapport_' . Str::slug($project->title) . '_' . now()->format('YmdHis') . '.pdf';
         $directory = 'exports/pdf';
-        
+
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
 
         $path = storage_path('app/public/' . $directory . '/' . $fileName);
 
-        // Generate PDF via Browsershot
-        Browsershot::html($html)
-            ->format('A4')
-            ->setChromePath('/snap/bin/chromium') // As configured on the system
-            ->noSandbox()
-            ->margins(0, 0, 0, 0)
-            ->waitUntilNetworkIdle() // Ensure all assets are loaded
-            ->save($path);
+        // Generate PDF via configured driver
+        $pdfDriver = PdfDriverFactory::make($driverName);
+        $pdfDriver->generate($html, $path);
 
         return $path;
     }

@@ -48,6 +48,39 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | PDF Export
+    |--------------------------------------------------------------------------
+    |
+    | Driver : 'dompdf' (defaut, gratuit, zero dependance)
+    |          'browsershot' (premium, necessite Chromium + Puppeteer)
+    |
+    */
+    'pdf' => [
+        'driver' => env('PDF_DRIVER', 'dompdf'),
+        'templates' => [
+            'classic' => [
+                'name' => 'Classique',
+                'description' => 'Mise en page sobre et professionnelle',
+                'view' => [
+                    'dompdf' => 'pdf.templates.classic-dompdf.index',
+                    'browsershot' => 'pdf.templates.classic.index',
+                ],
+                'premium' => false,
+            ],
+            'modern' => [
+                'name' => 'Moderne',
+                'description' => 'Design contemporain avec couleurs et graphiques',
+                'view' => [
+                    'dompdf' => 'pdf.templates.classic-dompdf.index',
+                    'browsershot' => 'pdf.templates.modern.index',
+                ],
+                'premium' => true,
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Preferences par defaut
     |--------------------------------------------------------------------------
     */
