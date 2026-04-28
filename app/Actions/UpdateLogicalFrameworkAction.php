@@ -66,7 +66,7 @@ class UpdateLogicalFrameworkAction
             $logicalFramework = $project->logicalFramework;
         } else {
             $logicalFramework = LogicalFramework::create(array_merge(
-                ['id' => (string) Str::uuid(), 'project_id' => $project->id],
+                ['id' => (string) Str::orderedUuid(), 'project_id' => $project->id],
                 $cleanData
             ));
         }
@@ -100,7 +100,7 @@ class UpdateLogicalFrameworkAction
 
                 $objective = SpecificObjective::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'logical_framework_id' => $logicalFramework->id]
+                    ['id' => (string) Str::orderedUuid(), 'logical_framework_id' => $logicalFramework->id]
                 ));
                 $submittedIds[] = $objective->id;
 
@@ -148,7 +148,7 @@ class UpdateLogicalFrameworkAction
 
                 $result = Result::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'specific_objective_id' => $objective->id]
+                    ['id' => (string) Str::orderedUuid(), 'specific_objective_id' => $objective->id]
                 ));
                 $submittedResultIds[] = $result->id;
 
@@ -202,7 +202,7 @@ class UpdateLogicalFrameworkAction
 
                 $activity = Activity::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'result_id' => $result->id]
+                    ['id' => (string) Str::orderedUuid(), 'result_id' => $result->id]
                 ));
                 $submittedActivityIds[] = $activity->id;
             }

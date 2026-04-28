@@ -20,7 +20,7 @@ class ProjectService
 
         return DB::transaction(function () use ($data) {
             $project = Project::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'title' => $data['title'],
                 'project_code' => $data['project_code'] ?? $this->generateProjectCode(),
                 'project_type_id' => $data['project_type_id'] ?? null,

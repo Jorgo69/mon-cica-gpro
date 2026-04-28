@@ -52,12 +52,18 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        if (!$user->hasPermissionTo('edit-projects')) {
+        // Le SYSTEM_ADMIN ne doit pas modifier les données privées des organisations
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
-        // Le SYSTEM_ADMIN ne doit pas modifier les données privées des organisations
-        if ($user->role === \App\Enums\AccountType::ROOT) {
+        // Le créateur peut toujours modifier son projet en brouillon
+        if ((string) $user->id === (string) $project->creator_user_id
+            && $project->status === \App\Enums\ProjectStatus::DRAFT) {
+            return true;
+        }
+
+        if (!$user->hasPermissionTo('edit-projects')) {
             return false;
         }
 

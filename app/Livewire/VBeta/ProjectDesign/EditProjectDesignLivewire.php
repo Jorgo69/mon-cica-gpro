@@ -274,11 +274,11 @@ class EditProjectDesignLivewire extends Component
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('public/project_documents', $fileName);
                 ProjectDocument::create([
-                    'id' => Str::uuid(),
+                    'id' => Str::orderedUuid(),
                     'project_id' => $project->id,
                     'file_name' => $fileName,
                     'file_path' => $filePath,
-                    'file_mime_type' => $file->getMimeType(),
+                    'file_type' => $file->getMimeType(),
                 ]);
             }
             $this->uploadedDocuments = [];
@@ -289,7 +289,7 @@ class EditProjectDesignLivewire extends Component
             }
             if ($this->generalGoal) {
                 $logicalFramework = $project->logicalFramework()->create([
-                    'id' => Str::uuid(),
+                    'id' => Str::orderedUuid(),
                     'general_goal' => $this->generalGoal,
                 ]);
 
@@ -300,7 +300,7 @@ class EditProjectDesignLivewire extends Component
                 foreach ($this->specificObjectives as $objectiveData) {
                     if (!empty($objectiveData['description'])) {
                         $objective = $logicalFramework->specificObjectives()->create([
-                            'id' => Str::uuid(),
+                            'id' => Str::orderedUuid(),
                             'description' => $objectiveData['description'],
                         ]);
 
@@ -311,7 +311,7 @@ class EditProjectDesignLivewire extends Component
                         foreach ($objectiveData['results'] as $resultData) {
                             if (!empty($resultData['description'])) {
                                 $result = $objective->results()->create([
-                                    'id' => Str::uuid(),
+                                    'id' => Str::orderedUuid(),
                                     'description' => $resultData['description'],
                                 ]);
 
@@ -322,7 +322,7 @@ class EditProjectDesignLivewire extends Component
                                 foreach ($resultData['activities'] as $activityData) {
                                     if (!empty($activityData['description'])) {
                                         $result->activities()->create([
-                                            'id' => Str::uuid(),
+                                            'id' => Str::orderedUuid(),
                                             'description' => $activityData['description'],
                                             'responsible_user_id' => $activityData['responsible'],
                                         ]);

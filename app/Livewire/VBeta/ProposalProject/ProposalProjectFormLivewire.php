@@ -149,6 +149,10 @@ class ProposalProjectFormLivewire extends Component
                 'before_or_equal:projectEndDate'
             ],
             'activities.*.status' => ['nullable', Rule::in(array_column(\App\Enums\ActivityStatus::cases(), 'value'))],
+
+            // Budgets
+            'budgets.*.description' => 'nullable|string|max:255',
+            'budgets.*.total_cost' => 'nullable|numeric|min:0',
         ];
 
         // Add dynamic rules based on current step
@@ -231,6 +235,13 @@ class ProposalProjectFormLivewire extends Component
 
     public function mount($projectId = null)
     {
+        if ($projectId) {
+            $project = Project::findOrFail($projectId);
+            $this->authorize('update', $project);
+        } else {
+            $this->authorize('create', Project::class);
+        }
+
         $this->users = UserQueryService::forCurrentOrg()->get();
         $this->allProjectTypes = ProjectType::visibleForOrg(\App\Services\OrgContext::orgId())->get();
         $this->initStepDetails();
@@ -298,28 +309,44 @@ class ProposalProjectFormLivewire extends Component
         // Logical Framework
         if ($project->logicalFramework) {
             $lf = $project->logicalFramework;
-            $lfData = $lf->toArray();
-            unset($lfData['indicators'], $lfData['specific_objectives']); // Remove eager-loaded relations
+            $lfData = collect($lf->toArray())->only([
+                'id', 'project_id', 'general_objective', 'general_obj_indicators',
+                'general_obj_verification_sources', 'assumptions',
+                'organization_id', 'creator_user_id',
+            ])->toArray();
             $this->initialLogicalFramework = array_merge($lfData, [
                 'indicators_list' => $lf->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
             ]);
             $this->specificObjectives = ($lf->specificObjectives ?? collect())->map(function ($obj) {
-                $data = $obj->toArray();
-                unset($data['indicators']);
+                $data = collect($obj->toArray())->only([
+                    'id', 'logical_framework_id', 'description', 'indicators',
+                    'verification_sources', 'assumptions', 'organization_id', 'creator_user_id',
+                ])->toArray();
                 $data['indicators_list'] = $obj->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
                 return $data;
             })->toArray();
-            
+
             $this->expectedResults = [];
             $this->activities = [];
 
             foreach ($lf->specificObjectives ?? [] as $obj) {
                 foreach ($obj->results ?? [] as $res) {
-                    $this->expectedResults[] = $res->toArray();
+                    $resData = collect($res->toArray())->only([
+                        'id', 'specific_objective_id', 'description', 'indicators',
+                        'verification_sources', 'assumptions', 'organization_id', 'creator_user_id',
+                    ])->toArray();
+                    $this->expectedResults[] = $resData;
                     foreach ($res->activities ?? [] as $act) {
-                        $activity = $act->toArray();
+                        $activity = collect($act->toArray())->only([
+                            'id', 'result_id', 'project_id', 'description', 'responsible_user_id',
+                            'start_date', 'end_date', 'status', 'budget', 'is_milestone',
+                            'organization_id', 'creator_user_id',
+                        ])->toArray();
                         if (isset($activity['start_date'])) $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
                         if (isset($activity['end_date'])) $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');
+                        if (isset($activity['status']) && $activity['status'] instanceof \App\Enums\ActivityStatus) {
+                            $activity['status'] = $activity['status']->value;
+                        }
                         $this->activities[] = $activity;
                     }
                 }
@@ -527,7 +554,7 @@ class ProposalProjectFormLivewire extends Component
     public function addSpecificObjective()
     {
         $this->specificObjectives[] = [
-            'id' => Str::uuid()->toString(),
+            'id' => Str::orderedUuid()->toString(),
             'description' => '',
             'indicators' => '',
             'verification_sources' => '',
@@ -544,7 +571,7 @@ class ProposalProjectFormLivewire extends Component
 
     public function addExpectedResult()
     {
-        $this->expectedResults[] = ['id' => Str::uuid()->toString(), 'description' => ''];
+        $this->expectedResults[] = ['id' => Str::orderedUuid()->toString(), 'description' => ''];
     }
 
     public function removeExpectedResult($index)
@@ -557,7 +584,7 @@ class ProposalProjectFormLivewire extends Component
     {
         $this->activities[] = [
             'id' => null, 'description' => '', 'responsible_user_id' => '', 'start_date' => '', 'end_date' => '',
-            'status' => 'En cours', 'justification' => '', 'is_milestone' => false, 'progress_percentage' => 0
+            'status' => \App\Enums\ActivityStatus::DRAFT->value, 'justification' => '', 'is_milestone' => false, 'budget' => 0
         ];
     }
 
@@ -597,7 +624,7 @@ class ProposalProjectFormLivewire extends Component
     public function addBudget()
     {
         $this->budgets[] = [
-            'id' => Str::uuid()->toString(), 'description' => '', 'quantity' => null, 'unit_cost' => null,
+            'id' => Str::orderedUuid()->toString(), 'description' => '', 'quantity' => null, 'unit_cost' => null,
             'total_cost' => null, 'category' => '', 'responsible_user_id' => null
         ];
     }
@@ -707,6 +734,40 @@ class ProposalProjectFormLivewire extends Component
             } else {
                 \Log::info('SUBMIT_FORM_BRANCH: Creating new project.');
                 $project = $this->createProject($projectDataPayload);
+            }
+
+            // Sauvegarder les documents uploades
+            if ($project && !empty($this->uploadedDocuments)) {
+                foreach ($this->uploadedDocuments as $document) {
+                    $path = $document->store('documents/' . $project->id, 'public');
+                    \App\Models\ProjectDocument::create([
+                        'project_id' => $project->id,
+                        'file_path' => $path,
+                        'file_name' => $document->getClientOriginalName(),
+                        'file_type' => $document->getMimeType(),
+                        'organization_id' => $project->organization_id,
+                        'creator_user_id' => Auth::id(),
+                    ]);
+                }
+            }
+
+            // Sauvegarder les budgets
+            if ($project && !empty($this->budgets)) {
+                // Supprimer les anciens budgets en edition
+                if ($this->projectId) {
+                    \App\Models\Budget::where('project_id', $project->id)->delete();
+                }
+                foreach ($this->budgets as $budgetData) {
+                    if (!empty($budgetData['description'])) {
+                        \App\Models\Budget::create([
+                            'project_id' => $project->id,
+                            'description' => $budgetData['description'],
+                            'total_amount' => $budgetData['total_cost'] ?? $budgetData['total_amount'] ?? 0,
+                            'organization_id' => $project->organization_id,
+                            'creator_user_id' => Auth::id(),
+                        ]);
+                    }
+                }
             }
 
             DB::commit();

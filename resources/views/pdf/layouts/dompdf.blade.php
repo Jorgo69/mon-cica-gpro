@@ -16,7 +16,7 @@
 
         @page {
             size: A4;
-            margin: 15mm 12mm;
+            margin: 20mm 18mm;
         }
 
         .page-break { page-break-after: always; }

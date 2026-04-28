@@ -63,7 +63,7 @@
                 @if($projectStartDate && $projectEndDate)
                 <div>
                     <span class="text-[9px] font-black text-muted uppercase tracking-[0.2em] block mb-1.5">Duree estimee</span>
-                    <p class="text-sm font-bold text-accent">{{ \Carbon\Carbon::parse($projectStartDate)->diffInMonths(\Carbon\Carbon::parse($projectEndDate)) }} mois</p>
+                    <p class="text-sm font-bold text-accent">{{ (int) \Carbon\Carbon::parse($projectStartDate)->diffInMonths(\Carbon\Carbon::parse($projectEndDate)) }} mois</p>
                 </div>
                 @endif
             </div>

@@ -44,14 +44,16 @@ class CreateLogicalFrameworkAction
         ) {
             
             // 🔹 1. Créer le cadre logique
+            $indicatorsList = $logicalFrameworkData['indicators_list'] ?? [];
+            $cleanLfData = \Illuminate\Support\Arr::except($logicalFrameworkData, ['indicators_list', 'specific_objectives']);
             $logicalFramework = LogicalFramework::create(array_merge(
-                ['id' => (string) Str::uuid(), 'project_id' => $projectId],
-                $logicalFrameworkData
+                ['id' => (string) Str::orderedUuid(), 'project_id' => $projectId],
+                $cleanLfData
             ));
 
             // Sync indicateurs du cadre logique (objectif general)
-            if (!empty($logicalFrameworkData['indicators_list'])) {
-                $this->syncIndicators($logicalFramework, $logicalFrameworkData['indicators_list']);
+            if (!empty($indicatorsList)) {
+                $this->syncIndicators($logicalFramework, $indicatorsList);
             }
 
             // 🔹 2. Créer les objectifs spécifiques
@@ -60,7 +62,7 @@ class CreateLogicalFrameworkAction
                 if (empty(trim($objData['description'] ?? ''))) continue;
 
                 $objective = SpecificObjective::create([
-                    'id'                   => (string) Str::uuid(),
+                    'id'                   => (string) Str::orderedUuid(),
                     'logical_framework_id' => $logicalFramework->id,
                     'description'          => $objData['description'],
                     'indicators'           => $objData['indicators'] ?? null,
@@ -78,7 +80,7 @@ class CreateLogicalFrameworkAction
             // Si aucun objectif n'est créé, créer un objectif par défaut pour lier les résultats
             if (empty($createdObjectives)) {
                  $createdObjectives[] = SpecificObjective::create([
-                    'id'                   => (string) Str::uuid(),
+                    'id'                   => (string) Str::orderedUuid(),
                     'logical_framework_id' => $logicalFramework->id,
                     'description'          => 'Objectif Principal',
                 ]);
@@ -93,7 +95,7 @@ class CreateLogicalFrameworkAction
                 $objective = $createdObjectives[$objectiveIndex];
 
                 $result = Result::create([
-                    'id'                   => (string) Str::uuid(),
+                    'id'                   => (string) Str::orderedUuid(),
                     'specific_objective_id'=> $objective->id,
                     'description'          => $resData['description'],
                 ]);
@@ -108,7 +110,7 @@ class CreateLogicalFrameworkAction
             // Si aucun résultat n'est créé, créer un résultat par défaut pour lier les activités
             if (empty($createdResults)) {
                 $createdResults[] = Result::create([
-                    'id'                   => (string) Str::uuid(),
+                    'id'                   => (string) Str::orderedUuid(),
                     'specific_objective_id'=> $createdObjectives[0]->id,
                     'description'          => 'Résultat Principal',
                 ]);
@@ -122,7 +124,7 @@ class CreateLogicalFrameworkAction
                 $result = $createdResults[$resultIndex];
 
                 $activity = Activity::create([
-                    'id'        => (string) Str::uuid(),
+                    'id'        => (string) Str::orderedUuid(),
                     'result_id' => $result->id,
                     'description'=> $actData['description'],
                     'responsible_user_id'=> $actData['responsible_user_id'] ?? null,

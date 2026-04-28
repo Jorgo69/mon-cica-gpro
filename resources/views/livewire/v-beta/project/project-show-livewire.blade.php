@@ -215,7 +215,7 @@
                                             <span class="text-sm font-medium text-body group-hover:text-accent transition-colors">
                                                 {{ $document->file_name }}
                                             </span>
-                                            <x-ui.badge variant="slate" size="sm">{{ strtoupper($document->file_mime_type) }}</x-ui.badge>
+                                            <x-ui.badge variant="slate" size="sm">{{ strtoupper($document->file_type ?? 'N/A') }}</x-ui.badge>
                                         </a>
                                     </li>
                                 @endforeach

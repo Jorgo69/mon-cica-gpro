@@ -16,7 +16,7 @@ class ProjectTypeSeeder extends Seeder
             ProjectType::firstOrCreate(
                 ['name' => $typeData['name']],
                 [
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'description' => $typeData['description'],
                     'category' => $typeData['category'],
                     'is_system' => true,

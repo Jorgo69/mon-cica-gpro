@@ -221,7 +221,7 @@ class CreateProjectDesignLivewire extends Component
             DB::beginTransaction();
 
             $project = Project::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_code' => $this->projectCode,
                 'title' => $this->projectTitle,
                 'short_title' => $this->projectShortTitle,
@@ -235,14 +235,14 @@ class CreateProjectDesignLivewire extends Component
 
             // Save ProjectContext
             ProjectContext::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_id' => $project->id,
                 'description' => $this->contextDescription,
             ]);
 
             // Save EnvironmentAnalysis
             EnvironmentAnalysis::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_id' => $project->id,
                 'description' => $this->environmentAnalysisText,
             ]);
@@ -250,7 +250,7 @@ class CreateProjectDesignLivewire extends Component
             // Save Stakeholders
             foreach ($this->stakeholders as $stakeholderData) {
                 Stakeholder::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'project_id' => $project->id,
                     'name' => $stakeholderData['name'],
                     'role' => $stakeholderData['role'],
@@ -261,28 +261,28 @@ class CreateProjectDesignLivewire extends Component
 
             // Save ProblemAnalysis
             ProblemAnalysis::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_id' => $project->id,
                 'description' => $this->problemAnalysisText,
             ]);
 
             // Save Strategy
             Strategy::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_id' => $project->id,
                 'description' => $this->strategyDefinitionText,
             ]);
             
             // Save Goal and Objectives
             $goal = Goal::create([
-                'id' => (string) Str::uuid(),
+                'id' => (string) Str::orderedUuid(),
                 'project_id' => $project->id,
                 'description' => $this->generalGoal,
             ]);
 
             foreach ($this->specificObjectives as $objectiveData) {
                 $objective = Objective::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'goal_id' => $goal->id,
                     'description' => $objectiveData['description'],
                 ]);
@@ -290,7 +290,7 @@ class CreateProjectDesignLivewire extends Component
                 // Save Results and Activities
                 foreach ($this->expectedResults as $resultData) {
                     $result = Result::create([
-                        'id' => (string) Str::uuid(),
+                        'id' => (string) Str::orderedUuid(),
                         'objective_id' => $objective->id,
                         'description' => $resultData['description'],
                         'indicators' => $resultData['indicators'],
@@ -298,7 +298,7 @@ class CreateProjectDesignLivewire extends Component
 
                     foreach ($resultData['activities'] as $activityData) {
                         Activity::create([
-                            'id' => (string) Str::uuid(),
+                            'id' => (string) Str::orderedUuid(),
                             'result_id' => $result->id,
                             'responsible_user_id' => $activityData['responsible_user_id'],
                             'description' => $activityData['description'],
@@ -313,7 +313,7 @@ class CreateProjectDesignLivewire extends Component
             // Save Risks
             foreach ($this->risks as $riskData) {
                 Risk::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'project_id' => $project->id,
                     'description' => $riskData['description'],
                     'impact' => $riskData['impact'],
@@ -326,11 +326,11 @@ class CreateProjectDesignLivewire extends Component
             foreach ($this->uploadedDocuments as $document) {
                 $path = $document->store('documents/' . $project->id, 'public');
                 ProjectDocument::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'project_id' => $project->id,
                     'file_path' => $path,
                     'file_name' => $document->getClientOriginalName(),
-                    'file_mime_type' => $document->getMimeType(),
+                    'file_type' => $document->getMimeType(),
                 ]);
             }
 

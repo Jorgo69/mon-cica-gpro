@@ -40,7 +40,7 @@ class GeneralAdministrationSeeder extends Seeder
                     'type' => 'project_type',
                 ],
                 [
-                    'id'          => (string) Str::uuid(),
+                    'id'          => (string) Str::orderedUuid(),
                     'description' => $description,
                     'is_system'   => true,
                     'is_active'   => true,
@@ -54,7 +54,7 @@ class GeneralAdministrationSeeder extends Seeder
                     'type' => 'activity_status',
                 ],
                 [
-                    'id'          => (string) Str::uuid(),
+                    'id'          => (string) Str::orderedUuid(),
                     'description' => $description,
                     'is_system'   => true,
                     'is_active'   => true,

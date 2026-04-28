@@ -132,7 +132,7 @@ class ProjectTypeFormLivewire extends Component
                 $projectType->update($updateData);
             } else {
                 $projectType = ProjectType::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'name' => $this->name,
                     'description' => $this->description,
                     'category' => $this->category,
@@ -152,7 +152,7 @@ class ProjectTypeFormLivewire extends Component
             foreach ($this->fields as $index => $fieldData) {
                 // Si c'est un nouveau champ, on génère les délimiteurs
                 if (empty($fieldData['delimiter_start'])) {
-                    $uniqueId = (string) Str::uuid();
+                    $uniqueId = (string) Str::orderedUuid();
                     $fieldData['delimiter_start'] = '{{--START:' . $uniqueId . '--}}';
                     $fieldData['delimiter_end'] = '{{--END:' . $uniqueId . '--}}';
                 }

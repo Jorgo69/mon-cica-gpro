@@ -14,7 +14,7 @@ trait SyncsIndicators
      */
     protected function syncIndicators(Model $model, array $indicatorsData): void
     {
-        $existingIds = $model->indicators()->pluck('id')->toArray();
+        $existingIds = $model->indicatorItems()->pluck('id')->toArray();
         $submittedIds = [];
 
         foreach ($indicatorsData as $index => $data) {
@@ -35,8 +35,8 @@ trait SyncsIndicators
                 Indicator::where('id', $data['id'])->update($payload);
                 $submittedIds[] = $data['id'];
             } else {
-                $indicator = $model->indicators()->create(array_merge($payload, [
-                    'id' => (string) Str::uuid(),
+                $indicator = $model->indicatorItems()->create(array_merge($payload, [
+                    'id' => (string) Str::orderedUuid(),
                 ]));
                 $submittedIds[] = $indicator->id;
             }

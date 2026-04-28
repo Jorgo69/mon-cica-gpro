@@ -14,10 +14,16 @@ trait Multitenantable
 
     protected static function tableHasCreatorUserId(string $table): bool
     {
-        if (!isset(static::$hasCreatorUserIdCache[$table])) {
-            static::$hasCreatorUserIdCache[$table] = Schema::hasColumn($table, 'creator_user_id');
+        return static::tableHasColumn($table, 'creator_user_id');
+    }
+
+    protected static function tableHasColumn(string $table, string $column): bool
+    {
+        $cacheKey = $table . '.' . $column;
+        if (!isset(static::$hasCreatorUserIdCache[$cacheKey])) {
+            static::$hasCreatorUserIdCache[$cacheKey] = Schema::hasColumn($table, $column);
         }
-        return static::$hasCreatorUserIdCache[$table];
+        return static::$hasCreatorUserIdCache[$cacheKey];
     }
 
     protected static function bootMultitenantable(): void
@@ -53,7 +59,15 @@ trait Multitenantable
                                   ->orWhere($table . '.id', $user->id);
                             });
                         } else {
-                            $builder->where($table . '.organization_id', $actingOrgId);
+                            $hasIsSystem = static::tableHasColumn($table, 'is_system');
+                            if ($hasIsSystem) {
+                                $builder->where(function ($q) use ($table, $actingOrgId) {
+                                    $q->where($table . '.organization_id', $actingOrgId)
+                                      ->orWhere($table . '.is_system', true);
+                                });
+                            } else {
+                                $builder->where($table . '.organization_id', $actingOrgId);
+                            }
                         }
                     }
                     // ROOT libre → pas de filtre (voit tout)
@@ -67,7 +81,16 @@ trait Multitenantable
 
                 // 3. User avec org
                 if ($user->organization_id) {
-                    $builder->where($table . '.organization_id', $user->organization_id);
+                    $hasIsSystem = static::tableHasColumn($table, 'is_system');
+                    if ($hasIsSystem) {
+                        // Voir les items de son org + les items systeme
+                        $builder->where(function ($q) use ($table, $user) {
+                            $q->where($table . '.organization_id', $user->organization_id)
+                              ->orWhere($table . '.is_system', true);
+                        });
+                    } else {
+                        $builder->where($table . '.organization_id', $user->organization_id);
+                    }
                     return;
                 }
 

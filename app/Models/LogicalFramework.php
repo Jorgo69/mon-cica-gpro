@@ -27,7 +27,7 @@ class LogicalFramework extends Model
     protected static function boot()
     {
         parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
     }
 
     public function project()

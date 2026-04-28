@@ -4,17 +4,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-/**
- * @OA\Schema(
- *     schema="Activity",
- *     title="Activity",
- *     description="Activity model",
- *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="description", type="string"),
- *     @OA\Property(property="status", type="string", enum={"pending", "in_progress", "completed", "overdue"}),
- *     @OA\Property(property="progress", type="number", format="float", example=45.5)
- * )
- */
 class Activity extends Model
 {
     use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta;
@@ -43,7 +32,7 @@ class Activity extends Model
     protected static function boot()
     {
         parent::boot();
-        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::uuid());
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
     }
 
     public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
@@ -135,8 +124,8 @@ class Activity extends Model
             return 100.0;
         }
 
-        $totalDuration = $startDate->diffInDays($endDate);
-        $elapsed = $startDate->diffInDays($today);
+        $totalDuration = (int) $startDate->diffInDays($endDate);
+        $elapsed = (int) $startDate->diffInDays($today);
 
         if ($totalDuration === 0) {
             return 100.0;
