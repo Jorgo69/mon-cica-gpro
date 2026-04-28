@@ -2,19 +2,8 @@
 
 ## En cours
 
-- [ ] Phase 6 : Service OrgContext + corrections globales
-  - [x] Creer le service OrgContext (singleton, methodes statiques)
-  - [x] Brancher Multitenantable sur OrgContext (creating event)
-  - [x] Fix MemberManagement ($id avant $queryService)
-  - [x] Retirer #[Lazy] de tous les composants (fix Snapshot missing)
-  - [x] Nettoyer routes de test + debug login
+- [ ] Phase 6 : Service OrgContext + corrections globales (SUITE)
   - [ ] Reorganiser les routes (root.php, admin.php, project.php) -- a valider
-  - [x] Fix MemberManagement : modal Ajouter (injection $id/$queryService)
-  - [x] Retirer #[Lazy] de TOUS les 16 composants (fix Snapshot missing global)
-  - [ ] Fix lang/fr/validation.php (contient anglais au lieu de francais)
-  - [ ] Table user_preferences + persister theme/langue/densite en DB
-  - [ ] Enrichir page Settings (sauvegarder en DB, pas juste localStorage)
-  - [ ] Fix toast notification vide (session residuelle ou dispatch fantome)
   - [ ] Fix corbeille (selectAllUsers/selectAllTypes/selectAllProjects manquants)
   - [ ] Tester tous les flows org_admin, org_user, independent
 
@@ -146,3 +135,21 @@
 - Multitenantable refactore : utilise OrgContext dans le creating event.
 - Fix MemberManagement : parametre $id avant $queryService (injection Livewire).
 - Phase 6 en cours : corrections globales, reorganisation routes, enrichissement Settings.
+
+### Session 9 (2026-04-27)
+- Tentative merge claude-suggestion → dev-ui-design : annulee (trop de conflits, doublon migrations).
+- Branch fix/client-corrections creee depuis claude-suggestion (non utilisee, travail continue sur dev-ui-design).
+- TipTap rich-editor integre : remplacement Summernote (composant Alpine + JS + deps npm).
+- Visibilite 3 niveaux : is_system/is_active sur ProjectType, trait HasVisibilityScope, scope visibleForOrg().
+- Audit automatise (2 sub-agents) : 6 bugs critiques identifies, 5 deja corriges dans des commits precedents.
+- Fix conflit relation/colonne indicators : renommage en indicatorItems() sur 3 models (LF, SO, Result) + vues + PDF.
+- Fix strtolower(enum) activity-list : utilise enum->label()/color().
+- Fix MAIL_MAILER=log (Mailpit non lance en dev).
+- Fix ProgressTracker : casts date/integer, null-safe relations, rattachement orphelins.
+- Fix dropdown projets : x-teleport body + position fixed (overflow-hidden du parent).
+- Fix AccountTypeMiddleware : redirect dashboard au lieu de 403 pour org_admin.
+- Service UserMeta cree (get/set/forget, dot notation, JSON en DB).
+- Migration meta JSON sur users + cast array sur User model.
+- Traductions FR : validation, passwords, pagination.
+- Fix toast vide : named params Livewire 3 + garde Alpine.
+- Discussion architecture : Trait HasMeta generique, LogframeQueryService, DB-agnostic (SQLite→PostgreSQL), preparation Open Source.

@@ -89,6 +89,10 @@ class SubActivityPolicy
      */
     public function restore(User $user, Activity $subActivity): bool
     {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
+            return false;
+        }
+
         if (!$user->hasPermissionTo('manage-activities')) {
             return false;
         }

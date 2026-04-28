@@ -20,6 +20,11 @@ class AccountTypeMiddleware
 
         $role = auth()->user()->role;
 
+        // ROOT bypass : accede a toutes les routes protegees
+        if ($role === \App\Enums\AccountType::ROOT) {
+            return $next($request);
+        }
+
         if ($role) {
             foreach ($types as $type) {
                 if ($role->value === $type) {

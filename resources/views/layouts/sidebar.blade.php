@@ -85,8 +85,7 @@
 
         {{-- ── ADMINISTRATION (ORG ADMIN & ADMINS) ── --}}
         @php
-            $isAdmin = in_array(auth()->user()->role, [\App\Enums\AccountType::ROOT, \App\Enums\AccountType::ORG_ADMIN]) 
-                        || auth()->user()->hasPermissionTo('manage-users');
+            $isAdmin = in_array(auth()->user()->role, [\App\Enums\AccountType::ROOT, \App\Enums\AccountType::ORG_ADMIN]);
         @endphp
 
         @if ($isAdmin)
