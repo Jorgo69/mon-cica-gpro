@@ -2,29 +2,26 @@
 
 namespace App\Services\Admin;
 
+use App\Enums\AdminCategoryType;
 use App\Models\GeneralAdministration;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class CategoryQueryService
 {
-    /**
-     * Récupère les catégories filtrées, triées et paginées.
-     *
-     * @param string $search        Terme de recherche.
-     * @param string $sortField     Champ de tri.
-     * @param string $sortDirection Direction du tri (asc/desc).
-     * @param int    $perPage       Nombre d'éléments par page.
-     * @return LengthAwarePaginator
-     */
     public function list(
+        ?AdminCategoryType $type = null,
         string $search = '',
-        string $sortField = 'created_at',
-        string $sortDirection = 'desc',
-        int $perPage = 10
+        string $sortField = 'name',
+        string $sortDirection = 'asc',
+        int $perPage = 15
     ): LengthAwarePaginator {
         $query = GeneralAdministration::query()
-            ->where('type', 'project_type_category')
             ->where('is_active', true);
+
+        if ($type) {
+            $query->where('type', $type);
+        }
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -33,14 +30,19 @@ class CategoryQueryService
             });
         }
 
-        // Empêcher le tri par ID
-        $allowedSorts = ['name', 'description', 'created_at'];
+        $allowedSorts = ['name', 'type', 'description', 'created_at'];
         if (!in_array($sortField, $allowedSorts)) {
-            $sortField = 'created_at';
+            $sortField = 'name';
         }
 
-        return $query
-            ->orderBy($sortField, $sortDirection)
-            ->paginate($perPage);
+        return $query->orderBy($sortField, $sortDirection)->paginate($perPage);
+    }
+
+    public function byType(AdminCategoryType $type): Collection
+    {
+        return GeneralAdministration::where('type', $type)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 }

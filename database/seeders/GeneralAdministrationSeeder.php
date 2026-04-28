@@ -2,64 +2,61 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Seeder;
+use App\Enums\AdminCategoryType;
 use App\Models\GeneralAdministration;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class GeneralAdministrationSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $projectTypes = [
-            'Brouillon'    => 'Projet en phase de conception',
-            'En Attente'   => 'Projet en attente de validation ou de démarrage',
-            'En Cours'     => 'Projet actuellement en exécution',
-            'Suspendu'     => 'Projet temporairement suspendu',
-            'Accepté'      => 'Projet accepté et validé',
-            'Rejeté'       => 'Projet refusé après évaluation',
-            'En Arrêté'    => 'Projet arrêté avant sa fin prévue',
-        ];
-        $activityCategory = [
-            'Brouillon'  => 'Activite en phase de conception',
-            'Abandonné' => 'Activite abandonne',
-            'En Arrêté'    => 'Activite arrêté avant sa fin prévue',
-            'En Attente' => 'Activite mis en pause',
-            'En Cours'     => 'Activite actuellement en exécution',
-            'Suspendu'   => 'Activite temporairement suspendu',
-            'Terminé'    => 'Activite arrêté avant sa fin prévue',
+        $categories = [
+            AdminCategoryType::PROJECT_CATEGORY->value => [
+                'Agriculture & Elevage' => 'Projets lies au secteur agricole et pastoral',
+                'Education' => 'Projets educatifs et de formation',
+                'Sante' => 'Projets de sante publique et nutrition',
+                'Infrastructure' => 'Routes, batiments, equipements',
+                'Environnement' => 'Projets environnementaux et climatiques',
+                'Gouvernance' => 'Droits humains, democratie, institutions',
+                'Humanitaire' => 'Urgences, refugies, aide alimentaire',
+                'Economie' => 'Micro-finance, emploi, entrepreneuriat',
+            ],
+            AdminCategoryType::BUDGET_CATEGORY->value => [
+                'Personnel' => 'Salaires, indemnites, consultants',
+                'Equipement' => 'Materiel, vehicules, informatique',
+                'Fonctionnement' => 'Loyer, fournitures, communication',
+                'Deplacement' => 'Transport, missions, per diem',
+                'Formation' => 'Ateliers, seminaires, supports',
+                'Sous-traitance' => 'Prestataires externes, etudes',
+            ],
+            AdminCategoryType::RESOURCE_TYPE->value => [
+                'Humaine' => 'Personnel, consultants, benevoles',
+                'Materielle' => 'Equipements, vehicules, mobilier',
+                'Financiere' => 'Fonds, subventions, prets',
+                'Technique' => 'Logiciels, outils, methodologies',
+            ],
+            AdminCategoryType::DOCUMENT_TYPE->value => [
+                'Rapport' => 'Rapports narratifs et financiers',
+                'Contrat' => 'Conventions, accords, MoU',
+                'Etude' => 'Etudes de faisabilite, evaluations',
+                'Communication' => 'Brochures, presentations, photos',
+                'Administratif' => 'PV, courriers, attestations',
+            ],
         ];
 
-        foreach ($projectTypes as $name => $description) {
-            GeneralAdministration::firstOrCreate(
-                [
-                    'name' => $name,
-                    'type' => 'project_type',
-                ],
-                [
-                    'id'          => (string) Str::orderedUuid(),
-                    'description' => $description,
-                    'is_system'   => true,
-                    'is_active'   => true,
-                ]
-            );
-        }
-        foreach ($activityCategory as $name => $description) {
-            GeneralAdministration::firstOrCreate(
-                [
-                    'name' => $name,
-                    'type' => 'activity_status',
-                ],
-                [
-                    'id'          => (string) Str::orderedUuid(),
-                    'description' => $description,
-                    'is_system'   => true,
-                    'is_active'   => true,
-                ]
-            );
+        foreach ($categories as $type => $items) {
+            foreach ($items as $name => $description) {
+                GeneralAdministration::firstOrCreate(
+                    ['name' => $name, 'type' => $type],
+                    [
+                        'id' => (string) Str::orderedUuid(),
+                        'description' => $description,
+                        'is_system' => true,
+                        'is_active' => true,
+                    ]
+                );
+            }
         }
     }
 }

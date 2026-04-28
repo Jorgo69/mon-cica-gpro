@@ -2,29 +2,36 @@
 
 namespace App\Livewire\VBeta\Admin\Category;
 
+use App\Enums\AdminCategoryType;
 use App\Services\Admin\CategoryQueryService;
 use Livewire\WithPagination;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use App\Livewire\Traits\WithToastNotifications;
 
 class CategoryManagementLivewire extends Component
 {
-    use WithPagination;
+    use WithPagination, WithToastNotifications;
 
     public $search = '';
-    public $sortField = 'created_at';
-    public $sortDirection = 'desc';
-    
+    public $typeFilter = '';
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
+
     public $showModal = false;
     public ?string $editingCategoryId = null;
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'sortField' => ['except' => 'created_at'],
-        'sortDirection' => ['except' => 'desc'],
+        'typeFilter' => ['except' => ''],
     ];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingTypeFilter()
     {
         $this->resetPage();
     }
@@ -39,9 +46,6 @@ class CategoryManagementLivewire extends Component
         $this->sortField = $field;
     }
 
-    /**
-     * Ouvre la modale via un événement Alpine dispatché au navigateur.
-     */
     public function openModal(?string $categoryId = null)
     {
         $this->editingCategoryId = $categoryId;
@@ -49,9 +53,6 @@ class CategoryManagementLivewire extends Component
         $this->dispatch('open-modal-category-management');
     }
 
-    /**
-     * Ferme la modale.
-     */
     public function closeModal()
     {
         $this->showModal = false;
@@ -59,9 +60,20 @@ class CategoryManagementLivewire extends Component
         $this->dispatch('close-modal-category-management');
     }
 
-    /**
-     * Écouteur pour l'événement "categorySaved".
-     */
+    public function deleteCategory(string $id)
+    {
+        $category = \App\Models\GeneralAdministration::find($id);
+        if (!$category) return;
+
+        if ($category->is_system) {
+            $this->notifyToast('error', 'Les categories systeme ne peuvent pas etre supprimees.');
+            return;
+        }
+
+        $category->delete();
+        $this->notifyToast('success', 'Categorie supprimee.');
+    }
+
     #[On('categorySaved')]
     public function refreshCategories()
     {
@@ -69,19 +81,18 @@ class CategoryManagementLivewire extends Component
         $this->resetPage();
     }
 
-    public function placeholder()
-    {
-        return view('components.ui.skeleton-table');
-    }
-
     public function render(CategoryQueryService $queryService)
     {
+        $type = $this->typeFilter ? AdminCategoryType::tryFrom($this->typeFilter) : null;
+
         return view('livewire.v-beta.admin.category.category-management-livewire', [
             'categories' => $queryService->list(
+                type: $type,
                 search: $this->search,
                 sortField: $this->sortField,
                 sortDirection: $this->sortDirection,
             ),
+            'categoryTypes' => AdminCategoryType::cases(),
         ]);
     }
 }

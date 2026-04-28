@@ -27,6 +27,7 @@ class GeneralAdministration extends Model
     ];
 
     protected $casts = [
+        'type' => \App\Enums\AdminCategoryType::class,
         'is_system' => 'boolean',
         'is_active' => 'boolean',
     ];

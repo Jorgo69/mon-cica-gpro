@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
  * Routes pour la gestion quotidienne au sein d'une organisation.
  * Utilisable uniquement par les Admins d'Espace ou le Root.
  */
-Route::middleware(['auth', 'account_type:org_admin,system_admin'])->prefix('v_beta/admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'account_type:org_admin,independent,system_admin'])->prefix('v_beta/admin')->name('admin.')->group(function () {
     // Projets & Configuration métier
     Route::view('/project/list', 'v_beta.admin.project.index')->name('project.list');
     Route::view('/type_of_project', 'v_beta.admin.type_of_project.index')->name('type.of.project');
