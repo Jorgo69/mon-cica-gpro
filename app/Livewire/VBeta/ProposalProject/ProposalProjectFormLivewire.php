@@ -264,8 +264,8 @@ class ProposalProjectFormLivewire extends Component
     {
         $project = Project::with([
             'projectDocuments',
-            'logicalFramework.indicators',
-            'logicalFramework.specificObjectives.indicators',
+            'logicalFramework.indicatorItems',
+            'logicalFramework.specificObjectives.indicatorItems',
             'logicalFramework.specificObjectives.results.activities',
             'budgets',
             'projectType'
@@ -308,12 +308,12 @@ class ProposalProjectFormLivewire extends Component
             $lfData = $lf->toArray();
             unset($lfData['indicators'], $lfData['specific_objectives']); // Remove eager-loaded relations
             $this->initialLogicalFramework = array_merge($lfData, [
-                'indicators_list' => ($lf->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+                'indicators_list' => $lf->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
             ]);
             $this->specificObjectives = ($lf->specificObjectives ?? collect())->map(function ($obj) {
                 $data = $obj->toArray();
-                unset($data['indicators']); // Remove eager-loaded relation (replaced by indicators_list)
-                $data['indicators_list'] = ($obj->indicators ?? collect())->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+                unset($data['indicators']);
+                $data['indicators_list'] = $obj->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
                 return $data;
             })->toArray();
             

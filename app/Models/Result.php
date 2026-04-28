@@ -43,7 +43,7 @@ class Result extends Model
         return $this->hasMany(Activity::class, 'result_id', 'id');
     }
 
-    public function indicators()
+    public function indicatorItems()
     {
         return $this->morphMany(Indicator::class, 'indicatorable')->orderBy('order');
     }

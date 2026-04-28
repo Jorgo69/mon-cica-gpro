@@ -63,9 +63,9 @@ class ProjectShowLivewire extends Component
             'projectType.dynamicFields',
             'documents',
             'budgets',
-            'logicalFramework.indicators',
-            'logicalFramework.specificObjectives.indicators',
-            'logicalFramework.specificObjectives.results.indicators',
+            'logicalFramework.indicatorItems',
+            'logicalFramework.specificObjectives.indicatorItems',
+            'logicalFramework.specificObjectives.results.indicatorItems',
             'logicalFramework.specificObjectives.results.activities',
             'creator',
         ])->findOrFail($this->projectId);

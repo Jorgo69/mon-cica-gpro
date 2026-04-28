@@ -11,9 +11,9 @@
             <div class="flex-1">
                 <span class="text-[10px] font-black uppercase tracking-widest text-primary block mb-1">Objectif General</span>
                 <p class="text-sm font-semibold text-heading">{!! $lf->general_objective !!}</p>
-                @if($lf->indicators->isNotEmpty())
+                @if($lf->indicatorItems->isNotEmpty())
                     <div class="mt-3 space-y-1">
-                        @foreach($lf->indicators as $ind)
+                        @foreach($lf->indicatorItems as $ind)
                             <div class="flex items-start gap-2 text-xs text-subtle">
                                 <x-lucide-bar-chart-3 class="w-3 h-3 mt-0.5 shrink-0 text-success" />
                                 <span>{{ $ind->description }}@if($ind->verification_source) <em class="text-muted">({{ $ind->verification_source }})</em>@endif</span>
@@ -36,9 +36,9 @@
                     <div class="flex-1">
                         <span class="text-[10px] font-black uppercase tracking-widest text-accent block mb-1">Objectif Specifique {{ $loop->iteration }}</span>
                         <p class="text-sm text-body">{!! $obj->description !!}</p>
-                        @if($obj->indicators->isNotEmpty())
+                        @if($obj->indicatorItems->isNotEmpty())
                             <div class="mt-2 space-y-1">
-                                @foreach($obj->indicators as $ind)
+                                @foreach($obj->indicatorItems as $ind)
                                     <div class="flex items-start gap-2 text-xs text-subtle">
                                         <x-lucide-bar-chart-3 class="w-3 h-3 mt-0.5 shrink-0 text-success" />
                                         <span>{{ $ind->description }}@if($ind->verification_source) <em class="text-muted">({{ $ind->verification_source }})</em>@endif</span>
@@ -56,9 +56,9 @@
                     <div class="p-3 bg-surface dark:bg-surface-alt/50 rounded-lg border border-border-light">
                         <span class="text-[9px] font-black uppercase tracking-widest text-muted block mb-1">Resultat {{ $loop->parent->iteration }}.{{ $loop->iteration }}</span>
                         <p class="text-sm text-body">{!! $res->description !!}</p>
-                        @if($res->indicators->isNotEmpty())
+                        @if($res->indicatorItems->isNotEmpty())
                             <div class="mt-2 space-y-1">
-                                @foreach($res->indicators as $ind)
+                                @foreach($res->indicatorItems as $ind)
                                     <div class="flex items-start gap-2 text-xs text-subtle">
                                         <x-lucide-bar-chart-3 class="w-3 h-3 mt-0.5 shrink-0 text-success" />
                                         <span>{{ $ind->description }}</span>

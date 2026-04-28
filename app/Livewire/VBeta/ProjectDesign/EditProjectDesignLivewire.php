@@ -104,9 +104,9 @@ class EditProjectDesignLivewire extends Component
         $this->project = Project::with([
             'projectContext',
             'projectDocuments',
-            'logicalFramework.indicators',
-            'logicalFramework.specificObjectives.indicators',
-            'logicalFramework.specificObjectives.results.indicators',
+            'logicalFramework.indicatorItems',
+            'logicalFramework.specificObjectives.indicatorItems',
+            'logicalFramework.specificObjectives.results.indicatorItems',
             'logicalFramework.specificObjectives.results.activities',
         ])->findOrFail($this->projectId);
 
@@ -134,17 +134,17 @@ class EditProjectDesignLivewire extends Component
         if ($this->project->logicalFramework) {
             $lf = $this->project->logicalFramework;
             $this->generalGoal = $lf->general_goal;
-            $this->logframeIndicators = $lf->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+            $this->logframeIndicators = $lf->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
 
             if ($lf->specificObjectives->isNotEmpty()) {
                 $this->specificObjectives = $lf->specificObjectives->map(function ($objective) {
                     return [
                         'description' => $objective->description,
-                        'indicators_list' => $objective->indicators->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+                        'indicators_list' => $objective->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
                         'results' => $objective->results->map(function($result) {
                             return [
                                 'description' => $result->description,
-                                'indicators_list' => $result->getRelation('indicators')->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+                                'indicators_list' => $result->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
                                 'activities' => $result->activities->map(fn($a) => ['description' => $a->description, 'responsible' => $a->responsible_user_id])->toArray()
                             ];
                         })->toArray()

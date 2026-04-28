@@ -19,17 +19,17 @@
                 <td class="px-4 py-3 border border-border font-black text-[10px] uppercase tracking-widest text-primary">Objectif General</td>
                 <td class="px-4 py-3 border border-border font-semibold">{!! $lf->general_objective !!}</td>
                 <td class="px-4 py-3 border border-border align-top">
-                    @foreach($lf->indicators as $ind)
+                    @foreach($lf->indicatorItems as $ind)
                         <p class="text-xs mb-1">{{ $ind->description }}</p>
                     @endforeach
                 </td>
                 <td class="px-4 py-3 border border-border align-top">
-                    @foreach($lf->indicators as $ind)
+                    @foreach($lf->indicatorItems as $ind)
                         <p class="text-xs mb-1">{{ $ind->verification_source ?? '—' }}</p>
                     @endforeach
                 </td>
                 <td class="px-4 py-3 border border-border align-top">
-                    @foreach($lf->indicators as $ind)
+                    @foreach($lf->indicatorItems as $ind)
                         <p class="text-xs mb-1">{{ $ind->assumption ?? '—' }}</p>
                     @endforeach
                 </td>
@@ -41,17 +41,17 @@
                     <td class="px-4 py-3 border border-border font-bold text-[10px] uppercase tracking-widest text-accent">OS {{ $loop->iteration }}</td>
                     <td class="px-4 py-3 border border-border">{!! $obj->description !!}</td>
                     <td class="px-4 py-3 border border-border align-top">
-                        @foreach($obj->indicators as $ind)
+                        @foreach($obj->indicatorItems as $ind)
                             <p class="text-xs mb-1">{{ $ind->description }}</p>
                         @endforeach
                     </td>
                     <td class="px-4 py-3 border border-border align-top">
-                        @foreach($obj->indicators as $ind)
+                        @foreach($obj->indicatorItems as $ind)
                             <p class="text-xs mb-1">{{ $ind->verification_source ?? '—' }}</p>
                         @endforeach
                     </td>
                     <td class="px-4 py-3 border border-border align-top">
-                        @foreach($obj->indicators as $ind)
+                        @foreach($obj->indicatorItems as $ind)
                             <p class="text-xs mb-1">{{ $ind->assumption ?? '—' }}</p>
                         @endforeach
                     </td>
@@ -63,17 +63,17 @@
                         <td class="px-4 py-3 border border-border text-[10px] uppercase tracking-widest text-muted pl-8">R {{ $loop->parent->iteration }}.{{ $loop->iteration }}</td>
                         <td class="px-4 py-3 border border-border text-subtle">{!! $res->description !!}</td>
                         <td class="px-4 py-3 border border-border align-top">
-                            @foreach($res->indicators as $ind)
+                            @foreach($res->indicatorItems as $ind)
                                 <p class="text-xs mb-1">{{ $ind->description }}</p>
                             @endforeach
                         </td>
                         <td class="px-4 py-3 border border-border align-top">
-                            @foreach($res->indicators as $ind)
+                            @foreach($res->indicatorItems as $ind)
                                 <p class="text-xs mb-1">{{ $ind->verification_source ?? '—' }}</p>
                             @endforeach
                         </td>
                         <td class="px-4 py-3 border border-border align-top">
-                            @foreach($res->indicators as $ind)
+                            @foreach($res->indicatorItems as $ind)
                                 <p class="text-xs mb-1">{{ $ind->assumption ?? '—' }}</p>
                             @endforeach
                         </td>

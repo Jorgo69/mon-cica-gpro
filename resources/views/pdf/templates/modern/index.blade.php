@@ -71,9 +71,9 @@
                             <span class="w-8 h-8 rounded-lg bg-surface-alt flex items-center justify-center font-bold text-xs text-subtle shrink-0">OS</span>
                             <div>
                                 <p class="text-base font-bold text-heading">{{ $obj->description }}</p>
-                                @if($obj->indicators->isNotEmpty())
+                                @if($obj->indicatorItems->isNotEmpty())
                                     <div class="mt-2 space-y-1">
-                                        @foreach($obj->indicators as $indicator)
+                                        @foreach($obj->indicatorItems as $indicator)
                                             <div class="text-xs text-subtle pl-2 border-l-2 border-emerald-200">
                                                 <span class="font-semibold">{{ $indicator->description }}</span>
                                                 @if($indicator->verification_source) <span class="text-muted">· Source : {{ $indicator->verification_source }}</span> @endif
@@ -90,9 +90,9 @@
                                 <div class="p-4 bg-surface rounded-2xl border border-border text-subtle text-sm">
                                     <span class="text-[9px] font-black uppercase tracking-widest text-accent block mb-1">Résultat</span>
                                     <span class="italic">{{ $res->description }}</span>
-                                    @if($res->indicators->isNotEmpty())
+                                    @if($res->indicatorItems->isNotEmpty())
                                         <div class="mt-2 space-y-1 not-italic">
-                                            @foreach($res->indicators as $indicator)
+                                            @foreach($res->indicatorItems as $indicator)
                                                 <div class="text-xs pl-2 border-l-2 border-emerald-200">
                                                     <span class="font-semibold">{{ $indicator->description }}</span>
                                                     @if($indicator->verification_source) <span class="text-muted">· Source : {{ $indicator->verification_source }}</span> @endif

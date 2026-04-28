@@ -16,7 +16,7 @@
                 <tr>
                     <td class="px-6 py-3 font-semibold text-heading align-top">Indicateurs</td>
                     <td class="px-6 py-3">
-                        @forelse($lf->indicators as $indicator)
+                        @forelse($lf->indicatorItems as $indicator)
                             <div class="mb-3 last:mb-0 p-3 bg-surface dark:bg-surface-alt/50 rounded-lg">
                                 <p class="text-sm font-medium text-heading">{{ $indicator->description }}</p>
                                 @if($indicator->verification_source)
@@ -55,7 +55,7 @@
                         <td class="px-6 py-3 font-semibold text-heading align-top">Indicateurs</td>
                         @foreach($lf->specificObjectives as $obj)
                             <td class="px-6 py-3">
-                                @forelse($obj->indicators as $indicator)
+                                @forelse($obj->indicatorItems as $indicator)
                                     <div class="mb-2 last:mb-0 p-2 bg-surface dark:bg-surface-alt/50 rounded-lg text-xs">
                                         <p class="font-medium text-heading">{{ $indicator->description }}</p>
                                         @if($indicator->verification_source)

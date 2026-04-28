@@ -51,9 +51,9 @@
                             <tr>
                                 <td class="border border-border p-3 align-top font-bold">
                                     {{ $obj->description }}
-                                    @if($obj->indicators->isNotEmpty())
+                                    @if($obj->indicatorItems->isNotEmpty())
                                         <div class="mt-2 font-normal text-subtle">
-                                            @foreach($obj->indicators as $indicator)
+                                            @foreach($obj->indicatorItems as $indicator)
                                                 <p class="text-xs mb-1">• {{ $indicator->description }}@if($indicator->verification_source) <em>({{ $indicator->verification_source }})</em>@endif</p>
                                             @endforeach
                                         </div>
@@ -63,9 +63,9 @@
                                     @foreach($obj->results as $res)
                                         <div class="mb-3">
                                             <p class="font-bold underline mb-1">Résultat : {{ $res->description }}</p>
-                                            @if($res->indicators->isNotEmpty())
+                                            @if($res->indicatorItems->isNotEmpty())
                                                 <div class="mb-2 text-subtle">
-                                                    @foreach($res->indicators as $indicator)
+                                                    @foreach($res->indicatorItems as $indicator)
                                                         <p class="text-xs mb-0.5">↳ {{ $indicator->description }}@if($indicator->verification_source) <em>({{ $indicator->verification_source }})</em>@endif</p>
                                                     @endforeach
                                                 </div>
