@@ -13,9 +13,8 @@ class ProjectExportController extends Controller
         try {
             $action = app(GenerateProjectReportAction::class);
             $templateKey = $request->query('template', 'classic');
-            $driver = $request->query('driver'); // null = config default
 
-            $path = $action->execute($id, $templateKey, $driver);
+            $path = $action->execute($id, $templateKey);
 
             return response()->download($path)->deleteFileAfterSend(false);
         } catch (\Exception $e) {

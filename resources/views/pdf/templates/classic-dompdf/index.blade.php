@@ -106,7 +106,7 @@
         <div class="section-header">Cadre Logique</div>
         <div class="section-body">
             <h3>Objectif General</h3>
-            <p>{{ $lf->general_objective }}</p>
+            <p>{!! strip_tags($lf->general_objective, "<p><br><strong><em><ul><ol><li>") !!}</p>
 
             {{-- Indicateurs du cadre logique --}}
             @if($lf->indicatorItems->isNotEmpty())
@@ -126,7 +126,7 @@
                 <h3 style="margin-top: 12px;">Objectifs Specifiques</h3>
                 @foreach($lf->specificObjectives as $i => $obj)
                     <div style="margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #e74c6f;">
-                        <strong>OS{{ $i + 1 }}.</strong> {{ $obj->description }}
+                        <strong>OS{{ $i + 1 }}.</strong> {!! strip_tags($obj->description, "<p><br><strong><em><ul><ol><li>") !!}
 
                         @if($obj->indicatorItems->isNotEmpty())
                             <div style="margin-top: 4px; margin-left: 10px;">
@@ -146,7 +146,7 @@
                         @if($obj->results->isNotEmpty())
                             @foreach($obj->results as $j => $result)
                             <div style="margin-top: 6px; margin-left: 16px; padding-left: 8px; border-left: 2px solid #0ea5e9;">
-                                <strong class="text-accent">R{{ $j + 1 }}.</strong> {{ $result->description }}
+                                <strong class="text-accent">R{{ $j + 1 }}.</strong> {!! strip_tags($result->description, "<p><br><strong><em><ul><ol><li>") !!}
 
                                 @if($result->indicatorItems->isNotEmpty())
                                     @foreach($result->indicatorItems as $ind)
@@ -174,7 +174,7 @@
                                             @foreach($result->activities as $k => $act)
                                             <tr>
                                                 <td>A{{ $k + 1 }}</td>
-                                                <td>{{ $act->description }}</td>
+                                                <td>{!! strip_tags($act->description, "<p><br><strong><em>") !!}</td>
                                                 <td>{{ $act->responsibleUser->name ?? 'N/A' }}</td>
                                                 <td>{{ $act->start_date?->format('d/m/Y') }}</td>
                                                 <td>{{ $act->end_date?->format('d/m/Y') }}</td>

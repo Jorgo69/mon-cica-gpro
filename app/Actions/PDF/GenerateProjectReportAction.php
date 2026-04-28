@@ -25,10 +25,11 @@ class GenerateProjectReportAction
             throw new \Exception("Modele PDF non trouve : {$templateKey}");
         }
 
-        // Resolve view — use dompdf view by default, browsershot if driver is chromium
+        // Resolve view based on active PDF driver
         $driver = config('pdf-studio.default_driver', 'dompdf');
+        $driverKey = ($driver === 'chromium') ? 'browsershot' : 'dompdf';
         $viewName = is_array($templateConfig['view'])
-            ? ($templateConfig['view'][$driver] ?? $templateConfig['view']['dompdf'])
+            ? ($templateConfig['view'][$driverKey] ?? $templateConfig['view']['dompdf'])
             : $templateConfig['view'];
 
         // Prepare dynamic fields

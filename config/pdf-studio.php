@@ -11,7 +11,7 @@ return [
     | "wkhtmltopdf", "dompdf".
     |
     */
-    'default_driver' => env('PDF_STUDIO_DRIVER', 'dompdf'),
+    'default_driver' => env('PDF_STUDIO_DRIVER', 'chromium'),
 
     /*
     |--------------------------------------------------------------------------
