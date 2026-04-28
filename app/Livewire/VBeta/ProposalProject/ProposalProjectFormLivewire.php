@@ -343,8 +343,8 @@ class ProposalProjectFormLivewire extends Component
             }
             $this->dispatch('stepChanged');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::info('Validation failed at step ' . $this->currentStep, ['errors' => $e->errors()]);
-            $this->notifyToast('warning', 'Veuillez corriger les erreurs avant de continuer.', 'Action requise');
+            $errorMessages = collect($e->errors())->flatten()->take(3)->implode(' | ');
+            $this->notifyToast('warning', $errorMessages, 'Corrigez avant de continuer');
             throw $e;
         } catch (\Exception $e) {
             Log::error('Unexpected error in nextStep: ' . $e->getMessage());
@@ -647,8 +647,21 @@ class ProposalProjectFormLivewire extends Component
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->isSubmitting = false;
             $this->markStepsWithErrors($e->errors());
+
+            // Build a user-friendly error summary
+            $errorMessages = collect($e->errors())->flatten()->take(5)->implode(' | ');
             $errorCount = count($e->errors());
-            $this->notifyToast('error', "{$errorCount} erreur(s) de validation. Vérifiez les étapes marquées en rouge.", 'Action Requise');
+            $extra = $errorCount > 5 ? " (+".($errorCount - 5)." autres)" : "";
+            $this->notifyToast('error', $errorMessages . $extra, "{$errorCount} erreur(s) de validation");
+
+            // Navigate to the first step with errors
+            foreach ($this->stepDetails as $index => $step) {
+                if (!empty($step['has_error'])) {
+                    $this->currentStep = $index + 1;
+                    break;
+                }
+            }
+
             throw $e;
         }
 
