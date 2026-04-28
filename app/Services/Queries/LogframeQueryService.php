@@ -74,13 +74,14 @@ class LogframeQueryService
     public function project(): ?Project
     {
         return Project::with([
-            'logicalFrameworks.specificObjectives.results.activities',
-            'logicalFrameworks.indicatorItems',
-            'logicalFrameworks.specificObjectives.indicatorItems',
-            'logicalFrameworks.specificObjectives.results.indicatorItems',
+            'logicalFramework.specificObjectives.results.activities',
+            'logicalFramework.indicatorItems',
+            'logicalFramework.specificObjectives.indicatorItems',
+            'logicalFramework.specificObjectives.results.indicatorItems',
             'projectDocuments',
+            'budgets',
             'creator',
-            'projectType',
+            'projectType.dynamicFields',
         ])->find($this->projectId);
     }
 }

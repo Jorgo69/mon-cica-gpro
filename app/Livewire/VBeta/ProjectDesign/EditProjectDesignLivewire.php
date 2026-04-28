@@ -100,15 +100,11 @@ class EditProjectDesignLivewire extends Component
 
     protected function loadProjectData()
     {
-        // Fetch relations correctly based on the user's model
-        $this->project = Project::with([
-            'projectContext',
-            'projectDocuments',
-            'logicalFramework.indicatorItems',
-            'logicalFramework.specificObjectives.indicatorItems',
-            'logicalFramework.specificObjectives.results.indicatorItems',
-            'logicalFramework.specificObjectives.results.activities',
-        ])->findOrFail($this->projectId);
+        $this->project = \App\Services\Queries\LogframeQueryService::forProject($this->projectId)->project();
+
+        if (!$this->project) {
+            abort(404);
+        }
 
         $this->authorize('update', $this->project);
 

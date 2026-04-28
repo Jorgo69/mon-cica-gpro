@@ -20,13 +20,13 @@ class SetLocale
         $locale = Session::get('locale');
 
         if (!$locale && auth()->check()) {
-            $locale = auth()->user()->meta['locale'] ?? null;
+            $locale = \App\Services\UserMeta::get('locale');
             if ($locale) {
                 Session::put('locale', $locale);
             }
         }
 
-        App::setLocale($locale ?? config('app.locale'));
+        App::setLocale($locale ?? config('gpro.defaults.locale', config('app.locale')));
 
         return $next($request);
     }

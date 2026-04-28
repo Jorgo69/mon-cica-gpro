@@ -262,14 +262,7 @@ class ProposalProjectFormLivewire extends Component
 
     private function loadExistingProject($projectId)
     {
-        $project = Project::with([
-            'projectDocuments',
-            'logicalFramework.indicatorItems',
-            'logicalFramework.specificObjectives.indicatorItems',
-            'logicalFramework.specificObjectives.results.activities',
-            'budgets',
-            'projectType'
-        ])->find($projectId);
+        $project = \App\Services\Queries\LogframeQueryService::forProject($projectId)->project();
 
         if (!$project) {
             $this->initNewProject();

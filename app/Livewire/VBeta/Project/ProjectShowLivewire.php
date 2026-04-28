@@ -59,16 +59,11 @@ class ProjectShowLivewire extends Component
      */
     public function loadProject()
     {
-        $this->project = Project::with([
-            'projectType.dynamicFields',
-            'documents',
-            'budgets',
-            'logicalFramework.indicatorItems',
-            'logicalFramework.specificObjectives.indicatorItems',
-            'logicalFramework.specificObjectives.results.indicatorItems',
-            'logicalFramework.specificObjectives.results.activities',
-            'creator',
-        ])->findOrFail($this->projectId);
+        $this->project = \App\Services\Queries\LogframeQueryService::forProject($this->projectId)->project();
+
+        if (!$this->project) {
+            abort(404);
+        }
 
         // Charge les définitions des champs dynamiques pour l'affichage
         if ($this->project->projectType) {
