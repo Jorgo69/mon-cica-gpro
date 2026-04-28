@@ -150,7 +150,7 @@
                 @endif
 
                 {{-- Section 3: Champs Dynamiques --}}
-                @if($dynamicFormFields)
+                @if(is_array($dynamicFormFields) && count($dynamicFormFields) > 0)
                     @foreach($dynamicFormFields as $section => $fields)
                         <x-ui.section :title="ucfirst($section)" icon="puzzle">
                             <div class="space-y-4">
@@ -227,39 +227,7 @@
                 @endif
 
                 @if($activeTab === 'analytics')
-                    {{-- Section: Analyses Spécifiques --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <x-ui.section title="Répartition des Ressources" icon="pie-chart">
-                            @php
-                                $resourceData = $project->resources->groupBy('type')->map(fn($group) => $group->sum('total_cost'));
-                            @endphp
-                            <x-ui.chart 
-                                type="pie" 
-                                height="300px"
-                                :labels="$resourceData->keys()->toArray()"
-                                :datasets="[
-                                    [
-                                        'data' => $resourceData->values()->toArray(),
-                                        'backgroundColor' => ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
-                                        'borderWidth' => 0
-                                    ]
-                                ]"
-                            />
-                        </x-ui.section>
-
-                        <x-ui.section title="Santé Budgétaire" icon="banknote">
-                            <div class="flex flex-col items-center justify-center h-[300px] space-y-4">
-                                <div class="text-center">
-                                    <p class="text-xs text-subtle uppercase font-black tracking-widest">Budget Total</p>
-                                    <p class="text-3xl font-black text-primary">{{ number_format($project->resources->sum('total_cost'), 0, ',', ' ') }} FCFA</p>
-                                </div>
-                                <div class="w-full bg-surface-alt h-4 rounded-full overflow-hidden">
-                                    <div class="bg-accent h-full" style="width: 100%"></div>
-                                </div>
-                                <p class="text-xs text-subtle italic">Consommation du budget : 100% planifié</p>
-                            </div>
-                        </x-ui.section>
-                    </div>
+                    <x-ui.empty-state icon="bar-chart-3" title="Analyses en cours de développement" description="Les analyses comparatives et budgétaires seront disponibles prochainement." />
                 @endif
 
                 @if($activeTab === 'tracking')
