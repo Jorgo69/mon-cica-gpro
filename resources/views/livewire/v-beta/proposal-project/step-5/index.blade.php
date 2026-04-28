@@ -74,10 +74,9 @@
                                 :error="$errors->first('activities.' . $index . '.status')"
                                 required
                             >
-                                <option value="En cours">En cours</option>
-                                <option value="Terminée">Terminée</option>
-                                <option value="En attente">En attente</option>
-                                <option value="En retard">En retard</option>
+                                @foreach(\App\Enums\ActivityStatus::cases() as $status)
+                                    <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                                @endforeach
                             </x-ui.select>
                         </div>
 

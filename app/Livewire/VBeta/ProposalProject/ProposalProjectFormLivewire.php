@@ -149,7 +149,7 @@ class ProposalProjectFormLivewire extends Component
                 'date',
                 'before_or_equal:projectEndDate'
             ],
-            'activities.*.status' => 'nullable|string|in:En cours,Terminée,En attente,En retard',
+            'activities.*.status' => ['nullable', Rule::in(array_column(\App\Enums\ActivityStatus::cases(), 'value'))],
         ];
 
         // Add dynamic rules based on current step
@@ -646,8 +646,9 @@ class ProposalProjectFormLivewire extends Component
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->isSubmitting = false;
-            \Illuminate\Support\Facades\Log::error('INITIAL_VALIDATION_FAILED: Form validation failed before processing payload.', ['errors' => $e->errors()]);
-            $this->notifyToast('error', 'Il y a des erreurs de validation sur le formulaire. Veuillez vérifier vos saisies.', 'Action Requise');
+            $this->markStepsWithErrors($e->errors());
+            $errorCount = count($e->errors());
+            $this->notifyToast('error', "{$errorCount} erreur(s) de validation. Vérifiez les étapes marquées en rouge.", 'Action Requise');
             throw $e;
         }
 
@@ -768,22 +769,36 @@ class ProposalProjectFormLivewire extends Component
         return clean($content);
     }
 
-    private function updateStepErrorStates()
+    private function markStepsWithErrors(array $errorKeys)
     {
-        $errors = $this->getErrorBag();
-        
-        $stepKeys = [
+        $stepPrefixes = [
             1 => ['projectTitle', 'projectCode', 'projectStartDate', 'projectEndDate', 'selectedProjectTypeId'],
-            2 => ['contextDescription', 'problemAnalysis', 'strategy', 'justification', 'contextFiles', 'contextFiles.*'],
-            3 => ['initialLogicalFramework.*', 'specificObjectives.*'],
-            4 => ['expectedResults.*'],
-            5 => ['activities.*'],
+            2 => ['contextDescription', 'problemAnalysis', 'strategy', 'justification', 'uploadedDocuments'],
+            3 => ['initialLogicalFramework', 'specificObjectives'],
+            4 => ['expectedResults'],
+            5 => ['activities'],
         ];
 
         foreach ($this->stepDetails as $index => &$step) {
             $stepNum = $index + 1;
-            $keys = $stepKeys[$stepNum] ?? [];
-            $step['has_error'] = $errors->hasAny($keys);
+            $prefixes = $stepPrefixes[$stepNum] ?? [];
+            $step['has_error'] = false;
+            foreach (array_keys($errorKeys) as $errorKey) {
+                foreach ($prefixes as $prefix) {
+                    if (str_starts_with($errorKey, $prefix)) {
+                        $step['has_error'] = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+    }
+
+    private function updateStepErrorStates()
+    {
+        $errors = $this->getErrorBag()->toArray();
+        if (!empty($errors)) {
+            $this->markStepsWithErrors($errors);
         }
     }
 
