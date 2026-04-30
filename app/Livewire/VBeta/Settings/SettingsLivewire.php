@@ -10,88 +10,71 @@ class SettingsLivewire extends Component
 {
     use WithToastNotifications;
 
+    public string $activeTab = 'appearance';
     public string $theme = 'light';
     public string $locale = 'fr';
     public string $density = 'comfortable';
-    public string $dateFormat = 'fr';
-    public string $timezone = 'Europe/Paris';
+    public string $dateFormat = 'dd/MM/yyyy';
     public bool $emailNotifications = true;
-    public bool $pushNotifications = false;
     public string $digestFrequency = 'weekly';
-    public string $profileVisibility = 'private';
 
     public function mount()
     {
-        $this->theme = UserMeta::get('theme', 'light');
-        $this->locale = UserMeta::get('locale', app()->getLocale());
-        $this->density = UserMeta::get('density', 'comfortable');
-        $this->dateFormat = UserMeta::get('date_format', 'fr');
-        $this->timezone = UserMeta::get('timezone', 'Europe/Paris');
-        $this->emailNotifications = UserMeta::get('notifications.email', true);
-        $this->pushNotifications = UserMeta::get('notifications.push', false);
+        $defaults = config('gpro.defaults');
+        $this->theme = UserMeta::get('theme', $defaults['theme'] ?? 'light');
+        $this->locale = UserMeta::get('locale', $defaults['locale'] ?? 'fr');
+        $this->density = UserMeta::get('density', $defaults['density'] ?? 'comfortable');
+        $this->dateFormat = UserMeta::get('date_format', 'dd/MM/yyyy');
+        $this->emailNotifications = (bool) UserMeta::get('notifications.email', true);
         $this->digestFrequency = UserMeta::get('notifications.digest', 'weekly');
-        $this->profileVisibility = UserMeta::get('privacy.visibility', 'private');
     }
 
-    public function saveTheme(string $value)
+    #[\Livewire\Attributes\On('navbar-theme-changed')]
+    public function onNavbarThemeChanged($theme)
     {
-        $this->theme = $value;
+        $this->theme = $theme;
+    }
+
+    public function updatedTheme($value)
+    {
         UserMeta::set('theme', $value);
+        $this->dispatch('theme-changed', theme: $value);
+        $this->notifyToast('success', 'Theme mis a jour.');
     }
 
-    public function saveDensity(string $value)
+    public function updatedDensity($value)
     {
-        $this->density = $value;
         UserMeta::set('density', $value);
+        $this->notifyToast('success', 'Densite mise a jour.');
     }
 
-    public function saveLocale(string $value)
+    public function updatedLocale($value)
     {
-        if (!in_array($value, ['fr', 'en'])) {
-            return;
-        }
+        if (!in_array($value, ['fr', 'en'])) return;
 
-        $this->locale = $value;
         UserMeta::set('locale', $value);
         session(['locale' => $value]);
-
+        $this->notifyToast('success', 'Langue mise a jour.');
         return $this->redirect(route('setting'), navigate: false);
     }
 
-    public function saveDateFormat(string $value)
+    public function updatedDateFormat($value)
     {
-        $this->dateFormat = $value;
         UserMeta::set('date_format', $value);
+        $this->notifyToast('success', 'Format de date mis a jour.');
     }
 
-    public function saveTimezone(string $value)
+    public function updatedEmailNotifications($value)
     {
-        $this->timezone = $value;
-        UserMeta::set('timezone', $value);
-    }
-
-    public function saveEmailNotifications(bool $value)
-    {
-        $this->emailNotifications = $value;
         UserMeta::set('notifications.email', $value);
+        $this->notifyToast('success', 'Notifications email ' . ($value ? 'activees' : 'desactivees') . '.');
     }
 
-    public function savePushNotifications(bool $value)
+    public function updatedDigestFrequency($value)
     {
-        $this->pushNotifications = $value;
-        UserMeta::set('notifications.push', $value);
-    }
-
-    public function saveDigestFrequency(string $value)
-    {
-        $this->digestFrequency = $value;
         UserMeta::set('notifications.digest', $value);
-    }
-
-    public function saveProfileVisibility(string $value)
-    {
-        $this->profileVisibility = $value;
-        UserMeta::set('privacy.visibility', $value);
+        $labels = ['never' => 'desactive', 'weekly' => 'hebdomadaire', 'monthly' => 'mensuel'];
+        $this->notifyToast('success', 'Resume ' . ($labels[$value] ?? $value) . '.');
     }
 
     public function render()

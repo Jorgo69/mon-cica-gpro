@@ -37,11 +37,7 @@
             <!-- Profile Menu -->
             <div class="relative ml-1">
                 <button @click="profileOpen = !profileOpen" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-alt transition-colors duration-150">
-                    @php
-                        $userName = auth()->user()->name ?? 'U';
-                        $initials = collect(explode(' ', $userName))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->implode('');
-                    @endphp
-                    <div class="avatar-initials">{{ $initials }}</div>
+                    <x-ui.avatar :user="auth()->user()" size="sm" />
                     <div class="hidden sm:block text-left">
                         <div class="text-[13px] font-semibold text-body leading-tight">
                             {{ auth()->user()->name ?? 'Utilisateur' }}

@@ -53,6 +53,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::view('setting', 'v_beta.settings.index')->name('setting');
+
+    // Mini API pour persister les preferences (theme toggle navbar, etc.)
+    Route::post('/api/user-meta', function (\Illuminate\Http\Request $request) {
+        $key = $request->input('key');
+        $value = $request->input('value');
+        if (in_array($key, ['theme', 'density', 'locale', 'avatar'])) {
+            \App\Services\UserMeta::set($key, $value);
+            return response()->json(['ok' => true]);
+        }
+        return response()->json(['error' => 'invalid key'], 422);
+    })->name('user-meta.update');
 });
 
 // Invitation (route publique, pas besoin d'auth)

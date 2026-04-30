@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $title ?? config('app.name') }}</title>
     @livewireStyles
@@ -18,13 +18,31 @@
     @stack('styles')
 
     <script>
-        // Initialisation immédiate du thème pour éviter le flash blanc
-        if (localStorage.getItem('darkMode') === 'true' || 
-            (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        // Initialisation theme : priorite DB (via Blade) > localStorage > system preference
+        @auth
+            @php $dbTheme = \App\Services\UserMeta::get('theme'); @endphp
+            @if($dbTheme === 'dark')
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            @elseif($dbTheme === 'light')
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            @else
+                if (localStorage.getItem('darkMode') === 'true' ||
+                    (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            @endif
+        @else
+            if (localStorage.getItem('darkMode') === 'true' ||
+                (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        @endauth
 
         window.appData = function() {
             return {
@@ -36,6 +54,7 @@
                 
                 init() {
                     this.initSidebar();
+                    this.listenThemeChange();
                 },
                 
                 initSidebar() {
@@ -55,14 +74,44 @@
                     }
                 },
                 
+                // Ecouter le changement de theme depuis Settings Livewire
+                listenThemeChange() {
+                    window.addEventListener('theme-changed', (e) => {
+                        const theme = e.detail?.theme ?? e.detail?.[0]?.theme;
+                        if (theme) {
+                            this.darkMode = theme === 'dark';
+                        }
+                    });
+                    document.addEventListener('livewire:init', () => {
+                        Livewire.on('theme-changed', (data) => {
+                            const theme = Array.isArray(data) ? data[0]?.theme : data?.theme;
+                            if (theme) {
+                                this.darkMode = theme === 'dark';
+                            }
+                        });
+                    });
+                },
+
                 toggleTheme() {
                     this.darkMode = !this.darkMode;
+                    const newTheme = this.darkMode ? 'dark' : 'light';
                     if (this.darkMode) {
                         document.documentElement.classList.add('dark');
                         localStorage.setItem('darkMode', 'true');
                     } else {
                         document.documentElement.classList.remove('dark');
                         localStorage.setItem('darkMode', 'false');
+                    }
+                    // Persist in DB + sync Settings Livewire si present
+                    fetch('/api/user-meta', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                        body: JSON.stringify({ key: 'theme', value: newTheme })
+                    }).catch(() => {});
+                    // Mettre a jour le composant Settings s'il est monte
+                    if (window.Livewire) {
+                        Livewire.dispatch('navbar-theme-changed', { theme: newTheme });
                     }
                 }
             }

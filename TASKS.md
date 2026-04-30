@@ -2,9 +2,9 @@
 
 ## En cours
 
-- [ ] Phase 6 : Service OrgContext + corrections globales (SUITE)
-  - [ ] Reorganiser les routes (root.php, admin.php, project.php) -- a valider
-  - [ ] Fix corbeille (selectAllUsers/selectAllTypes/selectAllProjects manquants)
+- [ ] Phase 6.5 : Stabilisation + Settings
+  - [ ] Refaire page Settings Livewire (3 onglets, branche UserMeta, design system)
+  - [ ] Reorganiser les routes (root.php, admin.php, project.php)
   - [ ] Tester tous les flows org_admin, org_user, independent
 
 ## A faire
@@ -153,3 +153,26 @@
 - Traductions FR : validation, passwords, pagination.
 - Fix toast vide : named params Livewire 3 + garde Alpine.
 - Discussion architecture : Trait HasMeta generique, LogframeQueryService, DB-agnostic (SQLite→PostgreSQL), preparation Open Source.
+
+### Session 10 (2026-04-28)
+- Migration Laravel 10 → 12 (framework 12.58.0, Livewire 3.7.15, Sanctum 4.3, Carbon 3.11).
+- UUIDv7 : Str::uuid() → Str::orderedUuid() dans 32+ fichiers.
+- Carbon 3 : (int) cast sur diffInDays/diffInWeeks/diffInMonths.
+- Swagger (l5-swagger) retire, annotations OpenAPI nettoyees dans 6 fichiers.
+- PDF Studio installe (sarder/pdfstudio ^2.0), architecture multi-driver (DomPDF defaut + Chromium premium).
+- Template PDF moderne refait : sobre, professionnel, noir/gris, marges aerees, sans gradient.
+- Fix HTML rendering dans PDF ({{ }} → {!! strip_tags() !!} pour rich-text).
+- Fix CRITIQUE : documents jamais sauvegardes dans submitForm() → Storage::store + ProjectDocument::create.
+- Fix CRITIQUE : budgets jamais sauvegardes → Budget::create dans submitForm().
+- Fix relation documents/projectDocuments unifiee, file_mime_type → file_type.
+- Fix SyncsIndicators : indicators() → indicatorItems().
+- Fix loadExistingProject : collect()->only() pour eviter colonnes parasites (indicator_items dans SQL).
+- Fix activity status : 'En cours' → ActivityStatus::DRAFT->value (casse enum).
+- Fix ProjectPolicy : createur peut modifier son brouillon meme sans permission edit-projects.
+- Fix authorize('create') ajoute dans mount() du formulaire proposition.
+- Enum AdminCategoryType (6 types : project_category, budget_category, resource_type, document_type, etc.).
+- Seeder GeneralAdministration refait : 23 categories systeme reparties par type enum.
+- CategoryQueryService + vue refaits : filtre par type, badge colore, protection is_system.
+- Multitenantable : items is_system=true visibles par toutes les orgs (orWhere is_system).
+- Route admin : ajout independent dans account_type middleware.
+- AccountTypeMiddleware : bypass ROOT automatique (plus besoin de lister system_admin partout).
