@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('project_types', function (Blueprint $table) {
@@ -17,7 +14,9 @@ return new class extends Migration
             $table->uuid('creator_user_id')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('category')->nullable(); // From NewVision.txt
+            $table->string('category')->nullable();
+            $table->boolean('is_system')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();
 
@@ -30,9 +29,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('project_types');

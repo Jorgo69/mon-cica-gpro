@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('results', function (Blueprint $table) {
@@ -17,7 +14,7 @@ return new class extends Migration
             $table->uuid('specific_objective_id');
             $table->uuid('creator_user_id')->nullable();
             $table->longText('description');
-
+            $table->json('meta')->default('{}')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -31,9 +28,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('results');

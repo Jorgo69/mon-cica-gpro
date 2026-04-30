@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('specific_objectives', function (Blueprint $table) {
@@ -20,7 +17,7 @@ return new class extends Migration
             $table->longText('indicators')->nullable();
             $table->longText('verification_sources')->nullable();
             $table->longText('assumptions')->nullable();
-
+            $table->json('meta')->default('{}')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -34,9 +31,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('specific_objectives');

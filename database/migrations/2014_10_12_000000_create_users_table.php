@@ -6,16 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary(); // Clé primaire UUID
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
-            
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('image')->nullable();
@@ -25,23 +21,16 @@ return new class extends Migration
             $table->string('pays', 100)->nullable();
             $table->string('ville', 100)->nullable();
             $table->string('role')->nullable();
-            $table->foreignUuid('organization_id')
-                  ->nullable()
-                  ->constrained('organizations')
-                  ->onDelete('cascade');
+            $table->foreignUuid('organization_id')->nullable()->constrained('organizations')->cascadeOnDelete();
+            $table->boolean('is_independent')->default(false);
             $table->string('department')->nullable();
-
-            // Ajout des soft deletes
+            $table->json('meta')->default('{}');
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
-            
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');

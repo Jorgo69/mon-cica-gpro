@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('general_administrations', function (Blueprint $table) {
@@ -18,6 +15,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('type');
+            $table->boolean('is_system')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();
 
@@ -29,9 +28,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('general_administrations');

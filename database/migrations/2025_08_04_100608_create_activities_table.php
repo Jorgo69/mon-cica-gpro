@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('activities', function (Blueprint $table) {
@@ -26,7 +23,7 @@ return new class extends Migration
             $table->text('justification')->nullable();
             $table->boolean('is_milestone')->default(false);
             $table->integer('progress_percentage')->default(0);
-
+            $table->json('meta')->default('{}')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -44,9 +41,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('activities');
