@@ -2,6 +2,8 @@
 
 namespace App\Livewire\VBeta\Settings;
 
+use App\Enums\NotificationType;
+use App\Services\NotificationPreferenceService;
 use App\Services\UserMeta;
 use App\Livewire\Traits\WithToastNotifications;
 use Livewire\Component;
@@ -17,6 +19,7 @@ class SettingsLivewire extends Component
     public string $dateFormat = 'dd/MM/yyyy';
     public bool $emailNotifications = true;
     public string $digestFrequency = 'weekly';
+    public string $timezone = 'Africa/Porto-Novo';
 
     public function mount()
     {
@@ -27,6 +30,7 @@ class SettingsLivewire extends Component
         $this->dateFormat = UserMeta::get('date_format', 'dd/MM/yyyy');
         $this->emailNotifications = (bool) UserMeta::get('notifications.email', true);
         $this->digestFrequency = UserMeta::get('notifications.digest', 'weekly');
+        $this->timezone = UserMeta::get('timezone', config('gpro.defaults.timezone', 'Africa/Porto-Novo'));
     }
 
     #[\Livewire\Attributes\On('navbar-theme-changed')]
@@ -77,8 +81,50 @@ class SettingsLivewire extends Component
         $this->notifyToast('success', 'Resume ' . ($labels[$value] ?? $value) . '.');
     }
 
+    public function updatedTimezone($value)
+    {
+        $valid = array_keys(config('gpro.timezones', []));
+        if (!in_array($value, $valid)) return;
+
+        UserMeta::set('timezone', $value);
+        $this->notifyToast('success', 'Fuseau horaire mis a jour.');
+    }
+
+    public function toggleNotificationChannel(string $type, string $channel)
+    {
+        $user = auth()->user();
+        $notifType = NotificationType::tryFrom($type);
+        if (!$notifType) return;
+
+        $current = $user->getMeta("notifications.preferences.{$type}") ?? $notifType->defaultChannels();
+
+        if (in_array($channel, $current)) {
+            $current = array_values(array_diff($current, [$channel]));
+        } else {
+            $current[] = $channel;
+        }
+
+        $user->setNotificationPreference($notifType, $current);
+        $this->notifyToast('success', 'Preference mise a jour.');
+    }
+
+    public function unlinkSocial(string $provider)
+    {
+        $user = auth()->user();
+        $account = $user->socialAccounts()->where('provider', $provider)->first();
+
+        if (!$account) return;
+
+        $account->delete();
+        $this->notifyToast('success', ucfirst($provider) . ' delie.');
+    }
+
     public function render()
     {
-        return view('livewire.v-beta.settings.settings-livewire');
+        return view('livewire.v-beta.settings.settings-livewire', [
+            'socialAccounts' => auth()->user()->socialAccounts ?? collect(),
+            'notificationTypes' => NotificationType::userConfigurable(),
+            'notificationPreferences' => NotificationPreferenceService::getAll(auth()->user()),
+        ]);
     }
 }

@@ -47,6 +47,11 @@ class Budget extends Model
         return $this->belongsTo(User::class, 'responsible_user_id', 'id');
     }
     
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     public function quarterlyBudgets()
     {
         return $this->hasMany(QuarterlyBudget::class, 'budget_id', 'id');

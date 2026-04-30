@@ -114,6 +114,9 @@
                     <a href="{{ route('admin.invitation.list') }}" class="nav-submenu-item @if(Route::is('admin.invitation.list*')) nav-submenu-item-active @endif">
                         Invitations
                     </a>
+                    <a href="{{ route('admin.exchange-rates') }}" class="nav-submenu-item @if(Route::is('admin.exchange-rates*')) nav-submenu-item-active @endif">
+                        Taux de change
+                    </a>
                     <a href="{{ route('admin.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.trash.management*')) nav-submenu-item-active @endif">
                         {{ __('Corbeilles') }}
                     </a>

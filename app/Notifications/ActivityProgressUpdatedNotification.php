@@ -2,13 +2,15 @@
 
 namespace App\Notifications;
 
+use App\Enums\NotificationType;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ActivityProgressUpdatedNotification extends Notification
+class ActivityProgressUpdatedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasFcmNotification;
 
     public function __construct(public $activity, public $progress)
     {
@@ -16,7 +18,7 @@ class ActivityProgressUpdatedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return $notifiable->getNotificationChannels(NotificationType::ACTIVITY_PROGRESS_UPDATED);
     }
 
     public function toMail(object $notifiable): MailMessage

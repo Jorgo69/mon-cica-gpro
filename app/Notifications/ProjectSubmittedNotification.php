@@ -2,13 +2,15 @@
 
 namespace App\Notifications;
 
+use App\Enums\NotificationType;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ProjectSubmittedNotification extends Notification
+class ProjectSubmittedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasFcmNotification;
 
     public function __construct(public $project, public $submitter)
     {
@@ -16,7 +18,7 @@ class ProjectSubmittedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return $notifiable->getNotificationChannels(NotificationType::PROJECT_SUBMITTED);
     }
 
     public function toMail(object $notifiable): MailMessage

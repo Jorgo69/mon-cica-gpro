@@ -1,17 +1,114 @@
 # Suivi du projet
 
-## En cours
+## A faire — Roadmap complete
 
-- [ ] Phase 6.5 : Stabilisation + Settings
-  - [ ] Refaire page Settings Livewire (3 onglets, branche UserMeta, design system)
-  - [ ] Reorganiser les routes (root.php, admin.php, project.php)
-  - [ ] Tester tous les flows org_admin, org_user, independent
+### CRITIQUE — Bloquant pour un premier client
 
-## A faire
+- [x] **Phase 8 : Collaboration terrain** (TERMINEE)
+  - [x] 8.1 Commentaires par activite (model Comment polymorphe, fil de discussion, mentions @user, notifications)
+  - [x] 8.2 Pieces jointes par activite (upload fichiers sur activite/sous-activite, pas seulement projet)
+  - [x] 8.3 Budget reel vs planifie (depenses reelles saisies, ecart planifie/reel, burn rate, alertes depassement automatiques)
 
-- [ ] Phase 7 : Systeme d'invitation end-to-end (mail SMTP Gmail, flow complet)
-- [ ] Phase 8 : Preparation SaaS (plans, limites, billing Stripe/Cashier)
-- [ ] Phase 9 : Multi-plateforme (NativePHP desktop, mobile)
+- [ ] **Phase 9 : Traductions i18n completes**
+  - [ ] Extraire tous les textes hardcodes des ~80+ vues Blade vers __() / @lang
+  - [ ] Creer lang/fr.json et lang/en.json complets
+  - [ ] Traduire les enums (label() bilingue selon locale)
+  - [ ] Traduire les emails/notifications
+  - [ ] Traduire les messages de validation custom
+
+- [ ] **Phase 10 : Tests automatises + CI**
+  - [ ] Tests Feature : creation projet, soumission, progression, invitation, login/register, social auth
+  - [ ] Tests Unit : ReminderService, CurrencyService, OrgContext, UserMeta, NotificationPreferenceService
+  - [ ] Tests Policy : ProjectPolicy, ActivityPolicy, InvitationPolicy (chaque role)
+  - [ ] GitHub Actions CI : lint PHP, tests Pest, build Vite
+  - [ ] Couverture minimum 60% sur les Services et Actions
+
+### IMPORTANT — Fait la difference avec la concurrence
+
+- [ ] **Phase 11 : Templates de projet**
+  - [ ] Dupliquer un projet existant (avec cadre logique, activites, indicateurs pre-remplis)
+  - [ ] Bibliotheque de templates systeme (par type de projet ONG)
+  - [ ] Personnaliser un template avant creation
+
+- [ ] **Phase 12 : Export Excel**
+  - [ ] Export activites en .xlsx (avec filtres, statuts, dates, responsables)
+  - [ ] Export budgets en .xlsx (planifie vs reel, par trimestre, par activite)
+  - [ ] Export indicateurs en .xlsx (baseline, target, current, source de verification)
+  - [ ] Export cadre logique complet en .xlsx
+
+- [ ] **Phase 13 : Tableau de bord bailleur**
+  - [ ] Vue en lecture seule pour partenaires financiers (lien partage avec token, pas besoin de compte)
+  - [ ] Progression globale projet, indicateurs cles, budget consomme
+  - [ ] Export PDF du rapport bailleur (format standard)
+  - [ ] Acces configurable par projet (quels indicateurs/budgets montrer)
+
+- [ ] **Phase 14 : Visualisation timeline / Gantt**
+  - [ ] Timeline horizontale des activites (date debut/fin, progression, statut)
+  - [ ] Vue Gantt simple (pas besoin d'etre editable, juste visualisation)
+  - [ ] Integre dans project-show (nouvel onglet)
+  - [ ] Exportable en image/PDF
+
+- [ ] **Phase 15 : Suivi des indicateurs**
+  - [ ] Tableau de suivi par indicateur (baseline, cible, valeur actuelle, source de verification)
+  - [ ] Historique des mesures (date, valeur, commentaire, piece jointe)
+  - [ ] Dashboard indicateurs par projet (graphiques progression)
+  - [ ] Alerte si indicateur stagne ou regresse
+
+### NICE-TO-HAVE — Polish produit
+
+- [ ] **Phase 16 : Onboarding guide**
+  - [ ] Wizard premiere connexion admin (creer premier projet, inviter equipe)
+  - [ ] Tooltips contextuels sur les pages cles
+  - [ ] Checklist "Bien demarrer" dans le dashboard (disparait une fois completee)
+  - [ ] Donnees de demo optionnelles (projet exemple pre-rempli)
+
+- [ ] **Phase 17 : Documentation utilisateur**
+  - [ ] Guide en ligne integre (aide contextuelle par page)
+  - [ ] FAQ / base de connaissances
+  - [ ] Videos courtes par fonctionnalite (optionnel, liens YouTube)
+  - [ ] Documentation API (remplacer Swagger par une doc statique propre)
+
+- [ ] **Phase 18 : RGPD / Protection des donnees**
+  - [ ] Export des donnees personnelles (bouton "Telecharger mes donnees" dans profil)
+  - [ ] Suppression complete sur demande (anonymisation, pas juste soft delete)
+  - [ ] Politique de confidentialite / CGU (page publique)
+  - [ ] Consentement cookies (banniere)
+  - [ ] Retention des donnees configurable (supprimer les projets archives apres X mois)
+  - [ ] Journal des acces aux donnees sensibles
+
+- [ ] **Phase 19 : Performance & Cache**
+  - [ ] Cache Redis/file sur les stats dashboard (invalidation sur changement)
+  - [ ] Cache des compteurs sidebar (projets, activites, notifications)
+  - [ ] Eager loading audit sur tous les composants liste (N+1 restants)
+  - [ ] Index DB sur les colonnes les plus filtrees (status, organization_id, dates)
+  - [ ] Pagination cursor pour les grandes listes (>1000 items)
+  - [ ] Monitoring : temps de reponse, queries lentes (Laravel Telescope ou Clockwork en dev)
+
+- [ ] **Phase 20 : Preparation SaaS**
+  - [ ] Plans et limites (free, pro, enterprise) avec config
+  - [ ] Billing Stripe via Laravel Cashier (abonnement mensuel/annuel)
+  - [ ] Middleware de verification plan (bloquer si limite atteinte)
+  - [ ] Page pricing publique
+  - [ ] Trial period (14 jours gratuit)
+  - [ ] Dashboard admin ROOT : revenus, MRR, churn, conversions
+
+- [ ] **Phase 21 : Multi-plateforme**
+  - [ ] NativePHP desktop (Windows, macOS, Linux)
+  - [ ] NativePHP mobile (Android, iOS) — ou PWA
+  - [ ] Push notifications natives (via FCM deja en place)
+  - [ ] Mode hors-ligne basique (consultation, sync au retour)
+
+### FUTUR — Apres v1.0
+
+- [ ] Import Excel (bulk import activites, budgets, indicateurs)
+- [ ] Collaboration temps reel (presence indicators, curseurs, Livewire polling ou WebSockets)
+- [ ] Workflow d'approbation configurable (soumission → validation → approbation multi-niveaux)
+- [ ] Rapports automatiques (generes automatiquement chaque trimestre, envoyes par email)
+- [ ] Integration calendrier (Google Calendar, Outlook sync)
+- [ ] Carte geographique des projets (si localisation GPS)
+- [ ] IA : analyse automatique du cadre logique, suggestions d'amelioration, detection d'incoherences
+- [ ] API publique complete (webhooks, OAuth2 pour integrations tierces)
+- [ ] Marketplace de plugins/extensions
 
 ## Termine
 - [x] Setup initial Laravel 10 avec Breeze (auth, profil, password reset)
@@ -54,6 +151,14 @@
 - [x] Phase 3.2 : Isolation stricte cross-org -- UserQueryService centralise, 8 composants Livewire corriges (plus de User::all()), Multitenantable renforce avec Schema::hasColumn() pour INDEPENDENT
 - [x] Phase 3.3 : Systeme d'invitation complet -- Model Invitation (UUID, token+code, expiration 7j), enum InvitationStatus, 3 Actions (Send/Accept/Revoke), InvitationNotification (mail avec lien+code), InvitationController (3 scenarios : connecte/login/register), integration onboarding joinOrganization() par code, auto-accept post-register et post-login via session token
 - [x] Phase 3.4 : Interface admin invitations -- InvitationManagementLivewire (liste paginee, envoi, renvoi, revocation, filtres statut), InvitationPolicy, route admin, lien sidebar
+- [x] Phase 6.5 : Stabilisation + Settings -- Settings Livewire 3 onglets (Apparence/Langue/Notifications) branches UserMeta, sync bidirectionnelle theme navbar<->Settings, recherche globale Ctrl+K refaite (categories, securite, quick actions, historique), profil redesigne design system, systeme avatars (24 SVG predefinis + x-ui.avatar), CSRF fix, fetch credentials fix
+- [x] Merge dev-ui-design -> development : resolution de ~57 fichiers en conflit + restauration 80 vues v-beta/
+- [x] Phase 7.1 : Infrastructure Queue database + Timezone utilisateur (migration jobs/job_batches, scheduler Kernel, select timezone Settings, config gpro.timezones)
+- [x] Phase 7.2 : Notifications enrichies -- Enum NotificationType (9 types), trait HasNotificationPreferences (via() dynamique), NotificationPreferenceService, 4 nouvelles notifs (DeadlineApproaching, ActivityOverdue, BudgetThreshold, WeeklyDigest), refactoring 4 notifs existantes (ShouldQueue + via dynamique), grille preferences par type dans Settings
+- [x] Phase 7.3 : Rappels automatiques -- ReminderService (queries, dedup, escalade, digest), 3 commandes artisan (send-deadline-reminders J-7/3/1, send-overdue-alerts + escalade J+7, send-weekly-digest), scheduler Kernel configure
+- [x] Phase 7.4 : Push notifications FCM -- laravel-notification-channels/fcm + firebase JS SDK, FcmToken model + migration, FcmTokenController (store/destroy), trait HasFcmNotification (toFcm generique), service worker + firebase-push.js, 7 notifs equipees FCM, degradation gracieuse
+- [x] Phase 7.5 : Social Auth -- laravel/socialite, SocialAccount model + migration, SocialAuthService (login/register/link/invitation auto-accept), SocialAuthController, boutons Google/Facebook/Microsoft dans login+register (conditionnels), section "Comptes lies" dans Settings
+- [x] Phase 7.6 : Multi-devise -- Enum Currency (8 devises), migration currency sur projects, ExchangeRate model + migration (taux manuels par org), CurrencyService (format/convert), composant x-currency, ExchangeRateManagementLivewire (CRUD admin), lien sidebar
 
 ---
 
@@ -176,3 +281,19 @@
 - Multitenantable : items is_system=true visibles par toutes les orgs (orWhere is_system).
 - Route admin : ajout independent dans account_type middleware.
 - AccountTypeMiddleware : bypass ROOT automatique (plus besoin de lister system_admin partout).
+
+### Session 11 (2026-04-30)
+- Merge dev-ui-design → development : resolution 57 fichiers en conflit + restauration 80 vues v-beta/.
+- **Phase 7 complete** (6 sous-phases) :
+  - 7.1 Infrastructure Queue database + Timezone utilisateur
+  - 7.2 Notifications enrichies (enum NotificationType, preferences par type, 4 nouvelles notifs, refactoring via() dynamique + ShouldQueue)
+  - 7.3 Rappels automatiques (3 commandes artisan, ReminderService, escalade, dedup, digest)
+  - 7.4 Push FCM (firebase JS, service worker, FcmToken model, trait HasFcmNotification, degradation gracieuse)
+  - 7.5 Social Auth (Socialite, Google/Facebook/Microsoft, SocialAccount model, auto-accept invitation, section Settings)
+  - 7.6 Multi-devise (enum Currency 8 devises, ExchangeRate model, CurrencyService, composant x-currency, admin CRUD)
+- Roadmap complete documentee : Phases 8-21 + backlog futur (23 chantiers identifies).
+- **Phase 8 complete** (3 sous-phases) :
+  - 8.1 Commentaires par activite (model Comment polymorphe, replies, mentions @user, CommentSectionLivewire reutilisable, CommentPostedNotification)
+  - 8.2 Pieces jointes par activite (model Attachment polymorphe, AttachmentSectionLivewire, upload multi-fichiers, download, auto-delete fichier)
+  - 8.3 Budget reel vs planifie (model Expense, BudgetTrackingService avec projectSummary/budgetLineSummaries/burnRate/spendingByCategory, ExpenseManagementLivewire, alerte BudgetThresholdNotification >= 80%)
+- **Consolidation migrations** : 5 fichiers add_*/alter fusionnes dans les CREATE correspondants (users, projects, project_types, general_administrations, organizations, logical_frameworks, specific_objectives, results, activities). migrate:fresh --seed passe proprement (42 migrations).

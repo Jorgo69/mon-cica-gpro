@@ -27,6 +27,7 @@ class Project extends Model
         'ai_analysis_result',
         'general_objectives',
         'status',
+        'currency',
         'start_date',
         'end_date',
         'meta',
@@ -34,6 +35,7 @@ class Project extends Model
 
     protected $casts = [
         'status' => \App\Enums\ProjectStatus::class,
+        'currency' => \App\Enums\Currency::class,
         'start_date' => 'date',
         'end_date' => 'date',
         'general_objectives' => 'array',
@@ -83,6 +85,17 @@ class Project extends Model
     {
         return $this->hasMany(Budget::class, 'project_id', 'id');
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     public function progressTrackers()
     {
         return $this->hasMany(ProgressTracker::class, 'project_id', 'id');

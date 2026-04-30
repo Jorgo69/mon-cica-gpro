@@ -88,5 +88,46 @@ return [
         'locale' => 'fr',
         'theme' => 'light',
         'density' => 'comfortable', // comfortable, compact
+        'timezone' => 'Africa/Porto-Novo',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifications
+    |--------------------------------------------------------------------------
+    */
+    'notifications' => [
+        'reminder_days' => [7, 3, 1], // J-7, J-3, J-1 avant deadline
+        'escalation_after_days' => 7, // Escalade si en retard > 7 jours
+        'digest_day' => 'monday', // Jour du resume hebdomadaire
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fuseaux horaires disponibles
+    |--------------------------------------------------------------------------
+    */
+    'timezones' => [
+        'Africa/Porto-Novo' => 'Benin (GMT+1)',
+        'Africa/Abidjan' => 'Cote d\'Ivoire (GMT)',
+        'Africa/Dakar' => 'Senegal (GMT)',
+        'Africa/Douala' => 'Cameroun (GMT+1)',
+        'Africa/Kinshasa' => 'RDC - Kinshasa (GMT+1)',
+        'Africa/Lubumbashi' => 'RDC - Lubumbashi (GMT+2)',
+        'Africa/Lagos' => 'Nigeria (GMT+1)',
+        'Africa/Bamako' => 'Mali (GMT)',
+        'Africa/Ouagadougou' => 'Burkina Faso (GMT)',
+        'Africa/Niamey' => 'Niger (GMT+1)',
+        'Africa/Lome' => 'Togo (GMT)',
+        'Africa/Conakry' => 'Guinee (GMT)',
+        'Africa/Libreville' => 'Gabon (GMT+1)',
+        'Africa/Brazzaville' => 'Congo (GMT+1)',
+        'Africa/Bangui' => 'Centrafrique (GMT+1)',
+        'Africa/Ndjamena' => 'Tchad (GMT+1)',
+        'Europe/Paris' => 'France (GMT+1/+2)',
+        'Europe/Brussels' => 'Belgique (GMT+1/+2)',
+        'America/New_York' => 'USA Est (GMT-5/-4)',
+        'America/Montreal' => 'Canada Est (GMT-5/-4)',
+        'UTC' => 'UTC',
     ],
 ];

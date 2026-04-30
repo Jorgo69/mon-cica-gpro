@@ -6,43 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('projects', function (Blueprint $table) {
-            $table->uuid('id')->primary();// Clé primaire UUID
-            $table->uuid('organization_id')->nullable();// Unité d'isolation
-            $table->uuid('creator_user_id');// Créateur du projet
+            $table->uuid('id')->primary();
+            $table->uuid('organization_id')->nullable();
+            $table->uuid('creator_user_id');
             $table->uuid('project_type_id')->nullable();
-            $table->string('project_code')->unique();// Code unique du projet (ex: PRJ-001)
-
+            $table->string('project_code')->unique();
             $table->string('title');
             $table->string('short_title')->nullable();
             $table->longText('description')->nullable();
-            $table->json('general_objectives')->nullable();// ADDED for dynamic fields
+            $table->longText('context_description')->nullable();
+            $table->json('general_objectives')->nullable();
             $table->longText('problem_analysis')->nullable();
             $table->longText('strategy')->nullable();
             $table->longText('justification')->nullable();
-            $table->string('status')->default('brouillon');// 'draft', 'active', 'completed', 'on_hold', 'cancelled'
-
+            $table->longText('ai_analysis_result')->nullable();
+            $table->string('status')->default('brouillon');
+            $table->string('currency', 3)->default('XOF');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->uuid('created_by_user_id')->nullable();// Pour l'audit, qui a créé l'entrée
-            $table->uuid('updated_by_user_id')->nullable();// Pour l'audit, qui a mis à jour l'entrée
+            $table->json('meta')->default('{}')->nullable();
+            $table->uuid('created_by_user_id')->nullable();
+            $table->uuid('updated_by_user_id')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
 
-            $table->timestamps();// created_at, updated_at
-            $table->softDeletes();// deleted_at
-
-            // Index pour les clés étrangères et les colonnes fréquemment recherchées
             $table->index('creator_user_id');
             $table->index('project_type_id');
             $table->index('status');
-            $table->index('start_date');
-            $table->index('end_date');
 
-            // Définition des clés étrangères
             $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('cascade');
             $table->foreign('creator_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('created_by_user_id')->references('id')->on('users')->onDelete('set null');
@@ -51,9 +45,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('projects');
