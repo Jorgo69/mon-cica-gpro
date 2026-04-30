@@ -17,11 +17,16 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Vérifie si une langue est stockée en session
-        $locale = Session::get('locale', config('app.locale'));
+        $locale = Session::get('locale');
 
-        // Applique la langue
-        App::setLocale($locale);
+        if (!$locale && auth()->check()) {
+            $locale = \App\Services\UserMeta::get('locale');
+            if ($locale) {
+                Session::put('locale', $locale);
+            }
+        }
+
+        App::setLocale($locale ?? config('gpro.defaults.locale', config('app.locale')));
 
         return $next($request);
     }

@@ -44,7 +44,7 @@
                         'bgColor' => 'red',
                         'borderColor' => 'red',
                         'textColor' => 'red',
-                        'iconColor' => 'text-red-500',
+                        'iconColor' => 'text-error',
                         'icon' => '<path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm-1 8l1 1 1-1 3-3-1-1-1 1-3 3z"/>',
                     ],
                     'info' => [
@@ -52,7 +52,7 @@
                         'bgColor' => 'blue',
                         'borderColor' => 'blue',
                         'textColor' => 'blue',
-                        'iconColor' => 'text-blue-500',
+                        'iconColor' => 'text-accent',
                         'icon' => '<path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 8a1 1 0 0 1-1-1v-4a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1zm0-7a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>',
                     ],
                     'warning' => [
@@ -60,7 +60,7 @@
                         'bgColor' => 'amber',
                         'borderColor' => 'amber',
                         'textColor' => 'amber',
-                        'iconColor' => 'text-amber-500',
+                        'iconColor' => 'text-warning',
                         'icon' => '<path d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 8a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm0-6a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1z"/>',
                     ],
                 ][$type];

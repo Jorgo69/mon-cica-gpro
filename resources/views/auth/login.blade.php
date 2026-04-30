@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-8">
-        <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Bienvenue</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Connectez-vous pour accéder à votre espace de gestion.</p>
+        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">Bienvenue</h2>
+        <p class="text-xs text-subtle font-medium mt-1">Connectez-vous pour accéder à votre espace de gestion.</p>
     </div>
 
     <!-- Session Status -->
@@ -39,12 +39,12 @@
         <!-- Remember Me & Forgot Password -->
         <div class="flex items-center justify-between">
             <label for="remember_me" class="inline-flex items-center cursor-pointer group">
-                <input id="remember_me" type="checkbox" class="w-4 h-4 text-accent border-slate-300 dark:border-slate-700 rounded focus:ring-accent/20 dark:bg-slate-900 transition-all" name="remember">
-                <span class="ms-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider group-hover:text-slate-700 transition-colors">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="w-4 h-4 text-accent border-border dark:border-border-light rounded focus:ring-accent/20 dark:bg-surface transition-all" name="remember">
+                <span class="ms-2 text-[11px] font-bold text-subtle uppercase tracking-wider group-hover:text-body transition-colors">{{ __('Remember me') }}</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-[11px] font-black uppercase tracking-wider text-slate-400 hover:text-accent transition-colors underline decoration-dotted underline-offset-4" href="{{ route('password.request') }}">
+                <a class="text-[11px] font-black uppercase tracking-wider text-muted hover:text-accent transition-colors underline decoration-dotted underline-offset-4" href="{{ route('password.request') }}">
                     Oubli ?
                 </a>
             @endif
@@ -57,7 +57,7 @@
         </div>
 
         @if (Route::has('register'))
-            <p class="text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] pt-4">
+            <p class="text-center text-[10px] font-black text-muted uppercase tracking-[0.2em] pt-4">
                 Pas encore de compte ? 
                 <a href="{{ route('register') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">S'inscrire</a>
             </p>

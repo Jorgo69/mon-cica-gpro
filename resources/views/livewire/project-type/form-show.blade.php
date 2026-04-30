@@ -1,13 +1,13 @@
-<main class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-100 dark:bg-gray-900">
-    <div class="max-w-4xl w-full space-y-8 bg-white dark:bg-gray-800 p-10 rounded-xl shadow-2xl">
+<main class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-surface-alt dark:bg-surface">
+    <div class="max-w-4xl w-full space-y-8 bg-card p-10 rounded-xl shadow-2xl">
         
-        <h1 class="text-3xl font-extrabold text-center text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-extrabold text-center text-heading">
             Détails du type de projet : {{ $projectType->name }}
         </h1>
         
-        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-inner">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Informations Clés</h3>
-            <dl class="space-y-2 text-gray-700 dark:text-gray-200">
+        <div class="bg-surface dark:bg-surface-alt p-6 rounded-lg shadow-inner">
+            <h3 class="text-xl font-semibold text-heading mb-4">Informations Clés</h3>
+            <dl class="space-y-2 text-body dark:text-heading">
                 <div>
                     <dt class="font-medium">Nom :</dt>
                     <dd>{{ $projectType->name }}</dd>
@@ -23,16 +23,16 @@
             </dl>
         </div>
 
-        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-inner">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Champs Dynamiques</h3>
+        <div class="bg-surface dark:bg-surface-alt p-6 rounded-lg shadow-inner">
+            <h3 class="text-xl font-semibold text-heading mb-4">Champs Dynamiques</h3>
             @if ($projectType->dynamicFields->isEmpty())
-                <p class="text-gray-600 dark:text-gray-400">Aucun champ dynamique n'est défini pour ce type de projet.</p>
+                <p class="text-subtle">Aucun champ dynamique n'est défini pour ce type de projet.</p>
             @else
                 <div class="space-y-6">
                     @foreach ($projectType->dynamicFields as $field)
-                        <div class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                            <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ $field->question_text }}</h4>
-                            <dl class="space-y-1 text-gray-700 dark:text-gray-200 text-sm">
+                        <div class="p-4 border border-border dark:border-border rounded-lg bg-card">
+                            <h4 class="text-lg font-bold text-heading mb-2">{{ $field->question_text }}</h4>
+                            <dl class="space-y-1 text-body dark:text-heading text-sm">
                                 <div>
                                     <dt class="font-medium">Nom du champ :</dt>
                                     <dd>{{ $field->field_name }}</dd>

@@ -7,6 +7,12 @@ use Livewire\Component;
 
 class SubActivityListLivewire extends Component
 {
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $subActivities = Activity::whereNotNull('parent_id')->get();

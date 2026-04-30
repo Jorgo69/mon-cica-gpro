@@ -1,4 +1,4 @@
-<main class="lg:ml-64 pt-16 pb-12 min-h-screen bg-slate-50 dark:bg-slate-950">
+<main class="lg:ml-64 pt-16 pb-12 min-h-screen bg-surface">
     <style>
         .wizard-container {
             display: flex;
@@ -63,7 +63,7 @@
             <div class="mb-6 p-5 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-3xl animate-bounce-subtle">
                 <div class="flex items-start gap-4">
                     <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/30">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <x-dynamic-component component="lucide-alert-triangle" class="w-5 h-5" />
                     </div>
                     <div>
                         <h3 class="text-sm font-black text-rose-800 dark:text-rose-300 uppercase tracking-tight">Oups ! Action Requise</h3>
@@ -82,18 +82,18 @@
         }">
             
             {{-- WIZARD SIDEBAR --}}
-            <aside class="sidebar-wizard bg-white dark:bg-slate-900 rounded-[2rem] p-8 mt-8 shadow-sm border border-slate-100 dark:border-slate-800">
+            <aside class="sidebar-wizard bg-card rounded-[2rem] p-8 mt-8 shadow-sm border border-border-light">
                 <div class="space-y-8">
                     <div>
-                        <h2 class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] mb-6 pl-1">Le Processus</h2>
+                        <h2 class="text-[10px] font-black text-muted uppercase tracking-[0.3em] mb-6 pl-1">Le Processus</h2>
                         <div class="space-y-2">
                             <template x-for="(step, index) in stepDetails" :key="index">
                                 <button type="button" 
                                     @click="(index + 1) <= currentStep && $wire.goToStep(index + 1)"
                                     class="w-full flex items-center gap-4 p-3 rounded-2xl transition-all group text-left"
                                     :class="{
-                                        'bg-slate-50 dark:bg-slate-800': (index + 1) === currentStep,
-                                        'hover:bg-slate-50/50 dark:hover:bg-slate-800/50': (index + 1) <= currentStep
+                                        'bg-surface': (index + 1) === currentStep,
+                                        'hover:bg-surface': (index + 1) <= currentStep
                                     }">
                                     
                                     <div class="step-indicator flex-shrink-0"
@@ -103,8 +103,8 @@
                                             'step-future': (index + 1) > currentStep && !step.has_error,
                                             'bg-rose-100 text-rose-600 border border-rose-200 dark:bg-rose-900/30 dark:border-rose-800 dark:text-rose-400 shadow-sm': step.has_error
                                         }">
-                                        <template x-if="(index + 1) < currentStep && !step.has_error"><i class="fas fa-check text-xs"></i></template>
-                                        <template x-if="step.has_error"><i class="fas fa-exclamation text-xs"></i></template>
+                                        <template x-if="(index + 1) < currentStep && !step.has_error"><x-dynamic-component component="lucide-check" class="w-3 h-3" /></template>
+                                        <template x-if="step.has_error"><x-dynamic-component component="lucide-alert-circle" class="w-3 h-3" /></template>
                                         <template x-if="(index + 1) >= currentStep && !step.has_error"><span x-text="index + 1"></span></template>
                                     </div>
 
@@ -112,7 +112,7 @@
                                         <p class="font-bold text-xs uppercase tracking-wide truncate" 
                                            :class="{
                                                'text-accent dark:text-accent-light': (index + 1) === currentStep && !step.has_error,
-                                               'text-slate-600 dark:text-slate-400': (index + 1) !== currentStep && !step.has_error,
+                                               'text-subtle': (index + 1) !== currentStep && !step.has_error,
                                                'text-rose-600 dark:text-rose-400': step.has_error
                                            }"
                                            x-text="step.title"></p>
@@ -126,12 +126,12 @@
                     </div>
 
                     {{-- Progress Bar --}}
-                    <div class="pt-8 border-t border-slate-50 dark:border-slate-800">
-                        <div class="flex justify-between text-[10px] font-black text-slate-400 mb-2.5 uppercase tracking-widest">
+                    <div class="pt-8 border-t border-border-light">
+                        <div class="flex justify-between text-[10px] font-black text-muted mb-2.5 uppercase tracking-widest">
                             <span>Progression</span>
                             <span class="text-accent" x-text="Math.round((currentStep / totalSteps) * 100) + '%'"></span>
                         </div>
-                        <div class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden">
                             <div class="h-full bg-accent transition-all duration-700 ease-out" :style="'width:' + (currentStep / totalSteps * 100) + '%'"></div>
                         </div>
                     </div>
@@ -139,9 +139,9 @@
             </aside>
 
             {{-- FORM CONTENT --}}
-            <div class="content-wizard bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 mt-8 lg:p-12 shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="content-wizard bg-card rounded-[2.5rem] p-8 mt-8 lg:p-12 shadow-sm border border-border-light">
                 <header class="mb-12">
-                    <h1 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">
+                    <h1 class="text-3xl font-black text-heading uppercase tracking-tighter">
                         {{ $projectId ? 'Mise à Jour' : 'Nouvelle Proposition' }}
                     </h1>
                     <div class="mt-2 w-12 h-1 bg-accent rounded-full"></div>
@@ -159,10 +159,10 @@
                     </div>
 
                     {{-- Navigation Buttons --}}
-                    <div class="mt-16 pt-10 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                    <div class="mt-16 pt-10 border-t border-border-light flex items-center justify-between">
                         @if ($currentStep > 1)
-                            <button type="button" wire:click="previousStep" class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-indigo-600 transition-all flex items-center gap-2">
-                                <i class="fas fa-arrow-left"></i> Précédent
+                            <button type="button" wire:click="previousStep" class="text-xs font-black uppercase tracking-[0.2em] text-muted hover:text-indigo-600 transition-all flex items-center gap-2">
+                                <x-dynamic-component component="lucide-arrow-left" class="w-4 h-4" /> Précédent
                             </button>
                         @else
                             <div></div>
@@ -177,12 +177,14 @@
                                     Suivant
                                 </x-ui.button>
                             @else
-                                <x-ui.button type="submit" 
+                                <x-ui.button type="submit"
                                         variant="accent"
                                         size="lg"
                                         icon="check-check"
-                                        loadingTarget="submitForm">
-                                    Soumettre le projet
+                                        loadingTarget="submitForm"
+                                        wire:loading.attr="disabled"
+                                        :disabled="$isSubmitting">
+                                    {{ $isSubmitting ? 'Enregistrement...' : 'Soumettre le projet' }}
                                 </x-ui.button>
                             @endif
                         </div>

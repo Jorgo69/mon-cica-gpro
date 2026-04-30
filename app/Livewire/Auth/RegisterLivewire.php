@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Actions\Auth\RegisterUserAction;
+use App\Actions\Invitation\AcceptInvitationAction;
 use App\Livewire\Traits\WithToastNotifications;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -19,6 +20,16 @@ class RegisterLivewire extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public bool $hasInvitation = false;
+
+    public function mount()
+    {
+        // Pre-remplir l'email si on vient d'un lien d'invitation
+        if (request()->has('email')) {
+            $this->email = request()->get('email');
+        }
+        $this->hasInvitation = session()->has('invitation_token');
+    }
 
     /**
      * Handle an incoming registration request.
@@ -38,6 +49,18 @@ class RegisterLivewire extends Component
         ]);
 
         Auth::login($user);
+
+        // Si un token d'invitation est en session, accepter directement
+        $invitationToken = session()->pull('invitation_token');
+        if ($invitationToken) {
+            $invitation = AcceptInvitationAction::findByToken($invitationToken);
+            if ($invitation) {
+                (new AcceptInvitationAction)->execute($invitation, $user);
+                $orgName = $invitation->organization?->name ?? 'l\'organisation';
+                $this->notifyToastSession('success', "Compte créé et vous avez rejoint {$orgName} !", 'Bienvenue !');
+                return redirect()->route('dashboard');
+            }
+        }
 
         $this->notifyToastSession('success', 'Votre compte a été créé avec succès.', 'Bienvenue !');
 

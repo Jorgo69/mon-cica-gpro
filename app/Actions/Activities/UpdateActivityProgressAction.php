@@ -3,38 +3,43 @@
 namespace App\Actions\Activities;
 
 use App\Models\Activity;
-use App\Models\ProjectUpdate;
+use App\Models\ProgressTracker;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UpdateActivityProgressAction
 {
-    /**
-     * Execute the action to update activity progress and log it.
-     *
-     * @param Activity $activity
-     * @param array $data
-     * @return Activity
-     */
     public function execute(Activity $activity, array $data): Activity
     {
         return DB::transaction(function () use ($activity, $data) {
-            // 1. Mettre à jour l'activité
             $activity->update([
                 'status' => $data['status'] ?? $activity->status,
                 'progress_percentage' => $data['progress_percentage'] ?? $activity->progress_percentage,
                 'justification' => $data['justification'] ?? $activity->justification,
             ]);
 
-            // 3. Notifier
+            // Créer un enregistrement ProgressTracker (historique)
+            ProgressTracker::create([
+                'activity_id' => $activity->id,
+                'project_id' => $activity->result?->specificObjective?->logicalFramework?->project_id,
+                'organization_id' => $activity->organization_id,
+                'creator_user_id' => Auth::id(),
+                'date' => now()->toDateString(),
+                'progress_percentage' => $activity->progress_percentage,
+                'status_update' => $data['status'] ?? $activity->status,
+                'justification' => $data['justification'] ?? null,
+                'performance_score' => $data['performance_score'] ?? null,
+                'evaluation_comment' => $data['evaluation_comment'] ?? null,
+            ]);
+
+            // Notifier
             $notification = new \App\Notifications\ActivityProgressUpdatedNotification($activity, $activity->progress_percentage);
-            
-            // On notifie le responsable s'il est différent de l'auteur de la mise à jour
-            if ($activity->responsibleUser && $activity->responsibleUser->id !== auth()->id()) {
+
+            if ($activity->responsibleUser && $activity->responsibleUser->id !== Auth::id()) {
                 $activity->responsibleUser->notify($notification);
             }
 
-            // On notifie le créateur du projet
-            if ($activity->project && $activity->project->creator && $activity->project->creator->id !== auth()->id()) {
+            if ($activity->project && $activity->project->creator && $activity->project->creator->id !== Auth::id()) {
                 $activity->project->creator->notify($notification);
             }
 

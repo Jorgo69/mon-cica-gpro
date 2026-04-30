@@ -11,18 +11,21 @@
     $id = $id ?? md5($title ?: 'modal-default');
 @endphp
 
-<div 
+<div
     wire:key="modal-{{ $id }}"
-    x-data="{ show: false }"
-    x-init="setTimeout(() => show = true, 50)"
+    x-data="{ show: true }"
+    x-init="$nextTick(() => $refs.modalContent?.focus())"
     x-show="show"
     x-on:keydown.escape.window="@if($dismissable) $wire.{{ $closeAction }}() @endif"
     x-cloak
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title-{{ $id }}"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
     style="display: none;"
 >
     {{-- Overlay --}}
-    <div 
+    <div
         x-show="show"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -31,12 +34,15 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm pointer-events-auto"
+        aria-hidden="true"
         @if($dismissable) @click="$wire.{{ $closeAction }}()" @endif
     ></div>
 
     {{-- Content --}}
-    <div 
+    <div
         x-show="show"
+        x-ref="modalContent"
+        tabindex="-1"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -47,8 +53,8 @@
     >
         {{-- Header --}}
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
-            <h2 class="text-[15px] font-bold text-slate-800 dark:text-slate-100 tracking-tight">{{ $title }}</h2>
-            <button type="button" wire:click="{{ $closeAction }}" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+            <h2 id="modal-title-{{ $id }}" class="text-[15px] font-bold text-slate-800 dark:text-slate-100 tracking-tight">{{ $title }}</h2>
+            <button type="button" wire:click="{{ $closeAction }}" aria-label="Fermer" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                 <x-lucide-x class="w-4 h-4" />
             </button>
         </div>

@@ -8,13 +8,19 @@ use Illuminate\Auth\Events\Registered;
 
 class RegisterUserAction
 {
+    /**
+     * Execute the action to register a new user.
+     * 
+     * @param array $data Validated user data
+     * @return User
+     */
     public function execute(array $data): User
     {
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            // account_type = 'org_member' par défaut (migration) → onboarding décidera
+            'organization_id' => null,
         ]);
 
         event(new Registered($user));

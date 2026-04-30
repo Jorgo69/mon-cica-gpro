@@ -28,7 +28,8 @@
         <select
             name="{{ $name }}"
             id="{{ $name }}"
-            @if($required) required @endif
+            @if($required) required aria-required="true" @endif
+            @if($error) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
             {{ $attributes->merge([
                 'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all appearance-none ' . ($icon ? 'pl-11' : 'pl-4') . ' pr-10 ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '')
             ]) }}
@@ -43,6 +44,6 @@
     </div>
 
     @if($error)
-        <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $error }}</p>
+        <p id="{{ $name }}-error" role="alert" class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $error }}</p>
     @endif
 </div>

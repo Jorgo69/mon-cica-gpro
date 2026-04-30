@@ -1,32 +1,33 @@
 <?php
-
 namespace App\Models;
-
-use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ProjectDocument extends Model
 {
-    use HasFactory, SoftDeletes, HasUuid;
+    use HasFactory, \App\Traits\Multitenantable;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'project_id',
-        'creator_user_id',
-        'file_path',
-        'file_name',
-        'file_type',
-        'file_size',
+        'id', 'organization_id', 'project_id', 'creator_user_id', 'file_path', 'file_name', 'file_type',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
+    }
 
     public function project()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

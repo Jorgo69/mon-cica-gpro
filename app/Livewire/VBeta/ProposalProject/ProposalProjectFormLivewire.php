@@ -14,6 +14,7 @@ use App\Models\ProjectType;
 use App\Models\Result;
 use App\Models\SpecificObjective;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Arr;
@@ -39,6 +40,7 @@ class ProposalProjectFormLivewire extends Component
     public $currentStep = 1;
     public $totalSteps = 6;
     public $stepDetails = [];
+    public bool $isSubmitting = false;
 
     // =========================================================================
     // PROPERTIES: Main Project Data (projects table)
@@ -82,6 +84,7 @@ class ProposalProjectFormLivewire extends Component
         'general_obj_indicators' => '',
         'general_obj_verification_sources' => '',
         'assumptions' => '',
+        'indicators_list' => [],
     ];
     public $specificObjectives = [];
     public $expectedResults = [];
@@ -109,12 +112,12 @@ class ProposalProjectFormLivewire extends Component
             'projectTitle' => 'required|string|max:255',
             'projectStartDate' => 'required|date',
             'projectEndDate' => 'required|date|after_or_equal:projectStartDate',
-            'selectedProjectTypeId' => 'required|uuid|exists:project_types,id',
+            'selectedProjectTypeId' => 'nullable|uuid|exists:project_types,id',
             'contextDescription' => 'nullable|string',
             'problemAnalysis' => 'nullable|string',
             'strategy' => 'nullable|string',
             'justification' => 'nullable|string',
-            'uploadedDocuments.*' => 'nullable|file|max:50000', // 50MB max
+            'uploadedDocuments.*' => 'nullable|file|max:50000|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,csv,txt,zip',
 
             // Logical Framework Basic
             'initialLogicalFramework.general_objective' => 'required|string',
@@ -124,27 +127,32 @@ class ProposalProjectFormLivewire extends Component
 
             // Specific Objectives
             'specificObjectives.*.description' => 'required|string',
-            'specificObjectives.*.indicators' => 'nullable|string',
             'specificObjectives.*.verification_sources' => 'nullable|string',
             'specificObjectives.*.assumptions' => 'nullable|string',
 
             // Results and Activities
             'expectedResults.*.description' => 'required|string',
             'activities.*.description' => 'required|string',
-            'activities.*.responsible_user_id' => 'required|uuid|exists:users,id',
+            'activities.*.responsible_user_id' => [
+                'required', 'uuid',
+                Rule::exists('users', 'id')->where('organization_id', \App\Services\OrgContext::orgId()),
+            ],
             'activities.*.start_date' => [
-                'required', 
-                'date', 
-                'after_or_equal:projectStartDate', 
+                'required',
+                'date',
+                'after_or_equal:projectStartDate',
                 'before_or_equal:projectEndDate'
             ],
             'activities.*.end_date' => [
-                'required', 
-                'date', 
-                'after_or_equal:activities.*.start_date', 
+                'required',
+                'date',
                 'before_or_equal:projectEndDate'
             ],
-            'activities.*.status' => 'nullable|string|in:En cours,Terminée,En attente,En retard',
+            'activities.*.status' => ['nullable', Rule::in(array_column(\App\Enums\ActivityStatus::cases(), 'value'))],
+
+            // Budgets
+            'budgets.*.description' => 'nullable|string|max:255',
+            'budgets.*.total_cost' => 'nullable|numeric|min:0',
         ];
 
         // Add dynamic rules based on current step
@@ -193,6 +201,25 @@ class ProposalProjectFormLivewire extends Component
             'budgets.*.description' => 'description de la ligne budgétaire',
         ];
 
+        // Dynamic indexed attributes for clear error messages
+        foreach ($this->specificObjectives as $i => $obj) {
+            $n = $i + 1;
+            $attributes["specificObjectives.{$i}.description"] = "description de l'objectif spécifique n°{$n}";
+            $attributes["specificObjectives.{$i}.verification_sources"] = "sources de vérification de l'objectif n°{$n}";
+            $attributes["specificObjectives.{$i}.assumptions"] = "hypothèses de l'objectif n°{$n}";
+        }
+        foreach ($this->expectedResults as $i => $res) {
+            $attributes["expectedResults.{$i}.description"] = "description du résultat attendu n°".($i + 1);
+        }
+        foreach ($this->activities as $i => $act) {
+            $n = $i + 1;
+            $attributes["activities.{$i}.description"] = "description de l'activité n°{$n}";
+            $attributes["activities.{$i}.responsible_user_id"] = "responsable de l'activité n°{$n}";
+            $attributes["activities.{$i}.start_date"] = "date de début de l'activité n°{$n}";
+            $attributes["activities.{$i}.end_date"] = "date de fin de l'activité n°{$n}";
+            $attributes["activities.{$i}.status"] = "statut de l'activité n°{$n}";
+        }
+
         foreach ($this->dynamicFormFields as $section => $fields) {
             foreach ($fields as $field) {
                 $attributes['dynamicFieldValues.' . $field['field_name']] = strtolower($field['question_text']);
@@ -208,8 +235,15 @@ class ProposalProjectFormLivewire extends Component
 
     public function mount($projectId = null)
     {
-        $this->users = User::all();
-        $this->allProjectTypes = ProjectType::all();
+        if ($projectId) {
+            $project = Project::findOrFail($projectId);
+            $this->authorize('update', $project);
+        } else {
+            $this->authorize('create', Project::class);
+        }
+
+        $this->users = UserQueryService::forCurrentOrg()->get();
+        $this->allProjectTypes = ProjectType::visibleForOrg(\App\Services\OrgContext::orgId())->get();
         $this->initStepDetails();
 
         if ($projectId) {
@@ -239,12 +273,7 @@ class ProposalProjectFormLivewire extends Component
 
     private function loadExistingProject($projectId)
     {
-        $project = Project::with([
-            'projectDocuments',
-            'logicalFramework.specificObjectives.results.activities',
-            'budgets',
-            'projectType'
-        ])->find($projectId);
+        $project = \App\Services\Queries\LogframeQueryService::forProject($projectId)->project();
 
         if (!$project) {
             $this->initNewProject();
@@ -279,19 +308,45 @@ class ProposalProjectFormLivewire extends Component
 
         // Logical Framework
         if ($project->logicalFramework) {
-            $this->initialLogicalFramework = $project->logicalFramework->toArray();
-            $this->specificObjectives = $project->logicalFramework->specificObjectives->toArray();
-            
+            $lf = $project->logicalFramework;
+            $lfData = collect($lf->toArray())->only([
+                'id', 'project_id', 'general_objective', 'general_obj_indicators',
+                'general_obj_verification_sources', 'assumptions',
+                'organization_id', 'creator_user_id',
+            ])->toArray();
+            $this->initialLogicalFramework = array_merge($lfData, [
+                'indicators_list' => $lf->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray(),
+            ]);
+            $this->specificObjectives = ($lf->specificObjectives ?? collect())->map(function ($obj) {
+                $data = collect($obj->toArray())->only([
+                    'id', 'logical_framework_id', 'description', 'indicators',
+                    'verification_sources', 'assumptions', 'organization_id', 'creator_user_id',
+                ])->toArray();
+                $data['indicators_list'] = $obj->indicatorItems->map(fn ($i) => $i->only(['id', 'description', 'verification_source', 'assumption']))->toArray();
+                return $data;
+            })->toArray();
+
             $this->expectedResults = [];
             $this->activities = [];
 
-            foreach ($project->logicalFramework->specificObjectives as $obj) {
-                foreach ($obj->results as $res) {
-                    $this->expectedResults[] = $res->toArray();
-                    foreach ($res->activities as $act) {
-                        $activity = $act->toArray();
+            foreach ($lf->specificObjectives ?? [] as $obj) {
+                foreach ($obj->results ?? [] as $res) {
+                    $resData = collect($res->toArray())->only([
+                        'id', 'specific_objective_id', 'description', 'indicators',
+                        'verification_sources', 'assumptions', 'organization_id', 'creator_user_id',
+                    ])->toArray();
+                    $this->expectedResults[] = $resData;
+                    foreach ($res->activities ?? [] as $act) {
+                        $activity = collect($act->toArray())->only([
+                            'id', 'result_id', 'project_id', 'description', 'responsible_user_id',
+                            'start_date', 'end_date', 'status', 'budget', 'is_milestone',
+                            'organization_id', 'creator_user_id',
+                        ])->toArray();
                         if (isset($activity['start_date'])) $activity['start_date'] = Carbon::parse($activity['start_date'])->format('Y-m-d');
                         if (isset($activity['end_date'])) $activity['end_date'] = Carbon::parse($activity['end_date'])->format('Y-m-d');
+                        if (isset($activity['status']) && $activity['status'] instanceof \App\Enums\ActivityStatus) {
+                            $activity['status'] = $activity['status']->value;
+                        }
                         $this->activities[] = $activity;
                     }
                 }
@@ -329,8 +384,8 @@ class ProposalProjectFormLivewire extends Component
             }
             $this->dispatch('stepChanged');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::info('Validation failed at step ' . $this->currentStep, ['errors' => $e->errors()]);
-            $this->notifyToast('warning', 'Veuillez corriger les erreurs avant de continuer.', 'Action requise');
+            $errorMessages = collect($e->errors())->flatten()->take(3)->implode(' | ');
+            $this->notifyToast('warning', $errorMessages, 'Corrigez avant de continuer');
             throw $e;
         } catch (\Exception $e) {
             Log::error('Unexpected error in nextStep: ' . $e->getMessage());
@@ -410,7 +465,12 @@ class ProposalProjectFormLivewire extends Component
                     $stepRules["activities.{$index}.description"] = $allRules['activities.*.description'];
                     $stepRules["activities.{$index}.responsible_user_id"] = $allRules['activities.*.responsible_user_id'];
                     $stepRules["activities.{$index}.start_date"] = $allRules['activities.*.start_date'];
-                    $stepRules["activities.{$index}.end_date"] = $allRules['activities.*.end_date'];
+                    $stepRules["activities.{$index}.end_date"] = [
+                        'required',
+                        'date',
+                        "after_or_equal:activities.{$index}.start_date",
+                        'before_or_equal:projectEndDate',
+                    ];
                 }
                 break;
             case 6:
@@ -458,10 +518,16 @@ class ProposalProjectFormLivewire extends Component
             ->orderBy('order')
             ->get()
             ->map(function($field) {
-                if ($field->input_type === 'select' && $field->options) {
-                    $field->options = json_decode($field->options, true) ?? [];
+                $arr = $field->toArray();
+                // options est deja decode par le cast JSON du model
+                // s'assurer que c'est bien un array
+                if ($arr['input_type'] === 'select' && is_string($arr['options'] ?? null)) {
+                    $arr['options'] = json_decode($arr['options'], true) ?? [];
                 }
-                return $field;
+                $arr['is_required'] = (bool) $arr['is_required'];
+                // input_type enum -> string value
+                $arr['input_type'] = $field->input_type?->value ?? $arr['input_type'];
+                return $arr;
             })
             ->groupBy('section')
             ->filter(fn($fields, $section) => !empty($section))
@@ -487,7 +553,14 @@ class ProposalProjectFormLivewire extends Component
 
     public function addSpecificObjective()
     {
-        $this->specificObjectives[] = ['id' => Str::uuid()->toString(), 'description' => '', 'indicators' => '', 'verification_sources' => '', 'assumptions' => ''];
+        $this->specificObjectives[] = [
+            'id' => Str::orderedUuid()->toString(),
+            'description' => '',
+            'indicators' => '',
+            'verification_sources' => '',
+            'assumptions' => '',
+            'indicators_list' => [],
+        ];
     }
 
     public function removeSpecificObjective($index)
@@ -498,7 +571,7 @@ class ProposalProjectFormLivewire extends Component
 
     public function addExpectedResult()
     {
-        $this->expectedResults[] = ['id' => Str::uuid()->toString(), 'description' => ''];
+        $this->expectedResults[] = ['id' => Str::orderedUuid()->toString(), 'description' => ''];
     }
 
     public function removeExpectedResult($index)
@@ -511,7 +584,7 @@ class ProposalProjectFormLivewire extends Component
     {
         $this->activities[] = [
             'id' => null, 'description' => '', 'responsible_user_id' => '', 'start_date' => '', 'end_date' => '',
-            'status' => 'En cours', 'justification' => '', 'is_milestone' => false, 'progress_percentage' => 0
+            'status' => \App\Enums\ActivityStatus::DRAFT->value, 'justification' => '', 'is_milestone' => false, 'budget' => 0
         ];
     }
 
@@ -521,10 +594,37 @@ class ProposalProjectFormLivewire extends Component
         $this->activities = array_values($this->activities);
     }
 
+    public function addIndicator(string $level, ?int $parentIndex = null)
+    {
+        $indicator = [
+            'id' => null,
+            'description' => '',
+            'verification_source' => '',
+            'assumption' => '',
+        ];
+
+        if ($level === 'logframe') {
+            $this->initialLogicalFramework['indicators_list'][] = $indicator;
+        } elseif ($level === 'objective' && $parentIndex !== null) {
+            $this->specificObjectives[$parentIndex]['indicators_list'][] = $indicator;
+        }
+    }
+
+    public function removeIndicator(string $level, ?int $parentIndex, int $indicatorIndex)
+    {
+        if ($level === 'logframe') {
+            unset($this->initialLogicalFramework['indicators_list'][$indicatorIndex]);
+            $this->initialLogicalFramework['indicators_list'] = array_values($this->initialLogicalFramework['indicators_list']);
+        } elseif ($level === 'objective' && $parentIndex !== null) {
+            unset($this->specificObjectives[$parentIndex]['indicators_list'][$indicatorIndex]);
+            $this->specificObjectives[$parentIndex]['indicators_list'] = array_values($this->specificObjectives[$parentIndex]['indicators_list']);
+        }
+    }
+
     public function addBudget()
     {
         $this->budgets[] = [
-            'id' => Str::uuid()->toString(), 'description' => '', 'quantity' => null, 'unit_cost' => null,
+            'id' => Str::orderedUuid()->toString(), 'description' => '', 'quantity' => null, 'unit_cost' => null,
             'total_cost' => null, 'category' => '', 'responsible_user_id' => null
         ];
     }
@@ -578,11 +678,31 @@ class ProposalProjectFormLivewire extends Component
 
     public function submitForm()
     {
+        if ($this->isSubmitting) {
+            return;
+        }
+        $this->isSubmitting = true;
+
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Illuminate\Support\Facades\Log::error('INITIAL_VALIDATION_FAILED: Form validation failed before processing payload.', ['errors' => $e->errors()]);
-            $this->notifyToast('error', 'Il y a des erreurs de validation sur le formulaire. Veuillez vérifier vos saisies.', 'Action Requise');
+            $this->isSubmitting = false;
+            $this->markStepsWithErrors($e->errors());
+
+            // Build a user-friendly error summary
+            $errorMessages = collect($e->errors())->flatten()->take(5)->implode(' | ');
+            $errorCount = count($e->errors());
+            $extra = $errorCount > 5 ? " (+".($errorCount - 5)." autres)" : "";
+            $this->notifyToast('error', $errorMessages . $extra, "{$errorCount} erreur(s) de validation");
+
+            // Navigate to the first step with errors
+            foreach ($this->stepDetails as $index => $step) {
+                if (!empty($step['has_error'])) {
+                    $this->currentStep = $index + 1;
+                    break;
+                }
+            }
+
             throw $e;
         }
 
@@ -593,7 +713,7 @@ class ProposalProjectFormLivewire extends Component
             'start_date'         => $this->projectStartDate ? Carbon::parse($this->projectStartDate)->format('Y-m-d') : null,
             'end_date'           => $this->projectEndDate ? Carbon::parse($this->projectEndDate)->format('Y-m-d') : null,
             'status'             => $this->projectStatus,
-            'project_type_id'    => $this->selectedProjectTypeId,
+            'project_type_id'    => $this->selectedProjectTypeId ?: null,
             'general_objectives' => $this->dynamicFieldValues,
             'description'        => $this->cleanHtml($this->contextDescription),
             'problem_analysis'   => $this->cleanHtml($this->problemAnalysis),
@@ -606,25 +726,76 @@ class ProposalProjectFormLivewire extends Component
         try {
             DB::beginTransaction();
 
+            $project = null;
             if ($this->projectId) {
                 \Log::info('SUBMIT_FORM_BRANCH: Updating existing project.', ['projectId' => $this->projectId]);
                 $this->updateProject($projectDataPayload);
+                $project = Project::find($this->projectId);
             } else {
                 \Log::info('SUBMIT_FORM_BRANCH: Creating new project.');
-                $this->createProject($projectDataPayload);
+                $project = $this->createProject($projectDataPayload);
+            }
+
+            // Sauvegarder les documents uploades
+            if ($project && !empty($this->uploadedDocuments)) {
+                foreach ($this->uploadedDocuments as $document) {
+                    $path = $document->store('documents/' . $project->id, 'public');
+                    \App\Models\ProjectDocument::create([
+                        'project_id' => $project->id,
+                        'file_path' => $path,
+                        'file_name' => $document->getClientOriginalName(),
+                        'file_type' => $document->getMimeType(),
+                        'organization_id' => $project->organization_id,
+                        'creator_user_id' => Auth::id(),
+                    ]);
+                }
+            }
+
+            // Sauvegarder les budgets
+            if ($project && !empty($this->budgets)) {
+                // Supprimer les anciens budgets en edition
+                if ($this->projectId) {
+                    \App\Models\Budget::where('project_id', $project->id)->delete();
+                }
+                foreach ($this->budgets as $budgetData) {
+                    if (!empty($budgetData['description'])) {
+                        \App\Models\Budget::create([
+                            'project_id' => $project->id,
+                            'description' => $budgetData['description'],
+                            'total_amount' => $budgetData['total_cost'] ?? $budgetData['total_amount'] ?? 0,
+                            'organization_id' => $project->organization_id,
+                            'creator_user_id' => Auth::id(),
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
             \Log::info('SUBMIT_FORM_SUCCESS: Transaction committed successfully.');
+
+            // Notifier les org_admin de la soumission du projet
+            if ($project) {
+                $orgAdmins = User::where('organization_id', $project->organization_id)
+                    ->where('role', \App\Enums\AccountType::ORG_ADMIN)
+                    ->where('id', '!=', Auth::id())
+                    ->get();
+
+                foreach ($orgAdmins as $admin) {
+                    $admin->notify(new \App\Notifications\ProjectSubmittedNotification($project, Auth::user()));
+                }
+            }
+
             $this->notifyToast('success', 'Projet enregistré avec succès.');
             return redirect()->route('project.list');
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+            $this->isSubmitting = false;
             \Log::error('SUBMIT_FORM_VALIDATION_ERROR: Validation failed.', ['errors' => $e->errors()]);
             $this->notifyToast('error', 'La validation a échoué. Veuillez vérifier tous les onglets.');
             throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->isSubmitting = false;
             \Log::error('SUBMIT_FORM_FATAL_ERROR: Exception thrown during submission.', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -676,36 +847,52 @@ class ProposalProjectFormLivewire extends Component
         );
         
         \Log::info('CREATE_PROJECT_END: Logical framework attached successfully.');
+
+        return $project;
     }
 
     private function cleanHtml($content)
     {
         if (empty($content)) return null;
-        return strip_tags($content, '<p><br><strong><em><u><s><ul><ol><li><a><img><h1><h2><h3><blockquote><code>');
+        return clean($content);
     }
 
-    private function updateStepErrorStates()
+    private function markStepsWithErrors(array $errorKeys)
     {
-        $errors = $this->getErrorBag();
-        
-        $stepKeys = [
+        $stepPrefixes = [
             1 => ['projectTitle', 'projectCode', 'projectStartDate', 'projectEndDate', 'selectedProjectTypeId'],
-            2 => ['contextDescription', 'problemAnalysis', 'strategy', 'justification', 'contextFiles', 'contextFiles.*'],
-            3 => ['initialLogicalFramework.*', 'specificObjectives.*'],
-            4 => ['expectedResults.*'],
-            5 => ['activities.*'],
+            2 => ['contextDescription', 'problemAnalysis', 'strategy', 'justification', 'uploadedDocuments'],
+            3 => ['initialLogicalFramework', 'specificObjectives'],
+            4 => ['expectedResults'],
+            5 => ['activities'],
         ];
 
         foreach ($this->stepDetails as $index => &$step) {
             $stepNum = $index + 1;
-            $keys = $stepKeys[$stepNum] ?? [];
-            $step['has_error'] = $errors->hasAny($keys);
+            $prefixes = $stepPrefixes[$stepNum] ?? [];
+            $step['has_error'] = false;
+            foreach (array_keys($errorKeys) as $errorKey) {
+                foreach ($prefixes as $prefix) {
+                    if (str_starts_with($errorKey, $prefix)) {
+                        $step['has_error'] = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+    }
+
+    private function updateStepErrorStates()
+    {
+        $errors = $this->getErrorBag()->toArray();
+        if (!empty($errors)) {
+            $this->markStepsWithErrors($errors);
         }
     }
 
     public function render()
     {
         $this->updateStepErrorStates();
-        return view('livewire.proposal-project.form');
+        return view('livewire.v-beta.proposal-project.proposal-project-form-livewire');
     }
 }

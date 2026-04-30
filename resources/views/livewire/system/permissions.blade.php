@@ -24,12 +24,12 @@
                 @forelse($permissions as $permission)
                     <x-ui.table.row>
                         <x-ui.table.td font="bold">
-                            <code class="px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[11px] tracking-tight">
+                            <code class="px-2.5 py-1 rounded-lg bg-surface dark:bg-primary-dark border border-border-light dark:border-surface-alt text-body font-mono text-[11px] tracking-tight">
                                 {{ $permission->name }}
                             </code>
                         </x-ui.table.td>
                         <x-ui.table.td>
-                            <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{{ $permission->guard_name }}</span>
+                            <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ $permission->guard_name }}</span>
                         </x-ui.table.td>
                         <x-ui.table.td>
                             @php
@@ -41,7 +41,7 @@
                                     <span class="text-[10px] font-bold uppercase tracking-wider italic">Critique Système</span>
                                 </div>
                             @else
-                                <div class="flex items-center gap-1.5 text-emerald-500">
+                                <div class="flex items-center gap-1.5 text-success">
                                     <x-lucide-unlock class="w-3 h-3" />
                                     <span class="text-[10px] font-bold uppercase tracking-wider">Libre</span>
                                 </div>
@@ -67,7 +67,7 @@
                 @endforelse
             </x-ui.table>
             
-            <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 font-semibold italic text-[10px] text-slate-400">
+            <div class="p-4 border-t border-border-light dark:border-surface-alt bg-surface/30 dark:bg-surface/30 font-semibold italic text-[10px] text-muted">
                 {{ $permissions->links() }}
             </div>
         </x-ui.section>
@@ -90,7 +90,7 @@
                         required
                         :error="$errors->first('name')"
                     />
-                    <p class="mt-2 text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                    <p class="mt-2 text-[10px] text-subtle font-medium leading-relaxed">
                         <x-lucide-info class="inline w-3 h-3 mr-1" />
                         Utilisez des points (.) ou des tirets (-) pour structurer vos noms technique de permission.
                     </p>

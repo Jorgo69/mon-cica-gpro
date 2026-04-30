@@ -7,12 +7,21 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\Queries\ProjectStatsQueryService;
 use App\Enums\AccountType;
 use App\Models\Activity;
-use Livewire\Attributes\Lazy;
 
-#[Lazy]
 class DashboardLivewire extends Component
 {
     public string $period = 'all'; // all, month, quarter, year
+
+    public function mount()
+    {
+        $user = Auth::user();
+
+        // ROOT sans impersonation -> son propre dashboard
+        // ROOT dans une org (impersonation) -> dashboard org normal
+        if ($user && $user->role === AccountType::ROOT && !session('acting_as_organization_id')) {
+            $this->redirect(route('system.dashboard'));
+        }
+    }
 
     public function render(ProjectStatsQueryService $queryService)
     {
@@ -24,15 +33,14 @@ class DashboardLivewire extends Component
         }
 
         [$startDate, $endDate] = $this->getDateRange();
-
+        
         $stats = $queryService->getDashboardStats($user, $startDate, $endDate);
-        $isAdmin = $user->account_type === AccountType::SYSTEM_ADMIN;
+        $isAdmin = in_array($user->role, [AccountType::ROOT, AccountType::ORG_ADMIN]);
 
-        // Proactive Alerts: Overdue activities scoped via project → org
-        $orgId = session('current_organization_id');
+        // Proactive Alerts: Overdue activities for this user/org
         $overdueActivities = Activity::query()
             ->where('status', \App\Enums\ActivityStatus::OVERDUE)
-            ->when($orgId, fn($q) => $q->whereHas('project', fn($pq) => $pq->where('organization_id', $orgId)))
+            ->when($user->role === AccountType::ORG_USER, fn($q) => $q->where('responsible_user_id', $user->id))
             ->with('project:id,title')
             ->limit(3)
             ->get();
@@ -43,7 +51,7 @@ class DashboardLivewire extends Component
             'currentPeriod' => $this->period,
         ], $stats);
 
-        return view('livewire.dashboard.index', $viewData);
+        return view('livewire.v-beta.dashboard-livewire', $viewData);
     }
 
     public function setPeriod(string $period)
@@ -64,75 +72,9 @@ class DashboardLivewire extends Component
         };
     }
 
+
     public function placeholder()
     {
-        return <<<'HTML'
-        <div>
-            {{-- En-tête de la page SKELETON --}}
-            <div class="mb-6 flex justify-between items-center">
-                <div>
-                    <x-ui.skeleton type="block" class="w-48 h-8 mb-2" />
-                    <x-ui.skeleton type="text" class="w-64" />
-                </div>
-                <x-ui.skeleton type="block" class="w-32 h-12" />
-            </div>
-
-            {{-- Statistiques Globales SKELETON --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <x-ui.skeleton type="card" class="h-32" />
-                <x-ui.skeleton type="card" class="h-32" />
-                <x-ui.skeleton type="card" class="h-32" />
-                <x-ui.skeleton type="card" class="h-32" />
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {{-- Colonne de gauche SKELETON --}}
-                <div class="lg:col-span-2 space-y-8">
-                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
-                        <x-ui.skeleton type="block" class="w-40 h-6 mb-6" />
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <x-ui.skeleton type="card" class="h-24" />
-                            <x-ui.skeleton type="card" class="h-24" />
-                            <x-ui.skeleton type="card" class="h-24" />
-                        </div>
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
-                        <x-ui.skeleton type="block" class="w-48 h-6 mb-6" />
-                        <div class="space-y-4">
-                            @for ($i = 0; $i < 4; $i++)
-                                <div class="flex items-center gap-4">
-                                    <x-ui.skeleton type="avatar" />
-                                    <div class="flex-1">
-                                        <x-ui.skeleton type="text" class="w-3/4 mb-1" />
-                                        <x-ui.skeleton type="text" class="w-1/2 h-3" />
-                                    </div>
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Colonne de droite SKELETON --}}
-                <div class="space-y-8">
-                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
-                        <x-ui.skeleton type="block" class="w-40 h-6 mb-6" />
-                        <div class="space-y-4">
-                            @for ($i = 0; $i < 3; $i++)
-                                <div class="border border-slate-100 dark:border-slate-800 rounded-xl p-4">
-                                    <x-ui.skeleton type="text" class="w-full mb-3 h-5" />
-                                    <x-ui.skeleton type="text" class="w-1/2 mb-4 h-3" />
-                                    <div class="flex justify-between items-center">
-                                        <x-ui.skeleton type="block" class="w-20 h-6 rounded-full" />
-                                        <x-ui.skeleton type="avatar" class="w-8 h-8 rounded-lg" />
-                                    </div>
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        HTML;
+        return view('components.ui.skeleton-table');
     }
 }

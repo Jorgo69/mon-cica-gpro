@@ -15,7 +15,7 @@ export default function richEditor({ uniqueId, content = '', placeholder = 'Écr
             _editor = new Editor({
                 element: this.$refs.editorContent,
                 extensions: [
-                    StarterKit,
+                    StarterKit.configure({ underline: false }),
                     Placeholder.configure({ placeholder }),
                     Underline,
                 ],

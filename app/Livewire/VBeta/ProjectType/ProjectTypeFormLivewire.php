@@ -3,7 +3,7 @@
 namespace App\Livewire\VBeta\ProjectType;
 
 use App\Models\DynamicProjectField;
-use App\Models\Category;
+use App\Models\GeneralAdministration;
 use App\Models\ProjectType;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -18,6 +18,8 @@ class ProjectTypeFormLivewire extends Component
     public $projectCategories = [];
 
     // Méthode de montage, appelée à l'initialisation du composant.
+    public bool $isSystem = false;
+
     public function mount($projectTypeId = null)
     {
         if ($projectTypeId) {
@@ -26,18 +28,25 @@ class ProjectTypeFormLivewire extends Component
             $this->name = $projectType->name;
             $this->description = $projectType->description;
             $this->category = $projectType->category;
+            $this->isSystem = $projectType->is_system;
             $this->fields = $projectType->dynamicFields->map(function ($field) {
-                // S'il s'agit d'une liste déroulante, on décode les options JSON en tableau.
-                if ($field->input_type === 'select') {
-                    $field->options = json_decode($field->options, true) ?? [];
+                $arr = $field->toArray();
+                // options deja decode par le cast JSON — forcer array si string residuel
+                if (is_string($arr['options'] ?? null)) {
+                    $arr['options'] = json_decode($arr['options'], true) ?? [];
                 }
-                return $field->toArray();
+                $arr['options'] = $arr['options'] ?? [];
+                $arr['is_required'] = (bool) ($arr['is_required'] ?? false);
+                $arr['input_type'] = $field->input_type?->value ?? $arr['input_type'];
+                return $arr;
             })->toArray();
         } else {
             $this->addField();
         }
 
-        $this->projectCategories = Category::where('type', 'project_type_category')->get();
+        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')
+            ->where('is_active', true)
+            ->get();
     }
 
     // Ajoute un nouveau champ dynamique au formulaire
@@ -112,17 +121,23 @@ class ProjectTypeFormLivewire extends Component
         try {
             if ($this->projectTypeId) {
                 $projectType = ProjectType::findOrFail($this->projectTypeId);
-                $projectType->update([
-                    'name' => $this->name,
+
+                $updateData = [
                     'description' => $this->description,
                     'category' => $this->category,
-                ]);
+                ];
+                if (!$projectType->is_system) {
+                    $updateData['name'] = $this->name;
+                }
+                $projectType->update($updateData);
             } else {
                 $projectType = ProjectType::create([
-                    'id' => (string) Str::uuid(),
+                    'id' => (string) Str::orderedUuid(),
                     'name' => $this->name,
                     'description' => $this->description,
                     'category' => $this->category,
+                    'organization_id' => \App\Services\OrgContext::orgId(),
+                    'creator_user_id' => auth()->id(),
                 ]);
                 $this->projectTypeId = $projectType->id;
             }
@@ -137,7 +152,7 @@ class ProjectTypeFormLivewire extends Component
             foreach ($this->fields as $index => $fieldData) {
                 // Si c'est un nouveau champ, on génère les délimiteurs
                 if (empty($fieldData['delimiter_start'])) {
-                    $uniqueId = (string) Str::uuid();
+                    $uniqueId = (string) Str::orderedUuid();
                     $fieldData['delimiter_start'] = '{{--START:' . $uniqueId . '--}}';
                     $fieldData['delimiter_end'] = '{{--END:' . $uniqueId . '--}}';
                 }
@@ -147,9 +162,9 @@ class ProjectTypeFormLivewire extends Component
 
                 $fieldData['section'] = trim($fieldData['section'] ?? '') ?: 'general';
                 
-                // Gérer la sérialisation des options en JSON si c'est un 'select'
+                // Le cast 'json' du model gere la serialisation — passer l'array directement
                 if ($fieldData['input_type'] === 'select') {
-                    $fieldData['options'] = json_encode($fieldData['options']);
+                    $fieldData['options'] = is_array($fieldData['options']) ? $fieldData['options'] : [];
                 } else {
                     $fieldData['options'] = null;
                     $fieldData['render_as'] = null;
@@ -175,6 +190,6 @@ class ProjectTypeFormLivewire extends Component
 
     public function render()
     {
-        return view('livewire.project-type.form');
+        return view('livewire.v-beta.project-type.project-type-form-livewire');
     }
 }

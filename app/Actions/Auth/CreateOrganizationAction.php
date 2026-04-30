@@ -3,81 +3,68 @@
 namespace App\Actions\Auth;
 
 use App\Models\User;
-use App\Models\Role;
 use App\Models\Organization;
-use App\Enums\AccountType;
-use App\Enums\OrgMemberRole;
-use App\Enums\OrganizationType;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Spatie\Permission\PermissionRegistrar;
 
 class CreateOrganizationAction
 {
     /**
-     * Permissions par rôle Spatie — à attribuer dans la nouvelle org.
-     * Source de vérité : PermissionSeeder.
+     * Create an organization and assign the user as ORG_ADMIN.
+     * 
+     * Toute l'opération est atomique : si une étape échoue,
+     * tout est annulé (rollback) pour éviter les données orphelines.
+     *
+     * @throws \Throwable
      */
-    private const ROLE_PERMISSIONS = [
-        'ORG_ADMIN' => [
-            'manage-organization', 'manage-users', 'manage-roles',
-            'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
-            'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets',
-        ],
-        'MANAGER' => [
-            'view-projects', 'create-projects', 'edit-projects',
-            'manage-activities', 'track-progress', 'view-budgets',
-        ],
-        'MEMBER' => [
-            'view-projects', 'track-progress',
-        ],
-        'SUPERVISOR' => [
-            'view-projects', 'track-progress', 'view-budgets', 'validate-projects',
-        ],
-    ];
-
     public function execute(User $user, string $name): Organization
     {
         return DB::transaction(function () use ($user, $name) {
-            Log::info('[Action] CreateOrganization - Début', ['user_id' => $user->id]);
+            Log::info('[Action] CreateOrganization - Début transaction');
 
             // 1. Créer l'organisation
             $organization = Organization::create([
-                'name'   => $name,
-                'type'   => OrganizationType::HEADQUARTERS,
+                'name' => $name,
+                'slug' => Str::slug($name),
                 'status' => 'trial',
             ]);
 
-            // 2. Marquer le user comme org_admin (il crée son organisation)
-            $user->update(['account_type' => AccountType::ORG_ADMIN]);
+            Log::info('[Action] CreateOrganization - Organisation créée', ['id' => $organization->id]);
 
-            // 3. Lier via la table pivot
-            $user->organizations()->attach($organization->id, [
-                'role'      => OrgMemberRole::ORG_ADMIN->value,
-                'status'    => 'active',
-                'joined_at' => now(),
+            // 2. Rattacher l'utilisateur à l'organisation
+            $user->update([
+                'organization_id' => $organization->id,
+                'role' => \App\Enums\AccountType::ORG_ADMIN,
             ]);
 
-            // 4. Organisation active en session
-            session(['current_organization_id' => $organization->id]);
+            Log::info('[Action] CreateOrganization - Utilisateur rattaché');
 
-            // 5. Créer les rôles Spatie scopés à cette nouvelle org + assigner ORG_ADMIN
-            app(PermissionRegistrar::class)->forgetCachedPermissions();
-            setPermissionsTeamId($organization->id);
+            // 3. Assigner le rôle Spatie ORG_ADMIN
+            // On force le vidage du cache par précaution
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            setPermissionsTeamId(null); 
+            
+            Log::info('[Action] CreateOrganization - Récupération manuelle du rôle ORG_ADMIN');
+            
+            // On récupère le rôle via le modèle local pour être sûr du guard et de l'UUID
+            $role = \App\Models\Role::where('name', 'ORG_ADMIN')
+                ->where('guard_name', 'web')
+                ->whereNull('organization_id')
+                ->first();
 
-            foreach (self::ROLE_PERMISSIONS as $roleName => $permissions) {
-                $role = Role::firstOrCreate([
-                    'name'            => $roleName,
-                    'guard_name'      => 'web',
-                    'organization_id' => $organization->id,
-                ]);
-                $role->syncPermissions($permissions);
+            if (!$role) {
+                Log::error('[Action] CreateOrganization - Role ORG_ADMIN introuvable');
+                throw new \Exception("Le rôle de base 'ORG_ADMIN' est introuvable. Veuillez vérifier vos seeders.");
             }
 
-            // Assigner ORG_ADMIN au créateur dans le contexte de cette org
-            $user->assignRole('ORG_ADMIN');
+            Log::info('[Action] CreateOrganization - Assignation du rôle', ['role_id' => $role->id]);
+            $user->assignRole($role);
+            
+            // On repasse sur le contexte de l'organisation pour la suite
+            setPermissionsTeamId($organization->id);
 
-            Log::info('[Action] CreateOrganization - Terminé', ['org_id' => $organization->id]);
+            Log::info('[Action] CreateOrganization - Rôle assigné avec succès');
 
             return $organization;
         });

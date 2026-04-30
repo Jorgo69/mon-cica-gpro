@@ -29,9 +29,10 @@
         </label>
     @endif
 
-    <div class="relative group" 
-        @if($type === 'password') 
-            x-data="{ show: false }" 
+    <div class="relative group"
+        @if($type === 'password')
+            wire:ignore.self
+            x-data="{ show: false }"
         @endif
     >
         @if($icon)
@@ -40,17 +41,18 @@
             </div>
         @endif
 
-        <input 
-            @if($type === 'password') 
-                :type="show ? 'text' : 'password'" 
+        <input
+            @if($type === 'password')
+                :type="show ? 'text' : 'password'"
             @else
-                type="{{ $type }}" 
+                type="{{ $type }}"
             @endif
-            name="{{ $name }}" 
+            name="{{ $name }}"
             id="{{ $name }}"
             @if(!$hasWireModel) value="{{ $inputValue }}" @endif
             placeholder="{{ $placeholder }}"
-            @if($required) required @endif
+            @if($required) required aria-required="true" @endif
+            @if($error) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
             {{ $attributes->merge([
                 'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all ' . ($icon ? 'pl-11' : 'pl-4') . ' ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '') . ' ' . ($type === 'password' ? 'pr-11' : 'pr-4')
             ]) }}
@@ -69,7 +71,7 @@
     </div>
 
     @if($error)
-        <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $error }}</p>
+        <p id="{{ $name }}-error" role="alert" class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $error }}</p>
     @elseif($attributes->get('helperText'))
         <p class="text-[10px] text-slate-400 mt-1.5 ml-1 font-medium italic">{{ $attributes->get('helperText') }}</p>
     @endif

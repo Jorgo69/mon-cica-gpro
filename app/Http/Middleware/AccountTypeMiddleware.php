@@ -18,14 +18,21 @@ class AccountTypeMiddleware
             return $next($request);
         }
 
-        $user = auth()->user();
+        $role = auth()->user()->role;
 
-        foreach ($types as $type) {
-            if ($user->account_type->value === $type) {
-                return $next($request);
+        // ROOT bypass : accede a toutes les routes protegees
+        if ($role === \App\Enums\AccountType::ROOT) {
+            return $next($request);
+        }
+
+        if ($role) {
+            foreach ($types as $type) {
+                if ($role->value === $type) {
+                    return $next($request);
+                }
             }
         }
 
-        abort(403, 'Accès refusé : Type de compte non autorisé.');
+        return redirect()->route('dashboard');
     }
 }

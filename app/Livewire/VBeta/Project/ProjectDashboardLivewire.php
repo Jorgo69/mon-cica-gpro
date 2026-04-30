@@ -41,8 +41,6 @@ class ProjectDashboardLivewire extends Component
         $this->project = Project::withCount(['qualitativeEvaluations', 'budgets'])
                         ->findOrFail($this->projectId);
 
-        // Vérifie que l'utilisateur a bien le droit de voir
-        // $this->authorize('view', $this->project);
         abort_if(
             !auth()->user()->can('view', $this->project),
             403,
@@ -88,6 +86,12 @@ class ProjectDashboardLivewire extends Component
      *
      * @return \Illuminate\View\View
      */
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $activitiesQuery = Activity::query();

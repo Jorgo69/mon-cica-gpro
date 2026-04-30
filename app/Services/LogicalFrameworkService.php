@@ -33,7 +33,7 @@ class LogicalFrameworkService
                 $resultId = $data['result_id'] ?? $results[$index % $results->count()]->id;
 
                 $activity = Activity::updateOrCreate(
-                    ['id' => $data['id'] ?? (string) Str::uuid()],
+                    ['id' => $data['id'] ?? (string) Str::orderedUuid()],
                     [
                         'result_id' => $resultId,
                         'title' => $data['title'],

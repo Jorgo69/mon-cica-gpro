@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use App\Models\Activity;
 use App\Livewire\Traits\WithToastNotifications;
 use Livewire\Component;
@@ -49,7 +50,7 @@ class SubActivityFormLivewire extends Component
     public function mount(string $activityId, ?string $subActivityToEditId = null)
     {
         $this->activityId = $activityId;
-        $this->users = User::orderBy('name')->get();
+        $this->users = UserQueryService::forCurrentOrg()->orderBy('name')->get();
         $this->subActivityToEditId = $subActivityToEditId;
 
         // Charger les dates de l'activité parente

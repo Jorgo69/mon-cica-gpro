@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session demarree. Tape /reprendre pour voir ou on en est, ou /suivi pour un etat rapide.'"
+          }
+        ]
+      }
+    ]
+  }
+}

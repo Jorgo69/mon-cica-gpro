@@ -23,8 +23,9 @@ export default {
       },
       // Palette de couleurs personnalisée pour une interface moderne
       colors: {
+        /* -- Brand -- */
         primary: {
-          light: '#334155', // Slate 700
+          light: '#334155',
           DEFAULT: 'rgb(var(--primary) / <alpha-value>)',
           dark: 'rgb(var(--primary-dark) / <alpha-value>)',
         },
@@ -33,32 +34,29 @@ export default {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           dark: 'rgb(var(--accent-dark) / <alpha-value>)',
         },
-        secondary: {
-          light: '#94A3B8', // Slate 400
-          DEFAULT: '#64748B', // Slate 500
-          dark: '#475569', // Slate 600
+
+        /* -- Surfaces -- */
+        surface: {
+          DEFAULT: 'rgb(var(--surface) / <alpha-value>)',
+          alt: 'rgb(var(--surface-alt) / <alpha-value>)',
         },
-        // Couleurs de fond pour les modes clair et sombre
-        background: {
-          light: '#F9FAFB', // Gray 50
-          dark: '#1F2937',  // Gray 800 (Note: assurez-vous que cette couleur contraste bien avec le texte dark)
-        },
-        // Couleurs de texte pour les modes clair et sombre
-        text: {
-          light: '#111827', // Gray 900
-          dark: '#F9FAFB',  // Gray 50
-        },
-        // Couleurs pour les cartes et conteneurs
         card: {
-          light: '#FFFFFF', // White
-          dark: '#374151',  // Gray 700
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
         },
-        // Couleurs des bordures
+
+        /* -- Text -- */
+        heading: 'rgb(var(--heading) / <alpha-value>)',
+        body: 'rgb(var(--body) / <alpha-value>)',
+        subtle: 'rgb(var(--subtle) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+
+        /* -- Borders -- */
         border: {
-          light: '#E5E7EB', // Gray 200
-          dark: '#4B5563',  // Gray 600
+          DEFAULT: 'rgb(var(--border) / <alpha-value>)',
+          light: 'rgb(var(--border-light) / <alpha-value>)',
         },
-        // Couleurs de succès, erreur, avertissement, info
+
+        /* -- Status -- */
         success: {
           DEFAULT: 'rgb(var(--success) / <alpha-value>)',
           dark: 'rgb(var(--success-dark) / <alpha-value>)',
@@ -68,13 +66,13 @@ export default {
           dark: 'rgb(var(--error-dark) / <alpha-value>)',
         },
         warning: {
-          DEFAULT: '#F59E0B', // Amber 500
-          dark: '#D97706', // Amber 600
+          DEFAULT: 'rgb(var(--warning) / <alpha-value>)',
+          dark: 'rgb(var(--warning-dark) / <alpha-value>)',
         },
         info: {
-          DEFAULT: '#3B82F6', // Blue 500
-          dark: '#2563EB', // Blue 600
-        }
+          DEFAULT: 'rgb(var(--info) / <alpha-value>)',
+          dark: 'rgb(var(--info-dark) / <alpha-value>)',
+        },
       },
     },
   },

@@ -1,30 +1,26 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 
 /**
- * ── ORGANIZATION ADMINISTRATION ──
- * Accessible par : org_admin (account_type) OU users avec permission manage-organization/manage-users.
+ * ── ORGANIZATION ADMINISTRATION (ORG_ADMIN & AUTHORIZED USERS) ──
+ * Routes pour la gestion quotidienne au sein d'une organisation.
+ * Utilisable uniquement par les Admins d'Espace ou le Root.
  */
-Route::middleware(['auth', 'account_type:org_admin,system_admin'])
-    ->prefix('v_beta/admin')
-    ->name('admin.')
-    ->group(function () {
-        // Projets (liste admin)
-        Route::view('/project/list', 'pages.admin.project.index')->name('project.list');
+Route::middleware(['auth', 'account_type:org_admin,independent,system_admin'])->prefix('v_beta/admin')->name('admin.')->group(function () {
+    // Projets & Configuration métier
+    Route::view('/project/list', 'v_beta.admin.project.index')->name('project.list');
+    Route::view('/type_of_project', 'v_beta.admin.type_of_project.index')->name('type.of.project');
+    Route::view('/type_of_project/create', 'v_beta.admin.type_of_project.form')->name('project.types.create');
+    Route::view('/type_of_project/{projectTypeId}/edit', 'v_beta.admin.type_of_project.form')->name('project.types.edit');
+    Route::view('/type_of_project/{projectTypeId}/show', 'v_beta.admin.type_of_project.show')->name('project.types.show');
+    
+    // Gestion des ressources humaines et taxonomies
+    Route::view('/members/list', 'v_beta.admin.member.index')->name('member.list');
+    Route::view('/categories/list', 'v_beta.admin.category.index')->name('category.list');
 
-        // Types de projet (CRUD)
-        Route::view('/type_of_project', 'pages.admin.project-type.index')->name('type.of.project');
-        Route::view('/type_of_project/create', 'pages.admin.project-type.form')->name('project.types.create');
-        Route::view('/type_of_project/{projectTypeId}/edit', 'pages.admin.project-type.form')->name('project.types.edit');
-        Route::view('/type_of_project/{projectTypeId}/show', 'pages.admin.project-type.show')->name('project.types.show');
+    // Invitations
+    Route::view('/invitations', 'v_beta.admin.invitation.index')->name('invitation.list');
 
-        // Membres
-        Route::view('/members/list', 'pages.admin.member.index')->name('member.list');
-
-        // Catégories
-        Route::view('/categories/list', 'pages.admin.category.index')->name('category.list');
-
-        // Corbeille
-        Route::view('/trash/management', 'pages.admin.trash.index')->name('trash.management');
-    });
+    // Utilitaires
+    Route::view('/trash/management', 'v_beta.admin.trash.index')->name('trash.management');
+});

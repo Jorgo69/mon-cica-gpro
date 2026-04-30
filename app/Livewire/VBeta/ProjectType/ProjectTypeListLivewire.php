@@ -2,37 +2,67 @@
 
 namespace App\Livewire\VBeta\ProjectType;
 
-use Livewire\Component;
 use App\Models\ProjectType;
+use App\Services\OrgContext;
+use App\Livewire\Traits\WithToastNotifications;
+use Livewire\Component;
 
 class ProjectTypeListLivewire extends Component
 {
-    // Propriété pour stocker la liste des types de projets
+    use WithToastNotifications;
+
     public $projectTypes;
 
-    // Méthode de montage pour charger les données
     public function mount()
     {
-        $this->projectTypes = ProjectType::orderBy('name')->get();
+        $this->loadTypes();
     }
 
-    // Méthode pour la suppression d'un type de projet
     public function deleteProjectType($id)
     {
-        try {
-            ProjectType::destroy($id);
-            // Recharger la liste après la suppression
-            $this->projectTypes = ProjectType::orderBy('name')->get();
-            session()->flash('message', 'Le type de projet a été supprimé avec succès.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Impossible de supprimer le type de projet.');
+        $type = ProjectType::findOrFail($id);
+
+        if ($type->is_system) {
+            $this->notifyToast('error', 'Les types systeme ne peuvent pas etre supprimes.');
+            return;
+        }
+
+        if ($type->organization_id && $type->organization_id !== OrgContext::orgId()) {
+            $this->notifyToast('error', 'Vous ne pouvez pas supprimer ce type.');
+            return;
+        }
+
+        $type->delete();
+        $this->loadTypes();
+        $this->notifyToast('success', 'Type de projet supprime.');
+    }
+
+    public function toggleActive($id)
+    {
+        $type = ProjectType::findOrFail($id);
+        $type->update(['is_active' => !$type->is_active]);
+        $this->loadTypes();
+        $this->notifyToast('success', $type->is_active ? 'Type active.' : 'Type masque.');
+    }
+
+    private function loadTypes()
+    {
+        $orgId = OrgContext::orgId();
+
+        if (OrgContext::isRoot() && !OrgContext::isImpersonating()) {
+            $this->projectTypes = ProjectType::orderBy('is_system', 'desc')->orderBy('name')->get();
+        } else {
+            $this->projectTypes = ProjectType::visibleForOrg($orgId)->orderBy('is_system', 'desc')->orderBy('name')->get();
         }
     }
 
-    // La méthode render retourne la vue associée au composant
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         return view('livewire.project-type.list');
     }
 }
-

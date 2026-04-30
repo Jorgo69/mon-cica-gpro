@@ -48,7 +48,7 @@
                                 <div class="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center text-accent font-bold text-[10px]">
                                     {{ strtoupper(substr($member->name, 0, 1)) }}
                                 </div>
-                                <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $member->name }}</span>
+                                <span class="font-semibold text-heading">{{ $member->name }}</span>
                             </div>
                         </x-ui.table.td>
                         <x-ui.table.td>{{ $member->email }}</x-ui.table.td>
@@ -74,7 +74,7 @@
         @endif
 
         @if($members->isNotEmpty())
-            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800">
+            <div class="px-6 py-4 border-t border-border-light dark:border-surface-alt">
                 {{ $members->links() }}
             </div>
         @endif
@@ -109,12 +109,12 @@
                         ['Ville', $ville, 'map-pin'],
                     ] as [$label, $val, $icon])
                         <div class="flex items-start gap-3">
-                            <div class="mt-0.5 p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-400">
+                            <div class="mt-0.5 p-1.5 rounded-lg bg-surface text-muted">
                                 <x-dynamic-component :component="'lucide-' . $icon" class="w-3.5 h-3.5" />
                             </div>
                             <div class="flex flex-col gap-0.5">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $label }}</span>
-                                <span class="text-[13px] font-semibold text-slate-700 dark:text-slate-200">{{ $val ?? 'Non renseigné' }}</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ $label }}</span>
+                                <span class="text-[13px] font-semibold text-body">{{ $val ?? 'Non renseigné' }}</span>
                             </div>
                         </div>
                     @endforeach
@@ -125,8 +125,8 @@
                     <div class="w-16 h-16 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4">
                         <x-lucide-alert-triangle class="w-8 h-8" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Supprimer le membre ?</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Voulez-vous vraiment supprimer <strong class="text-error">{{ $name }}</strong> ? Cette action est irréversible.</p>
+                    <h3 class="text-lg font-bold text-heading mb-2">Supprimer le membre ?</h3>
+                    <p class="text-sm text-subtle">Voulez-vous vraiment supprimer <strong class="text-error">{{ $name }}</strong> ? Cette action est irréversible.</p>
                 </div>
                 <x-slot:footer>
                     <x-ui.button wire:click="closeModal" variant="ghost">Annuler</x-ui.button>

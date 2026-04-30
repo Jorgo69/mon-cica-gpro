@@ -5,6 +5,7 @@ namespace App\Livewire\VBeta\Resource;
 use Livewire\Component;
 use App\Models\Resource;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use App\Livewire\Traits\WithToastNotifications;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -40,7 +41,7 @@ class ResourceFormLivewire extends Component
     public function mount(string $activityId, ?string $resourceToEditId = null)
     {
         $this->activityId = $activityId;
-        $this->users = User::orderBy('name')->get();
+        $this->users = UserQueryService::forCurrentOrg()->orderBy('name')->get();
         $this->resourceToEditId = $resourceToEditId;
 
         if ($this->resourceToEditId) {

@@ -50,18 +50,18 @@
     </a>
 @else
     <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}
-        wire:loading.attr="disabled"
-        wire:loading.class="opacity-75 cursor-wait !pointer-events-none"
+        wire:loading.delay.long.attr="disabled"
+        wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none"
         @if($targetAttr) wire:target="{{ $targetAttr }}" @endif
     >
         {{-- Loading Spinner (Shows only when loading) --}}
-        <svg wire:loading @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="animate-spin -ml-1 mr-2 w-4 h-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg wire:loading.delay.long @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="animate-spin -ml-1 mr-2 w-4 h-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
 
         {{-- Normal Icon (Hides when loading) --}}
-        <div wire:loading.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="contents">
+        <div wire:loading.delay.long.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="contents">
             @if($icon)
                 <x-dynamic-component :component="'lucide-' . $icon" class="w-4 h-4 mr-2 shrink-0" />
             @endif
@@ -69,8 +69,8 @@
 
         {{-- Texte : alterné entre le slot normal et le loadingText --}}
         @if($loadingText)
-            <span wire:loading.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $slot }}</span>
-            <span wire:loading @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $loadingText }}</span>
+            <span wire:loading.delay.long.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $slot }}</span>
+            <span wire:loading.delay.long @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $loadingText }}</span>
         @else
             <span>{{ $slot }}</span>
         @endif

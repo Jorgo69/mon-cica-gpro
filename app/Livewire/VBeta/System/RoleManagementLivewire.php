@@ -15,7 +15,7 @@ class RoleManagementLivewire extends Component
 
     // Filtres
     public $search = '';
-    public $organizationId = null; // null = rôles globaux
+    public $organizationId = ''; // '' = tous, 'global' = système, uuid = org spécifique
 
     // Gestion de la modale
     public $showModal = false;
@@ -97,11 +97,18 @@ class RoleManagementLivewire extends Component
         $this->reset(['name', 'org_id', 'rolePermissions', 'selectedRole', 'modalType']);
     }
 
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $roles = Role::query()
             ->when($this->search, fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
-            ->when($this->organizationId !== null, fn($q) => $q->where('organization_id', $this->organizationId))
+            ->when($this->organizationId === 'global', fn($q) => $q->whereNull('organization_id'))
+            ->when($this->organizationId && $this->organizationId !== 'global', fn($q) => $q->where('organization_id', $this->organizationId))
             ->orderBy('organization_id')
             ->orderBy('name')
             ->paginate(10);

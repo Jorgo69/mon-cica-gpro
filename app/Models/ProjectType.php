@@ -1,47 +1,39 @@
 <?php
-
 namespace App\Models;
-
-use App\Traits\HasUuid;
-use App\Traits\Multitenantable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 
 class ProjectType extends Model
 {
-    use HasFactory, SoftDeletes, Multitenantable, HasUuid;
+    use HasFactory, SoftDeletes, \App\Traits\Multitenantable, \App\Traits\HasVisibilityScope;
 
-    protected $fillable = [
-        'organization_id',
-        'category_id',
-        'creator_user_id',
-        'name',
-        'description',
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = ['id', 'organization_id', 'creator_user_id', 'name', 'description', 'category', 'is_system', 'is_active'];
+
+    protected $casts = [
+        'is_system' => 'boolean',
+        'is_active' => 'boolean',
     ];
-
-    public function organization()
+    protected static function boot()
     {
-        return $this->belongsTo(Organization::class);
+        parent::boot();
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
     }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'creator_user_id');
-    }
-
     public function projects()
     {
-        return $this->hasMany(Project::class);
+        return $this->hasMany(Project::class, 'project_type_id', 'id');
     }
-
     public function dynamicFields()
     {
-        return $this->hasMany(DynamicProjectField::class)->orderBy('order');
+        return $this->hasMany(DynamicProjectField::class, 'project_type_id', 'id')->orderBy('order');
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

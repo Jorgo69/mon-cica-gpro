@@ -9,23 +9,23 @@
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
-                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllUsers" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Nom</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Email</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden lg:table-cell">Rôle</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                        <tr class="border-b border-border-light dark:border-surface-alt">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllUsers" class="rounded border-border text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Nom</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Email</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">Rôle</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @forelse ($trashedUsers as $user)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $user->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
-                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $user->name }}</td>
-                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell">{{ $user->email }}</td>
-                                <td class="px-6 py-3 hidden lg:table-cell"><x-ui.badge variant="slate" size="sm">{{ $user->account_type }}</x-ui.badge></td>
-                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $user->deleted_at }}</td>
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $user->id }}" class="rounded border-border text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-heading">{{ $user->name }}</td>
+                                <td class="px-6 py-3 text-sm text-subtle hidden md:table-cell">{{ $user->email }}</td>
+                                <td class="px-6 py-3 hidden lg:table-cell"><x-ui.badge variant="slate" size="sm">{{ $user->role }}</x-ui.badge></td>
+                                <td class="px-6 py-3 text-sm text-subtle">{{ $user->deleted_at }}</td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1">
                                         <x-ui.button wire:click="openModal('view','user','{{ $user->id }}')" variant="ghost" icon="eye" size="sm" />
@@ -48,21 +48,21 @@
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
-                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllTypes" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Nom</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Catégorie</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                        <tr class="border-b border-border-light dark:border-surface-alt">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllTypes" class="rounded border-border text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Nom</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Catégorie</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @forelse ($trashedProjectTypes as $type)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $type->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
-                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $type->name }}</td>
-                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400 hidden md:table-cell">{{ $type->category }}</td>
-                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $type->deleted_at }}</td>
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $type->id }}" class="rounded border-border text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-heading">{{ $type->name }}</td>
+                                <td class="px-6 py-3 text-sm text-subtle hidden md:table-cell">{{ $type->category }}</td>
+                                <td class="px-6 py-3 text-sm text-subtle">{{ $type->deleted_at }}</td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1">
                                         <x-ui.button wire:click="openModal('view','project_type','{{ $type->id }}')" variant="ghost" icon="eye" size="sm" />
@@ -85,21 +85,21 @@
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
-                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllProjects" class="rounded border-slate-300 text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Titre</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Code</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest hidden lg:table-cell">Statut</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                        <tr class="border-b border-border-light dark:border-surface-alt">
+                            <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllProjects" class="rounded border-border text-accent focus:ring-accent"></th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Titre</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Code</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">Statut</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @forelse ($trashedProjects as $project)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $project->id }}" class="rounded border-slate-300 text-accent focus:ring-accent"></td>
-                                <td class="px-6 py-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $project->title }}</td>
-                                <td class="px-6 py-3 hidden md:table-cell"><span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span></td>
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                                <td class="px-6 py-3"><input type="checkbox" wire:model="selectedIds" value="{{ $project->id }}" class="rounded border-border text-accent focus:ring-accent"></td>
+                                <td class="px-6 py-3 text-sm font-semibold text-heading">{{ $project->title }}</td>
+                                <td class="px-6 py-3 hidden md:table-cell"><span class="text-xs font-mono font-bold text-subtle bg-surface-alt px-2 py-0.5 rounded-lg">{{ $project->project_code }}</span></td>
                                 <td class="px-6 py-3 hidden lg:table-cell">
                                     @php
                                         $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
@@ -107,7 +107,7 @@
                                     @endphp
                                     <x-ui.badge :variant="$variant" size="sm">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
                                 </td>
-                                <td class="px-6 py-3 text-sm text-slate-500 dark:text-slate-400">{{ $project->deleted_at }}</td>
+                                <td class="px-6 py-3 text-sm text-subtle">{{ $project->deleted_at }}</td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1">
                                         <x-ui.button wire:click="openModal('view','project','{{ $project->id }}')" variant="ghost" icon="eye" size="sm" />
@@ -137,8 +137,8 @@
                     @foreach ((array) $selectedItem->toArray() as $key => $val)
                         @if(!is_array($val) && $val)
                         <div class="flex items-start gap-2 text-sm">
-                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-36 shrink-0">{{ str_replace('_', ' ', ucfirst($key)) }}</span>
-                            <span class="text-slate-600 dark:text-slate-300 break-all">{{ $val }}</span>
+                            <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-36 shrink-0">{{ str_replace('_', ' ', ucfirst($key)) }}</span>
+                            <span class="text-body break-all">{{ $val }}</span>
                         </div>
                         @endif
                     @endforeach
@@ -149,8 +149,8 @@
                     <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mx-auto mb-4">
                         <x-lucide-alert-triangle class="w-6 h-6 text-error" />
                     </div>
-                    <p class="text-sm text-slate-600 dark:text-slate-300 mb-2">Cette action est <strong class="text-error">irréversible</strong>.</p>
-                    <p class="text-sm text-slate-500">Voulez-vous supprimer définitivement cet élément ?</p>
+                    <p class="text-sm text-body mb-2">Cette action est <strong class="text-error">irréversible</strong>.</p>
+                    <p class="text-sm text-subtle">Voulez-vous supprimer définitivement cet élément ?</p>
                 </div>
                 <x-slot:footer>
                     <x-ui.button wire:click="$set('showModal', false)" variant="outline" size="sm">Annuler</x-ui.button>

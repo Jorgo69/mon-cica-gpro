@@ -18,6 +18,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \Illuminate\Mail\Events\MessageSending::class => [
+            \App\Listeners\CheckEmailSuppression::class,
+        ],
+        \Illuminate\Mail\Events\MessageSent::class => [
+            \App\Listeners\HandleFailedEmail::class,
+        ],
     ];
 
     /**

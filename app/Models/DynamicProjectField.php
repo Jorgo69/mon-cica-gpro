@@ -1,48 +1,41 @@
 <?php
-
 namespace App\Models;
-
-use App\Traits\HasUuid;
-use App\Traits\Multitenantable;
-use App\Enums\FieldType;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class DynamicProjectField extends Model
 {
-    use HasFactory, SoftDeletes, Multitenantable, HasUuid;
-
+    use HasFactory, \App\Traits\Multitenantable;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    
     protected $fillable = [
-        'project_type_id',
-        'organization_id',
-        'creator_user_id',
-        'field_name',
-        'question_text',
-        'input_type',
-        'options',
-        'section',
-        'order',
-        'target_project_field',
-        'delimiter_start',
-        'delimiter_end',
-        'render_as',
-        'is_required',
+        'id', 'organization_id', 'creator_user_id', 'project_type_id', 'field_name', 'question_text', 'input_type',
+        'options', 'order', 'target_project_field', 'section',
+        'delimiter_start', 'delimiter_end', 'render_as', 'is_required',
     ];
 
     protected $casts = [
-        'options'     => 'array',
+        'options' => 'json', 
         'is_required' => 'boolean',
-        'input_type'  => FieldType::class,
+        'input_type' => \App\Enums\FieldType::class,
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
+    }
 
     public function projectType()
     {
-        return $this->belongsTo(ProjectType::class);
+        return $this->belongsTo(ProjectType::class, 'project_type_id', 'id');
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 }

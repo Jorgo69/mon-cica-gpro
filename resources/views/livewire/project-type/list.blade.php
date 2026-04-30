@@ -12,8 +12,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($projectTypes as $type)
             <x-ui.card>
-                <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">{{ $type->name }}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-4">{{ $type->description }}</p>
+                <h3 class="text-base font-bold text-heading mb-1">{{ $type->name }}</h3>
+                <p class="text-sm text-subtle line-clamp-2 mb-4">{{ $type->description }}</p>
                 <div class="flex items-center justify-between">
                     <x-ui.badge variant="accent" size="sm" icon="tag">{{ $type->category ?? 'N/A' }}</x-ui.badge>
                     <div class="flex items-center gap-1.5">

@@ -2,45 +2,37 @@
 
 namespace App\Actions\PDF;
 
-use App\Models\Project;
-use App\Services\PDF\PDFTemplateManager;
-use Spatie\Browsershot\Browsershot;
+use PdfStudio\Laravel\Facades\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GenerateProjectReportAction
 {
-    public function __construct(
-        protected PDFTemplateManager $templateManager
-    ) {}
-
-    /**
-     * Generate a PDF report for a project.
-     *
-     * @param string $projectId
-     * @param string|null $templateKey
-     * @return string Path to the generated PDF
-     */
     public function execute(string $projectId, ?string $templateKey = null): string
     {
-        $project = Project::with([
-            'creator',
-            'projectType.dynamicFields',
-            'logicalFramework.specificObjectives.results.activities.subActivities',
-            'budgets.responsibleUser',
-            'documents',
-        ])->findOrFail($projectId);
+        $project = \App\Services\Queries\LogframeQueryService::forProject($projectId)->project();
 
-        // Select template
-        $template = $templateKey 
-            ? $this->templateManager->getAvailableTemplates()->get($templateKey)
-            : $this->templateManager->getTemplateForOrganization($project->organization_id);
-
-        if (!$template) {
-            throw new \Exception("Modèle PDF non trouvé : {$templateKey}");
+        if (!$project) {
+            throw new \Exception("Projet non trouve : {$projectId}");
         }
 
-        // Prepare Dynamic Fields
+        // Resolve template
+        $templateKey = $templateKey ?? 'classic';
+        $templates = config('gpro.pdf.templates', []);
+        $templateConfig = $templates[$templateKey] ?? null;
+
+        if (!$templateConfig) {
+            throw new \Exception("Modele PDF non trouve : {$templateKey}");
+        }
+
+        // Resolve view based on active PDF driver
+        $driver = config('pdf-studio.default_driver', 'dompdf');
+        $driverKey = ($driver === 'chromium') ? 'browsershot' : 'dompdf';
+        $viewName = is_array($templateConfig['view'])
+            ? ($templateConfig['view'][$driverKey] ?? $templateConfig['view']['dompdf'])
+            : $templateConfig['view'];
+
+        // Prepare dynamic fields
         $dynamicFormFields = [];
         if ($project->projectType) {
             $dynamicFormFields = $project->projectType->dynamicFields()
@@ -50,31 +42,25 @@ class GenerateProjectReportAction
                 ->toArray();
         }
 
-        // Render HTML
-        $html = view($template['view'], [
-            'project' => $project,
-            'dynamicFormFields' => $dynamicFormFields,
-        ])->render();
-
-        // Define output path
+        // Output path
         $fileName = 'Rapport_' . Str::slug($project->title) . '_' . now()->format('YmdHis') . '.pdf';
         $directory = 'exports/pdf';
-        
+
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
 
         $path = storage_path('app/public/' . $directory . '/' . $fileName);
 
-        // Generate PDF via Browsershot
-        Browsershot::html($html)
-            ->format('A4')
-            ->setChromePath('/snap/bin/chromium') // As configured on the system
-            ->noSandbox()
-            ->margins(0, 0, 0, 0)
-            ->waitUntilNetworkIdle() // Ensure all assets are loaded
-            ->save($path);
+        // Generate PDF via PDF Studio
+        $relativePath = $directory . '/' . $fileName;
+        Pdf::view($viewName)
+            ->data([
+                'project' => $project,
+                'dynamicFormFields' => $dynamicFormFields,
+            ])
+            ->save($relativePath);
 
-        return $path;
+        return storage_path('app/' . $relativePath);
     }
 }

@@ -1,52 +1,57 @@
 <?php
-
 namespace App\Models;
-
-use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Resource extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity, HasUuid;
-
+    use HasFactory, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    
     protected $fillable = [
-        'activity_id',
-        'creator_user_id',
-        'responsible_user_id',
-        'name',
-        'type',
-        'category',
-        'quantity',
-        'unit_cost',
-        'total_cost',
+        'id', 'organization_id', 'activity_id', 'creator_user_id', 'name', 'type', 'quantity',
+        'unit_cost', 'total_cost', 'category', 'responsible_user_id',
     ];
 
     protected $casts = [
-        'unit_cost'  => 'decimal:2',
+        'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
     ];
 
-    public function getActivitylogOptions(): LogOptions
+    protected static function boot()
     {
-        return LogOptions::defaults()->logAll()->logOnlyDirty()->dontSubmitEmptyLogs();
+        parent::boot();
+        static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
     }
 
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(\Spatie\Activitylog\Models\Activity $activity, string $eventName)
+    {
+        $activity->organization_id = $this->organization_id ?? auth()->user()?->organization_id;
+    }
+    
     public function activity()
     {
-        return $this->belongsTo(Activity::class);
+        return $this->belongsTo(Activity::class, 'activity_id', 'id');
     }
-
+    
     public function creator()
     {
-        return $this->belongsTo(User::class, 'creator_user_id');
+        return $this->belongsTo(User::class, 'creator_user_id', 'id');
     }
 
     public function responsibleUser()
     {
-        return $this->belongsTo(User::class, 'responsible_user_id');
+        return $this->belongsTo(User::class, 'responsible_user_id', 'id');
     }
 }

@@ -97,8 +97,8 @@ function friendly_date($date)
         // Forcer le parsing même pour les dates sans heure
         $carbon = \Carbon\Carbon::parse($date)->startOfDay();
         $now = now();
-        $diffInDays = $carbon->diffInDays($now);
-        $diffInWeeks = $carbon->diffInWeeks($now);
+        $diffInDays = (int) $carbon->diffInDays($now);
+        $diffInWeeks = (int) $carbon->diffInWeeks($now);
         $locale = app()->getLocale();
 
         $carbon->locale($locale);

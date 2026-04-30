@@ -69,19 +69,19 @@
         <div class="overflow-x-auto -mx-6">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-slate-100 dark:border-slate-800">
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Statut</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Progression</th>
-                        <th class="px-6 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                    <tr class="border-b border-border-light dark:border-surface-alt">
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Description</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Statut</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Progression</th>
+                        <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                     @forelse ($activities as $activity)
-                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                            <td class="px-6 py-4 text-sm font-medium text-slate-800 dark:text-slate-200">{{ $activity->description }}</td>
-                            <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">{{ $activity->responsibleUser->name ?? 'Non assigné' }}</td>
+                        <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors">
+                            <td class="px-6 py-4 text-sm font-medium text-heading">{{ $activity->description }}</td>
+                            <td class="px-6 py-4 text-sm text-subtle">{{ $activity->responsibleUser->name ?? 'Non assigné' }}</td>
                             <td class="px-6 py-4">
                                 @php
                                     $statusColor = match($activity->status) {
@@ -96,10 +96,10 @@
                             <td class="px-6 py-4">
                                 @php $progress = $activity->calculateProgress(); @endphp
                                 <div class="flex items-center gap-2">
-                                    <div class="w-16 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="w-16 h-1.5 bg-surface-alt rounded-full overflow-hidden">
                                         <div class="h-full bg-accent rounded-full transition-all" style="width: {{ $progress }}%"></div>
                                     </div>
-                                    <span class="text-[11px] font-bold text-slate-500">{{ $progress }}%</span>
+                                    <span class="text-[11px] font-bold text-subtle">{{ $progress }}%</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-right">

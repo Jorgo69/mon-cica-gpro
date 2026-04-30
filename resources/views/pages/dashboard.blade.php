@@ -22,16 +22,16 @@
             <div class="lg:col-span-2 space-y-8">
                 <x-ui.section :title="__('Activity Status')" icon="activity">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ __('Ongoing') }}</p>
+                        <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Ongoing') }}</p>
                             <p class="text-2xl font-black text-primary">{{ $activitiesInProgress }}</p>
                         </div>
-                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ __('Completed') }}</p>
+                        <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Completed') }}</p>
                             <p class="text-2xl font-black text-success">{{ $activitiesCompleted }}</p>
                         </div>
-                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ __('Overdue') }}</p>
+                        <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Overdue') }}</p>
                             <p class="text-2xl font-black text-error">{{ $activitiesOverdue }}</p>
                         </div>
                     </div>
@@ -40,16 +40,16 @@
                 <x-ui.section :title="__('Recent updates')" icon="history">
                     <div class="space-y-4">
                         @forelse($recentProgressUpdates as $update)
-                            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
-                                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                                    <x-lucide-user class="w-5 h-5 text-slate-400" />
+                            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface dark:hover:bg-surface-alt/50 transition-colors border border-transparent hover:border-border-light">
+                                <div class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center shrink-0">
+                                    <x-lucide-user class="w-5 h-5 text-muted" />
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{{ $update->project->title }}</p>
-                                    <p class="text-xs text-slate-500 truncate">{{ $update->activity->description }}</p>
+                                    <p class="text-sm font-bold text-heading truncate">{{ $update->project->title }}</p>
+                                    <p class="text-xs text-subtle truncate">{{ $update->activity->description }}</p>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <p class="text-[10px] font-black text-slate-400 uppercase text-right">{{ $update->date->diffForHumans() }}</p>
+                                    <p class="text-[10px] font-black text-muted uppercase text-right">{{ $update->date->diffForHumans() }}</p>
                                     <p class="text-xs font-bold text-accent">{{ $update->progress_percentage }}%</p>
                                 </div>
                             </div>
@@ -65,9 +65,9 @@
                 <x-ui.section :title="__('Recent Projects')" icon="folder-closed">
                     <div class="space-y-4">
                         @forelse($recentProjects as $project)
-                            <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
-                                <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mb-1 line-clamp-1">{{ $project->title }}</h4>
-                                <p class="text-[10px] text-slate-500 mb-3 flex items-center gap-1">
+                            <div class="p-4 rounded-xl bg-card border border-border-light shadow-sm hover:shadow-md transition-all">
+                                <h4 class="text-sm font-bold text-heading mb-1 line-clamp-1">{{ $project->title }}</h4>
+                                <p class="text-[10px] text-subtle mb-3 flex items-center gap-1">
                                     <x-lucide-calendar class="w-3 h-3" />
                                     {{ __('Created on') }} {{ $project->created_at->format('d/m/Y') }}
                                 </p>

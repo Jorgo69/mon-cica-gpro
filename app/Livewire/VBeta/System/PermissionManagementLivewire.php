@@ -71,6 +71,12 @@ class PermissionManagementLivewire extends Component
         $this->notifyToast('success', 'La permission a été supprimée définitivement.', 'Action effectuée');
     }
 
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         return view('livewire.system.permissions', [

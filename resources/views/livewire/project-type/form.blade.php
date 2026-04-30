@@ -13,9 +13,9 @@
                             :error="$errors->first('name')" placeholder="Ex: Projet de Développement" />
                 
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Description</label>
+                    <label class="block text-[11px] font-black text-subtle uppercase tracking-wider ml-1">Description</label>
                     <textarea wire:model.defer="description" rows="3" 
-                              class="block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 px-4 transition-all"></textarea>
+                              class="block w-full border-border bg-card text-heading rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 px-4 transition-all"></textarea>
                 </div>
 
                 <x-ui.select wire:model.defer="category" name="category" label="Catégorie" icon="tag">
@@ -33,8 +33,8 @@
         <x-ui.section title="Champs Dynamiques" icon="puzzle">
             <div class="space-y-4">
                 @foreach ($fields as $index => $field)
-                    <div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50/50 dark:bg-slate-800/30 relative">
-                        <button type="button" wire:click="removeField({{ $index }})" class="absolute top-3 right-3 p-1 rounded-lg text-slate-400 hover:text-error hover:bg-error/5 transition-all">
+                    <div wire:key="field-{{ $index }}" class="p-4 border border-border rounded-xl bg-surface/50 dark:bg-surface-alt/30 relative">
+                        <button type="button" wire:click="removeField({{ $index }})" class="absolute top-3 right-3 p-1 rounded-lg text-muted hover:text-error hover:bg-error/5 transition-all">
                             <x-lucide-x class="w-4 h-4" />
                         </button>
 
@@ -62,22 +62,22 @@
                                     <option value="checkbox">Cases à cocher</option>
                                 </x-ui.select>
 
-                                <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Options de la liste</p>
+                                <div class="bg-card p-4 rounded-xl border border-border">
+                                    <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-3">Options de la liste</p>
                                     <div class="space-y-2">
                                         @foreach ($field['options'] as $optionIndex => $option)
                                             <div class="flex items-center gap-2">
                                                 <input type="text" wire:model.defer="fields.{{ $index }}.options.{{ $optionIndex }}.label" 
-                                                       class="flex-1 block border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent text-sm py-2 px-3" placeholder="Libellé">
+                                                       class="flex-1 block border-border bg-card rounded-lg shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent text-sm py-2 px-3" placeholder="Libellé">
                                                 <input type="text" wire:model.defer="fields.{{ $index }}.options.{{ $optionIndex }}.value" 
-                                                       class="flex-1 block border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent text-sm py-2 px-3" placeholder="Valeur">
-                                                <button type="button" wire:click="removeOption({{ $index }}, {{ $optionIndex }})" class="p-1.5 rounded-lg text-slate-400 hover:text-error hover:bg-error/5 transition-all">
+                                                       class="flex-1 block border-border bg-card rounded-lg shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent text-sm py-2 px-3" placeholder="Valeur">
+                                                <button type="button" wire:click="removeOption({{ $index }}, {{ $optionIndex }})" class="p-1.5 rounded-lg text-muted hover:text-error hover:bg-error/5 transition-all">
                                                     <x-lucide-trash-2 class="w-4 h-4" />
                                                 </button>
                                             </div>
                                         @endforeach
                                     </div>
-                                    <button type="button" wire:click="addOption({{ $index }})" class="mt-3 w-full flex justify-center items-center gap-2 px-4 py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                    <button type="button" wire:click="addOption({{ $index }})" class="mt-3 w-full flex justify-center items-center gap-2 px-4 py-2.5 border border-dashed border-border rounded-xl text-sm font-semibold text-subtle hover:bg-surface transition-colors">
                                         <x-lucide-plus class="w-4 h-4" />
                                         Ajouter une option
                                     </button>
@@ -96,15 +96,15 @@
 
                             <div class="flex items-center gap-2">
                                 <input id="is_required-{{ $index }}" wire:model.defer="fields.{{ $index }}.is_required" type="checkbox" 
-                                       class="rounded border-slate-300 text-accent focus:ring-accent h-4 w-4">
-                                <label for="is_required-{{ $index }}" class="text-sm font-medium text-slate-700 dark:text-slate-300">Obligatoire</label>
+                                       class="rounded border-border text-accent focus:ring-accent h-4 w-4">
+                                <label for="is_required-{{ $index }}" class="text-sm font-medium text-body">Obligatoire</label>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            <button type="button" wire:click="addField" class="mt-4 w-full flex justify-center items-center gap-2 px-4 py-3 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+            <button type="button" wire:click="addField" class="mt-4 w-full flex justify-center items-center gap-2 px-4 py-3 border border-dashed border-border rounded-xl text-sm font-semibold text-subtle hover:bg-surface transition-colors">
                 <x-lucide-plus class="w-4 h-4" />
                 Ajouter un champ
             </button>

@@ -17,10 +17,14 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('telephone', 50)->nullable();
             $table->string('numero_identification', 100)->unique()->nullable();
-            $table->string('country', 10)->nullable()->index();
-            $table->json('location')->nullable(); // ville, quartier, adresse
-            $table->string('account_type')->default('org_member'); // PHP Enum: system_admin | org_member | independent
-            $table->foreignUuid('department_id')->nullable()->constrained('departments')->nullOnDelete();
+            $table->string('pays', 100)->nullable();
+            $table->string('ville', 100)->nullable();
+            $table->string('role')->nullable();
+            $table->foreignUuid('organization_id')
+                  ->nullable()
+                  ->constrained('organizations')
+                  ->onDelete('cascade');
+            $table->string('department')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

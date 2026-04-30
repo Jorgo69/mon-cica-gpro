@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectListLivewire extends Component
@@ -55,10 +56,18 @@ class ProjectListLivewire extends Component
 
     public function deleteProject($projectId)
     {
-        $this->authorize('delete', $this->projectId);
-        dd($projectId);
+        $project = Project::findOrFail($projectId);
+        $this->authorize('delete', $project);
 
-        Project::find($projectId)->delete();
+        $project->delete();
+
+        session()->flash('success', __('Le projet a été supprimé avec succès.'));
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()
@@ -98,7 +107,7 @@ class ProjectListLivewire extends Component
         $projects->orderBy($this->sortField, $this->sortDirection);
 
         // Obtenir les options pour les filtres (par exemple, tous les utilisateurs disponibles)
-        $availableUsers = User::orderBy('name')->get();
+        $availableUsers = UserQueryService::forCurrentOrg()->orderBy('name')->get();
 
         // Obtenir les statuts de projet uniques (si vous voulez un filtre dynamique)
         $projectStatuses = Project::select('status')->distinct()->get()->pluck('status');

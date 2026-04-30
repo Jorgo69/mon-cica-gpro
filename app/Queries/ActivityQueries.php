@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use App\Models\User;
 use App\Models\Activity;
+use App\Enums\AccountType;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ActivityQueries
@@ -44,7 +45,9 @@ class ActivityQueries
         // Based on original logic:
         // $activities->where('responsible_user_id', $user->id);
         // We ensure this constraint is preserved unless the user is an admin.
-        if (!$user->hasRole('IT_ADMIN')) {
+        // ROOT et ORG_ADMIN voient toutes les activites (de leur org via Global Scope)
+        // ORG_USER et INDEPENDENT ne voient que les activites ou ils sont responsables
+        if (!in_array($user->role, [AccountType::ROOT, AccountType::ORG_ADMIN])) {
             $query->where('responsible_user_id', $user->id);
         }
 

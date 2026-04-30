@@ -97,6 +97,12 @@ class OrganizationManagementLivewire extends Component
         $this->notifyToast('success', "L'organisation a été supprimée définitivement du système.", 'Organisation retirée');
     }
 
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         return view('livewire.system.organizations', [

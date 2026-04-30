@@ -11,7 +11,7 @@
     <div class="container mx-auto px-4 py-16">
         <div class="max-w-lg mx-auto text-center">
             <div class="mb-8">
-                <svg class="mx-auto h-40 w-40 text-red-600" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="mx-auto h-40 w-40 text-error" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="20" y="20" width="60" height="60" rx="5" stroke="currentColor" stroke-width="2" fill="none"/>
                     <path d="M35 35L65 65" stroke="currentColor" stroke-width="2"/>
                     <path d="M65 35L35 65" stroke="currentColor" stroke-width="2"/>
@@ -21,8 +21,8 @@
             </div>
             <h1 class="text-5xl font-bold text-red-800 mb-4">403</h1>
             <h2 class="text-2xl font-semibold text-red-700 mb-6">Accès Refusé</h2>
-            <p class="text-red-600 mb-8">Désolé, vous n'avez pas les permissions nécessaires pour accéder à cette ressource.</p>
-            <a href="/dashboard" class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+            <p class="text-error mb-8">Désolé, vous n'avez pas les permissions nécessaires pour accéder à cette ressource.</p>
+            <a href="/dashboard" class="inline-block bg-error hover:bg-error-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
                 Retour à l'accueil
             </a>
         </div>

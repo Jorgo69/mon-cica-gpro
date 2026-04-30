@@ -1,5 +1,5 @@
 <!-- ========== HEADER ========== -->
-<header class="bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 fixed w-full top-0 z-50">
+<header class="bg-card border-b border-border/80 dark:border-surface-alt fixed w-full top-0 z-50">
     <div class="flex items-center justify-between px-4 h-14">
 
         <!-- Logo & Mobile Toggle -->
@@ -11,7 +11,7 @@
                 <div class="w-8 h-8 rounded-lg bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
                     <x-lucide-handshake class="w-[18px] h-[18px] text-accent" />
                 </div>
-                <span class="text-[15px] font-bold text-slate-800 dark:text-slate-100 tracking-tight hidden sm:block">{{ config('app.name') }}</span>
+                <span class="text-[15px] font-bold text-heading tracking-tight hidden sm:block">{{ config('app.name') }}</span>
             </a>
         </div>
         
@@ -19,10 +19,10 @@
         <div class="flex items-center gap-1">
 
             <!-- Global Search -->
-            <button @click="$dispatch('toggle-search')" class="navbar-action group hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-xl transition-all hover:border-accent/30">
-                <x-lucide-search class="w-4 h-4 text-slate-400 group-hover:text-accent" />
-                <span class="text-xs font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200">Rechercher...</span>
-                <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-[10px] font-black text-slate-400 group-hover:text-accent">Ctrl+K</kbd>
+            <button @click="$dispatch('toggle-search')" class="navbar-action group hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface dark:bg-surface-alt/50 border border-border-light dark:border-surface-alt rounded-xl transition-all hover:border-accent/30">
+                <x-lucide-search class="w-4 h-4 text-muted group-hover:text-accent" />
+                <span class="text-xs font-bold text-muted group-hover:text-subtle dark:group-hover:text-heading">Rechercher...</span>
+                <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded bg-white dark:bg-surface-alt border border-border dark:border-border text-[10px] font-black text-muted group-hover:text-accent">Ctrl+K</kbd>
             </button>
 
             <!-- Theme Toggle -->
@@ -36,27 +36,17 @@
             
             <!-- Profile Menu -->
             <div class="relative ml-1">
-                <button @click="profileOpen = !profileOpen" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-150">
-                    @php
-                        $userName = auth()->user()->name ?? 'U';
-                        $initials = collect(explode(' ', $userName))->map(fn($w) => mb_substr($w, 0, 1))->take(2)->implode('');
-                    @endphp
-                    <div class="avatar-initials">{{ $initials }}</div>
+                <button @click="profileOpen = !profileOpen" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-alt transition-colors duration-150">
+                    <x-ui.avatar :user="auth()->user()" size="sm" />
                     <div class="hidden sm:block text-left">
-                        <div class="text-[13px] font-semibold text-slate-700 dark:text-slate-200 leading-tight">
+                        <div class="text-[13px] font-semibold text-body leading-tight">
                             {{ auth()->user()->name ?? 'Utilisateur' }}
                         </div>
-                        <div class="text-[11px] text-slate-400 dark:text-slate-500 leading-tight">
-                            @php
-                                $pivotRole = auth()->user()->organizations()
-                                    ->where('organizations.id', session('current_organization_id'))
-                                    ->first()?->pivot?->role;
-                                $roleLabel = $pivotRole ? \App\Enums\OrgMemberRole::tryFrom($pivotRole)?->label() : null;
-                            @endphp
-                            {{ $roleLabel ?? auth()->user()->account_type?->label() ?? 'Aucun rôle' }}
+                        <div class="text-[11px] text-muted leading-tight">
+                            {{ auth()->user()->role ?? 'Aucun rôle' }}
                         </div>
                     </div>
-                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-slate-400 hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />
+                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-muted hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />
                 </button>
                 
                 <!-- Dropdown -->

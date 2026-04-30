@@ -2,71 +2,59 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\AccountType;
-use App\Enums\OrganizationStatus;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetOrganizationContext
 {
+    /**
+     * Garantit que l'utilisateur accede au bon contexte organisationnel.
+     *
+     * Pour ROOT : si acting_as_organization_id est en session, on utilise ce contexte.
+     * Sinon ROOT bypass tout (pas de contexte restrictif).
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return $next($request);
-        }
+        if (auth()->check()) {
+            $user = auth()->user();
 
-        $user = auth()->user();
-
-        // 1. SYSTEM_ADMIN → bypass total, context Spatie global
-        if ($user->account_type === AccountType::SYSTEM_ADMIN) {
-            setPermissionsTeamId(null);
-            return $next($request);
-        }
-
-        // 2. INDEPENDENT → pas d'org nécessaire, accès à /workspace
-        if ($user->account_type === AccountType::INDEPENDENT) {
-            return $next($request);
-        }
-
-        // 3. ORG_ADMIN / ORG_MEMBER → vérifier qu'il a au moins une organisation
-        $hasOrg = $user->organizations()->wherePivot('status', 'active')->exists();
-
-        if (!$hasOrg) {
-            // Pas encore rattaché → onboarding
-            $allowedRoutes = ['onboarding', 'logout'];
-            $isLivewireRequest = $request->hasHeader('X-Livewire');
-
-            if (!$request->routeIs($allowedRoutes) && !$isLivewireRequest) {
-                return redirect()->route('onboarding');
+            // 1. ROOT : soit dans une org (impersonation), soit libre
+            if ($user->role === \App\Enums\AccountType::ROOT) {
+                // Nettoyer l'impersonation si la session est corrompue
+                $actingOrgId = session('acting_as_organization_id');
+                if ($actingOrgId) {
+                    $orgExists = \App\Models\Organization::where('id', $actingOrgId)->exists();
+                    if ($orgExists) {
+                        setPermissionsTeamId($actingOrgId);
+                    } else {
+                        session()->forget(['acting_as_organization_id', 'acting_as_organization_name']);
+                    }
+                }
+                return $next($request);
             }
-            return $next($request);
-        }
 
-        // 4. Résoudre l'organisation active en session
-        $orgId = session('current_organization_id');
+            // 2. Gestion de l'Onboarding (Si aucune organisation rattachee et non independant)
+            if (!$user->organization_id && !$user->is_independent) {
+                $onboardingRoutes = ['onboarding', 'logout'];
+                $isLivewireRequest = $request->hasHeader('X-Livewire');
 
-        if (!$orgId) {
-            // Pas d'org en session → prendre la première org active
-            $firstOrg = $user->organizations()->wherePivot('status', 'active')->first();
-            $orgId = $firstOrg?->id;
-            session(['current_organization_id' => $orgId]);
-        }
+                if (!$request->routeIs($onboardingRoutes) && !$isLivewireRequest) {
+                    return redirect()->route('onboarding');
+                }
+                return $next($request);
+            }
 
-        // 5. Vérifier le statut de l'org active
-        if ($orgId) {
-            $org = \App\Models\Organization::find($orgId);
-
-            if ($org && $org->status === OrganizationStatus::SUSPENDED) {
-                session()->forget('current_organization_id');
+            // 3. Si l'organisation est suspendue ou inactive, on bloque l'acces
+            $organization = $user->organization;
+            if ($organization && $organization->status === \App\Enums\OrganizationStatus::SUSPENDED) {
                 auth()->logout();
-                return redirect()->route('login')
-                    ->with('error', 'Votre organisation est suspendue. Contactez l\'administrateur.');
+                return redirect()->route('login')->with('error', 'Votre organisation est suspendue. Contactez l\'administrateur.');
             }
-        }
 
-        // 6. Contexte Spatie Permissions
-        setPermissionsTeamId($orgId);
+            // 4. On s'assure que le context Spatie est fixe pour cet utilisateur
+            setPermissionsTeamId($user->organization_id);
+        }
 
         return $next($request);
     }

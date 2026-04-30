@@ -3,54 +3,47 @@
 namespace App\Services\Admin;
 
 use App\Models\User;
-use App\Enums\AccountType;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 class MemberQueryService
 {
+    /**
+     * Recupere la liste des membres filtree par organisation (via Global Scope), recherche et tri.
+     */
     public function list(
         string $search = '',
         string $sortField = 'created_at',
         string $sortDirection = 'desc',
         int $perPage = 10
     ): LengthAwarePaginator {
-        $user = auth()->user();
-        $orgId = session('current_organization_id');
-
+        // Le Global Scope Multitenantable sur User filtre automatiquement par org
         $query = User::query();
-
-        // Scoping: members de l'org active (sauf system_admin → voit tout)
-        if ($user && $user->account_type !== AccountType::SYSTEM_ADMIN && $orgId) {
-            $query->whereHas('organizations', fn($q) => $q->where('organizations.id', $orgId));
-        }
 
         if (!empty($search)) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('telephone', 'like', "%{$search}%");
+                  ->orWhere('telephone', 'like', "%{$search}%")
+                  ->orWhere('department', 'like', "%{$search}%");
             });
         }
 
-        $allowedSorts = ['name', 'email', 'created_at', 'account_type'];
+        $allowedSorts = ['name', 'email', 'created_at', 'department', 'role'];
         if (!in_array($sortField, $allowedSorts)) {
             $sortField = 'created_at';
         }
 
-        return $query->orderBy($sortField, $sortDirection)->paginate($perPage);
+        return $query
+            ->orderBy($sortField, $sortDirection)
+            ->paginate($perPage);
     }
 
+    /**
+     * Recupere un membre specifique par son ID (scope automatique via Multitenantable).
+     */
     public function findById(string $id): ?User
     {
-        $user = auth()->user();
-        $orgId = session('current_organization_id');
-        $query = User::query();
-
-        if ($user && $user->account_type !== AccountType::SYSTEM_ADMIN && $orgId) {
-            $query->whereHas('organizations', fn($q) => $q->where('organizations.id', $orgId));
-        }
-
-        return $query->find($id);
+        return User::find($id);
     }
 }

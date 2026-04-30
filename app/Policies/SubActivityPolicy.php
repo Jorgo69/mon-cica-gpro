@@ -27,13 +27,13 @@ class SubActivityPolicy
             return false;
         }
 
-        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return true;
         }
 
         // Vérifier que la sous-activité appartient à l'organisation de l'utilisateur
         // On suppose que SubActivity n'a pas directement organization_id, on passe par activity
-        return session('current_organization_id') === (string) $subActivity->activity->project?->organization_id;
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 
     /**
@@ -41,7 +41,7 @@ class SubActivityPolicy
      */
     public function create(User $user, Activity $activity): bool
     {
-        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -49,7 +49,7 @@ class SubActivityPolicy
             return false;
         }
 
-        return session('current_organization_id') === (string) $activity->project?->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**
@@ -57,7 +57,7 @@ class SubActivityPolicy
      */
     public function update(User $user, Activity $activity, Activity $subActivity): bool
     {
-        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -65,7 +65,7 @@ class SubActivityPolicy
             return false;
         }
 
-        return session('current_organization_id') === (string) $activity->project?->organization_id;
+        return (string) $user->organization_id === (string) $activity->organization_id;
     }
 
     /**
@@ -73,7 +73,7 @@ class SubActivityPolicy
      */
     public function delete(User $user, Activity $subActivity): bool
     {
-        if ($user->account_type === \App\Enums\AccountType::SYSTEM_ADMIN) {
+        if ($user->role === \App\Enums\AccountType::ROOT) {
             return false;
         }
 
@@ -81,7 +81,7 @@ class SubActivityPolicy
             return false;
         }
 
-        return session('current_organization_id') === (string) $subActivity->activity->project?->organization_id;
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 
     /**
@@ -89,8 +89,15 @@ class SubActivityPolicy
      */
     public function restore(User $user, Activity $subActivity): bool
     {
-         // La restauration suit généralement les mêmes règles que la suppression/mise à jour.
-        return $user->account_type === 'Administrateur' || $user->id === $subActivity->activity->responsible_user_id;
+        if ($user->role === \App\Enums\AccountType::ROOT) {
+            return false;
+        }
+
+        if (!$user->hasPermissionTo('manage-activities')) {
+            return false;
+        }
+
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 
     /**
@@ -98,7 +105,10 @@ class SubActivityPolicy
      */
     public function forceDelete(User $user, Activity $subActivity): bool
     {
-        // La suppression forcée est généralement une opération réservée à l'administrateur.
-        return $user->account_type === 'Administrateur';
+        if ($user->role !== \App\Enums\AccountType::ORG_ADMIN) {
+            return false;
+        }
+
+        return (string) $user->organization_id === (string) $subActivity->activity->organization_id;
     }
 }

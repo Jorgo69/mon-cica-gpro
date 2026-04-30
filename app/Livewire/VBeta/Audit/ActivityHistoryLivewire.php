@@ -2,9 +2,9 @@
 
 namespace App\Livewire\VBeta\Audit;
 
+use App\Enums\AccountType;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Enums\AccountType;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityHistoryLivewire extends Component
@@ -23,17 +23,25 @@ class ActivityHistoryLivewire extends Component
         }
     }
 
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $user = auth()->user();
-        $query = Activity::query()->latest();
+        $query = Activity::query()
+            ->latest();
 
-        // system_admin voit tout, les autres filtrés par org active
-        if ($user->account_type !== AccountType::SYSTEM_ADMIN) {
-            $orgId = session('current_organization_id');
-            if ($orgId) {
-                $query->where('organization_id', $orgId);
-            }
+        // ROOT voit tout, INDEPENDENT voit ses propres logs, les autres voient leur org
+        if ($user->role === AccountType::ROOT) {
+            // pas de filtre
+        } elseif ($user->role === AccountType::INDEPENDENT) {
+            $query->where('causer_id', $user->id);
+        } else {
+            $query->where('properties->organization_id', $user->organization_id);
         }
 
         if ($this->subjectId && $this->subjectType) {
@@ -41,7 +49,7 @@ class ActivityHistoryLivewire extends Component
                   ->where('subject_type', $this->subjectType);
         }
 
-        return view('livewire.audit.activity-history', [
+        return view('livewire.v-beta.audit.activity-history-livewire', [
             'activities' => $query->paginate($this->perPage)
         ]);
     }

@@ -22,7 +22,7 @@ class SaveCategoryAction
                 [
                     'name'        => $data['name'],
                     'description' => $data['description'] ?? null,
-                    'type'        => 'project_type_category',
+                    'type'        => $data['type'],
                 ]
             );
         });

@@ -10,10 +10,12 @@ use App\Models\LogicalFramework;
 use App\Models\SpecificObjective;
 use App\Models\Result;
 use App\Models\Activity;
+use App\Traits\SyncsIndicators;
 use Illuminate\Support\Facades\DB;
 
 class UpdateLogicalFrameworkAction
 {
+    use SyncsIndicators;
     /**
      * Met à jour le cadre logique et ses enfants pour un projet donné.
      * Cette méthode gère les créations, mises à jour et suppressions (synchronisation).
@@ -56,15 +58,24 @@ class UpdateLogicalFrameworkAction
 
     private function syncLogicalFramework(Project $project, array $data): LogicalFramework
     {
+        $indicatorsList = $data['indicators_list'] ?? [];
+        $cleanData = Arr::except($data, ['indicators_list']);
+
         if ($project->logicalFramework) {
-            $project->logicalFramework->update($data);
-            return $project->logicalFramework;
+            $project->logicalFramework->update($cleanData);
+            $logicalFramework = $project->logicalFramework;
+        } else {
+            $logicalFramework = LogicalFramework::create(array_merge(
+                ['id' => (string) Str::orderedUuid(), 'project_id' => $project->id],
+                $cleanData
+            ));
         }
-        
-        return LogicalFramework::create(array_merge(
-            ['id' => (string) Str::uuid(), 'project_id' => $project->id],
-            $data
-        ));
+
+        if (!empty($indicatorsList)) {
+            $this->syncIndicators($logicalFramework, $indicatorsList);
+        }
+
+        return $logicalFramework;
     }
 
     private function syncSpecificObjectives(LogicalFramework $logicalFramework, array $specificObjectivesData): void
@@ -73,19 +84,29 @@ class UpdateLogicalFrameworkAction
         $submittedIds = [];
 
         foreach ($specificObjectivesData as $objData) {
-            $cleanData = Arr::except($objData, ['id', 'logical_framework_id', 'created_at', 'updated_at', 'results']);
-            
+            $indicatorsList = $objData['indicators_list'] ?? [];
+            $cleanData = Arr::except($objData, ['id', 'logical_framework_id', 'created_at', 'updated_at', 'results', 'indicators_list']);
+
             if (isset($objData['id']) && in_array($objData['id'], $existingIds)) {
                 SpecificObjective::where('id', $objData['id'])->update($cleanData);
-                $submittedIds[] = $objData['id'];
+                $objectiveId = $objData['id'];
+                $submittedIds[] = $objectiveId;
+
+                if (!empty($indicatorsList)) {
+                    $this->syncIndicators(SpecificObjective::find($objectiveId), $indicatorsList);
+                }
             } else {
                 if (empty(trim($cleanData['description'] ?? ''))) continue;
 
                 $objective = SpecificObjective::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'logical_framework_id' => $logicalFramework->id]
+                    ['id' => (string) Str::orderedUuid(), 'logical_framework_id' => $logicalFramework->id]
                 ));
                 $submittedIds[] = $objective->id;
+
+                if (!empty($indicatorsList)) {
+                    $this->syncIndicators($objective, $indicatorsList);
+                }
             }
         }
 
@@ -112,17 +133,28 @@ class UpdateLogicalFrameworkAction
             if ($objectives->isEmpty()) break;
             $objective = $objectives[$objectiveIndex % count($objectives)];
             
+            $indicatorsList = $resData['indicators_list'] ?? [];
+            $cleanData = Arr::except($cleanData, ['indicators_list']);
+
             if (isset($resData['id']) && in_array($resData['id'], $allExistingResultIds)) {
                 Result::where('id', $resData['id'])->update($cleanData);
                 $submittedResultIds[] = $resData['id'];
+
+                if (!empty($indicatorsList)) {
+                    $this->syncIndicators(Result::find($resData['id']), $indicatorsList);
+                }
             } else {
                 if (empty(trim($cleanData['description'] ?? ''))) continue;
 
                 $result = Result::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'specific_objective_id' => $objective->id]
+                    ['id' => (string) Str::orderedUuid(), 'specific_objective_id' => $objective->id]
                 ));
                 $submittedResultIds[] = $result->id;
+
+                if (!empty($indicatorsList)) {
+                    $this->syncIndicators($result, $indicatorsList);
+                }
             }
             
             $objectiveIndex++;
@@ -170,7 +202,7 @@ class UpdateLogicalFrameworkAction
 
                 $activity = Activity::create(array_merge(
                     $cleanData,
-                    ['id' => (string) Str::uuid(), 'result_id' => $result->id]
+                    ['id' => (string) Str::orderedUuid(), 'result_id' => $result->id]
                 ));
                 $submittedActivityIds[] = $activity->id;
             }

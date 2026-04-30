@@ -46,10 +46,10 @@
             @else
                 <table class="w-full">
                     <thead>
-                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                        <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('title')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">Projet</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Projet</span>
                                     @if ($sortField === 'title')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
@@ -57,7 +57,7 @@
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('project_code')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">Code</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Code</span>
                                     @if ($sortField === 'project_code')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
@@ -65,37 +65,37 @@
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('status')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">Statut</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Statut</span>
                                     @if ($sortField === 'status')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Responsable</span>
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('start_date')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-accent transition-colors">Période</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Période</span>
                                     @if ($sortField === 'start_date')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-300 uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-body uppercase tracking-widest">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
                         @foreach ($projects as $project)
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors group">
                                 <td class="px-6 py-4">
                                     <div class="max-w-xs md:max-w-sm">
-                                        <p class="text-sm font-bold text-slate-800 dark:text-slate-100 truncate group-hover:text-accent transition-colors">{{ $project->title }}</p>
-                                        <p class="text-[10px] text-slate-400 italic mt-0.5 truncate">{{ $project->short_title ?: 'Sans titre court' }}</p>
+                                        <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors">{{ $project->title }}</p>
+                                        <p class="text-[10px] text-muted italic mt-0.5 truncate">{{ $project->short_title ?: 'Sans titre court' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                                    <span class="text-xs font-mono font-bold text-subtle bg-surface-alt px-2.5 py-1 rounded-lg">
                                         {{ $project->project_code }}
                                     </span>
                                 </td>
@@ -110,21 +110,21 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-[10px]">
+                                        <div class="w-7 h-7 rounded-lg bg-surface-alt flex items-center justify-center text-subtle font-bold text-[10px]">
                                             {{ strtoupper(substr($project->creator->name ?? '?', 0, 1)) }}
                                         </div>
-                                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">{{ $project->creator->name ?? 'N/A' }}</span>
+                                        <span class="text-xs font-semibold text-subtle">{{ $project->creator->name ?? 'N/A' }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="space-y-0.5">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-slate-300 uppercase">Du</span>
-                                            <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</span>
+                                            <span class="text-[9px] font-black text-body uppercase">Du</span>
+                                            <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</span>
                                         </div>
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-slate-300 uppercase">Au</span>
-                                            <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</span>
+                                            <span class="text-[9px] font-black text-body uppercase">Au</span>
+                                            <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</span>
                                         </div>
                                     </div>
                                 </td>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +23,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // --- Domain Driven Routes ---
@@ -38,6 +40,9 @@ require __DIR__.'/domains/resource.php';
 Route::get('lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'fr'])) {
         session(['locale' => $locale]);
+        if (auth()->check()) {
+            \App\Services\UserMeta::set('locale', $locale);
+        }
     }
     return back();
 });
@@ -47,7 +52,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::view('setting', 'pages.settings.index')->name('setting');
+    Route::view('setting', 'v_beta.settings.index')->name('setting');
+
+    // Mini API pour persister les preferences (theme toggle navbar, etc.)
+    Route::post('/api/user-meta', function (\Illuminate\Http\Request $request) {
+        $key = $request->input('key');
+        $value = $request->input('value');
+        if (in_array($key, ['theme', 'density', 'locale', 'avatar'])) {
+            \App\Services\UserMeta::set($key, $value);
+            return response()->json(['ok' => true]);
+        }
+        return response()->json(['error' => 'invalid key'], 422);
+    })->name('user-meta.update');
 });
+
+// Invitation (route publique, pas besoin d'auth)
+Route::get('/invitation/{token}', InvitationController::class)->name('invitation.accept');
+
+// Email unsubscribe/resubscribe (routes publiques, signees par token)
+Route::get('/email/unsubscribe/{token}', [\App\Http\Controllers\EmailUnsubscribeController::class, 'unsubscribe'])->name('email.unsubscribe');
+Route::get('/email/resubscribe/{token}', [\App\Http\Controllers\EmailUnsubscribeController::class, 'resubscribe'])->name('email.resubscribe');
 
 require __DIR__.'/auth.php';

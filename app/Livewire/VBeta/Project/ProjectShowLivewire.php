@@ -13,6 +13,7 @@ use App\Models\Activity;
 use App\Models\Risk;
 use App\Models\Budget;
 use App\Models\DynamicProjectField;
+use App\Enums\LogframeDisplayFormat;
 
 class ProjectShowLivewire extends Component
 {
@@ -22,10 +23,18 @@ class ProjectShowLivewire extends Component
     public $project;
     public $dynamicFormFields = [];
     public $activeTab = 'overview'; // [overview, logframe, documents, history]
+    public $logframeFormat = 'cards'; // default format
 
     public function switchTab($tab)
     {
         $this->activeTab = $tab;
+    }
+
+    public function setLogframeFormat(string $format)
+    {
+        if (LogframeDisplayFormat::tryFrom($format)) {
+            $this->logframeFormat = $format;
+        }
     }
 
     /**
@@ -38,9 +47,7 @@ class ProjectShowLivewire extends Component
         
         
         $this->loadProject();
-        
-        // Vérifie que l'utilisateur peut voir ce projet
-        // $this->authorize('view', $this->project);
+        $this->authorize('view', $this->project);
     }
 
     /**
@@ -51,14 +58,11 @@ class ProjectShowLivewire extends Component
      */
     public function loadProject()
     {
-        $this->project = Project::with([
-            'projectType.dynamicFields', // Charge le type de projet et ses champs dynamiques
-            'projectContext',
-            'documents',
-            'budgets',
-            'logicalFramework.specificObjectives.results.activities', // La hiérarchie correcte
-            'creator',
-        ])->findOrFail($this->projectId);
+        $this->project = \App\Services\Queries\LogframeQueryService::forProject($this->projectId)->project();
+
+        if (!$this->project) {
+            abort(404);
+        }
 
         // Charge les définitions des champs dynamiques pour l'affichage
         if ($this->project->projectType) {

@@ -17,6 +17,9 @@ class TrashManagementLivewire extends Component
     public $modalType = '';
     public $selectedItem = null;
     public $selectedModel = null; // "user", "project", "project_type"
+    public $selectAllUsers = false;
+    public $selectAllProjects = false;
+    public $selectAllTypes = false;
 
     // Ouvrir modal
     public function openModal($type, $model, $id = null)
@@ -97,6 +100,12 @@ class TrashManagementLivewire extends Component
         $this->selectedItem = null;
         $this->selectedModel = null;
         $this->showModal = false;
+    }
+
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
     }
 
     public function render()

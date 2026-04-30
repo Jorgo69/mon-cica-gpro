@@ -3,6 +3,7 @@
 namespace App\Livewire\VBeta\Activity;
 
 use App\Models\User;
+use App\Services\Queries\UserQueryService;
 use Livewire\Component;
 use App\Models\Activity;
 use Livewire\WithPagination;
@@ -31,6 +32,11 @@ class ActivityListLivewire extends Component
         $this->sortField = $field;
     }
 
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render(ActivityQueries $activityQueries)
     {
         $user = Auth::user();
@@ -56,7 +62,7 @@ class ActivityListLivewire extends Component
         }
 
         // Obtenir les options pour les filtres
-        $availableUsers = User::orderBy('name')->get();
+        $availableUsers = UserQueryService::forCurrentOrg()->orderBy('name')->get();
         // Optionnel: utiliser des enums si dispo, sinon la requête de statuts existants
         $activityStatuses = Activity::select('status')->whereNotNull('status')->distinct()->pluck('status');
 

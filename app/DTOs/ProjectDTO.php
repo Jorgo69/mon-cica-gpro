@@ -6,7 +6,7 @@ class ProjectDTO
 {
     public function __construct(
         public readonly string $title,
-        public readonly string $projectTypeId,
+        public readonly ?string $projectTypeId = null,
         public readonly ?string $projectCode = null,
         public readonly ?string $shortTitle = null,
         public readonly ?string $status = null,
@@ -25,7 +25,7 @@ class ProjectDTO
     {
         return new self(
             title: $data['title'] ?? $data['project_name'] ?? '',
-            projectTypeId: $data['project_type_id'] ?? '',
+            projectTypeId: $data['project_type_id'] ?: null,
             projectCode: $data['project_code'] ?? null,
             shortTitle: $data['short_title'] ?? null,
             status: $data['status'] ?? null,

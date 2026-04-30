@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $title ?? config('app.name') }}</title>
     @livewireStyles
@@ -20,13 +18,31 @@
     @stack('styles')
 
     <script>
-        // Initialisation immédiate du thème pour éviter le flash blanc
-        if (localStorage.getItem('darkMode') === 'true' || 
-            (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        // Initialisation theme : priorite DB (via Blade) > localStorage > system preference
+        @auth
+            @php $dbTheme = \App\Services\UserMeta::get('theme'); @endphp
+            @if($dbTheme === 'dark')
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            @elseif($dbTheme === 'light')
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            @else
+                if (localStorage.getItem('darkMode') === 'true' ||
+                    (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            @endif
+        @else
+            if (localStorage.getItem('darkMode') === 'true' ||
+                (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        @endauth
 
         window.appData = function() {
             return {
@@ -38,6 +54,7 @@
                 
                 init() {
                     this.initSidebar();
+                    this.listenThemeChange();
                 },
                 
                 initSidebar() {
@@ -57,8 +74,27 @@
                     }
                 },
                 
+                // Ecouter le changement de theme depuis Settings Livewire
+                listenThemeChange() {
+                    window.addEventListener('theme-changed', (e) => {
+                        const theme = e.detail?.theme ?? e.detail?.[0]?.theme;
+                        if (theme) {
+                            this.darkMode = theme === 'dark';
+                        }
+                    });
+                    document.addEventListener('livewire:init', () => {
+                        Livewire.on('theme-changed', (data) => {
+                            const theme = Array.isArray(data) ? data[0]?.theme : data?.theme;
+                            if (theme) {
+                                this.darkMode = theme === 'dark';
+                            }
+                        });
+                    });
+                },
+
                 toggleTheme() {
                     this.darkMode = !this.darkMode;
+                    const newTheme = this.darkMode ? 'dark' : 'light';
                     if (this.darkMode) {
                         document.documentElement.classList.add('dark');
                         localStorage.setItem('darkMode', 'true');
@@ -66,43 +102,41 @@
                         document.documentElement.classList.remove('dark');
                         localStorage.setItem('darkMode', 'false');
                     }
+                    // Persist in DB + sync Settings Livewire si present
+                    fetch('/api/user-meta', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                        body: JSON.stringify({ key: 'theme', value: newTheme })
+                    }).catch(() => {});
+                    // Mettre a jour le composant Settings s'il est monte
+                    if (window.Livewire) {
+                        Livewire.dispatch('navbar-theme-changed', { theme: newTheme });
+                    }
                 }
             }
         }
     </script>
 </head>
 
-{{-- <body class="bg-gray-50 dark:bg-gray-900 font-sans">
-    <div class="min-h-screen transition-colors duration-300">
+<body class="bg-surface font-sans">
+    <x-ui.org-impersonation-banner />
+    <div class="min-h-screen transition-colors duration-300 @if(auth()->user()?->role === \App\Enums\AccountType::ROOT && session('acting_as_organization_id')) pt-8 @endif">
         @include('layouts.navbar')
-        @include('layouts.sidebar')
+        @if(auth()->user()?->role === \App\Enums\AccountType::ROOT && !session('acting_as_organization_id'))
+            @include('layouts.sidebar-root')
+        @else
+            @include('layouts.sidebar')
+        @endif
 
-        <!-- Main Content -->
-        <main class="lg:ml-60 pt-14 min-h-screen">
-            <div class="p-4 sm:p-6 lg:p-8">
-                {{ $slot }}
-            </div>
-        </main>
+        {{-- Le slot est rendu directement — les pages utilisent <x-ui.page-layout>
+             qui fournit deja lg:ml-60 pt-14 --}}
+        {{ $slot }}
     </div>
 
     @livewire('v-beta.search.global-search-livewire')
     <x-ui.toast-notifications />
-
-    @livewireScripts
-    @stack('scripts')
-</body> --}}
-
-<body class="bg-gray-50 dark:bg-gray-900 font-sans">
-    
-        @include('layouts.navbar')
-        <!-- Sidebar -->
-        @include('layouts.sidebar')
-
-
-    {{ $slot }}
-    
-    @livewire('v-beta.search.global-search-livewire')
-    <x-ui.toast-notifications />
+    <x-ui.offline-banner />
 
     @livewireScripts
     @stack('scripts')

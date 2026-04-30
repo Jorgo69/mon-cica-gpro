@@ -1,148 +1,295 @@
-@extends('pdf.layouts.report')
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ $project->title }} - Rapport de Projet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        @page { size: A4; margin: 22mm 20mm; }
+        .page-break { page-break-after: always; }
+        .no-break { page-break-inside: avoid; }
+    </style>
+</head>
+<body class="text-gray-800 text-sm leading-relaxed">
 
-@section('title', 'Rapport de Projet - ' . $project->title)
-
-@section('content')
-    {{-- Page de Garde --}}
-    <div class="h-screen flex flex-col justify-center items-center header-bg text-white px-20 text-center relative overflow-hidden">
-        <div class="z-10">
-            <div class="w-24 h-24 rounded-3xl bg-white/10 flex items-center justify-center mx-auto mb-8 backdrop-blur-md border border-white/20">
-                <svg class="w-12 h-12 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+    {{-- ==================== PAGE DE GARDE ==================== --}}
+    <div class="flex flex-col justify-center items-center min-h-[85vh] text-center">
+        <div class="mb-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
-            <h4 class="text-accent font-black uppercase tracking-[0.3em] text-sm mb-4">Rapport Officiel</h4>
-            <h1 class="text-5xl font-extrabold mb-6 leading-tight">{{ $project->title }}</h1>
-            <div class="h-1 w-24 bg-accent mx-auto mb-8 rounded-full"></div>
-            <p class="text-xl text-slate-300 font-medium mb-12">Code Projet : {{ $project->project_code }}</p>
-            
-            <div class="grid grid-cols-2 gap-12 text-left bg-white/5 p-8 rounded-3xl backdrop-blur-sm border border-white/10">
-                <div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Créé par</span>
-                    <span class="text-lg font-bold">{{ $project->creator?->name ?? 'Système' }}</span>
-                </div>
-                <div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Date d'édition</span>
-                    <span class="text-lg font-bold">{{ now()->translatedFormat('d F Y') }}</span>
-                </div>
-            </div>
+            <p class="text-xs text-gray-400 uppercase tracking-[0.3em] font-semibold mb-8">Rapport de projet</p>
         </div>
-        
-        {{-- Décoration --}}
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-accent opacity-10 rounded-full blur-3xl"></div>
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-3 max-w-lg leading-tight">{{ $project->title }}</h1>
+        @if($project->short_title)
+            <p class="text-base text-gray-500 mb-2">{{ $project->short_title }}</p>
+        @endif
+        <p class="text-sm text-gray-400 font-mono">{{ $project->project_code }}</p>
+
+        <div class="w-12 h-px bg-gray-300 my-8"></div>
+
+        <div class="text-xs text-gray-400 space-y-1">
+            @if($project->start_date && $project->end_date)
+                <p>{{ $project->start_date?->format('d/m/Y') }} &mdash; {{ $project->end_date?->format('d/m/Y') }}</p>
+            @endif
+            @if($project->creator)
+                <p>{{ $project->creator->name }}</p>
+            @endif
+            @if($project->projectType)
+                <p>{{ $project->projectType->name }}</p>
+            @endif
+            <p class="mt-4 text-gray-300">Document genere le {{ now()->format('d/m/Y') }}</p>
+        </div>
     </div>
 
     <div class="page-break"></div>
 
-    {{-- Synthèse du Projet --}}
-    <div class="p-12">
-        <div class="flex items-center gap-4 mb-12">
-            <div class="w-1.5 h-10 bg-accent rounded-full"></div>
-            <h2 class="text-3xl font-extrabold tracking-tight">Synthèse du Projet</h2>
-        </div>
+    {{-- ==================== FICHE PROJET ==================== --}}
+    <div class="mb-10">
+        <h2 class="text-lg font-bold text-gray-900 border-b-2 border-gray-900 pb-2 mb-6 uppercase tracking-wide">Fiche du projet</h2>
 
-        <div class="grid grid-cols-3 gap-6 mb-12">
-            <div class="card bg-slate-50 border-none">
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Statut Actuel</span>
-                <span class="px-3 py-1 bg-white rounded-full text-xs font-bold shadow-sm border border-slate-100">{{ $project->status?->label() ?? 'N/A' }}</span>
-            </div>
-            <div class="card bg-slate-50 border-none">
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Type de Projet</span>
-                <span class="text-sm font-bold">{{ $project->projectType?->name ?? 'Standard' }}</span>
-            </div>
-            <div class="card bg-slate-50 border-none">
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Budget Total</span>
-                <span class="text-sm font-bold text-primary">{{ number_format($project->budgets->sum('total_amount'), 0, ',', ' ') }} FCFA</span>
-            </div>
-        </div>
+        <table class="w-full text-sm">
+            <tbody>
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium w-40 align-top">Titre</td>
+                    <td class="py-2.5 font-semibold text-gray-900">{{ $project->title }}</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Code</td>
+                    <td class="py-2.5 font-mono text-gray-700">{{ $project->project_code }}</td>
+                </tr>
+                @if($project->short_title)
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Titre abrege</td>
+                    <td class="py-2.5 text-gray-700">{{ $project->short_title }}</td>
+                </tr>
+                @endif
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Periode</td>
+                    <td class="py-2.5 text-gray-700">{{ $project->start_date?->format('d/m/Y') ?? '...' }} &rarr; {{ $project->end_date?->format('d/m/Y') ?? '...' }}
+                        @if($project->start_date && $project->end_date)
+                            <span class="text-gray-400 ml-2">({{ (int) $project->start_date->diffInMonths($project->end_date) }} mois)</span>
+                        @endif
+                    </td>
+                </tr>
+                @if($project->projectType)
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Type</td>
+                    <td class="py-2.5 text-gray-700">{{ $project->projectType->name }}</td>
+                </tr>
+                @endif
+                <tr class="border-b border-gray-100">
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Statut</td>
+                    <td class="py-2.5">
+                        <span class="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-semibold rounded">
+                            {{ $project->status instanceof \App\Enums\ProjectStatus ? $project->status->label() : $project->status }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="py-2.5 pr-4 text-gray-400 font-medium align-top">Responsable</td>
+                    <td class="py-2.5 text-gray-700">{{ $project->creator->name ?? 'N/A' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="mb-12">
-            <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Objectifs Généraux</h3>
-            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed italic border-l-4 border-slate-100 pl-6">
-                {{ $project->description ?? 'Aucune description disponible.' }}
-            </div>
+    {{-- ==================== DESCRIPTION ==================== --}}
+    @if($project->description)
+    <div class="mb-10 no-break">
+        <h2 class="text-lg font-bold text-gray-900 border-b-2 border-gray-900 pb-2 mb-4 uppercase tracking-wide">Description</h2>
+        <div class="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none">
+            {!! strip_tags($project->description, '<p><br><strong><em><ul><ol><li>') !!}
         </div>
+    </div>
+    @endif
 
-        {{-- CADRE LOGIQUE --}}
-        <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-6 font-bold">Cadre Logique & Structure</h3>
-        @if($project->logicalFramework && $project->logicalFramework->specificObjectives->count())
-            <div class="space-y-6 mb-12">
-                @foreach($project->logicalFramework->specificObjectives as $obj)
-                    <div class="card bg-white">
-                        <div class="flex items-start gap-4 mb-6">
-                            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-500 shrink-0">OS</span>
-                            <p class="text-base font-bold text-slate-800">{{ $obj->description }}</p>
-                        </div>
-                        
-                        <div class="ml-12 space-y-4">
-                            @foreach($obj->results as $res)
-                                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-slate-600 text-sm">
-                                    <span class="text-[9px] font-black uppercase tracking-widest text-accent block mb-1">Résultat</span>
-                                    {{ $res->description }}
-                                </div>
-                                
-                                <div class="grid grid-cols-1 gap-3 mt-3">
-                                    @foreach($res->activities as $act)
-                                        <div class="flex items-center justify-between p-3 pl-4 bg-white rounded-xl border border-slate-100 shadow-sm">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-2 h-2 rounded-full bg-accent"></div>
-                                                <span class="text-xs font-semibold text-slate-700">{{ $act->description }}</span>
-                                            </div>
-                                            <span class="text-[10px] font-bold text-slate-400">{{ number_format($act->budget, 0, ',', ' ') }} FCFA</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
+    {{-- ==================== CONTEXTE ==================== --}}
+    @if($project->problem_analysis || $project->strategy || $project->justification || $project->context_description)
+    <div class="mb-10">
+        <h2 class="text-lg font-bold text-gray-900 border-b-2 border-gray-900 pb-2 mb-4 uppercase tracking-wide">Contexte & Analyse</h2>
+        <div class="space-y-5">
+            @foreach([
+                ['titre' => 'Justification', 'contenu' => $project->justification],
+                ['titre' => 'Strategie', 'contenu' => $project->strategy],
+                ['titre' => 'Analyse du probleme', 'contenu' => $project->problem_analysis],
+                ['titre' => 'Contexte', 'contenu' => $project->context_description],
+            ] as $bloc)
+                @if(!empty($bloc['contenu']))
+                <div class="no-break">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">{{ $bloc['titre'] }}</h3>
+                    <div class="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-4">
+                        {!! strip_tags($bloc['contenu'], '<p><br><strong><em><ul><ol><li>') !!}
                     </div>
-                @endforeach
+                </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- ==================== CADRE LOGIQUE ==================== --}}
+    @if($project->logicalFramework)
+    @php $lf = $project->logicalFramework; @endphp
+    <div class="page-break"></div>
+    <div class="mb-10">
+        <h2 class="text-lg font-bold text-gray-900 border-b-2 border-gray-900 pb-2 mb-6 uppercase tracking-wide">Cadre logique</h2>
+
+        {{-- Objectif general --}}
+        <div class="mb-6 no-break">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Objectif general</h3>
+            <div class="text-sm font-semibold text-gray-900 bg-gray-50 rounded-lg p-4">{!! strip_tags($lf->general_objective, '<p><br><strong><em><ul><ol><li>') !!}</div>
+        </div>
+
+        {{-- Indicateurs objectif general --}}
+        @if($lf->indicatorItems->isNotEmpty())
+        <div class="mb-6">
+            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Indicateurs</h4>
+            @foreach($lf->indicatorItems as $ind)
+            <div class="mb-2 pl-4 border-l-2 border-gray-200 no-break">
+                <p class="text-sm text-gray-800">{{ $ind->description }}</p>
+                @if($ind->verification_source)
+                    <p class="text-xs text-gray-400 mt-0.5">Source : {{ $ind->verification_source }}</p>
+                @endif
+                @if($ind->assumption)
+                    <p class="text-xs text-gray-400">Hypothese : {{ $ind->assumption }}</p>
+                @endif
             </div>
-        @else
-            <div class="p-8 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-300 mb-12">
-                <p class="text-sm text-slate-400 font-medium">Aucun cadre logique défini.</p>
-            </div>
+            @endforeach
+        </div>
         @endif
 
-        {{-- CHAMPS DYNAMIQUES --}}
-        @if($dynamicFormFields)
-            <div class="page-break"></div>
-            <div class="py-12">
-                <div class="flex items-center gap-4 mb-12">
-                    <div class="w-1.5 h-10 bg-primary rounded-full"></div>
-                    <h2 class="text-3xl font-extrabold tracking-tight">Informations Complémentaires</h2>
+        {{-- Objectifs specifiques --}}
+        @if($lf->specificObjectives->isNotEmpty())
+        <div class="space-y-6">
+            @foreach($lf->specificObjectives as $i => $obj)
+            <div class="no-break">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="flex-shrink-0 w-7 h-7 bg-gray-900 text-white rounded flex items-center justify-center text-xs font-bold">{{ $i + 1 }}</span>
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Objectif specifique {{ $i + 1 }}</h3>
+                        <div class="text-sm font-semibold text-gray-900 mt-0.5">{!! strip_tags($obj->description, '<p><br><strong><em><ul><ol><li>') !!}</div>
+                    </div>
                 </div>
 
-                @foreach($dynamicFormFields as $section => $fields)
-                    <div class="mb-10">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-6 border-b border-slate-100 pb-2">{{ ucfirst($section) }}</h3>
-                        <div class="space-y-4">
-                            @foreach($fields as $fieldDef)
-                                @php
-                                    $targetField = $fieldDef['target_project_field'];
-                                    $value = null;
-                                    if (isset($project->$targetField)) {
-                                        // On supporte le format délimité et le format JSON
-                                        if (is_array($project->$targetField)) {
-                                            $value = $project->$targetField[$fieldDef['question_text']] ?? null;
-                                        } else {
-                                            $pattern = '/' . preg_quote($fieldDef['delimiter_start'], '/') . '(.*?)' . preg_quote($fieldDef['delimiter_end'], '/') . '/s';
-                                            if (preg_match($pattern, $project->$targetField, $matches)) {
-                                                $value = $matches[1];
-                                            }
-                                        }
-                                    }
-                                @endphp
-                                @if($value)
-                                    <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                                        <p class="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-2">{{ $fieldDef['question_text'] }}</p>
-                                        <div class="text-sm text-slate-700 leading-relaxed prose prose-sm max-w-none">
-                                            {!! nl2br(e($value)) !!}
-                                        </div>
-                                    </div>
-                                @endif
+                {{-- Indicateurs de l'objectif --}}
+                @if($obj->indicatorItems->isNotEmpty())
+                <div class="ml-10 mb-3">
+                    @foreach($obj->indicatorItems as $ind)
+                    <div class="pl-3 border-l-2 border-gray-200 mb-1.5">
+                        <p class="text-xs text-gray-600">{{ $ind->description }}</p>
+                        @if($ind->verification_source)
+                            <p class="text-xs text-gray-400">Source : {{ $ind->verification_source }}</p>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                {{-- Resultats --}}
+                @if($obj->results->isNotEmpty())
+                <div class="ml-10 space-y-4">
+                    @foreach($obj->results as $j => $result)
+                    <div class="no-break">
+                        <div class="flex items-start gap-2 mb-2">
+                            <span class="flex-shrink-0 text-xs font-bold text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">R{{ $j + 1 }}</span>
+                            <div class="text-sm text-gray-800">{!! strip_tags($result->description, '<p><br><strong><em><ul><ol><li>') !!}</div>
+                        </div>
+
+                        {{-- Indicateurs du resultat --}}
+                        @if($result->indicatorItems->isNotEmpty())
+                        <div class="ml-8 mb-2">
+                            @foreach($result->indicatorItems as $ind)
+                            <div class="pl-3 border-l border-gray-200 mb-1">
+                                <p class="text-xs text-gray-500">{{ $ind->description }}</p>
+                            </div>
                             @endforeach
                         </div>
+                        @endif
+
+                        {{-- Activites --}}
+                        @if($result->activities->isNotEmpty())
+                        <div class="ml-8">
+                            <table class="w-full text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-left">
+                                        <th class="py-1.5 pr-2 text-gray-400 font-semibold border-b border-gray-200 w-8">#</th>
+                                        <th class="py-1.5 pr-2 text-gray-400 font-semibold border-b border-gray-200">Activite</th>
+                                        <th class="py-1.5 pr-2 text-gray-400 font-semibold border-b border-gray-200 w-28">Responsable</th>
+                                        <th class="py-1.5 pr-2 text-gray-400 font-semibold border-b border-gray-200 w-20">Debut</th>
+                                        <th class="py-1.5 pr-2 text-gray-400 font-semibold border-b border-gray-200 w-20">Fin</th>
+                                        <th class="py-1.5 text-gray-400 font-semibold border-b border-gray-200 w-20">Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($result->activities as $k => $act)
+                                    <tr>
+                                        <td class="py-1.5 pr-2 text-gray-400 border-b border-gray-50">A{{ $k + 1 }}</td>
+                                        <td class="py-1.5 pr-2 text-gray-800 font-medium border-b border-gray-50">{!! strip_tags($act->description, '<p><br><strong><em>') !!}</td>
+                                        <td class="py-1.5 pr-2 text-gray-600 border-b border-gray-50">{{ $act->responsibleUser->name ?? 'N/A' }}</td>
+                                        <td class="py-1.5 pr-2 text-gray-500 border-b border-gray-50">{{ $act->start_date?->format('d/m') }}</td>
+                                        <td class="py-1.5 pr-2 text-gray-500 border-b border-gray-50">{{ $act->end_date?->format('d/m') }}</td>
+                                        <td class="py-1.5 border-b border-gray-50">
+                                            @php $statusEnum = $act->status instanceof \App\Enums\ActivityStatus ? $act->status : \App\Enums\ActivityStatus::tryFrom($act->status ?? ''); @endphp
+                                            <span class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-semibold rounded">
+                                                {{ $statusEnum ? $statusEnum->label() : ($act->status ?? 'N/A') }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
                     </div>
-                @endforeach
+                    @endforeach
+                </div>
+                @endif
             </div>
+            @endforeach
+        </div>
         @endif
     </div>
-@endsection
+    @endif
+
+    {{-- ==================== BUDGET ==================== --}}
+    @if($project->budgets->isNotEmpty())
+    <div class="mb-10 no-break">
+        <h2 class="text-lg font-bold text-gray-900 border-b-2 border-gray-900 pb-2 mb-4 uppercase tracking-wide">Budget previsionnel</h2>
+        <table class="w-full text-sm border-collapse">
+            <thead>
+                <tr class="text-left">
+                    <th class="py-2 pr-4 text-gray-400 font-semibold border-b-2 border-gray-200">Poste budgetaire</th>
+                    <th class="py-2 pr-4 text-gray-400 font-semibold border-b-2 border-gray-200 w-32">Responsable</th>
+                    <th class="py-2 text-gray-400 font-semibold border-b-2 border-gray-200 text-right w-32">Montant (FCFA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($project->budgets as $budget)
+                <tr>
+                    <td class="py-2 pr-4 text-gray-800 border-b border-gray-100">{{ $budget->description ?? 'N/A' }}</td>
+                    <td class="py-2 pr-4 text-gray-600 border-b border-gray-100">{{ $budget->responsibleUser->name ?? 'N/A' }}</td>
+                    <td class="py-2 text-gray-800 font-semibold border-b border-gray-100 text-right">{{ number_format($budget->total_amount ?? 0, 0, ',', ' ') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" class="py-3 font-bold text-gray-900 border-t-2 border-gray-900">TOTAL</td>
+                    <td class="py-3 font-bold text-gray-900 border-t-2 border-gray-900 text-right">{{ number_format($project->budgets->sum('total_amount') ?? 0, 0, ',', ' ') }} FCFA</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    @endif
+
+    {{-- ==================== PIED DE PAGE ==================== --}}
+    <div class="mt-16 pt-4 border-t border-gray-200 text-center">
+        <p class="text-[10px] text-gray-300">Document genere par CICA-GPRO &bull; {{ now()->format('d/m/Y H:i') }} &bull; Ce document est confidentiel</p>
+    </div>
+
+</body>
+</html>

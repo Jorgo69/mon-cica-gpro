@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ResourceListLivewire extends Component
 {
+    
+    public function placeholder()
+    {
+        return view('components.ui.skeleton-table');
+    }
+
     public function render()
     {
         $user = Auth::user();

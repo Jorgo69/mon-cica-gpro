@@ -3,7 +3,8 @@
 namespace App\Livewire\VBeta\Admin\Category;
 
 use App\Actions\Admin\Category\SaveCategoryAction;
-use App\Models\Category;
+use App\Enums\AdminCategoryType;
+use App\Models\GeneralAdministration;
 use Livewire\Component;
 
 class CategoryModalFormLivewire extends Component
@@ -12,42 +13,56 @@ class CategoryModalFormLivewire extends Component
     public $editing = false;
     public $name = '';
     public $description = '';
+    public $type = '';
 
-    protected $rules = [
-        'name'        => 'required|string|max:255',
-        'description' => 'nullable|string|max:1000',
+    protected function rules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'type' => ['required', \Illuminate\Validation\Rule::in(array_column(AdminCategoryType::cases(), 'value'))],
+        ];
+    }
+
+    protected $validationAttributes = [
+        'name' => 'nom',
+        'type' => 'type de categorie',
     ];
 
-    /**
-     * Se monte au chargement du composant.
-     */
     public function mount(?string $editingCategoryId = null)
     {
         $this->editingCategoryId = $editingCategoryId;
 
         if ($this->editingCategoryId) {
             $this->editing = true;
-            $category = Category::findOrFail($this->editingCategoryId);
+            $category = GeneralAdministration::findOrFail($this->editingCategoryId);
+
+            if ($category->is_system) {
+                abort(403, 'Les categories systeme ne peuvent pas etre modifiees.');
+            }
+
             $this->name = $category->name;
             $this->description = $category->description;
+            $this->type = $category->type instanceof AdminCategoryType ? $category->type->value : $category->type;
         }
     }
 
-    /**
-     * Sauvegarde ou met à jour la catégorie via l'Action CQRS.
-     */
     public function saveCategory(SaveCategoryAction $action)
     {
         $this->validate();
 
         try {
             $action->execute(
-                data: ['name' => $this->name, 'description' => $this->description],
+                data: [
+                    'name' => $this->name,
+                    'description' => $this->description,
+                    'type' => $this->type,
+                ],
                 categoryId: $this->editingCategoryId,
             );
 
             $this->dispatch('categorySaved');
-            $this->reset(['name', 'description', 'editingCategoryId', 'editing']);
+            $this->reset(['name', 'description', 'type', 'editingCategoryId', 'editing']);
         } catch (\Exception $e) {
             session()->flash('error', "Erreur : " . $e->getMessage());
         }
@@ -55,6 +70,8 @@ class CategoryModalFormLivewire extends Component
 
     public function render()
     {
-        return view('livewire.admin.category.modal-form');
+        return view('livewire.v-beta.admin.category.category-modal-form-livewire', [
+            'categoryTypes' => AdminCategoryType::cases(),
+        ]);
     }
 }
