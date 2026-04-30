@@ -178,14 +178,15 @@
         <x-ui.section title="Preferences par type" icon="sliders" :noPadding="false">
             <p class="text-xs text-subtle mb-4">Choisissez les canaux pour chaque type de notification</p>
             <div class="space-y-3">
-                <div class="grid grid-cols-[1fr_80px_80px] gap-2 px-2 pb-2 border-b border-border-light">
+                <div class="grid grid-cols-[1fr_70px_70px_70px] gap-2 px-2 pb-2 border-b border-border-light">
                     <span class="text-[10px] font-black text-muted uppercase tracking-widest">Type</span>
                     <span class="text-[10px] font-black text-muted uppercase tracking-widest text-center">In-app</span>
                     <span class="text-[10px] font-black text-muted uppercase tracking-widest text-center">Email</span>
+                    <span class="text-[10px] font-black text-muted uppercase tracking-widest text-center">Push</span>
                 </div>
                 @foreach($notificationTypes as $type)
                     @php $prefs = $notificationPreferences[$type->value] ?? $type->defaultChannels(); @endphp
-                    <div class="grid grid-cols-[1fr_80px_80px] gap-2 items-center px-2 py-2 rounded-lg hover:bg-surface/50 transition-colors">
+                    <div class="grid grid-cols-[1fr_70px_70px_70px] gap-2 items-center px-2 py-2 rounded-lg hover:bg-surface/50 transition-colors">
                         <div class="flex items-center gap-2">
                             <x-dynamic-component :component="'lucide-' . $type->icon()" class="w-4 h-4 text-{{ $type->color() }}" />
                             <span class="text-xs font-bold text-body">{{ $type->label() }}</span>
@@ -201,6 +202,13 @@
                             <button wire:click="toggleNotificationChannel('{{ $type->value }}', 'mail')"
                                 class="w-8 h-8 rounded-lg flex items-center justify-center transition-all
                                     {{ in_array('mail', $prefs) ? 'bg-accent/10 text-accent' : 'bg-surface-alt text-muted hover:text-body' }}">
+                                <x-lucide-check class="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div class="flex justify-center">
+                            <button wire:click="toggleNotificationChannel('{{ $type->value }}', 'fcm')"
+                                class="w-8 h-8 rounded-lg flex items-center justify-center transition-all
+                                    {{ in_array('fcm', $prefs) ? 'bg-accent/10 text-accent' : 'bg-surface-alt text-muted hover:text-body' }}">
                                 <x-lucide-check class="w-4 h-4" />
                             </button>
                         </div>

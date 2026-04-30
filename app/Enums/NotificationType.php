@@ -64,8 +64,9 @@ enum NotificationType: string
         return match ($this) {
             self::WEEKLY_DIGEST => ['mail'],
             self::INVITATION => ['mail'],
-            self::ACTIVITY_OVERDUE => ['database', 'mail'],
-            self::DEADLINE_APPROACHING => ['database', 'mail'],
+            self::ACTIVITY_OVERDUE => ['database', 'mail', 'fcm'],
+            self::DEADLINE_APPROACHING => ['database', 'mail', 'fcm'],
+            self::ACTIVITY_ASSIGNED => ['database', 'mail', 'fcm'],
             default => ['database', 'mail'],
         };
     }

@@ -118,6 +118,16 @@ class User extends Authenticatable
         return $this->hasMany(SocialAccount::class);
     }
 
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+
+    public function routeNotificationForFcm(): array
+    {
+        return $this->fcmTokens()->pluck('token')->toArray();
+    }
+
     public function createdProjects(): HasMany
     {
         return $this->hasMany(Project::class, 'creator_user_id', 'id');

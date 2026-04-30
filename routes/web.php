@@ -64,6 +64,10 @@ Route::middleware('auth')->group(function () {
         }
         return response()->json(['error' => 'invalid key'], 422);
     })->name('user-meta.update');
+
+    // FCM push tokens
+    Route::post('/api/fcm-tokens', [\App\Http\Controllers\Api\FcmTokenController::class, 'store'])->name('fcm-token.store');
+    Route::delete('/api/fcm-tokens/{token}', [\App\Http\Controllers\Api\FcmTokenController::class, 'destroy'])->name('fcm-token.destroy');
 });
 
 // Invitation (route publique, pas besoin d'auth)

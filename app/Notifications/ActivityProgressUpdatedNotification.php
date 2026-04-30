@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 
 class ActivityProgressUpdatedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, \App\Traits\HasFcmNotification;
 
     public function __construct(public $activity, public $progress)
     {

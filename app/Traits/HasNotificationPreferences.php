@@ -24,7 +24,13 @@ trait HasNotificationPreferences
             $channels = array_values(array_diff($channels, ['mail']));
         }
 
-        return $channels;
+        // If user has no FCM tokens, remove 'fcm' channel
+        if (in_array('fcm', $channels) && $this->fcmTokens()->count() === 0) {
+            $channels = array_values(array_diff($channels, ['fcm']));
+        }
+
+        // Map 'fcm' to the actual channel class
+        return array_map(fn($ch) => $ch === 'fcm' ? \NotificationChannels\Fcm\FcmChannel::class : $ch, $channels);
     }
 
     public function setNotificationPreference(NotificationType $type, array $channels): void
