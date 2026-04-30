@@ -76,6 +76,16 @@ class Activity extends Model
     {
         return $this->hasMany(Resource::class, 'activity_id', 'id');
     }
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     public function progressTrackers()
     {
         return $this->hasMany(ProgressTracker::class, 'activity_id', 'id');
