@@ -21,6 +21,9 @@ Route::middleware(['auth', 'account_type:org_admin,independent,system_admin'])->
     // Invitations
     Route::view('/invitations', 'v_beta.admin.invitation.index')->name('invitation.list');
 
+    // Taux de change
+    Route::get('/exchange-rates', \App\Livewire\VBeta\Admin\ExchangeRateManagementLivewire::class)->name('exchange-rates');
+
     // Utilitaires
     Route::view('/trash/management', 'v_beta.admin.trash.index')->name('trash.management');
 });

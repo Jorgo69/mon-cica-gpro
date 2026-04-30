@@ -2,11 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Enums\NotificationType;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ActivityProgressUpdatedNotification extends Notification
+class ActivityProgressUpdatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -16,7 +18,7 @@ class ActivityProgressUpdatedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return $notifiable->getNotificationChannels(NotificationType::ACTIVITY_PROGRESS_UPDATED);
     }
 
     public function toMail(object $notifiable): MailMessage

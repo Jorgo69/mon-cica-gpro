@@ -11,6 +11,10 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+// Social Auth (pas de middleware guest — un user connecte peut lier son compte)
+Route::get('auth/{provider}/redirect', [\App\Http\Controllers\Auth\SocialAuthController::class, 'redirect'])->name('social.redirect');
+Route::get('auth/{provider}/callback', [\App\Http\Controllers\Auth\SocialAuthController::class, 'callback'])->name('social.callback');
+
 Route::middleware('guest')->group(function () {
     Route::get('register', \App\Livewire\Auth\RegisterLivewire::class)
                 ->name('register');

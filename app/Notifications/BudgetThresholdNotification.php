@@ -8,37 +8,41 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ProjectSubmittedNotification extends Notification implements ShouldQueue
+class BudgetThresholdNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public $project, public $submitter)
+    public function __construct(public $project, public float $usedPercent)
     {
     }
 
     public function via(object $notifiable): array
     {
-        return $notifiable->getNotificationChannels(NotificationType::PROJECT_SUBMITTED);
+        return $notifiable->getNotificationChannels(NotificationType::BUDGET_THRESHOLD);
     }
 
     public function toMail(object $notifiable): MailMessage
     {
+        $level = $this->usedPercent >= 100 ? 'depasse' : 'atteint ' . round($this->usedPercent) . '%';
+
         return (new MailMessage)
-            ->subject("Nouveau projet soumis : {$this->project->title}")
+            ->subject("Budget {$level} — {$this->project->title}")
             ->greeting("Bonjour {$notifiable->name},")
-            ->line("**{$this->submitter->name}** a soumis le projet **{$this->project->title}** pour validation.")
-            ->line("Code projet : {$this->project->project_code}")
+            ->line("Le budget du projet **{$this->project->title}** a **{$level}**.")
             ->action('Voir le projet', route('project.show', $this->project->id))
             ->salutation('— ' . config('app.name'));
     }
 
     public function toArray(object $notifiable): array
     {
+        $level = $this->usedPercent >= 100 ? 'depasse' : 'atteint ' . round($this->usedPercent) . '%';
+
         return [
             'project_id' => $this->project->id,
-            'title' => 'Nouveau projet soumis',
-            'message' => "{$this->submitter->name} a soumis le projet \"{$this->project->title}\" pour validation.",
+            'title' => "Budget {$level}",
+            'message' => "Le budget du projet \"{$this->project->title}\" a {$level}.",
             'action_url' => route('project.show', $this->project->id),
+            'type' => NotificationType::BUDGET_THRESHOLD->value,
         ];
     }
 }

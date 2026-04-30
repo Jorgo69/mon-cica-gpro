@@ -27,6 +27,7 @@ class Project extends Model
         'ai_analysis_result',
         'general_objectives',
         'status',
+        'currency',
         'start_date',
         'end_date',
         'meta',
@@ -34,6 +35,7 @@ class Project extends Model
 
     protected $casts = [
         'status' => \App\Enums\ProjectStatus::class,
+        'currency' => \App\Enums\Currency::class,
         'start_date' => 'date',
         'end_date' => 'date',
         'general_objectives' => 'array',

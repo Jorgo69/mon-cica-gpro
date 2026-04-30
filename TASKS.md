@@ -2,14 +2,18 @@
 
 ## En cours
 
-- [ ] Phase 6.5 : Stabilisation + Settings
-  - [ ] Refaire page Settings Livewire (3 onglets, branche UserMeta, design system)
-  - [ ] Reorganiser les routes (root.php, admin.php, project.php)
-  - [ ] Tester tous les flows org_admin, org_user, independent
+- [ ] Phase 7 : Systeme de notifications complet
+  - [ ] Notifications in-app (database) + email (avec preferences utilisateur)
+  - [ ] Push notifications via Firebase FCM (web/mobile/desktop)
+  - [ ] Rappels automatiques (activites en retard, deadlines proches, escalade)
+  - [ ] Scheduler Laravel pour les rappels recurrents
+  - [ ] Timezone utilisateur dans les preferences (pour timing correct des rappels)
+- [ ] Google Auth via Laravel Socialite (Google, Facebook, Microsoft)
+- [ ] Multi-devise (taux de change manuels, devise par projet)
 
 ## A faire
 
-- [ ] Phase 7 : Systeme d'invitation end-to-end (mail SMTP Gmail, flow complet)
+- [ ] Traductions i18n completes (tous les Blade -> __() + lang/fr.json + lang/en.json)
 - [ ] Phase 8 : Preparation SaaS (plans, limites, billing Stripe/Cashier)
 - [ ] Phase 9 : Multi-plateforme (NativePHP desktop, mobile)
 
@@ -54,6 +58,8 @@
 - [x] Phase 3.2 : Isolation stricte cross-org -- UserQueryService centralise, 8 composants Livewire corriges (plus de User::all()), Multitenantable renforce avec Schema::hasColumn() pour INDEPENDENT
 - [x] Phase 3.3 : Systeme d'invitation complet -- Model Invitation (UUID, token+code, expiration 7j), enum InvitationStatus, 3 Actions (Send/Accept/Revoke), InvitationNotification (mail avec lien+code), InvitationController (3 scenarios : connecte/login/register), integration onboarding joinOrganization() par code, auto-accept post-register et post-login via session token
 - [x] Phase 3.4 : Interface admin invitations -- InvitationManagementLivewire (liste paginee, envoi, renvoi, revocation, filtres statut), InvitationPolicy, route admin, lien sidebar
+- [x] Phase 6.5 : Stabilisation + Settings -- Settings Livewire 3 onglets (Apparence/Langue/Notifications) branches UserMeta, sync bidirectionnelle theme navbar<->Settings, recherche globale Ctrl+K refaite (categories, securite, quick actions, historique), profil redesigne design system, systeme avatars (24 SVG predefinis + x-ui.avatar), CSRF fix, fetch credentials fix
+- [x] Merge dev-ui-design -> development : resolution de ~57 fichiers en conflit + restauration 80 vues v-beta/
 
 ---
 

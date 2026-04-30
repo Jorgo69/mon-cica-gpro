@@ -17,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, \App\Traits\Multitenantable, \Spatie\Activitylog\Traits\LogsActivity, \App\Traits\HasMeta, \App\Traits\HasNotificationPreferences;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, SoftDeletes;
@@ -113,6 +113,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
     public function createdProjects(): HasMany
     {
         return $this->hasMany(Project::class, 'creator_user_id', 'id');
