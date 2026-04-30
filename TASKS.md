@@ -4,10 +4,10 @@
 
 ### CRITIQUE — Bloquant pour un premier client
 
-- [ ] **Phase 8 : Collaboration terrain**
-  - [ ] 8.1 Commentaires par activite (model Comment polymorphe, fil de discussion, mentions @user, notifications)
-  - [ ] 8.2 Pieces jointes par activite (upload fichiers sur activite/sous-activite, pas seulement projet)
-  - [ ] 8.3 Budget reel vs planifie (depenses reelles saisies, ecart planifie/reel, burn rate, alertes depassement automatiques)
+- [x] **Phase 8 : Collaboration terrain** (TERMINEE)
+  - [x] 8.1 Commentaires par activite (model Comment polymorphe, fil de discussion, mentions @user, notifications)
+  - [x] 8.2 Pieces jointes par activite (upload fichiers sur activite/sous-activite, pas seulement projet)
+  - [x] 8.3 Budget reel vs planifie (depenses reelles saisies, ecart planifie/reel, burn rate, alertes depassement automatiques)
 
 - [ ] **Phase 9 : Traductions i18n completes**
   - [ ] Extraire tous les textes hardcodes des ~80+ vues Blade vers __() / @lang
@@ -292,3 +292,8 @@
   - 7.5 Social Auth (Socialite, Google/Facebook/Microsoft, SocialAccount model, auto-accept invitation, section Settings)
   - 7.6 Multi-devise (enum Currency 8 devises, ExchangeRate model, CurrencyService, composant x-currency, admin CRUD)
 - Roadmap complete documentee : Phases 8-21 + backlog futur (23 chantiers identifies).
+- **Phase 8 complete** (3 sous-phases) :
+  - 8.1 Commentaires par activite (model Comment polymorphe, replies, mentions @user, CommentSectionLivewire reutilisable, CommentPostedNotification)
+  - 8.2 Pieces jointes par activite (model Attachment polymorphe, AttachmentSectionLivewire, upload multi-fichiers, download, auto-delete fichier)
+  - 8.3 Budget reel vs planifie (model Expense, BudgetTrackingService avec projectSummary/budgetLineSummaries/burnRate/spendingByCategory, ExpenseManagementLivewire, alerte BudgetThresholdNotification >= 80%)
+- **Consolidation migrations** : 5 fichiers add_*/alter fusionnes dans les CREATE correspondants (users, projects, project_types, general_administrations, organizations, logical_frameworks, specific_objectives, results, activities). migrate:fresh --seed passe proprement (42 migrations).
