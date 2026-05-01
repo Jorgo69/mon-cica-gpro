@@ -19,6 +19,11 @@
             </x-slot:actions>
         </x-ui.page-header>
 
+        {{-- Onboarding Checklist --}}
+        @if($showOnboarding && $onboardingProgress)
+            <x-ui.onboarding-checklist :progress="$onboardingProgress" />
+        @endif
+
         {{-- Alertes Critiques --}}
         @if($overdueActivities->isNotEmpty())
             <div class="mb-8 p-4 rounded-2xl bg-error/5 border border-error/10 flex flex-col md:flex-row items-center justify-between gap-4">

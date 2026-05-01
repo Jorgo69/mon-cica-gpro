@@ -31,6 +31,10 @@ class SettingsLivewire extends Component
         $this->emailNotifications = (bool) UserMeta::get('notifications.email', true);
         $this->digestFrequency = UserMeta::get('notifications.digest', 'weekly');
         $this->timezone = UserMeta::get('timezone', config('gpro.defaults.timezone', 'Africa/Porto-Novo'));
+
+        if (!UserMeta::get('visited_settings')) {
+            UserMeta::set('visited_settings', true);
+        }
     }
 
     #[\Livewire\Attributes\On('navbar-theme-changed')]

@@ -14,6 +14,7 @@ return [
     'projects' => 'Projets',
     'all_projects' => 'Tous les projets',
     'templates' => 'Templates',
+    'faq' => 'Aide / FAQ',
     'resources' => 'Ressources',
     'activities' => 'Activités',
     'supervision' => 'Supervision',

@@ -103,6 +103,9 @@ class ProjectListLivewire extends Component
             $projects->where('creator_user_id', $this->responsibleUserFilter);
         }
 
+        // Eager load relations to avoid N+1
+        $projects->with(['creator:id,name', 'projectType:id,name']);
+
         // Appliquer le tri
         $projects->orderBy($this->sortField, $this->sortDirection);
 

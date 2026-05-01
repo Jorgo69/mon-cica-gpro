@@ -43,6 +43,9 @@ class User extends Authenticatable
         'ville',
         'department',
         'password',
+        'plan',
+        'plan_activated_at',
+        'plan_expires_at',
         'meta',
     ];
 
@@ -65,6 +68,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'role' => AccountType::class,
+        'plan' => \App\Enums\Plan::class,
+        'plan_activated_at' => 'datetime',
+        'plan_expires_at' => 'datetime',
         'meta' => 'array',
     ];
 
@@ -113,6 +119,35 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
+    /**
+     * Get the effective plan for this user.
+     * For org members: uses the organization's plan.
+     * For independents: uses their own plan.
+     */
+    public function effectivePlan(): \App\Enums\Plan
+    {
+        if ($this->role === AccountType::INDEPENDENT || !$this->organization_id) {
+            return $this->plan ?? \App\Enums\Plan::FREE;
+        }
+
+        return $this->organization?->currentPlan() ?? \App\Enums\Plan::FREE;
+    }
+
+    public function isPlanActive(): bool
+    {
+        if ($this->role === AccountType::INDEPENDENT || !$this->organization_id) {
+            if ($this->plan === \App\Enums\Plan::FREE || !$this->plan) return true;
+            return !$this->plan_expires_at || !$this->plan_expires_at->isPast();
+        }
+
+        return $this->organization?->isPlanActive() ?? true;
+    }
+
+    public function hasFeature(string $feature): bool
+    {
+        return $this->effectivePlan()->hasFeature($feature);
+    }
+
     public function socialAccounts(): HasMany
     {
         return $this->hasMany(SocialAccount::class);

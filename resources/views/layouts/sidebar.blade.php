@@ -163,6 +163,9 @@
                     <a href="{{ route('profile.edit') }}" class="nav-submenu-item @if(Route::is('profile*')) nav-submenu-item-active @endif">
                         {{ __('navigation.my_profile') }}
                     </a>
+                    <a href="{{ route('faq') }}" class="nav-submenu-item @if(Route::is('faq')) nav-submenu-item-active @endif">
+                        {{ __('navigation.faq') }}
+                    </a>
                 </div>
             </div>
         </div>

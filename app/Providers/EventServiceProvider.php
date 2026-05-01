@@ -31,7 +31,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \App\Models\Project::observe(\App\Observers\CacheInvalidationObserver::class);
+        \App\Models\Activity::observe(\App\Observers\CacheInvalidationObserver::class);
     }
 
     /**

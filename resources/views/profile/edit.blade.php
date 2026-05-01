@@ -193,6 +193,37 @@
                 </form>
             </x-ui.section>
 
+            {{-- Donnees personnelles (RGPD) --}}
+            <x-ui.section title="RGPD" icon="shield-check" :noPadding="false">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1 p-4 bg-surface rounded-xl border border-border-light">
+                        <div class="flex items-start gap-3">
+                            <x-lucide-download class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p class="text-sm font-bold text-heading">{{ __('legal.export_my_data') }}</p>
+                                <p class="text-[10px] text-muted mt-1">{{ __('legal.export_my_data_desc') }}</p>
+                                <a href="{{ route('profile.export-data') }}" class="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 text-xs font-bold text-accent bg-accent/10 rounded-lg hover:bg-accent/20 transition-colors">
+                                    <x-lucide-download class="w-3.5 h-3.5" />
+                                    {{ __('legal.export_my_data') }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 bg-surface rounded-xl border border-border-light">
+                        <div class="flex items-start gap-3">
+                            <x-lucide-file-text class="w-5 h-5 text-muted flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p class="text-sm font-bold text-heading">Documents legaux</p>
+                                <div class="mt-2 space-y-1">
+                                    <a href="{{ route('legal.privacy') }}" target="_blank" class="text-xs text-accent hover:underline block">{{ __('legal.privacy_title') }}</a>
+                                    <a href="{{ route('legal.terms') }}" target="_blank" class="text-xs text-accent hover:underline block">{{ __('legal.terms_title') }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </x-ui.section>
+
             {{-- Zone dangereuse --}}
             <x-ui.section :title="__('settings.profile.danger_zone')" icon="alert-triangle" :noPadding="false">
                 <div class="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800">

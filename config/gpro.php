@@ -130,4 +130,47 @@ return [
         'America/Montreal' => 'Canada Est (GMT-5/-4)',
         'UTC' => 'UTC',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Plans et limites
+    |--------------------------------------------------------------------------
+    */
+    // Payment
+    'payment' => [
+        'gateway_url' => env('PAYMENT_GATEWAY_URL'),
+        'gateway_name' => env('PAYMENT_GATEWAY_NAME'),
+        'contact_whatsapp' => env('PAYMENT_CONTACT_WHATSAPP', '+22997000000'),
+        'contact_email' => env('PAYMENT_CONTACT_EMAIL', 'contact@cica-gpro.com'),
+    ],
+
+    'plans' => [
+        'free' => [
+            'price' => '0 FCFA',
+            'price_period' => 'mois',
+            'limits' => [
+                'max_projects' => 2,
+                'max_members' => 5,
+                'features' => ['basic_export', 'logframe'],
+            ],
+        ],
+        'pro' => [
+            'price' => '15 000 FCFA',
+            'price_period' => 'mois',
+            'limits' => [
+                'max_projects' => 20,
+                'max_members' => 50,
+                'features' => ['basic_export', 'logframe', 'pdf_export', 'excel_export', 'share_link', 'templates', 'indicators', 'budget_tracking'],
+            ],
+        ],
+        'enterprise' => [
+            'price' => '45 000 FCFA',
+            'price_period' => 'mois',
+            'limits' => [
+                'max_projects' => -1, // illimite
+                'max_members' => -1,
+                'features' => ['basic_export', 'logframe', 'pdf_export', 'excel_export', 'share_link', 'templates', 'indicators', 'budget_tracking', 'api_access', 'priority_support', 'multi_currency'],
+            ],
+        ],
+    ],
 ];

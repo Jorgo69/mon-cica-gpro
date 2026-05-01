@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#6366f1">
+        <link rel="manifest" href="/manifest.json">
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -35,5 +38,6 @@
             
             <p class="mt-8 text-[10px] font-bold text-muted uppercase tracking-[0.2em] relative z-10">&copy; {{ date('Y') }} Cave-Tech. All rights reserved.</p>
         </div>
+        <x-ui.cookie-banner />
     </body>
 </html>

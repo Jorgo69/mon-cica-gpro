@@ -9,6 +9,7 @@
             'language' => ['label' => __('settings.language'), 'icon' => 'languages'],
             'notifications' => ['label' => __('settings.notifications'), 'icon' => 'bell'],
             'accounts' => ['label' => __('settings.linked_accounts'), 'icon' => 'link'],
+            'plan' => ['label' => __('plans.plan'), 'icon' => 'crown'],
         ] as $tab => $info)
             <button wire:click="$set('activeTab', '{{ $tab }}')"
                 class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all
@@ -263,6 +264,113 @@
                     </div>
                     @endif
                 @endforeach
+            </div>
+        </x-ui.section>
+    </div>
+    @endif
+
+    {{-- TAB PLAN --}}
+    @if($activeTab === 'plan')
+    <div class="space-y-6">
+        @php
+            $user = auth()->user();
+            $currentPlan = $user->effectivePlan();
+            $isIndependent = $user->role === \App\Enums\AccountType::INDEPENDENT;
+            $isOrgAdmin = $user->role === \App\Enums\AccountType::ORG_ADMIN;
+            $org = $user->organization;
+            $expiresAt = $isIndependent ? $user->plan_expires_at : $org?->plan_expires_at;
+            $payment = config('gpro.payment');
+        @endphp
+
+        {{-- Current Plan --}}
+        <x-ui.section :title="__('plans.plan')" icon="crown" :noPadding="false">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center">
+                    <x-lucide-crown class="w-7 h-7 {{ $currentPlan->color() }}" />
+                </div>
+                <div>
+                    <p class="text-xl font-black {{ $currentPlan->color() }}">{{ $currentPlan->label() }}</p>
+                    <p class="text-xs text-muted">
+                        {{ $currentPlan->price() }}/{{ config("gpro.plans.{$currentPlan->value}.price_period") }}
+                        @if($expiresAt)
+                            &middot; {{ __('plans.expires') }}: {{ $expiresAt->format('d/m/Y') }}
+                            @if($expiresAt->isPast())
+                                <span class="text-error font-bold">({{ __('plans.expired') }})</span>
+                            @endif
+                        @endif
+                    </p>
+                </div>
+            </div>
+
+            {{-- Limits usage --}}
+            @if($org || $isIndependent)
+                @php
+                    $maxProjects = $currentPlan->maxProjects();
+                    $maxMembers = $currentPlan->maxMembers();
+                    $usedProjects = $isIndependent
+                        ? \App\Models\Project::where('creator_user_id', $user->id)->count()
+                        : ($org ? $org->projects()->count() : 0);
+                    $usedMembers = $org ? $org->users()->count() : 1;
+                @endphp
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-3 bg-surface rounded-xl">
+                        <span class="text-[9px] font-black text-muted uppercase block">{{ __('plans.projects') }}</span>
+                        <span class="text-lg font-black text-heading">{{ $usedProjects }}</span>
+                        <span class="text-xs text-muted">/ {{ $maxProjects === -1 ? '∞' : $maxProjects }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded-xl">
+                        <span class="text-[9px] font-black text-muted uppercase block">{{ __('plans.members') }}</span>
+                        <span class="text-lg font-black text-heading">{{ $usedMembers }}</span>
+                        <span class="text-xs text-muted">/ {{ $maxMembers === -1 ? '∞' : $maxMembers }}</span>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Upgrade CTA --}}
+            @if($currentPlan !== \App\Enums\Plan::ENTERPRISE)
+                <div class="p-4 bg-accent/5 rounded-xl border border-accent/20">
+                    <p class="text-sm font-bold text-heading mb-2">{{ __('plans.upgrade_title') }}</p>
+
+                    @if($payment['gateway_url'])
+                        <a href="{{ $payment['gateway_url'] }}" target="_blank"
+                           class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-xs font-bold rounded-lg hover:bg-accent/90 transition-colors">
+                            <x-lucide-credit-card class="w-4 h-4" />
+                            {{ __('plans.pay_online') }}
+                        </a>
+                    @endif
+
+                    <div class="mt-3 space-y-1 text-xs text-muted">
+                        <p class="font-bold text-body">{{ __('plans.manual_payment') }}</p>
+                        @if($payment['contact_whatsapp'])
+                            <p>
+                                <x-lucide-message-circle class="w-3.5 h-3.5 inline text-success" />
+                                WhatsApp: <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $payment['contact_whatsapp']) }}" target="_blank" class="text-accent hover:underline">{{ $payment['contact_whatsapp'] }}</a>
+                            </p>
+                        @endif
+                        @if($payment['contact_email'])
+                            <p>
+                                <x-lucide-mail class="w-3.5 h-3.5 inline text-accent" />
+                                Email: <a href="mailto:{{ $payment['contact_email'] }}" class="text-accent hover:underline">{{ $payment['contact_email'] }}</a>
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        </x-ui.section>
+
+        {{-- Plan comparison --}}
+        <x-ui.section title="{{ __('plans.compare') }}" icon="layout-grid" :noPadding="false">
+            <div class="grid grid-cols-3 gap-3 text-center text-xs">
+                @foreach(\App\Enums\Plan::cases() as $p)
+                    <div class="p-3 rounded-xl {{ $currentPlan === $p ? 'bg-accent/10 border border-accent/30' : 'bg-surface' }}">
+                        <p class="font-black {{ $p->color() }} mb-1">{{ $p->label() }}</p>
+                        <p class="text-[10px] text-muted">{{ $p->price() }}</p>
+                        <p class="text-[10px] text-body mt-1">{{ $p->maxProjects() === -1 ? '∞' : $p->maxProjects() }} proj. / {{ $p->maxMembers() === -1 ? '∞' : $p->maxMembers() }} memb.</p>
+                    </div>
+                @endforeach
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ route('pricing') }}" target="_blank" class="text-xs text-accent hover:underline">{{ __('plans.see_details') }}</a>
             </div>
         </x-ui.section>
     </div>

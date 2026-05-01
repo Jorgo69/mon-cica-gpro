@@ -4,6 +4,7 @@ namespace App\Livewire\VBeta;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use App\Services\OnboardingService;
 use App\Services\Queries\ProjectStatsQueryService;
 use App\Enums\AccountType;
 use App\Models\Activity;
@@ -45,13 +46,28 @@ class DashboardLivewire extends Component
             ->limit(3)
             ->get();
 
+        $onboarding = OnboardingService::for($user);
+        $showOnboarding = !$onboarding->isCompleted();
+
+        // Mark dashboard as visited for onboarding
+        if (!$user->getMeta('visited_dashboard')) {
+            $user->setMeta('visited_dashboard', true);
+        }
+
         $viewData = array_merge([
             'isAdmin' => $isAdmin,
             'overdueActivities' => $overdueActivities,
             'currentPeriod' => $this->period,
+            'showOnboarding' => $showOnboarding,
+            'onboardingProgress' => $showOnboarding ? $onboarding->progress() : null,
         ], $stats);
 
         return view('livewire.v-beta.dashboard-livewire', $viewData);
+    }
+
+    public function dismissOnboarding()
+    {
+        OnboardingService::for(Auth::user())->dismiss();
     }
 
     public function setPeriod(string $period)

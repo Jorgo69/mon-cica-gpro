@@ -20,6 +20,7 @@
                     <x-ui.table.th>{{ __('system.root_org_list.organization') }}</x-ui.table.th>
                     <x-ui.table.th>{{ __('system.root_org_list.members') }}</x-ui.table.th>
                     <x-ui.table.th>{{ __('system.root_org_list.projects') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('plans.plan') }}</x-ui.table.th>
                     <x-ui.table.th>{{ __('common.status') }}</x-ui.table.th>
                     <x-ui.table.th>{{ __('common.created_at') }}</x-ui.table.th>
                     <x-ui.table.th align="right">{{ __('common.actions') }}</x-ui.table.th>
@@ -36,6 +37,32 @@
                         </x-ui.table.td>
                         <x-ui.table.td>
                             <x-ui.badge variant="accent" size="sm">{{ $org->projects_count }}</x-ui.badge>
+                        </x-ui.table.td>
+                        <x-ui.table.td>
+                            @php $plan = $org->currentPlan(); @endphp
+                            <div x-data="{ open: false }" class="relative">
+                                <button @click="open = !open" class="flex items-center gap-1.5">
+                                    <x-ui.badge :variant="$plan->badgeColor()" size="sm">{{ $plan->label() }}</x-ui.badge>
+                                    <x-lucide-chevron-down class="w-3 h-3 text-muted" />
+                                </button>
+                                <div x-show="open" @click.away="open = false" x-cloak
+                                     class="absolute z-30 top-full mt-1 left-0 bg-card border border-border-light rounded-xl shadow-xl p-3 w-56 space-y-2">
+                                    <p class="text-[9px] font-black text-muted uppercase tracking-widest mb-2">{{ __('plans.change_plan') }}</p>
+                                    @foreach(\App\Enums\Plan::cases() as $p)
+                                        <button wire:click="changePlan('{{ $org->id }}', '{{ $p->value }}', 12)"
+                                                @click="open = false"
+                                                class="w-full text-left px-2 py-1.5 rounded-lg text-xs hover:bg-surface transition-colors flex items-center justify-between {{ $plan === $p ? 'bg-accent/10 text-accent font-bold' : 'text-body' }}">
+                                            <span>{{ $p->label() }}</span>
+                                            <span class="text-[9px] text-muted">{{ $p->price() }}</span>
+                                        </button>
+                                    @endforeach
+                                    @if($org->plan_expires_at)
+                                        <p class="text-[9px] text-muted pt-1 border-t border-border-light">
+                                            {{ __('plans.expires') }}: {{ $org->plan_expires_at->format('d/m/Y') }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
                         </x-ui.table.td>
                         <x-ui.table.td>
                             <x-ui.badge :variant="$org->status->color()" size="sm">{{ $org->status->label() }}</x-ui.badge>

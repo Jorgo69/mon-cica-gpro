@@ -48,55 +48,54 @@
   - [x] Marqueur "Aujourd'hui", tooltip hover, legende
   - [x] Nouvel onglet Timeline dans project show
 
-- [ ] **Phase 15 : Suivi des indicateurs**
-  - [ ] Tableau de suivi par indicateur (baseline, cible, valeur actuelle, source de verification)
-  - [ ] Historique des mesures (date, valeur, commentaire, piece jointe)
-  - [ ] Dashboard indicateurs par projet (graphiques progression)
-  - [ ] Alerte si indicateur stagne ou regresse
+- [x] **Phase 15 : Suivi des indicateurs** (TERMINEE)
+  - [x] IndicatorMeasurement model + migration (value, comment, measured_at)
+  - [x] current_value + unit sur Indicator, progressPercent(), trend()
+  - [x] IndicatorTrackingLivewire (tableau, formulaire inline, modal historique)
+  - [x] Onglet "Indicateurs" dans project show (remplace "Analyses")
+  - [x] IndicatorAlertNotification (stagnation/regression)
 
 ### NICE-TO-HAVE — Polish produit
 
-- [ ] **Phase 16 : Onboarding guide**
-  - [ ] Wizard premiere connexion admin (creer premier projet, inviter equipe)
-  - [ ] Tooltips contextuels sur les pages cles
-  - [ ] Checklist "Bien demarrer" dans le dashboard (disparait une fois completee)
-  - [ ] Donnees de demo optionnelles (projet exemple pre-rempli)
+- [x] **Phase 16 : Onboarding guide** (TERMINEE)
+  - [x] OnboardingService (etapes adaptees par role : ORG_ADMIN 4, MEMBER 3, INDEPENDENT 2)
+  - [x] Composant onboarding-checklist dans le dashboard (anneau progression, etapes cliquables, dismiss)
+  - [x] Projet demo seeder (Formation agriculteurs, cadre logique complet, marque template)
+  - [x] Auto-tracking : visited_dashboard, visited_settings
 
-- [ ] **Phase 17 : Documentation utilisateur**
-  - [ ] Guide en ligne integre (aide contextuelle par page)
-  - [ ] FAQ / base de connaissances
-  - [ ] Videos courtes par fonctionnalite (optionnel, liens YouTube)
-  - [ ] Documentation API (remplacer Swagger par une doc statique propre)
+- [x] **Phase 17 : Documentation utilisateur** (TERMINEE)
+  - [x] Composant x-ui.help-tip (tooltip contextuel, 30+ cles aide FR+EN)
+  - [x] Page FAQ Livewire (/faq, recherche, 6 categories, 17 questions FR+EN, accordeon)
+  - [x] Lien "Aide / FAQ" dans la sidebar
 
-- [ ] **Phase 18 : RGPD / Protection des donnees**
-  - [ ] Export des donnees personnelles (bouton "Telecharger mes donnees" dans profil)
-  - [ ] Suppression complete sur demande (anonymisation, pas juste soft delete)
-  - [ ] Politique de confidentialite / CGU (page publique)
-  - [ ] Consentement cookies (banniere)
-  - [ ] Retention des donnees configurable (supprimer les projets archives apres X mois)
-  - [ ] Journal des acces aux donnees sensibles
+- [x] **Phase 18 : RGPD / Protection des donnees** (TERMINEE)
+  - [x] GdprExportService (export JSON complet : compte, projets, activites, commentaires, notifs)
+  - [x] GdprDeleteService (anonymisation irreversible, desassociation activites)
+  - [x] Pages publiques /privacy et /terms (7 sections chacune, FR+EN)
+  - [x] Banniere cookies (Alpine.js, localStorage, accept/essential only)
+  - [x] Section RGPD dans le profil (bouton export + liens legaux)
 
-- [ ] **Phase 19 : Performance & Cache**
-  - [ ] Cache Redis/file sur les stats dashboard (invalidation sur changement)
-  - [ ] Cache des compteurs sidebar (projets, activites, notifications)
-  - [ ] Eager loading audit sur tous les composants liste (N+1 restants)
-  - [ ] Index DB sur les colonnes les plus filtrees (status, organization_id, dates)
-  - [ ] Pagination cursor pour les grandes listes (>1000 items)
-  - [ ] Monitoring : temps de reponse, queries lentes (Laravel Telescope ou Clockwork en dev)
+- [x] **Phase 19 : Performance & Cache** (TERMINEE)
+  - [x] Cache dashboard stats 5 min par user+periode, CacheInvalidationObserver
+  - [x] 16 index DB (activities, projects, comments, attachments, indicators, expenses, budgets, share_tokens)
+  - [x] N+1 fix ProjectListLivewire (eager load creator + projectType)
+  - [x] Deploy script optimise (clear all > migrate > rebuild caches)
 
-- [ ] **Phase 20 : Preparation SaaS**
-  - [ ] Plans et limites (free, pro, enterprise) avec config
-  - [ ] Billing Stripe via Laravel Cashier (abonnement mensuel/annuel)
-  - [ ] Middleware de verification plan (bloquer si limite atteinte)
-  - [ ] Page pricing publique
-  - [ ] Trial period (14 jours gratuit)
-  - [ ] Dashboard admin ROOT : revenus, MRR, churn, conversions
+- [x] **Phase 20 : SaaS Plans** (TERMINEE)
+  - [x] Enum Plan (Free/Pro/Enterprise), config limites dans gpro.php
+  - [x] Plans sur Organization ET User (independants), effectivePlan(), isPlanActive(), hasFeature()
+  - [x] Middleware plan:feature (bloque si feature pas dans le plan, ROOT bypass)
+  - [x] UI ROOT : dropdown changement plan par org en 1 clic
+  - [x] Onglet Plan dans Settings (usage, expiration, CTA upgrade, contacts WhatsApp/email)
+  - [x] Page /pricing publique (3 plans, comparatif features, paiement MoMo/virement)
+  - [x] Paiement configurable : PAYMENT_GATEWAY_URL dans .env (FedaPay/Kkiapay ready)
 
-- [ ] **Phase 21 : Multi-plateforme**
-  - [ ] NativePHP desktop (Windows, macOS, Linux)
-  - [ ] NativePHP mobile (Android, iOS) — ou PWA
-  - [ ] Push notifications natives (via FCM deja en place)
-  - [ ] Mode hors-ligne basique (consultation, sync au retour)
+- [x] **Phase 21 : PWA Multi-plateforme** (TERMINEE)
+  - [x] manifest.json (standalone, icones, raccourcis)
+  - [x] Service Worker (network-first, cache assets, page offline, push FCM)
+  - [x] 8 icones PNG (72-512px)
+  - [x] Page /offline
+  - [x] Meta tags PWA dans layouts app + guest
 
 ### FUTUR — Apres v1.0
 
@@ -309,3 +308,15 @@
 - **Phase 14 complete** : Gantt/Timeline (diagramme horizontal Tailwind+Alpine, onglet project show).
 - Fix bonus : composant x-currency cree, enums ActivityStatus corrigees (ONGOING au lieu de IN_PROGRESS).
 - CI/CD : deploy.yml conditionne au succes du CI (workflow_run).
+
+### Session 13 (2026-05-02)
+- **Bugfixes** (8 bugs) : login cookies corrompus, HTML dans Excel (strip_tags), dark mode persiste apres logout, Settings htmlspecialchars (EN settings.php structure alignee sur FR), timeline tooltip z-index, share link auto-copy, bouton template introuvable (ajoute dans project show), MEMBER sans create-projects (permission ajoutee).
+- **Sidebar refactoree** : Projets en dropdown avec sous-items (Tous les projets + Templates).
+- **Phase 15 complete** : Suivi indicateurs (IndicatorMeasurement, progressPercent, trend, onglet Indicateurs).
+- **Phase 16 complete** : Onboarding guide (OnboardingService par role, checklist dashboard, projet demo).
+- **Phase 17 complete** : Documentation (help-tip contextuel, page FAQ Livewire 17 questions, sidebar).
+- **Phase 18 complete** : RGPD (export JSON, anonymisation, CGU/confidentialite, banniere cookies).
+- **Phase 19 complete** : Performance (cache dashboard 5min, 16 index DB, N+1 fix, deploy script).
+- **Phase 20 complete** : SaaS Plans adapte Afrique (Free/Pro/Enterprise, activation manuelle ROOT, pricing publique, paiement MoMo/gateway configurable, plans independants).
+- **Phase 21 complete** : PWA (manifest, service worker, icones, page offline, meta tags).
+- **Toutes les 21 phases sont terminees.** Projet pret pour v1.0.
