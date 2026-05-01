@@ -1,4 +1,7 @@
 <div class="space-y-8">
+    {{-- AI Logframe Suggestion --}}
+    <livewire:v-beta.a-i.ai-assistant-livewire context="logframe" :projectTitle="$projectTitle ?? ''" :projectDescription="$projectDescription ?? ''" />
+
     {{-- BUT GENERAL --}}
     <x-ui.card :noPadding="false">
         <label class="block text-[11px] font-black text-subtle uppercase tracking-[0.15em] ml-1 mb-4">But Général du Projet</label>

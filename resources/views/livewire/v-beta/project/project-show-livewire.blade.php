@@ -8,6 +8,7 @@
                         {{ __('common.edit') }}
                     </x-ui.button>
                 @endcan
+                <livewire:v-beta.a-i.ai-assistant-livewire context="summary" :projectId="$project->id" />
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
                     {{ __('projects.show.premium_report') }}
                 </x-ui.button>

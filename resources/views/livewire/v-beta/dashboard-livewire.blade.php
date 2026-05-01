@@ -24,6 +24,34 @@
             <x-ui.onboarding-checklist :progress="$onboardingProgress" />
         @endif
 
+        {{-- AI Dashboard Analysis --}}
+        @if(\App\Services\AI\GeminiService::isConfigured() && $totalProjects > 0)
+            @php
+                $aiAnalysis = app(\App\Services\AI\GeminiService::class)->analyzeDashboard([
+                    'total_projects' => $totalProjects,
+                    'active' => $projectsInProgress,
+                    'completed' => $projectsCompleted,
+                    'draft' => $projectsDraft,
+                    'total_activities' => $totalActivities,
+                    'activities_in_progress' => $activitiesInProgress,
+                    'activities_completed' => $activitiesCompleted,
+                    'activities_overdue' => $activitiesOverdue,
+                    'total_budget' => number_format($totalPlannedBudget, 0, ',', ' '),
+                ]);
+            @endphp
+            @if($aiAnalysis)
+                <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 rounded-2xl flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                        <x-lucide-sparkles class="w-4 h-4 text-purple-500" />
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">{{ __('ai.dashboard_insight') }}</span>
+                        <p class="text-xs text-body mt-1 leading-relaxed">{{ $aiAnalysis }}</p>
+                    </div>
+                </div>
+            @endif
+        @endif
+
         {{-- Alertes Critiques --}}
         @if($overdueActivities->isNotEmpty())
             <div class="mb-8 p-4 rounded-2xl bg-error/5 border border-error/10 flex flex-col md:flex-row items-center justify-between gap-4">

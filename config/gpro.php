@@ -136,6 +136,12 @@ return [
     | Plans et limites
     |--------------------------------------------------------------------------
     */
+    // AI (Gemini free tier)
+    'ai' => [
+        'gemini_api_key' => env('GEMINI_API_KEY'),
+        'gemini_model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+    ],
+
     // Payment
     'payment' => [
         'gateway_url' => env('PAYMENT_GATEWAY_URL'),

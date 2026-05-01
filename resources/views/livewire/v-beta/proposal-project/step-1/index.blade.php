@@ -37,8 +37,13 @@
             />
         </div>
 
+        {{-- AI Assistant: Generate Description --}}
+        <div class="md:col-span-2">
+            <livewire:v-beta.a-i.ai-assistant-livewire context="description" :projectTitle="$projectTitle ?? ''" />
+        </div>
+
         {{-- Project Code --}}
-        <x-ui.input 
+        <x-ui.input
             label="{{ __('project.step_1.form.input_3') }}" 
             wire:model.defer="projectCode"
             placeholder="PRJ-2024-X"
