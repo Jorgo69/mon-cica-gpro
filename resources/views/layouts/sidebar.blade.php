@@ -13,69 +13,69 @@
     <nav class="px-3 py-4 pb-20">
 
         {{-- ── PRINCIPAL ── --}}
-        <p class="sidebar-section-title">Principal</p>
+        <p class="sidebar-section-title">{{ __('navigation.main') }}</p>
 
         {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}" 
+        <a href="{{ route('dashboard') }}"
            class="nav-item @if(Route::is('dashboard*')) nav-item-active @endif">
             <x-lucide-layout-dashboard class="nav-icon" />
-            <span class="nav-label">{{ __('navigation.sidebar.Dashboard') }}</span>
+            <span class="nav-label">{{ __('navigation.dashboard') }}</span>
         </a>
 
         {{-- Projets --}}
         @can('view-projects')
-        <a href="{{ route('project.list') }}" 
+        <a href="{{ route('project.list') }}"
            class="nav-item @if(Route::is('creator.proposal.project*') || Route::is('project*')) nav-item-active @endif">
             <x-lucide-folder-kanban class="nav-icon" />
-            <span class="nav-label">{{ __('navigation.sidebar.Project') }}</span>
+            <span class="nav-label">{{ __('navigation.projects') }}</span>
         </a>
         @endcan
 
         {{-- Ressources --}}
         @can('view-projects')
-        <a href="{{ route('resource.index') }}" 
+        <a href="{{ route('resource.index') }}"
            class="nav-item @if(Route::is('resource*')) nav-item-active @endif">
             <x-lucide-boxes class="nav-icon" />
-            <span class="nav-label">{{ __('Ressource') }}</span>
+            <span class="nav-label">{{ __('navigation.resources') }}</span>
         </a>
         @endcan
 
         {{-- Activités --}}
         @can('view-projects')
-        <a href="{{ route('activity.index') }}" 
+        <a href="{{ route('activity.index') }}"
            class="nav-item @if(Route::is('activity*')) nav-item-active @endif">
             <x-lucide-list-checks class="nav-icon" />
-            <span class="nav-label">{{ __('navigation.sidebar.Activity') }}</span>
+            <span class="nav-label">{{ __('navigation.activities') }}</span>
         </a>
         @endcan
 
 
         {{-- ── SYSTÈME (ROOT / SYSTEM_ADMIN) ── --}}
         @if (auth()->user()->role === \App\Enums\AccountType::ROOT)
-        <p class="sidebar-section-title">Système</p>
+        <p class="sidebar-section-title">{{ __('navigation.system') }}</p>
 
         <div x-data="{ open: {{ Route::is('system*') ? 'true' : 'false' }} }">
-            <button @click="open = !open" 
+            <button @click="open = !open"
                     class="nav-item w-full justify-between @if(Route::is('system*')) nav-item-active @endif">
                 <div class="flex items-center gap-3 text-rose-600 dark:text-rose-400">
                     <x-lucide-server class="nav-icon" />
-                    <span class="nav-label font-bold text-xs uppercase tracking-tight">Configuration</span>
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.configuration') }}</span>
                 </div>
                 <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
                     <a href="{{ route('system.dashboard') }}" class="nav-submenu-item @if(Route::is('system.dashboard*')) nav-submenu-item-active @endif">
-                        Supervision
+                        {{ __('navigation.supervision') }}
                     </a>
                     <a href="{{ route('system.roles') }}" class="nav-submenu-item @if(Route::is('system.roles*')) nav-submenu-item-active @endif">
-                        Rôles & Permissions
+                        {{ __('navigation.roles_permissions') }}
                     </a>
                     <a href="{{ route('system.organizations') }}" class="nav-submenu-item @if(Route::is('system.organizations*')) nav-submenu-item-active @endif">
-                        Organisations
+                        {{ __('navigation.organizations') }}
                     </a>
                     <a href="{{ route('system.audit.logs') }}" class="nav-submenu-item @if(Route::is('system.audit.logs*')) nav-submenu-item-active @endif">
-                        Logs d'audit global
+                        {{ __('navigation.global_audit_logs') }}
                     </a>
                 </div>
             </div>
@@ -89,36 +89,36 @@
         @endphp
 
         @if ($isAdmin)
-        <p class="sidebar-section-title">Administration</p>
+        <p class="sidebar-section-title">{{ __('navigation.administration') }}</p>
 
         <div x-data="{ open: {{ Route::is('admin*') ? 'true' : 'false' }} }">
-            <button @click="open = !open" 
+            <button @click="open = !open"
                     class="nav-item w-full justify-between @if(Route::is('admin*')) nav-item-active @endif">
                 <div class="flex items-center gap-3">
                     <x-lucide-shield-check class="nav-icon text-indigo-500" />
-                    <span class="nav-label font-bold text-xs uppercase tracking-tight">Gestion Organisme</span>
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.org_management') }}</span>
                 </div>
                 <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
                     <a href="{{ route('admin.member.list') }}" class="nav-submenu-item @if(Route::is('admin.member.list*')) nav-submenu-item-active @endif">
-                        {{ __('navigation.sidebar.members') }}
+                        {{ __('navigation.members') }}
                     </a>
                     <a href="{{ route('admin.category.list') }}" class="nav-submenu-item @if(Route::is('admin.category.list*')) nav-submenu-item-active @endif">
-                        {{ __('navigation.sidebar.categories list') }}
+                        {{ __('navigation.categories') }}
                     </a>
                     <a href="{{ route('admin.type.of.project') }}" class="nav-submenu-item @if(Route::is('admin.type.of.project*')) nav-submenu-item-active @endif">
-                        {{ __('Type de Projet') }}
+                        {{ __('navigation.project_types') }}
                     </a>
                     <a href="{{ route('admin.invitation.list') }}" class="nav-submenu-item @if(Route::is('admin.invitation.list*')) nav-submenu-item-active @endif">
-                        Invitations
+                        {{ __('navigation.invitations') }}
                     </a>
                     <a href="{{ route('admin.exchange-rates') }}" class="nav-submenu-item @if(Route::is('admin.exchange-rates*')) nav-submenu-item-active @endif">
-                        Taux de change
+                        {{ __('navigation.exchange_rates') }}
                     </a>
                     <a href="{{ route('admin.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.trash.management*')) nav-submenu-item-active @endif">
-                        {{ __('Corbeilles') }}
+                        {{ __('navigation.trash') }}
                     </a>
                 </div>
             </div>
@@ -127,24 +127,24 @@
 
 
         {{-- ── PARAMÈTRES ── --}}
-        <p class="sidebar-section-title">Paramètres</p>
+        <p class="sidebar-section-title">{{ __('navigation.settings_section') }}</p>
 
         <div x-data="{ open: {{ (Route::is('setting*') || Route::is('profile*')) ? 'true' : 'false' }} }">
-            <button @click="open = !open" 
+            <button @click="open = !open"
                     class="nav-item w-full justify-between @if(Route::is('setting*') || Route::is('profile*')) nav-item-active @endif">
                 <div class="flex items-center gap-3">
                     <x-lucide-settings class="nav-icon" />
-                    <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.sidebar.Settings') }}</span>
+                    <span class="nav-label font-bold text-xs uppercase tracking-tight">{{ __('navigation.settings_section') }}</span>
                 </div>
                 <x-lucide-chevron-right class="w-3.5 h-3.5 text-muted transition-transform duration-200" x-bind:class="{ 'rotate-90': open }" />
             </button>
             <div x-show="open" x-collapse>
                 <div class="nav-submenu">
                     <a href="{{ route('setting') }}" class="nav-submenu-item @if(Route::is('setting')) nav-submenu-item-active @endif">
-                        Général
+                        {{ __('navigation.general') }}
                     </a>
                     <a href="{{ route('profile.edit') }}" class="nav-submenu-item @if(Route::is('profile*')) nav-submenu-item-active @endif">
-                        Mon Profil
+                        {{ __('navigation.my_profile') }}
                     </a>
                 </div>
             </div>

@@ -1,13 +1,13 @@
 <div class="space-y-6">
     <div class="mb-8">
-        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">Créer un compte</h2>
-        <p class="text-xs text-subtle font-medium mt-1">Rejoignez CICA-GPRO pour gérer vos projets avec excellence.</p>
+        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">{{ __('auth.create_account') }}</h2>
+        <p class="text-xs text-subtle font-medium mt-1">{{ __('auth.register_subtitle') }}</p>
     </div>
 
     <form wire:submit="register" class="space-y-6">
         <!-- Name -->
         <x-ui.input 
-            label="Nom complet" 
+            label="{{ __('auth.full_name') }}"
             type="text" 
             wire:model="name"
             icon="user"
@@ -19,7 +19,7 @@
 
         <!-- Email Address -->
         <x-ui.input 
-            label="Adresse Email" 
+            label="{{ __('auth.email_address') }}"
             type="email" 
             wire:model="email"
             icon="mail"
@@ -31,7 +31,7 @@
         <!-- Password -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-ui.input 
-                label="Mot de passe" 
+                label="{{ __('auth.password_label') }}"
                 type="password" 
                 wire:model="password"
                 icon="lock"
@@ -41,7 +41,7 @@
             />
 
             <x-ui.input 
-                label="Confirmation" 
+                label="{{ __('auth.confirm_password') }}"
                 type="password" 
                 wire:model="password_confirmation"
                 icon="shield-check"
@@ -52,8 +52,8 @@
         </div>
 
         <div class="pt-2">
-            <x-ui.button type="submit" variant="primary" icon="user-plus" size="lg" class="w-full" loadingText="Création du compte...">
-                S'inscrire
+            <x-ui.button type="submit" variant="primary" icon="user-plus" size="lg" class="w-full" loadingText="{{ __('common.loading') }}">
+                {{ __('auth.register') }}
             </x-ui.button>
         </div>
 
@@ -63,7 +63,7 @@
                 <div class="w-full border-t border-border-light dark:border-surface-alt"></div>
             </div>
             <div class="relative flex justify-center text-[10px] uppercase tracking-[0.2em] font-black">
-                <span class="bg-card px-4 text-muted">Ou s'inscrire avec</span>
+                <span class="bg-card px-4 text-muted">{{ __('common.or') }} {{ mb_strtolower(__('auth.register_with', ['provider' => ''])) }}</span>
             </div>
         </div>
 
@@ -95,8 +95,8 @@
         @endif
 
         <p class="text-center text-[10px] font-black text-muted uppercase tracking-[0.2em] pt-4">
-            Déjà inscrit ? 
-            <a href="{{ route('login') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">Se connecter</a>
+            {{ __('auth.already_registered') }}
+            <a href="{{ route('login') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">{{ __('auth.login') }}</a>
         </p>
     </form>
 </div>

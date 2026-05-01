@@ -21,7 +21,7 @@
             <!-- Global Search -->
             <button @click="$dispatch('toggle-search')" class="navbar-action group hidden sm:flex items-center gap-2 px-3 py-1.5 bg-surface dark:bg-surface-alt/50 border border-border-light dark:border-surface-alt rounded-xl transition-all hover:border-accent/30">
                 <x-lucide-search class="w-4 h-4 text-muted group-hover:text-accent" />
-                <span class="text-xs font-bold text-muted group-hover:text-subtle dark:group-hover:text-heading">Rechercher...</span>
+                <span class="text-xs font-bold text-muted group-hover:text-subtle dark:group-hover:text-heading">{{ __('navigation.search_placeholder') }}</span>
                 <kbd class="hidden md:inline-flex items-center px-1.5 py-0.5 rounded bg-white dark:bg-surface-alt border border-border dark:border-border text-[10px] font-black text-muted group-hover:text-accent">Ctrl+K</kbd>
             </button>
 
@@ -40,10 +40,10 @@
                     <x-ui.avatar :user="auth()->user()" size="sm" />
                     <div class="hidden sm:block text-left">
                         <div class="text-[13px] font-semibold text-body leading-tight">
-                            {{ auth()->user()->name ?? 'Utilisateur' }}
+                            {{ auth()->user()->name ?? __('navigation.user') }}
                         </div>
                         <div class="text-[11px] text-muted leading-tight">
-                            {{ auth()->user()->role ?? 'Aucun rôle' }}
+                            {{ auth()->user()->role ?? __('navigation.no_role') }}
                         </div>
                     </div>
                     <x-lucide-chevron-down class="w-3.5 h-3.5 text-muted hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />
@@ -62,15 +62,15 @@
                     
                     <a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                         <x-lucide-user class="nav-icon" />
-                        <span>{{ __('navigation.navbar.profile') }}</span>
+                        <span>{{ __('navigation.profile') }}</span>
                     </a>
                     <a href="{{ route('setting') }}" class="nav-dropdown-item">
                         <x-lucide-settings class="nav-icon" />
-                        <span>{{ __('navigation.navbar.setting') }}</span>
+                        <span>{{ __('navigation.settings') }}</span>
                     </a>
                     <a href="#" class="nav-dropdown-item">
                         <x-lucide-life-buoy class="nav-icon" />
-                        <span>{{ __('navigation.navbar.support') }}</span>
+                        <span>{{ __('navigation.support') }}</span>
                     </a>
                     
                     @auth
@@ -79,14 +79,14 @@
                             @csrf
                             <button type="submit" class="nav-dropdown-item w-full text-left text-error/80 hover:text-error dark:text-error/70 dark:hover:text-error">
                                 <x-lucide-log-out class="nav-icon" />
-                                <span>{{ __('navigation.navbar.logout') }}</span>
+                                <span>{{ __('navigation.logout') }}</span>
                             </button>
                         </form>
                     @else
                         <div class="nav-dropdown-divider"></div>
                         <a href="{{ route('login') }}" class="nav-dropdown-item">
                             <x-lucide-log-in class="nav-icon" />
-                            <span>Connexion</span>
+                            <span>{{ __('navigation.login') }}</span>
                         </a>
                     @endauth
                 </div>

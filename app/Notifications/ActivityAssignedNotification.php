@@ -26,12 +26,12 @@ class ActivityAssignedNotification extends Notification implements ShouldQueue
         $projectTitle = $this->activity->project?->title ?? 'N/A';
 
         return (new MailMessage)
-            ->subject("Activité assignée : {$this->activity->description}")
-            ->greeting("Bonjour {$notifiable->name},")
-            ->line("**{$this->assigner->name}** vous a assigné une activité sur le projet **{$projectTitle}**.")
-            ->line("Activité : **{$this->activity->description}**")
-            ->action('Voir le projet', route('project.show', $this->activity->project?->id))
-            ->salutation('— ' . config('app.name'));
+            ->subject(__('mail.activity_assigned.subject', ['activity' => $this->activity->description]))
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.activity_assigned.line1', ['assigner' => $this->assigner->name, 'project' => $projectTitle]))
+            ->line(__('mail.activity_assigned.line2', ['activity' => $this->activity->description]))
+            ->action(__('mail.activity_assigned.action'), route('project.show', $this->activity->project?->id))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
@@ -39,8 +39,11 @@ class ActivityAssignedNotification extends Notification implements ShouldQueue
         return [
             'activity_id' => $this->activity->id,
             'project_id' => $this->activity->project?->id,
-            'title' => 'Activité assignée',
-            'message' => "{$this->assigner->name} vous a assigné l'activité \"{$this->activity->description}\".",
+            'title' => __('mail.activity_assigned.title'),
+            'message' => __('mail.activity_assigned.message', [
+                'assigner' => $this->assigner->name,
+                'activity' => $this->activity->description,
+            ]),
             'action_url' => route('project.show', $this->activity->project?->id),
         ];
     }

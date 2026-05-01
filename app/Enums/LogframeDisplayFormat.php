@@ -10,11 +10,7 @@ enum LogframeDisplayFormat: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::TABLE => 'Matrice',
-            self::TREE => 'Arborescence',
-            self::CARDS => 'Fiches',
-        };
+        return __('enums.logframe_format.' . $this->value);
     }
 
     public function icon(): string

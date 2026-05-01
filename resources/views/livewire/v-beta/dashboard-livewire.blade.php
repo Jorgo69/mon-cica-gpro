@@ -1,10 +1,10 @@
 <div>
     <x-ui.page-layout>
         {{-- En-tête de la page --}}
-        <x-ui.page-header :title="__('Tableau de Bord')" :subtitle="__('Vue d\'ensemble de la performance des projets')">
+        <x-ui.page-header :title="__('dashboard.title')" :subtitle="__('dashboard.subtitle')">
             <x-slot:actions>
                 <div class="flex items-center gap-2 mr-4 bg-surface-alt p-1 rounded-xl">
-                    @foreach(['all' => 'Global', 'month' => 'Mois', 'quarter' => 'Trimestre', 'year' => 'Année'] as $key => $label)
+                    @foreach(['all' => __('dashboard.global'), 'month' => __('dashboard.month'), 'quarter' => __('dashboard.quarter'), 'year' => __('dashboard.year')] as $key => $label)
                         <button 
                             wire:click="setPeriod('{{ $key }}')"
                             class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all {{ $currentPeriod === $key ? 'bg-card text-primary shadow-sm' : 'text-subtle hover:text-heading' }}"
@@ -14,7 +14,7 @@
                     @endforeach
                 </div>
                 <x-ui.button tag="a" :href="route('project.create')" variant="accent" icon="plus" size="md" wire:navigate>
-                    {{ __('Nouveau Projet') }}
+                    {{ __('dashboard.new_project') }}
                 </x-ui.button>
             </x-slot:actions>
         </x-ui.page-header>
@@ -27,8 +27,8 @@
                         <x-lucide-alert-circle class="w-5 h-5 text-error" />
                     </div>
                     <div>
-                        <h3 class="text-sm font-black text-error uppercase tracking-wider">Activités en retard</h3>
-                        <p class="text-xs text-subtle">Vous avez {{ $overdueActivities->count() }} activités qui nécessitent une attention immédiate.</p>
+                        <h3 class="text-sm font-black text-error uppercase tracking-wider">{{ __('dashboard.overdue_activities') }}</h3>
+                        <p class="text-xs text-subtle">{{ __('dashboard.overdue_alert', ['count' => $overdueActivities->count()]) }}</p>
                     </div>
                 </div>
                 <div class="flex -space-x-2">
@@ -43,23 +43,23 @@
 
         {{-- Statistiques Globales --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <x-ui.stat-card :label="__('Projets Totaux')" :value="$totalProjects" variant="default" icon="folder" />
-            <x-ui.stat-card :label="__('En cours')" :value="$projectsInProgress" variant="success" icon="play-circle" />
-            <x-ui.stat-card :label="__('Terminés')" :value="$projectsCompleted" variant="accent" icon="check-circle" />
-            <x-ui.stat-card :label="__('Annulés')" :value="$projectsCanceled" variant="error" icon="x-circle" />
+            <x-ui.stat-card :label="__('dashboard.total_projects')" :value="$totalProjects" variant="default" icon="folder" />
+            <x-ui.stat-card :label="__('dashboard.in_progress')" :value="$projectsInProgress" variant="success" icon="play-circle" />
+            <x-ui.stat-card :label="__('dashboard.completed')" :value="$projectsCompleted" variant="accent" icon="check-circle" />
+            <x-ui.stat-card :label="__('dashboard.cancelled')" :value="$projectsCanceled" variant="error" icon="x-circle" />
         </div>
 
 
         {{-- Section Analytique : Graphiques --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <x-ui.section :title="__('Budget per Project')" icon="bar-chart-3">
+            <x-ui.section :title="__('dashboard.budget_per_project')" icon="bar-chart-3">
                 <x-ui.chart 
                     type="bar" 
                     height="320px"
                     :labels="collect($budgetByProject)->pluck('label')->toArray()"
                     :datasets="[
                         [
-                            'label' => __('Planned Budget (FCFA)'),
+                            'label' => __('dashboard.planned_budget') . ' (FCFA)',
                             'data' => collect($budgetByProject)->pluck('value')->toArray(),
                             'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
                             'borderColor' => 'rgb(99, 102, 241)',
@@ -71,7 +71,7 @@
                 />
             </x-ui.section>
 
-            <x-ui.section :title="__('Projects Overview')" icon="pie-chart">
+            <x-ui.section :title="__('dashboard.projects_overview')" icon="pie-chart">
                 <x-ui.chart 
                     type="doughnut" 
                     height="320px"
@@ -97,24 +97,24 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Colonne de gauche : Activités --}}
             <div class="lg:col-span-2 space-y-8">
-                <x-ui.section :title="__('Activity Status')" icon="activity">
+                <x-ui.section :title="__('dashboard.activity_status')" icon="activity">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
-                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Ongoing') }}</p>
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('dashboard.ongoing') }}</p>
                             <p class="text-2xl font-black text-primary">{{ $activitiesInProgress }}</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
-                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Completed') }}</p>
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('dashboard.completed') }}</p>
                             <p class="text-2xl font-black text-success">{{ $activitiesCompleted }}</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-surface dark:bg-surface-alt/50 border border-border-light">
-                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('Overdue') }}</p>
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-1">{{ __('dashboard.overdue') }}</p>
                             <p class="text-2xl font-black text-error">{{ $activitiesOverdue }}</p>
                         </div>
                     </div>
                 </x-ui.section>
 
-                <x-ui.section :title="__('Recent updates')" icon="history">
+                <x-ui.section :title="__('dashboard.recent_updates')" icon="history">
                     <div class="space-y-4">
                         @forelse($recentProgressUpdates as $update)
                             <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-surface dark:hover:bg-surface-alt/50 transition-colors border border-transparent hover:border-border-light">
@@ -122,8 +122,8 @@
                                     <x-lucide-user class="w-5 h-5 text-muted" />
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-heading truncate">{{ $update->project?->title ?? 'Projet inconnu' }}</p>
-                                    <p class="text-xs text-subtle truncate">{{ $update->activity?->description ?? 'Activite supprimee' }}</p>
+                                    <p class="text-sm font-bold text-heading truncate">{{ $update->project?->title ?? __('dashboard.unknown_project') }}</p>
+                                    <p class="text-xs text-subtle truncate">{{ $update->activity?->description ?? __('dashboard.deleted_activity') }}</p>
                                 </div>
                                 <div class="text-right shrink-0">
                                     <p class="text-[10px] font-black text-muted uppercase text-right">{{ $update->date->diffForHumans() }}</p>
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
                         @empty
-                            <x-ui.empty-state icon="clock" :title="__('No updates')" :description="__('Activities have not been updated yet.')" />
+                            <x-ui.empty-state icon="clock" :title="__('dashboard.no_updates')" :description="__('dashboard.no_updates_desc')" />
                         @endforelse
                     </div>
                 </x-ui.section>
@@ -139,14 +139,14 @@
 
             {{-- Colonne de droite : Projets Récents --}}
             <div class="space-y-8">
-                <x-ui.section :title="__('Recent Projects')" icon="folder-closed">
+                <x-ui.section :title="__('dashboard.recent_projects')" icon="folder-closed">
                     <div class="space-y-4">
                         @forelse($recentProjects as $project)
                             <div class="p-4 rounded-xl bg-card border border-border-light shadow-sm hover:shadow-md transition-all">
                                 <h4 class="text-sm font-bold text-heading mb-1 line-clamp-1">{{ $project->title }}</h4>
                                 <p class="text-[10px] text-subtle mb-3 flex items-center gap-1">
                                     <x-lucide-calendar class="w-3 h-3" />
-                                    {{ __('Created on') }} {{ $project->created_at->format('d/m/Y') }}
+                                    {{ __('dashboard.created_on') }} {{ $project->created_at->format('d/m/Y') }}
                                 </p>
                                 <div class="flex items-center justify-between">
                                     <x-ui.badge :variant="$project->status?->color() ?? 'slate'" size="sm">
@@ -156,7 +156,7 @@
                                 </div>
                             </div>
                         @empty
-                            <x-ui.empty-state icon="folder-open" :title="__('No projects yet')" :description="__('Start by creating a new project.')" />
+                            <x-ui.empty-state icon="folder-open" :title="__('dashboard.no_projects')" :description="__('dashboard.no_projects_desc')" />
                         @endforelse
                     </div>
                 </x-ui.section>

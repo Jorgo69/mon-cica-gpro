@@ -24,18 +24,18 @@ class InvitationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $orgName = $this->invitation->organization?->name ?? config('app.name');
-        $senderName = $this->invitation->invitedBy?->name ?? 'Un administrateur';
+        $senderName = $this->invitation->invitedBy?->name ?? __('mail.an_admin');
         $acceptUrl = route('invitation.accept', $this->invitation->token);
 
         return (new MailMessage)
-            ->subject("Invitation à rejoindre {$orgName}")
-            ->greeting('Bonjour,')
-            ->line("**{$senderName}** vous invite à rejoindre l'espace **{$orgName}** sur " . config('app.name') . '.')
-            ->line("Cliquez sur le bouton ci-dessous pour accepter l'invitation :")
-            ->action('Accepter l\'invitation', $acceptUrl)
-            ->line("Vous pouvez aussi utiliser ce code d'invitation : **{$this->invitation->code}**")
-            ->line('Ce code est valable 7 jours.')
-            ->salutation('— ' . config('app.name'))
-            ->line('[Se desabonner](' . route('email.unsubscribe', EmailUnsubscribeController::generateToken($this->invitation->email)) . ')');
+            ->subject(__('mail.invitation.subject', ['organization' => $orgName]))
+            ->greeting(__('mail.greeting_simple'))
+            ->line(__('mail.invitation.line1', ['sender' => $senderName, 'organization' => $orgName, 'app' => config('app.name')]))
+            ->line(__('mail.invitation.line2'))
+            ->action(__('mail.invitation.action'), $acceptUrl)
+            ->line(__('mail.invitation.line3', ['code' => $this->invitation->code]))
+            ->line(__('mail.invitation.line4'))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]))
+            ->line('[' . __('mail.unsubscribe') . '](' . route('email.unsubscribe', EmailUnsubscribeController::generateToken($this->invitation->email)) . ')');
     }
 }

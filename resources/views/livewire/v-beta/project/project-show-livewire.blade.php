@@ -1,18 +1,18 @@
 <x-ui.page-layout>
     @if ($project)
         {{-- Page Header --}}
-        <x-ui.page-header title="Détails du Projet" :subtitle="$project->project_code">
+        <x-ui.page-header :title="__('projects.show.title')" :subtitle="$project->project_code">
             <x-slot:actions>
                 @can('update', $project)
                     <x-ui.button tag="a" :href="route('creator.proposal.project.edit', ['projectId' => $project->id])" variant="outline" icon="pencil" size="sm" wire:navigate>
-                        Modifier
+                        {{ __('common.edit') }}
                     </x-ui.button>
                 @endcan
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
-                    Rapport Premium
+                    {{ __('projects.show.premium_report') }}
                 </x-ui.button>
                 <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm" wire:navigate>
-                    Retour
+                    {{ __('common.back') }}
                 </x-ui.button>
             </x-slot:actions>
         </x-ui.page-header>
@@ -21,32 +21,32 @@
         <div class="flex items-center gap-2 border-b border-border-light mb-6 overflow-x-auto no-scrollbar">
             <button wire:click="switchTab('overview')" 
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'overview' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Aperçu
+                {{ __('projects.show.tabs.overview') }}
                 @if($activeTab === 'overview') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('logframe')" 
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'logframe' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Cadre Logique
+                {{ __('projects.show.tabs.logframe') }}
                 @if($activeTab === 'logframe') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('documents')" 
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'documents' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Documents
+                {{ __('projects.show.tabs.documents') }}
                 @if($activeTab === 'documents') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('analytics')" 
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'analytics' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Analyses
+                {{ __('projects.show.tabs.analyses') }}
                 @if($activeTab === 'analytics') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('tracking')"
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'tracking' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Suivi
+                {{ __('projects.show.tabs.tracking') }}
                 @if($activeTab === 'tracking') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('history')"
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'history' ? 'text-accent' : 'text-subtle hover:text-body' }}">
-                Historique
+                {{ __('projects.show.tabs.history') }}
                 @if($activeTab === 'history') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
         </div>
@@ -55,21 +55,21 @@
 
             @if($activeTab === 'overview')
                 {{-- Section 1: Informations Générales --}}
-                <x-ui.section title="Informations Générales" icon="info">
+                <x-ui.section :title="__('projects.show.general_info')" icon="info">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Titre</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.title') }}</span>
                                 <span class="font-semibold text-heading">{{ $project->title }}</span>
                             </div>
                             @if($project->short_title)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Titre court</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('projects.show.short_title') }}</span>
                                 <span class="text-body">{{ $project->short_title }}</span>
                             </div>
                             @endif
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Statut</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.status') }}</span>
                                 @php
                                     $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                     $badgeVariant = $statusEnum ? $statusEnum->color() : 'slate';
@@ -77,7 +77,7 @@
                                 <x-ui.badge :variant="$badgeVariant">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Période</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.period') }}</span>
                                 <span class="text-body">
                                     {{ $project->start_date?->format('d/m/Y') }} → {{ $project->end_date?->format('d/m/Y') }}
                                 </span>
@@ -85,22 +85,22 @@
                         </div>
                         <div class="space-y-3 text-sm">
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Créé le</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.created_at') }}</span>
                                 <span class="text-body">{{ $project->created_at?->format('d/m/Y H:i') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Mis à jour</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.updated_at') }}</span>
                                 <span class="text-body">{{ $project->updated_at?->format('d/m/Y H:i') }}</span>
                             </div>
                             @if($project->creator)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Créé par</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.created_by') }}</span>
                                 <span class="text-body">{{ $project->creator->name }}</span>
                             </div>
                             @endif
                             @if($project->projectType)
                             <div class="flex items-center gap-2">
-                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">Type</span>
+                                <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.type') }}</span>
                                 <x-ui.badge variant="accent" size="sm">{{ $project->projectType->name }}</x-ui.badge>
                             </div>
                             @endif
@@ -109,7 +109,7 @@
 
                     @if($project->description)
                         <div class="mt-6 pt-5 border-t border-border-light">
-                            <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">Description</p>
+                            <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-2">{{ __('common.description') }}</p>
                             <div class="prose prose-sm dark:prose-invert max-w-none text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-sm leading-relaxed">
                                 {!! $project->description !!}
                             </div>
@@ -119,29 +119,29 @@
 
                 {{-- Section 2: Contexte du projet --}}
                 @if($project->context_description || $project->problem_analysis || $project->strategy || $project->justification)
-                    <x-ui.section title="Contexte du Projet" icon="file-text">
+                    <x-ui.section :title="__('projects.show.context')" icon="file-text">
                         <div class="space-y-4">
                             @if($project->context_description)
                             <div>
-                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Description du contexte</p>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">{{ __('projects.show.context_desc') }}</p>
                                 <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl text-justify leading-relaxed">{!! clean($project->context_description) !!}</div>
                             </div>
                             @endif
                             @if($project->justification)
                             <div>
-                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Justification</p>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">{{ __('projects.show.justification') }}</p>
                                 <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->justification !!}</div>
                             </div>
                             @endif
                             @if($project->strategy)
                             <div>
-                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Stratégie</p>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">{{ __('projects.show.strategy') }}</p>
                                 <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->strategy !!}</div>
                             </div>
                             @endif
                             @if($project->problem_analysis)
                             <div>
-                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">Analyse du problème</p>
+                                <p class="text-[11px] font-bold text-muted uppercase tracking-wider mb-1.5">{{ __('projects.show.problem_analysis') }}</p>
                                 <div class="text-sm text-body bg-surface dark:bg-surface-alt/50 p-4 rounded-xl leading-relaxed">{!! $project->problem_analysis !!}</div>
                             </div>
                             @endif
@@ -184,7 +184,7 @@
 
                         {{-- Selecteur de format --}}
                         <div class="flex items-center gap-2 mb-6">
-                            <span class="text-[10px] font-black text-muted uppercase tracking-widest">Format :</span>
+                            <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.show.format') }} :</span>
                             @foreach(\App\Enums\LogframeDisplayFormat::cases() as $format)
                                 <button type="button"
                                     wire:click="setLogframeFormat('{{ $format->value }}')"
@@ -205,7 +205,7 @@
                 @if($activeTab === 'documents')
                     {{-- Section: Documents --}}
                     @if($project->documents->isNotEmpty())
-                        <x-ui.section title="Documents Associés" icon="paperclip">
+                        <x-ui.section :title="__('projects.show.documents')" icon="paperclip">
                             <ul class="space-y-2">
                                 @foreach($project->documents as $document)
                                     <li>
@@ -222,12 +222,12 @@
                             </ul>
                         </x-ui.section>
                     @else
-                        <x-ui.empty-state icon="file-question" title="Aucun document" description="Il n'y a pas encore de documents associés à ce projet." />
+                        <x-ui.empty-state icon="file-question" :title="__('projects.show.no_documents')" :description="__('projects.show.no_documents_desc')" />
                     @endif
                 @endif
 
                 @if($activeTab === 'analytics')
-                    <x-ui.empty-state icon="bar-chart-3" title="Analyses en cours de développement" description="Les analyses comparatives et budgétaires seront disponibles prochainement." />
+                    <x-ui.empty-state icon="bar-chart-3" :title="__('projects.show.analyses_coming')" :description="__('projects.show.analyses_coming_desc')" />
                 @endif
 
                 @if($activeTab === 'tracking')
@@ -237,16 +237,16 @@
 
                 @if($activeTab === 'history')
                     {{-- Section: Historique --}}
-                    <x-ui.section title="Audit & Traçabilité" icon="history">
+                    <x-ui.section :title="__('projects.show.audit_trail')" icon="history">
                         @livewire('v-beta.audit.activity-history-livewire', ['subject' => $project])
                     </x-ui.section>
                 @endif
 
         </div>
     @else
-        <x-ui.empty-state icon="folder-x" title="Projet non trouvé" description="Le projet demandé n'existe pas ou a été supprimé.">
+        <x-ui.empty-state icon="folder-x" :title="__('projects.show.not_found')" :description="__('projects.show.not_found_desc')">
             <x-ui.button tag="a" :href="route('project.list')" variant="outline" icon="arrow-left" size="sm" wire:navigate>
-                Retour à la liste
+                {{ __('common.back') }}
             </x-ui.button>
         </x-ui.empty-state>
     @endif

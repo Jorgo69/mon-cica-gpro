@@ -38,12 +38,12 @@
                             @if($entry['performance_score'])
                                 <div class="mt-2 flex items-center gap-1">
                                     <x-lucide-star class="w-3 h-3 text-warning" />
-                                    <span class="text-xs font-bold text-subtle">Score : {{ $entry['performance_score'] }}/10</span>
+                                    <span class="text-xs font-bold text-subtle">{{ __('activities.score') }} : {{ $entry['performance_score'] }}/10</span>
                                 </div>
                             @endif
 
                             <p class="text-[10px] text-muted mt-2">
-                                Par {{ $entry['creator']['name'] ?? 'Système' }}
+                                {{ __('activities.by') }} {{ $entry['creator']['name'] ?? __('activities.system') }}
                             </p>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
     @else
         <div class="text-center py-8">
             <x-lucide-clock class="w-8 h-8 mx-auto text-body dark:text-subtle mb-2" />
-            <p class="text-sm text-muted">Aucun historique de progression</p>
+            <p class="text-sm text-muted">{{ __('activities.no_progress_history') }}</p>
         </div>
     @endif
 </div>

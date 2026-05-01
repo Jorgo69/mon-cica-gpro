@@ -1,7 +1,7 @@
 <div class="space-y-6">
     <div class="mb-8">
-        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">Bienvenue</h2>
-        <p class="text-xs text-subtle font-medium mt-1">Connectez-vous pour accéder à votre espace de gestion.</p>
+        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">{{ __('auth.welcome') }}</h2>
+        <p class="text-xs text-subtle font-medium mt-1">{{ __('auth.login_subtitle') }}</p>
     </div>
 
     @if (session('status'))
@@ -13,7 +13,7 @@
     <form wire:submit="login" class="space-y-6">
         <!-- Email Address -->
         <x-ui.input 
-            label="Adresse Email" 
+            label="{{ __('auth.email_address') }}"
             type="email" 
             wire:model="email"
             icon="mail"
@@ -26,7 +26,7 @@
         <!-- Password -->
         <div class="space-y-2">
             <x-ui.input 
-                label="Mot de passe" 
+                label="{{ __('auth.password_label') }}"
                 type="password" 
                 wire:model="password"
                 icon="lock"
@@ -40,19 +40,19 @@
         <div class="flex items-center justify-between">
             <label for="remember_me" class="inline-flex items-center cursor-pointer group">
                 <input id="remember_me" type="checkbox" wire:model="remember" class="w-4 h-4 text-accent border-border dark:border-border-light rounded focus:ring-accent/20 dark:bg-surface transition-all cursor-pointer">
-                <span class="ms-2 text-[11px] font-bold text-subtle uppercase tracking-wider group-hover:text-body dark:group-hover:text-heading transition-colors">{{ __('Remember me') }}</span>
+                <span class="ms-2 text-[11px] font-bold text-subtle uppercase tracking-wider group-hover:text-body dark:group-hover:text-heading transition-colors">{{ __('auth.remember_me') }}</span>
             </label>
 
             @if (Route::has('password.request'))
                 <a class="text-[11px] font-black uppercase tracking-wider text-muted hover:text-accent transition-colors underline decoration-dotted underline-offset-4" href="{{ route('password.request') }}">
-                    Oubli ?
+                    {{ __('auth.forgot_password') }}
                 </a>
             @endif
         </div>
 
         <div class="pt-2">
-            <x-ui.button type="submit" variant="primary" icon="log-in" size="lg" class="w-full" loadingText="Connexion en cours...">
-                Se connecter
+            <x-ui.button type="submit" variant="primary" icon="log-in" size="lg" class="w-full" loadingText="{{ __('auth.logging_in') }}">
+                {{ __('auth.login') }}
             </x-ui.button>
         </div>
 
@@ -62,7 +62,7 @@
                 <div class="w-full border-t border-border-light dark:border-surface-alt"></div>
             </div>
             <div class="relative flex justify-center text-[10px] uppercase tracking-[0.2em] font-black">
-                <span class="bg-card px-4 text-muted">Ou continuer avec</span>
+                <span class="bg-card px-4 text-muted">{{ __('common.or') }} {{ mb_strtolower(__('auth.continue_with', ['provider' => ''])) }}</span>
             </div>
         </div>
 
@@ -95,8 +95,8 @@
 
         @if (Route::has('register'))
             <p class="text-center text-[10px] font-black text-muted uppercase tracking-[0.2em] pt-4">
-                Pas encore de compte ? 
-                <a href="{{ route('register') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">S'inscrire</a>
+                {{ __('auth.no_account') }}
+                <a href="{{ route('register') }}" wire:navigate class="text-accent hover:underline decoration-accent underline-offset-4">{{ __('auth.register') }}</a>
             </p>
         @endif
     </form>

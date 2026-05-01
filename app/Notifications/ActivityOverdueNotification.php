@@ -25,35 +25,49 @@ class ActivityOverdueNotification extends Notification implements ShouldQueue
     {
         $projectTitle = $this->activity->project?->title ?? 'N/A';
         $subject = $this->isEscalation
-            ? "[ESCALADE] Activite en retard depuis {$this->daysOverdue} jours"
-            : "Activite en retard : {$this->activity->description}";
+            ? __('mail.activity_overdue.subject_escalation', ['days' => $this->daysOverdue])
+            : __('mail.activity_overdue.subject_normal', ['activity' => $this->activity->description]);
 
         $mail = (new MailMessage)
             ->subject($subject)
-            ->greeting("Bonjour {$notifiable->name},");
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]));
 
         if ($this->isEscalation) {
-            $mail->line("**ESCALADE** — L'activite **{$this->activity->description}** du projet **{$projectTitle}** est en retard depuis **{$this->daysOverdue} jours**.")
-                ->line("Le responsable ({$this->activity->responsibleUser?->name}) n'a pas mis a jour cette activite. Votre intervention est requise.");
+            $mail->line(__('mail.activity_overdue.line_escalation1', [
+                    'activity' => $this->activity->description,
+                    'project' => $projectTitle,
+                    'days' => $this->daysOverdue,
+                ]))
+                ->line(__('mail.activity_overdue.line_escalation2', [
+                    'responsible' => $this->activity->responsibleUser?->name,
+                ]));
         } else {
-            $mail->line("L'activite **{$this->activity->description}** du projet **{$projectTitle}** est en retard de **{$this->daysOverdue} jour(s)**.")
-                ->line("Date limite depassee : **{$this->activity->end_date->format('d/m/Y')}**");
+            $mail->line(__('mail.activity_overdue.line_normal1', [
+                    'activity' => $this->activity->description,
+                    'project' => $projectTitle,
+                    'days' => $this->daysOverdue,
+                ]))
+                ->line(__('mail.activity_overdue.line_normal2', [
+                    'date' => $this->activity->end_date->format('d/m/Y'),
+                ]));
         }
 
         return $mail
-            ->action('Voir le projet', route('project.show', $this->activity->project?->id))
-            ->salutation('— ' . config('app.name'));
+            ->action(__('mail.activity_overdue.action'), route('project.show', $this->activity->project?->id))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
     {
-        $prefix = $this->isEscalation ? '[ESCALADE] ' : '';
-
         return [
             'activity_id' => $this->activity->id,
             'project_id' => $this->activity->project?->id,
-            'title' => "{$prefix}Activite en retard ({$this->daysOverdue}j)",
-            'message' => "{$prefix}L'activite \"{$this->activity->description}\" est en retard de {$this->daysOverdue} jour(s).",
+            'title' => $this->isEscalation
+                ? __('mail.activity_overdue.title_escalation', ['days' => $this->daysOverdue])
+                : __('mail.activity_overdue.title_normal', ['days' => $this->daysOverdue]),
+            'message' => $this->isEscalation
+                ? __('mail.activity_overdue.message_escalation', ['activity' => $this->activity->description, 'days' => $this->daysOverdue])
+                : __('mail.activity_overdue.message_normal', ['activity' => $this->activity->description, 'days' => $this->daysOverdue]),
             'action_url' => route('project.show', $this->activity->project?->id),
             'type' => NotificationType::ACTIVITY_OVERDUE->value,
         ];

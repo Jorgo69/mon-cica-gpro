@@ -1,18 +1,18 @@
 <div>
-    <x-ui.page-header title="Invitations" subtitle="Gérez les invitations à rejoindre votre organisation">
+    <x-ui.page-header :title="__('admin.invitations.title')" :subtitle="__('admin.invitations.subtitle')">
         <x-ui.button wire:click="openModal" variant="accent" size="md">
             <x-lucide-send class="w-4 h-4 mr-1.5" />
-            Inviter un membre
+            {{ __('admin.invitations.invite_member') }}
         </x-ui.button>
     </x-ui.page-header>
 
     {{-- Filtres --}}
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
         <div class="flex-1">
-            <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher par email..." />
+            <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('admin.invitations.search_by_email')" />
         </div>
         <x-ui.select wire:model.live="statusFilter">
-            <option value="">Tous les statuts</option>
+            <option value="">{{ __('admin.invitations.all_statuses') }}</option>
             @foreach($statuses as $status)
                 <option value="{{ $status->value }}">{{ $status->label() }}</option>
             @endforeach
@@ -23,14 +23,14 @@
     <x-ui.card>
         <x-ui.table>
             <x-slot name="head">
-                <x-ui.table.th>Email</x-ui.table.th>
-                <x-ui.table.th>Organisation</x-ui.table.th>
-                <x-ui.table.th>Rôle</x-ui.table.th>
-                <x-ui.table.th>Statut</x-ui.table.th>
-                <x-ui.table.th>Invité par</x-ui.table.th>
-                <x-ui.table.th>Expire le</x-ui.table.th>
-                <x-ui.table.th>Code</x-ui.table.th>
-                <x-ui.table.th>Actions</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.email') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.organization') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.role') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.status') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.invited_by') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.expires_at') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.code') }}</x-ui.table.th>
+                <x-ui.table.th>{{ __('admin.invitations.actions') }}</x-ui.table.th>
             </x-slot>
 
             <x-slot name="body">
@@ -63,14 +63,14 @@
                             @if($invitation->status === \App\Enums\InvitationStatus::PENDING)
                                 <div class="flex gap-2">
                                     <button wire:click="resend('{{ $invitation->id }}')"
-                                            wire:confirm="Renvoyer une nouvelle invitation ?"
+                                            wire:confirm="{{ __('admin.invitations.confirm_resend') }}"
                                             class="text-accent hover:text-accent-dark text-sm font-medium">
-                                        Renvoyer
+                                        {{ __('admin.invitations.resend') }}
                                     </button>
                                     <button wire:click="revoke('{{ $invitation->id }}')"
-                                            wire:confirm="Révoquer cette invitation ?"
+                                            wire:confirm="{{ __('admin.invitations.confirm_revoke') }}"
                                             class="text-error hover:text-error-dark text-sm font-medium">
-                                        Révoquer
+                                        {{ __('admin.invitations.revoke') }}
                                     </button>
                                 </div>
                             @else
@@ -83,8 +83,8 @@
                         <x-ui.table.td colspan="8">
                             <x-ui.empty-state
                                 icon="mail"
-                                title="Aucune invitation"
-                                description="Invitez des membres à rejoindre votre organisation." />
+                                :title="__('admin.invitations.no_invitations')"
+                                :description="__('admin.invitations.no_invitations_detail')" />
                         </x-ui.table.td>
                     </x-ui.table.row>
                 @endforelse
@@ -98,26 +98,26 @@
 
     {{-- Modal d'invitation --}}
     @if($showModal)
-    <x-ui.modal title="Inviter un membre">
+    <x-ui.modal :title="__('admin.invitations.invite_member')">
         <form wire:submit="sendInvitation" class="space-y-4">
-            <x-ui.input wire:model="email" label="Email" type="email" required placeholder="collaborateur@exemple.com" />
+            <x-ui.input wire:model="email" :label="__('admin.invitations.email')" type="email" required :placeholder="__('admin.invitations.email_placeholder')" />
 
             @if(auth()->user()->role === \App\Enums\AccountType::ROOT && !session('acting_as_organization_id'))
-                <x-ui.select wire:model="organizationId" label="Organisation cible" required>
-                    <option value="">Sélectionner une organisation</option>
+                <x-ui.select wire:model="organizationId" :label="__('admin.invitations.target_organization')" required>
+                    <option value="">{{ __('admin.invitations.select_organization') }}</option>
                     @foreach($organizations as $org)
                         <option value="{{ $org->id }}">{{ $org->name }}</option>
                     @endforeach
                 </x-ui.select>
             @endif
 
-            <x-ui.select wire:model="role" label="Type de compte">
+            <x-ui.select wire:model="role" :label="__('admin.invitations.account_type')">
                 @foreach($accountTypes as $type)
                     <option value="{{ $type->value }}">{{ $type->label() }}</option>
                 @endforeach
             </x-ui.select>
 
-            <x-ui.select wire:model="spatieRole" label="Rôle">
+            <x-ui.select wire:model="spatieRole" :label="__('admin.invitations.role')">
                 @foreach($spatieRoles as $r)
                     <option value="{{ $r }}">{{ $r }}</option>
                 @endforeach
@@ -125,11 +125,11 @@
 
             <div class="flex justify-end gap-3 pt-4">
                 <x-ui.button type="button" wire:click="$set('showModal', false)" variant="secondary">
-                    Annuler
+                    {{ __('common.cancel') }}
                 </x-ui.button>
                 <x-ui.button type="submit" variant="accent">
                     <x-lucide-send class="w-4 h-4 mr-1.5" />
-                    Envoyer l'invitation
+                    {{ __('admin.invitations.send') }}
                 </x-ui.button>
             </div>
         </form>

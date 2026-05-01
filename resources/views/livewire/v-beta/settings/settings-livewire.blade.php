@@ -1,14 +1,14 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Parametres" subtitle="Personnalisez votre experience selon vos preferences" />
+    <x-ui.page-header :title="__('settings.title')" :subtitle="__('settings.subtitle')" />
 
     {{-- Onglets --}}
     <div class="flex gap-2 mb-8 flex-wrap">
         @foreach([
-            'appearance' => ['label' => 'Apparence', 'icon' => 'palette'],
-            'language' => ['label' => 'Langue', 'icon' => 'languages'],
-            'notifications' => ['label' => 'Notifications', 'icon' => 'bell'],
-            'accounts' => ['label' => 'Comptes lies', 'icon' => 'link'],
+            'appearance' => ['label' => __('settings.appearance'), 'icon' => 'palette'],
+            'language' => ['label' => __('settings.language'), 'icon' => 'languages'],
+            'notifications' => ['label' => __('settings.notifications'), 'icon' => 'bell'],
+            'accounts' => ['label' => __('settings.linked_accounts'), 'icon' => 'link'],
         ] as $tab => $info)
             <button wire:click="$set('activeTab', '{{ $tab }}')"
                 class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all
@@ -25,37 +25,37 @@
     @if($activeTab === 'appearance')
     <div class="space-y-6">
         {{-- Mode sombre --}}
-        <x-ui.section title="Mode sombre" icon="moon" :noPadding="false">
+        <x-ui.section :title="__('settings.theme.dark')" icon="moon" :noPadding="false">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-bold text-heading">Theme de l'interface</p>
-                    <p class="text-xs text-subtle mt-0.5">Basculez entre le mode clair et sombre</p>
+                    <p class="text-sm font-bold text-heading">{{ __('settings.theme.title') }}</p>
+                    <p class="text-xs text-subtle mt-0.5">{{ __('settings.theme.desc') }}</p>
                 </div>
                 <div x-data="{ dark: @entangle('theme') }" class="flex gap-2">
                     <button @click="dark = 'light'; $wire.set('theme', 'light'); document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode', 'false')"
                         :class="dark === 'light' ? 'bg-amber-100 text-amber-600 border-amber-300 shadow-sm' : 'bg-surface text-subtle border-border-light hover:bg-surface-alt'"
                         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all">
                         <x-lucide-sun class="w-4 h-4" />
-                        Clair
+                        {{ __('settings.theme.light') }}
                     </button>
                     <button @click="dark = 'dark'; $wire.set('theme', 'dark'); document.documentElement.classList.add('dark'); localStorage.setItem('darkMode', 'true')"
                         :class="dark === 'dark' ? 'bg-indigo-100 text-indigo-600 border-indigo-300 shadow-sm dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700' : 'bg-surface text-subtle border-border-light hover:bg-surface-alt'"
                         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all">
                         <x-lucide-moon class="w-4 h-4" />
-                        Sombre
+                        {{ __('settings.theme.dark') }}
                     </button>
                 </div>
             </div>
         </x-ui.section>
 
         {{-- Densite --}}
-        <x-ui.section title="Densite d'affichage" icon="layout-grid" :noPadding="false">
-            <p class="text-xs text-subtle mb-4">Ajustez l'espacement des elements de l'interface</p>
+        <x-ui.section :title="__('settings.density.title')" icon="layout-grid" :noPadding="false">
+            <p class="text-xs text-subtle mb-4">{{ __('settings.theme.desc') }}</p>
             <div class="grid grid-cols-3 gap-4">
                 @foreach([
-                    'compact' => ['label' => 'Compact', 'desc' => 'Plus d\'informations visibles', 'icon' => 'align-justify'],
-                    'comfortable' => ['label' => 'Confortable', 'desc' => 'Equilibre ideal', 'icon' => 'align-center'],
-                    'spacious' => ['label' => 'Espace', 'desc' => 'Plus de respiration', 'icon' => 'maximize-2'],
+                    'compact' => ['label' => __('settings.density.compact'), 'desc' => __('settings.density.compact_desc'), 'icon' => 'align-justify'],
+                    'comfortable' => ['label' => __('settings.density.comfortable'), 'desc' => __('settings.density.comfortable_desc'), 'icon' => 'align-center'],
+                    'spacious' => ['label' => __('settings.density.spacious'), 'desc' => __('settings.density.spacious_desc'), 'icon' => 'maximize-2'],
                 ] as $key => $opt)
                     <button wire:click="$set('density', '{{ $key }}')"
                         class="p-5 rounded-2xl border-2 text-center transition-all group
@@ -78,14 +78,14 @@
     {{-- TAB LANGUE --}}
     @if($activeTab === 'language')
     <div class="space-y-6">
-        <x-ui.section title="Langue et region" icon="globe" :noPadding="false">
+        <x-ui.section :title="__('settings.language_settings.title')" icon="globe" :noPadding="false">
             <div class="space-y-6">
                 <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">Langue</label>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.language') }}</label>
                     <div class="grid grid-cols-2 gap-3">
                         @foreach([
-                            'fr' => ['label' => 'Francais', 'flag' => 'FR'],
-                            'en' => ['label' => 'English', 'flag' => 'EN'],
+                            'fr' => ['label' => __('settings.language_settings.french'), 'flag' => 'FR'],
+                            'en' => ['label' => __('settings.language_settings.english'), 'flag' => 'EN'],
                         ] as $code => $lang)
                             <button wire:click="$set('locale', '{{ $code }}')"
                                 class="flex items-center gap-3 p-4 rounded-xl border-2 transition-all
@@ -106,12 +106,12 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">Format de date</label>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.date_format.title') }}</label>
                     <select wire:model.live="dateFormat"
                         class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
-                        <option value="dd/MM/yyyy">JJ/MM/AAAA (francais)</option>
-                        <option value="MM/dd/yyyy">MM/DD/YYYY (americain)</option>
-                        <option value="yyyy-MM-dd">AAAA-MM-JJ (ISO)</option>
+                        <option value="dd/MM/yyyy">{{ __('settings.date_format.french') }}</option>
+                        <option value="MM/dd/yyyy">{{ __('settings.date_format.american') }}</option>
+                        <option value="yyyy-MM-dd">{{ __('settings.date_format.iso') }}</option>
                     </select>
                 </div>
             </div>
@@ -122,12 +122,12 @@
     {{-- TAB NOTIFICATIONS --}}
     @if($activeTab === 'notifications')
     <div class="space-y-6">
-        <x-ui.section title="Notifications" icon="bell-ring" :noPadding="false">
+        <x-ui.section :title="__('settings.notifications')" icon="bell-ring" :noPadding="false">
             <div class="space-y-6">
                 <div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-light">
                     <div>
-                        <p class="text-sm font-bold text-heading">Notifications par email</p>
-                        <p class="text-xs text-subtle mt-0.5">Recevoir des notifications importantes par email</p>
+                        <p class="text-sm font-bold text-heading">{{ __('settings.email_notifications.title') }}</p>
+                        <p class="text-xs text-subtle mt-0.5">{{ __('settings.email_notifications.desc') }}</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" wire:model.live="emailNotifications" class="sr-only peer">
@@ -137,8 +137,8 @@
 
                 {{-- Fuseau horaire --}}
                 <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">Fuseau horaire</label>
-                    <p class="text-xs text-subtle mb-3">Utilise pour le timing des rappels et l'affichage des dates</p>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.timezone.title') }}</label>
+                    <p class="text-xs text-subtle mb-3">{{ __('settings.timezone.desc') }}</p>
                     <select wire:model.live="timezone"
                         class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
                         @foreach(config('gpro.timezones', []) as $tz => $label)
@@ -222,7 +222,7 @@
     {{-- TAB COMPTES LIES --}}
     @if($activeTab === 'accounts')
     <div class="space-y-6">
-        <x-ui.section title="Comptes lies" icon="link" :noPadding="false">
+        <x-ui.section :title="__('settings.linked_accounts')" icon="link" :noPadding="false">
             <p class="text-xs text-subtle mb-6">Connectez vos comptes sociaux pour simplifier la connexion</p>
 
             @php

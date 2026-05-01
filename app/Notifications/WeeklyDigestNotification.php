@@ -23,28 +23,28 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $mail = (new MailMessage)
-            ->subject('Resume hebdomadaire — ' . config('app.name'))
-            ->greeting("Bonjour {$notifiable->name},")
-            ->line('Voici le resume de la semaine :');
+            ->subject(__('mail.weekly_digest.subject', ['app' => config('app.name')]))
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.weekly_digest.line_intro'));
 
         if ($this->digest['overdue_count'] > 0) {
-            $mail->line("**{$this->digest['overdue_count']}** activite(s) en retard");
+            $mail->line(__('mail.weekly_digest.overdue', ['count' => $this->digest['overdue_count']]));
         }
 
         if ($this->digest['upcoming_count'] > 0) {
-            $mail->line("**{$this->digest['upcoming_count']}** echeance(s) cette semaine");
+            $mail->line(__('mail.weekly_digest.upcoming', ['count' => $this->digest['upcoming_count']]));
         }
 
         if ($this->digest['completed_count'] > 0) {
-            $mail->line("**{$this->digest['completed_count']}** activite(s) terminees cette semaine");
+            $mail->line(__('mail.weekly_digest.completed', ['count' => $this->digest['completed_count']]));
         }
 
         if ($this->digest['projects_count'] > 0) {
-            $mail->line("**{$this->digest['projects_count']}** projet(s) actifs");
+            $mail->line(__('mail.weekly_digest.projects', ['count' => $this->digest['projects_count']]));
         }
 
         return $mail
-            ->action('Voir le tableau de bord', route('dashboard'))
-            ->salutation('— ' . config('app.name'));
+            ->action(__('mail.weekly_digest.action'), route('dashboard'))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 }

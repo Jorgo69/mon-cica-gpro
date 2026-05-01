@@ -1,14 +1,14 @@
 <x-ui.page-layout>
 
     {{-- Header Section --}}
-    <x-ui.page-header title="Liste des Activités" subtitle="Gérez et suivez l'avancement de vos activités">
+    <x-ui.page-header :title="__('activities.title')" :subtitle="__('activities.subtitle')">
         {{-- If there were actions like 'Nouvelle Activité', they would go here --}}
     </x-ui.page-header>
 
     {{-- Filters --}}
     <x-ui.card class="mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher par projet lié..." icon="search" />
+            <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('activities.search_placeholder')" icon="search" />
             
             <x-ui.select wire:model.live="statusFilter" icon="filter">
                 <option value="">{{ __('table.status') }}</option>
@@ -23,7 +23,7 @@
             </x-ui.select>
 
             <x-ui.select wire:model.live="responsibleUserFilter" icon="user">
-                <option value="">Tous les responsables</option>
+                <option value="">{{ __('activities.all_responsibles') }}</option>
                 @foreach ($availableUsers as $userOption)
                     <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
                 @endforeach
@@ -35,45 +35,45 @@
     @include('messages.index')
 
     {{-- Activities Table --}}
-    <x-ui.section title="Activités" icon="list-todo" :noPadding="false">
+    <x-ui.section :title="__('activities.count_label')" icon="list-todo" :noPadding="false">
         <div class="overflow-x-auto -mx-6">
             @if (!isset($activities) || $activities->isEmpty())
-                <x-ui.empty-state icon="list-todo" title="Aucune activité trouvée" description="Essayez de modifier vos filtres pour voir les résultats." />
+                <x-ui.empty-state icon="list-todo" :title="__('activities.no_activities')" :description="__('activities.no_activities_filter_desc')" />
             @else
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('description')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.description') }}</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('activities.description') }}</span>
                                     @if ($sortField === 'description')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('table.budget') }}</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('activities.budget') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('status')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('table.statut') }}</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('activities.status') }}</span>
                                     @if ($sortField === 'status')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('table.responsible') }}</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('activities.responsible') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('start_date')">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">Période</span>
+                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('activities.period') }}</span>
                                     @if ($sortField === 'start_date' || $sortField === 'end_date')
                                         <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                                     @endif
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-body uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-body uppercase tracking-widest">{{ __('activities.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
@@ -85,7 +85,7 @@
                                             {{ excerpt_words($activity->description, 10). ' ...' }}
                                         </p>
                                         <p class="text-[10px] text-muted italic mt-0.5 truncate">
-                                            Projet: {{ $activity->result?->specificObjective?->logicalFramework?->project?->short_title ?? 'N/A' }}
+                                            {{ __('activities.project') }}: {{ $activity->result?->specificObjective?->logicalFramework?->project?->short_title ?? 'N/A' }}
                                         </p>
                                     </div>
                                 </td>
@@ -112,11 +112,11 @@
                                 <td class="px-6 py-4">
                                     <div class="space-y-0.5">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-body uppercase">Du</span>
+                                            <span class="text-[9px] font-black text-body uppercase">{{ __('activities.from') }}</span>
                                             <span class="text-[11px] font-semibold text-subtle">{{ $activity->start_date ? \Carbon\Carbon::parse($activity->start_date)->format('d/m/Y') : 'N/A' }}</span>
                                         </div>
                                         <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-body uppercase">Au</span>
+                                            <span class="text-[9px] font-black text-body uppercase">{{ __('activities.to') }}</span>
                                             <span class="text-[11px] font-semibold text-subtle">{{ $activity->end_date ? \Carbon\Carbon::parse($activity->end_date)->format('d/m/Y') : 'N/A' }}</span>
                                         </div>
                                     </div>

@@ -11,12 +11,7 @@ enum OrganizationStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::TRIAL => 'Période d\'essai',
-            self::ACTIVE => 'Actif',
-            self::SUSPENDED => 'Suspendu',
-            self::INACTIVE => 'Inactif',
-        };
+        return __('enums.organization_status.' . $this->value);
     }
 
     public function color(): string

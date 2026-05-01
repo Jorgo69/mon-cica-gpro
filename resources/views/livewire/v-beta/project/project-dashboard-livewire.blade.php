@@ -1,7 +1,7 @@
 <x-ui.page-layout>
 
     {{-- Page Header --}}
-    <x-ui.page-header title="Tableau de bord : {{ $project->title }}" subtitle="Suivi de l'avancement des activités du projet" />
+    <x-ui.page-header :title="__('projects.dashboard.title', ['name' => $project->title])" :subtitle="__('projects.dashboard.subtitle')" />
 
     {{-- Progress Bar --}}
     @include('livewire.v-beta.project.include.progres-bar')
@@ -20,11 +20,11 @@
     @endphp
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 my-6">
-        <x-ui.stat-card :value="$totalActivitiesCount" label="Total" icon="layers" variant="default" />
-        <x-ui.stat-card :value="$completedActivitiesCount" label="Terminées" icon="check-circle-2" variant="success" />
-        <x-ui.stat-card :value="$ongoingCount" label="En cours" icon="loader" variant="accent" />
-        <x-ui.stat-card :value="$nonStartedCount" label="Non démarrées" icon="clock" variant="warning" />
-        <x-ui.stat-card :value="$lateActivitiesCount" label="En retard" icon="alert-triangle" variant="error" />
+        <x-ui.stat-card :value="$totalActivitiesCount" :label="__('projects.dashboard.total')" icon="layers" variant="default" />
+        <x-ui.stat-card :value="$completedActivitiesCount" :label="__('projects.dashboard.completed')" icon="check-circle-2" variant="success" />
+        <x-ui.stat-card :value="$ongoingCount" :label="__('projects.dashboard.in_progress')" icon="loader" variant="accent" />
+        <x-ui.stat-card :value="$nonStartedCount" :label="__('projects.dashboard.not_started')" icon="clock" variant="warning" />
+        <x-ui.stat-card :value="$lateActivitiesCount" :label="__('projects.dashboard.overdue')" icon="alert-triangle" variant="error" />
     </div>
 
     {{-- Filters --}}
@@ -32,49 +32,49 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <x-ui.input 
                 wire:model.live.debounce.300ms="search" 
-                placeholder="Rechercher une activité..." 
+                :placeholder="__('projects.dashboard.search_placeholder')"
                 icon="search" />
 
             <x-ui.select wire:model.live="responsibleUserFilter" icon="user">
-                <option value="">Tous les responsables</option>
+                <option value="">{{ __('projects.dashboard.all_responsibles') }}</option>
                 @foreach ($availableUsers as $user)
                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                 @endforeach
             </x-ui.select>
 
             <x-ui.select wire:model.live="statusFilter" icon="filter">
-                <option value="">Tous les statuts</option>
-                <option value="En cours">En cours</option>
-                <option value="Terminé">Terminé</option>
-                <option value="En retard">En retard</option>
+                <option value="">{{ __('projects.dashboard.all_statuses') }}</option>
+                <option value="En cours">{{ __('common.in_progress') }}</option>
+                <option value="Terminé">{{ __('common.completed') }}</option>
+                <option value="En retard">{{ __('common.overdue') }}</option>
             </x-ui.select>
 
             <x-ui.select wire:model.live="perPage" icon="list">
                 @if ($totalActivitiesCount >= 10)
-                    <option value="10">10 par page</option>
+                    <option value="10">10 {{ __('projects.dashboard.per_page') }}</option>
                 @endif
                 @if ($totalActivitiesCount >= 25)
-                    <option value="25">25 par page</option>
+                    <option value="25">25 {{ __('projects.dashboard.per_page') }}</option>
                 @endif
                 @if ($totalActivitiesCount >= 50)
-                    <option value="50">50 par page</option>
+                    <option value="50">50 {{ __('projects.dashboard.per_page') }}</option>
                 @endif
-                <option value="{{ $totalActivitiesCount }}">Tout afficher</option>
+                <option value="{{ $totalActivitiesCount }}">{{ __('common.all') }}</option>
             </x-ui.select>
         </div>
     </x-ui.card>
 
     {{-- Activities Table --}}
-    <x-ui.section title="Détails des activités" icon="clipboard-list">
+    <x-ui.section :title="__('projects.dashboard.activity_details')" icon="clipboard-list">
         <div class="overflow-x-auto -mx-6">
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-border-light dark:border-surface-alt">
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Description</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Statut</th>
-                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Progression</th>
-                        <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.description') }}</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.responsible') }}</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.status') }}</th>
+                        <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.progress') }}</th>
+                        <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
@@ -104,7 +104,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <button wire:click="openActivityDetails('{{ $activity->id }}')" class="navbar-action" title="Voir">
+                                    <button wire:click="openActivityDetails('{{ $activity->id }}')" class="navbar-action" title="{{ __('common.view') }}">
                                         <x-lucide-eye class="nav-icon" />
                                     </button>
                                     <a href="{{ route('activity.management', ['activity' => $activity->id]) }}" class="navbar-action" title="Gérer" wire:navigate>
@@ -116,7 +116,7 @@
                     @empty
                         <tr>
                             <td colspan="5">
-                                <x-ui.empty-state icon="clipboard-x" title="Aucune activité trouvée" description="Modifiez vos filtres ou ajoutez des activités au projet." />
+                                <x-ui.empty-state icon="clipboard-x" :title="__('projects.dashboard.no_activities')" :description="__('projects.dashboard.no_activities_desc')" />
                             </td>
                         </tr>
                     @endforelse

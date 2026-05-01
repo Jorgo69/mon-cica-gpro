@@ -24,26 +24,34 @@ class DeadlineApproachingNotification extends Notification implements ShouldQueu
     public function toMail(object $notifiable): MailMessage
     {
         $projectTitle = $this->activity->project?->title ?? 'N/A';
-        $label = $this->daysLeft === 1 ? 'demain' : "dans {$this->daysLeft} jours";
+        $label = $this->daysLeft === 1
+            ? __('mail.deadline_approaching.label_tomorrow')
+            : __('mail.deadline_approaching.label_days', ['days' => $this->daysLeft]);
 
         return (new MailMessage)
-            ->subject("Echeance {$label} : {$this->activity->description}")
-            ->greeting("Bonjour {$notifiable->name},")
-            ->line("L'activite **{$this->activity->description}** du projet **{$projectTitle}** arrive a echeance **{$label}**.")
-            ->line("Date limite : **{$this->activity->end_date->format('d/m/Y')}**")
-            ->action('Voir le projet', route('project.show', $this->activity->project?->id))
-            ->salutation('— ' . config('app.name'));
+            ->subject(__('mail.deadline_approaching.subject', ['label' => $label, 'activity' => $this->activity->description]))
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.deadline_approaching.line1', [
+                'activity' => $this->activity->description,
+                'project' => $projectTitle,
+                'label' => $label,
+            ]))
+            ->line(__('mail.deadline_approaching.line2', ['date' => $this->activity->end_date->format('d/m/Y')]))
+            ->action(__('mail.deadline_approaching.action'), route('project.show', $this->activity->project?->id))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
     {
-        $label = $this->daysLeft === 1 ? 'demain' : "dans {$this->daysLeft} jours";
+        $label = $this->daysLeft === 1
+            ? __('mail.deadline_approaching.label_tomorrow')
+            : __('mail.deadline_approaching.label_days', ['days' => $this->daysLeft]);
 
         return [
             'activity_id' => $this->activity->id,
             'project_id' => $this->activity->project?->id,
-            'title' => "Echeance {$label}",
-            'message' => "L'activite \"{$this->activity->description}\" arrive a echeance {$label}.",
+            'title' => __('mail.deadline_approaching.title', ['label' => $label]),
+            'message' => __('mail.deadline_approaching.message', ['activity' => $this->activity->description, 'label' => $label]),
             'action_url' => route('project.show', $this->activity->project?->id),
             'type' => NotificationType::DEADLINE_APPROACHING->value,
         ];

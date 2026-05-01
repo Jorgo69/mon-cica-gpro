@@ -14,7 +14,7 @@
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg leading-6 font-bold text-heading" id="modal-title">
-                                Détails de l'activité
+                                {{ __('projects.dashboard.activity_details') }}
                             </h3>
                             <button wire:click="closeModal" type="button" class="text-muted hover:text-subtle transition-colors duration-200">
                                 <span class="sr-only">Close modal</span>
@@ -26,22 +26,22 @@
                             <div class="mt-2 text-sm text-subtle space-y-4">
                                 <!-- Informations générales de l'activité -->
                                 <div>
-                                    <p class="font-semibold text-body">Description :</p>
+                                    <p class="font-semibold text-body">{{ __('common.description') }} :</p>
                                     <p>{{ $activity->description }}</p>
                                 </div>
                                 
                                 <div>
-                                    <p class="font-semibold text-body">Responsable :</p>
+                                    <p class="font-semibold text-body">{{ __('common.responsible') }} :</p>
                                     <p>{{ $activity->responsibleUser->name ?? 'Non assigné' }}</p>
                                 </div>
                                 
                                 <div>
-                                    <p class="font-semibold text-body">Statut :</p>
+                                    <p class="font-semibold text-body">{{ __('common.status') }} :</p>
                                     <p>{{ $activity->status }}</p>
                                 </div>
                                 
                                 <div>
-                                    <p class="font-semibold text-body">Progression :</p>
+                                    <p class="font-semibold text-body">{{ __('projects.dashboard.progress') }} :</p>
                                     <p>{{ $activity->calculateProgress() }}%</p>
                                 </div>
 

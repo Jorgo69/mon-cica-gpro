@@ -1,9 +1,9 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Types de Projets" subtitle="Configurez les catégories et champs dynamiques de vos projets">
+    <x-ui.page-header :title="__('admin.types.list_title')" :subtitle="__('admin.types.list_subtitle')">
         <x-slot:actions>
             <x-ui.button tag="a" :href="route('admin.project.types.create')" variant="accent" icon="plus" size="lg">
-                Créer un nouveau type
+                {{ __('admin.types.create_new') }}
             </x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
@@ -20,14 +20,14 @@
                         <x-ui.button tag="a" :href="route('admin.project.types.edit', ['projectTypeId' => $type->id])" variant="ghost" icon="pencil" size="sm" />
                         <x-ui.button 
                             wire:click="deleteProjectType('{{ $type->id }}')" 
-                            onclick="confirm('Êtes-vous sûr de vouloir supprimer ce type de projet ?') || event.stopImmediatePropagation()"
+                            onclick="confirm('{{ __('admin.types.confirm_delete') }}') || event.stopImmediatePropagation()"
                             variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
                     </div>
                 </div>
             </x-ui.card>
         @empty
             <div class="col-span-full">
-                <x-ui.empty-state icon="layout-grid" title="Aucun type de projet" description="Créez votre premier type de projet pour commencer." />
+                <x-ui.empty-state icon="layout-grid" :title="__('admin.types.no_types')" :description="__('admin.types.no_types_desc')" />
             </div>
         @endforelse
     </div>

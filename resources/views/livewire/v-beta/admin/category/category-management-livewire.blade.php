@@ -1,9 +1,9 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Gestion des Categories" subtitle="Organisez et parametrez les categories de votre organisation">
+    <x-ui.page-header :title="__('admin.categories.title')" :subtitle="__('admin.categories.subtitle')">
         <x-slot:actions>
             <x-ui.button wire:click="openModal" variant="accent" icon="plus" size="lg">
-                Nouvelle Categorie
+                {{ __('admin.categories.new') }}
             </x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
@@ -11,9 +11,9 @@
     {{-- Filtres --}}
     <x-ui.card class="mb-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher une categorie..." icon="search" />
+            <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('admin.categories.search_placeholder')" icon="search" />
             <x-ui.select wire:model.live="typeFilter" icon="filter">
-                <option value="">Tous les types</option>
+                <option value="">{{ __('admin.categories.all_types') }}</option>
                 @foreach($categoryTypes as $type)
                     <option value="{{ $type->value }}">{{ $type->label() }}</option>
                 @endforeach
@@ -24,7 +24,7 @@
     {{-- Modal --}}
     @if($showModal)
         <x-ui.modal :show="true"
-                    :title="$editingCategoryId ? 'Modifier la categorie' : 'Nouvelle categorie'"
+                    :title="$editingCategoryId ? __('admin.categories.modal_edit') : __('admin.categories.modal_new')"
                     id="category-management">
             @livewire('v-beta.admin.category.category-modal-form-livewire', [
                 'editingCategoryId' => $editingCategoryId,
@@ -33,15 +33,15 @@
     @endif
 
     {{-- Table --}}
-    <x-ui.section title="Categories" icon="tag" :noPadding="true">
+    <x-ui.section :title="__('admin.categories.section')" icon="tag" :noPadding="true">
         @if ($categories->isEmpty())
-            <x-ui.empty-state icon="tag" title="Aucune categorie trouvee" description="Creez votre premiere categorie ou ajustez vos filtres." />
+            <x-ui.empty-state icon="tag" :title="__('admin.categories.no_categories')" :description="__('admin.categories.no_categories_detail')" />
         @else
             <x-ui.table>
                 <x-slot:headers>
                     <x-ui.table.th class="cursor-pointer" wire:click="sortBy('name')">
                         <div class="flex items-center gap-1">
-                            Nom
+                            {{ __('admin.categories.name') }}
                             @if ($sortField === 'name')
                                 <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                             @endif
@@ -49,15 +49,15 @@
                     </x-ui.table.th>
                     <x-ui.table.th class="cursor-pointer" wire:click="sortBy('type')">
                         <div class="flex items-center gap-1">
-                            Type
+                            {{ __('admin.categories.type') }}
                             @if ($sortField === 'type')
                                 <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                             @endif
                         </div>
                     </x-ui.table.th>
-                    <x-ui.table.th>Description</x-ui.table.th>
-                    <x-ui.table.th>Source</x-ui.table.th>
-                    <x-ui.table.th align="right">Actions</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.categories.description') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.categories.source') }}</x-ui.table.th>
+                    <x-ui.table.th align="right">{{ __('admin.categories.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
                 @foreach ($categories as $category)
@@ -78,18 +78,18 @@
                         </x-ui.table.td>
                         <x-ui.table.td>
                             @if($category->is_system)
-                                <x-ui.badge variant="slate" size="sm">Systeme</x-ui.badge>
+                                <x-ui.badge variant="slate" size="sm">{{ __('admin.categories.system') }}</x-ui.badge>
                             @else
-                                <x-ui.badge variant="accent" size="sm">Organisation</x-ui.badge>
+                                <x-ui.badge variant="accent" size="sm">{{ __('admin.categories.organization') }}</x-ui.badge>
                             @endif
                         </x-ui.table.td>
                         <x-ui.table.td align="right">
                             @if($category->is_system)
-                                <span class="text-[10px] text-muted italic">Protege</span>
+                                <span class="text-[10px] text-muted italic">{{ __('admin.categories.protected') }}</span>
                             @else
                                 <div class="flex items-center justify-end gap-1">
                                     <x-ui.button wire:click="openModal('{{ $category->id }}')" variant="ghost" icon="pencil" size="sm" />
-                                    <x-ui.button wire:click="deleteCategory('{{ $category->id }}')" wire:confirm="Supprimer cette categorie ?" variant="ghost" icon="trash-2" size="sm" class="text-error hover:text-error" />
+                                    <x-ui.button wire:click="deleteCategory('{{ $category->id }}')" wire:confirm="{{ __('admin.categories.confirm_delete') }}" variant="ghost" icon="trash-2" size="sm" class="text-error hover:text-error" />
                                 </div>
                             @endif
                         </x-ui.table.td>

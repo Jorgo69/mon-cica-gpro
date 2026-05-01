@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>419 - Page Expirée</title>
+    <title>419 - {{ __('errors.419.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -24,10 +24,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-amber-800 mb-4">419</h1>
-            <h2 class="text-2xl font-semibold text-amber-700 mb-6">Page Expirée</h2>
-            <p class="text-warning mb-8">Désolé, votre session a expiré. Veuillez rafraîchir la page et réessayer.</p>
+            <h2 class="text-2xl font-semibold text-amber-700 mb-6">{{ __('errors.419.title') }}</h2>
+            <p class="text-warning mb-8">{{ __('errors.419.message') }}</p>
             <a href="/dashboard" class="inline-block bg-warning hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Rafraîchir
+                {{ __('errors.refresh') }}
             </a>
         </div>
     </div>

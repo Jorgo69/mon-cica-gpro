@@ -1,43 +1,43 @@
 <x-ui.page-layout>
 
     {{-- Header Section --}}
-    <x-ui.page-header title="Inventaire des Ressources" subtitle="Gérez les ressources humaines, matérielles et financières de vos projets">
+    <x-ui.page-header :title="__('resources.title')" :subtitle="__('resources.subtitle')">
         <x-slot:actions>
             {{-- Note: Usually resources are added within an activity context, 
                  but if there's a global creator, we'd point here. 
                  For now, keeping consistency with user's existing structure. --}}
             <x-ui.button variant="outline" icon="refresh-cw" wire:click="$refresh">
-                Actualiser
+                {{ __('common.refresh') }}
             </x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
 
     {{-- Resources Table --}}
-    <x-ui.section title="Ressources" icon="package" :noPadding="false">
+    <x-ui.section :title="__('resources.count_label')" icon="package" :noPadding="false">
         <div class="overflow-x-auto -mx-6">
             @if ($resources->isEmpty())
-                <x-ui.empty-state icon="box" title="Aucune ressource répertoriée" description="Les ressources sont généralement créées lors de la planification des activités." />
+                <x-ui.empty-state icon="box" :title="__('resources.no_resources_listed')" :description="__('resources.no_resources_desc')" />
             @else
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Désignation</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.designation') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Type</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.type') }}</span>
                             </th>
                             <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Quantité</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.quantity') }}</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Coût Unitaire</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.unit_cost') }}</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Total</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.total') }}</span>
                             </th>
                             <th class="px-6 py-3 text-right">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">Actions</span>
+                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.actions') }}</span>
                             </th>
                         </tr>
                     </thead>
@@ -47,7 +47,7 @@
                                 <td class="px-6 py-4">
                                     <div class="max-w-xs">
                                         <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors">{{ $resource->name }}</p>
-                                        <p class="text-[10px] text-muted mt-0.5 truncate">{{ $resource->category ?: 'Sans catégorie' }}</p>
+                                        <p class="text-[10px] text-muted mt-0.5 truncate">{{ $resource->category ?: __('resources.uncategorized') }}</p>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -74,8 +74,8 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <x-ui.button variant="ghost" size="sm" icon="pencil" title="Modifier" />
-                                        <x-ui.button variant="ghost" size="sm" icon="trash-2" class="text-error hover:bg-error/10" title="Supprimer" />
+                                        <x-ui.button variant="ghost" size="sm" icon="pencil" :title="__('common.edit')" />
+                                        <x-ui.button variant="ghost" size="sm" icon="trash-2" class="text-error hover:bg-error/10" :title="__('common.delete')" />
                                     </div>
                                 </td>
                             </tr>

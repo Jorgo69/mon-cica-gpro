@@ -26,11 +26,15 @@ class ActivityProgressUpdatedNotification extends Notification implements Should
         $projectTitle = $this->activity->project?->title ?? 'N/A';
 
         return (new MailMessage)
-            ->subject("Activité mise à jour — {$this->progress}%")
-            ->greeting("Bonjour {$notifiable->name},")
-            ->line("L'activité **{$this->activity->description}** du projet **{$projectTitle}** est passée à **{$this->progress}%** de réalisation.")
-            ->action('Voir le projet', route('project.show', $this->activity->project?->id))
-            ->salutation('— ' . config('app.name'));
+            ->subject(__('mail.activity_progress_updated.subject', ['progress' => $this->progress]))
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.activity_progress_updated.line1', [
+                'activity' => $this->activity->description,
+                'project' => $projectTitle,
+                'progress' => $this->progress,
+            ]))
+            ->action(__('mail.activity_progress_updated.action'), route('project.show', $this->activity->project?->id))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
@@ -38,8 +42,11 @@ class ActivityProgressUpdatedNotification extends Notification implements Should
         return [
             'activity_id' => $this->activity->id,
             'project_id' => $this->activity->project?->id,
-            'title' => 'Progression Activité Mise à jour',
-            'message' => "L'activité \"{$this->activity->description}\" est passée à {$this->progress}% de réalisation.",
+            'title' => __('mail.activity_progress_updated.title'),
+            'message' => __('mail.activity_progress_updated.message', [
+                'activity' => $this->activity->description,
+                'progress' => $this->progress,
+            ]),
             'action_url' => route('project.show', $this->activity->project?->id),
         ];
     }

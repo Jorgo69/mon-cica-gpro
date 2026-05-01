@@ -1,32 +1,32 @@
 <x-ui.page-layout>
     <x-ui.page-header
-        title="Supervision Plateforme"
-        subtitle="Vue globale de toutes les organisations et utilisateurs"
+        :title="__('system.root_dashboard.title')"
+        :subtitle="__('system.root_dashboard.subtitle')"
         icon="shield-check"
     />
 
     {{-- Stats globales --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <x-ui.stat-card
-            label="Organisations"
+            :label="__('system.root_dashboard.organizations')"
             :value="$totalOrganizations"
             icon="building-2"
             color="accent"
         />
         <x-ui.stat-card
-            label="Utilisateurs"
+            :label="__('system.root_dashboard.users')"
             :value="$totalUsers"
             icon="users"
             color="info"
         />
         <x-ui.stat-card
-            label="Projets"
+            :label="__('system.root_dashboard.projects')"
             :value="$totalProjects"
             icon="folder-kanban"
             color="success"
         />
         <x-ui.stat-card
-            label="Invitations en attente"
+            :label="__('system.root_dashboard.pending_invitations')"
             :value="$pendingInvitations"
             icon="mail"
             color="warning"
@@ -35,15 +35,15 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Top organisations --}}
-        <x-ui.section title="Organisations" icon="building-2">
+        <x-ui.section :title="__('system.root_dashboard.top_orgs.organizations')" icon="building-2">
             @if($topOrganizations->isEmpty())
-                <x-ui.empty-state icon="building-2" message="Aucune organisation" />
+                <x-ui.empty-state icon="building-2" :message="__('system.root_dashboard.no_orgs')" />
             @else
                 <x-ui.table>
                     <x-slot:headers>
-                        <x-ui.table.th>Organisation</x-ui.table.th>
-                        <x-ui.table.th>Membres</x-ui.table.th>
-                        <x-ui.table.th>Projets</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.top_orgs.organizations') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.top_orgs.members') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.top_orgs.projects') }}</x-ui.table.th>
                     </x-slot:headers>
                     @foreach($topOrganizations as $org)
                         <x-ui.table.row>
@@ -63,16 +63,16 @@
         </x-ui.section>
 
         {{-- Derniers utilisateurs --}}
-        <x-ui.section title="Derniers inscrits" icon="user-plus">
+        <x-ui.section :title="__('system.root_dashboard.recent_users.title')" icon="user-plus">
             @if($recentUsers->isEmpty())
-                <x-ui.empty-state icon="users" message="Aucun utilisateur" />
+                <x-ui.empty-state icon="users" :message="__('system.root_dashboard.no_users')" />
             @else
                 <x-ui.table>
                     <x-slot:headers>
-                        <x-ui.table.th>Utilisateur</x-ui.table.th>
-                        <x-ui.table.th>Rôle</x-ui.table.th>
-                        <x-ui.table.th>Organisation</x-ui.table.th>
-                        <x-ui.table.th>Date</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.recent_users.user') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.recent_users.role') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.recent_users.organization') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.recent_users.date') }}</x-ui.table.th>
                     </x-slot:headers>
                     @foreach($recentUsers as $user)
                         <x-ui.table.row>
@@ -86,7 +86,7 @@
                                 </x-ui.badge>
                             </x-ui.table.td>
                             <x-ui.table.td class="text-sm text-subtle">
-                                {{ $user->organization?->name ?? 'Aucune' }}
+                                {{ $user->organization?->name ?? __('common.none') }}
                             </x-ui.table.td>
                             <x-ui.table.td class="text-xs text-muted">
                                 {{ $user->created_at->diffForHumans() }}
@@ -101,13 +101,13 @@
     {{-- Invitations en attente --}}
     @if($recentInvitations->isNotEmpty())
         <div class="mt-6">
-            <x-ui.section title="Invitations en attente" icon="mail">
+            <x-ui.section :title="__('system.root_dashboard.pending_invitations_table.title')" icon="mail">
                 <x-ui.table>
                     <x-slot:headers>
-                        <x-ui.table.th>Email</x-ui.table.th>
-                        <x-ui.table.th>Organisation</x-ui.table.th>
-                        <x-ui.table.th>Invité par</x-ui.table.th>
-                        <x-ui.table.th>Date</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.pending_invitations_table.email') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.pending_invitations_table.organization') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.pending_invitations_table.invited_by') }}</x-ui.table.th>
+                        <x-ui.table.th>{{ __('system.root_dashboard.pending_invitations_table.date') }}</x-ui.table.th>
                     </x-slot:headers>
                     @foreach($recentInvitations as $invitation)
                         <x-ui.table.row>

@@ -26,32 +26,35 @@ class CommentPostedNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $author = $this->comment->user->name ?? 'Quelqu\'un';
+        $author = $this->comment->user->name ?? __('mail.someone');
         $subject = $this->isMention
-            ? "{$author} vous a mentionne dans un commentaire"
-            : "{$author} a commente une activite";
+            ? __('mail.comment_posted.subject_mention', ['author' => $author])
+            : __('mail.comment_posted.subject_comment', ['author' => $author]);
 
         $url = $this->getActionUrl();
 
         return (new MailMessage)
             ->subject($subject)
-            ->greeting("Bonjour {$notifiable->name},")
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
             ->line($subject . '.')
             ->line('> ' . \Illuminate\Support\Str::limit(strip_tags($this->comment->body), 200))
-            ->action('Voir', $url)
-            ->salutation('— ' . config('app.name'));
+            ->action(__('mail.comment_posted.action'), $url)
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
     {
-        $author = $this->comment->user->name ?? 'Quelqu\'un';
+        $author = $this->comment->user->name ?? __('mail.someone');
+        $excerpt = \Illuminate\Support\Str::limit(strip_tags($this->comment->body), 100);
 
         return [
             'comment_id' => $this->comment->id,
-            'title' => $this->isMention ? 'Vous avez ete mentionne' : 'Nouveau commentaire',
+            'title' => $this->isMention
+                ? __('mail.comment_posted.title_mention')
+                : __('mail.comment_posted.title_comment'),
             'message' => $this->isMention
-                ? "{$author} vous a mentionne : \"" . \Illuminate\Support\Str::limit(strip_tags($this->comment->body), 100) . '"'
-                : "{$author} a commente : \"" . \Illuminate\Support\Str::limit(strip_tags($this->comment->body), 100) . '"',
+                ? __('mail.comment_posted.message_mention', ['author' => $author, 'excerpt' => $excerpt])
+                : __('mail.comment_posted.message_comment', ['author' => $author, 'excerpt' => $excerpt]),
             'action_url' => $this->getActionUrl(),
         ];
     }

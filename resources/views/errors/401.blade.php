@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>401 - Non Autorisé</title>
+    <title>401 - {{ __('errors.401.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -19,10 +19,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-yellow-800 mb-4">401</h1>
-            <h2 class="text-2xl font-semibold text-yellow-700 mb-6">Accès Non Autorisé</h2>
-            <p class="text-yellow-600 mb-8">Vous devez être authentifié pour accéder à cette ressource.</p>
+            <h2 class="text-2xl font-semibold text-yellow-700 mb-6">{{ __('errors.401.title') }}</h2>
+            <p class="text-yellow-600 mb-8">{{ __('errors.401.message') }}</p>
             <a href="/login" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Se connecter
+                {{ __('errors.login') }}
             </a>
         </div>
     </div>

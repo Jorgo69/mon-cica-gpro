@@ -16,17 +16,7 @@ enum NotificationType: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::PROJECT_SUBMITTED => 'Projet soumis',
-            self::PROJECT_STATUS_UPDATED => 'Statut projet modifie',
-            self::ACTIVITY_ASSIGNED => 'Activite assignee',
-            self::ACTIVITY_PROGRESS_UPDATED => 'Progression activite',
-            self::DEADLINE_APPROACHING => 'Echeance proche',
-            self::ACTIVITY_OVERDUE => 'Activite en retard',
-            self::BUDGET_THRESHOLD => 'Seuil budget',
-            self::WEEKLY_DIGEST => 'Resume hebdomadaire',
-            self::INVITATION => 'Invitation',
-        };
+        return __('enums.notification_type.' . $this->value);
     }
 
     public function icon(): string

@@ -15,16 +15,16 @@ enum ActivityStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::DRAFT => 'Brouillon',
-            self::ABANDONED => 'Abandonné',
-            self::STOPPED => 'En Arrêté',
-            self::PENDING => 'En Attente',
-            self::ONGOING => 'En Cours',
-            self::SUSPENDED => 'Suspendu',
-            self::COMPLETED => 'Terminé',
-            self::OVERDUE => 'En retard',
-        };
+        return __('enums.activity_status.' . match($this) {
+            self::DRAFT => 'draft',
+            self::ABANDONED => 'abandoned',
+            self::STOPPED => 'stopped',
+            self::PENDING => 'pending',
+            self::ONGOING => 'ongoing',
+            self::SUSPENDED => 'suspended',
+            self::COMPLETED => 'completed',
+            self::OVERDUE => 'overdue',
+        });
     }
 
     public function color(): string
