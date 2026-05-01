@@ -1,26 +1,31 @@
 # ==============================================================================
 # GITHUB ACTIONS - Deploy to LWS Production (FTP Only)
-# Triggered on push to 'production' branch
+# Se declenche UNIQUEMENT apres que le CI passe sur 'development'
 # ==============================================================================
 
 name: Deploy to LWS Production
 
 on:
-  push:
-    branches:
-      - development
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [development]
 
 jobs:
   deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
-    
+    # Ne deploie QUE si le CI a reussi
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     steps:
       # ------------------------------------------
       # STEP 1: Checkout source code
       # ------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: development
 
       # ------------------------------------------
       # STEP 2: Setup PHP 8.3
@@ -76,13 +81,18 @@ jobs:
           rm -rf tests
           rm -rf .git
           rm -rf .github
-          # Keep vendor/ for FTP hosting
+          rm -rf .claude
           rm -f .gitignore
           rm -f .gitattributes
           rm -f .editorconfig
           rm -f phpunit.xml
           rm -f vite.config.js
           rm -f README.md
+          rm -f CLAUDE.md
+          rm -f TASKS.md
+          rm -f DECISIONS.md
+          rm -f ERRORS.md
+          rm -f PATTERNS.md
 
       # ------------------------------------------
       # STEP 6: Deploy via FTP
@@ -110,7 +120,7 @@ jobs:
           log-level: standard
 
       # ------------------------------------------
-      # STEP 7: Trigger webhook
+      # STEP 7: Trigger webhook (migrations, cache, etc.)
       # ------------------------------------------
       - name: Trigger post-deploy webhook
         run: |
