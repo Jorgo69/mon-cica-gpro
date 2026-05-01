@@ -36,7 +36,8 @@ return [
             'overview' => 'Vue d\'ensemble',
             'logframe' => 'Cadre Logique',
             'documents' => 'Documents',
-            'analyses' => 'Analyses',
+            'analyses' => 'Indicateurs',
+            'timeline' => 'Timeline',
             'tracking' => 'Suivi',
             'history' => 'Historique',
         ],
@@ -149,6 +150,13 @@ return [
         'end_date' => 'Date de fin',
 
         'no_dynamic_fields' => 'Aucun champ dynamique configuré pour ce type de projet',
+    ],
+
+    // Timeline / Gantt
+    'timeline' => [
+        'no_data' => 'Pas de données pour le diagramme',
+        'no_data_desc' => 'Les activités doivent avoir des dates de début et de fin pour apparaître sur le diagramme.',
+        'today' => 'Aujourd\'hui',
     ],
 
     // Templates

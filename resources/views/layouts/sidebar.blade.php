@@ -22,22 +22,30 @@
             <span class="nav-label">{{ __('navigation.dashboard') }}</span>
         </a>
 
-        {{-- Projets --}}
+        {{-- Projets (avec sous-menu Templates) --}}
         @can('view-projects')
-        <a href="{{ route('project.list') }}"
-           class="nav-item @if(Route::is('creator.proposal.project*') || Route::is('project*')) nav-item-active @endif">
-            <x-lucide-folder-kanban class="nav-icon" />
-            <span class="nav-label">{{ __('navigation.projects') }}</span>
-        </a>
-        @endcan
-
-        {{-- Templates --}}
-        @can('view-projects')
-        <a href="{{ route('project.templates') }}"
-           class="nav-item @if(Route::is('project.templates')) nav-item-active @endif" wire:navigate>
-            <x-lucide-layout-template class="nav-icon" />
-            <span class="nav-label">{{ __('navigation.templates') }}</span>
-        </a>
+        <div x-data="{ open: {{ Route::is('project*') || Route::is('creator.proposal.project*') ? 'true' : 'false' }} }">
+            <button @click="open = !open"
+                    class="nav-item w-full justify-between @if(Route::is('project.list') || Route::is('project.show') || Route::is('project.dashboard') || Route::is('creator.proposal.project*')) nav-item-active @endif">
+                <div class="flex items-center gap-3">
+                    <x-lucide-folder-kanban class="nav-icon" />
+                    <span class="nav-label">{{ __('navigation.projects') }}</span>
+                </div>
+                <x-lucide-chevron-down class="w-3.5 h-3.5 text-muted transition-transform" ::class="open ? 'rotate-180' : ''" />
+            </button>
+            <div x-show="open" x-collapse class="ml-6 mt-0.5 space-y-0.5 border-l border-border-light pl-2">
+                <a href="{{ route('project.list') }}"
+                   class="nav-item text-[11px] @if(Route::is('project.list')) nav-item-active @endif">
+                    <x-lucide-list class="nav-icon w-3.5 h-3.5" />
+                    <span class="nav-label">{{ __('navigation.all_projects') }}</span>
+                </a>
+                <a href="{{ route('project.templates') }}"
+                   class="nav-item text-[11px] @if(Route::is('project.templates')) nav-item-active @endif">
+                    <x-lucide-layout-template class="nav-icon w-3.5 h-3.5" />
+                    <span class="nav-label">{{ __('navigation.templates') }}</span>
+                </a>
+            </div>
+        </div>
         @endcan
 
         {{-- Ressources --}}

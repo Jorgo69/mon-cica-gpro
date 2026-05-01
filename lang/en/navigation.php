@@ -12,6 +12,7 @@ return [
     // Main menu
     'dashboard' => 'Dashboard',
     'projects' => 'Projects',
+    'all_projects' => 'All projects',
     'templates' => 'Templates',
     'resources' => 'Resources',
     'activities' => 'Activities',

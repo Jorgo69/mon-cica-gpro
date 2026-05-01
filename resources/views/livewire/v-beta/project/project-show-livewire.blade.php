@@ -11,10 +11,19 @@
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
                     {{ __('projects.show.premium_report') }}
                 </x-ui.button>
+                <x-ui.button tag="a" :href="route('projects.export.excel', $project->id)" variant="outline" icon="file-spreadsheet" size="sm">
+                    {{ __('common.export_excel') }}
+                </x-ui.button>
                 <x-ui.button tag="a" :href="route('project.templates')" variant="outline" icon="copy-plus" size="sm" wire:navigate
                     x-data x-on:click.prevent="if(confirm('{{ __('projects.templates.duplicate_project') }} ?')) window.location='{{ route('project.templates') }}?duplicate={{ $project->id }}'">
                     {{ __('projects.templates.duplicate_project') }}
                 </x-ui.button>
+                @can('update', $project)
+                    <x-ui.button wire:click="toggleTemplate" variant="{{ $project->is_template ? 'accent' : 'ghost' }}" icon="{{ $project->is_template ? 'layout-template' : 'layout-template' }}" size="sm">
+                        {{ $project->is_template ? __('projects.templates.unmark_template') : __('projects.templates.mark_as_template') }}
+                    </x-ui.button>
+                @endcan
+                <livewire:v-beta.project.project-share-livewire :projectId="$project->id" />
                 <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm" wire:navigate>
                     {{ __('common.back') }}
                 </x-ui.button>
@@ -42,6 +51,11 @@
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'analytics' ? 'text-accent' : 'text-subtle hover:text-body' }}">
                 {{ __('projects.show.tabs.analyses') }}
                 @if($activeTab === 'analytics') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
+            </button>
+            <button wire:click="switchTab('timeline')"
+                class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'timeline' ? 'text-accent' : 'text-subtle hover:text-body' }}">
+                {{ __('projects.show.tabs.timeline') }}
+                @if($activeTab === 'timeline') <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div> @endif
             </button>
             <button wire:click="switchTab('tracking')"
                 class="px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap {{ $activeTab === 'tracking' ? 'text-accent' : 'text-subtle hover:text-body' }}">
@@ -231,7 +245,13 @@
                 @endif
 
                 @if($activeTab === 'analytics')
-                    <x-ui.empty-state icon="bar-chart-3" :title="__('projects.show.analyses_coming')" :description="__('projects.show.analyses_coming_desc')" />
+                    <x-ui.section :title="__('indicators.tracking_title')" icon="target">
+                        @livewire('v-beta.project.indicator-tracking-livewire', ['projectId' => $project->id])
+                    </x-ui.section>
+                @endif
+
+                @if($activeTab === 'timeline')
+                    @include('livewire.v-beta.project.include.gantt-timeline', ['project' => $project])
                 @endif
 
                 @if($activeTab === 'tracking')

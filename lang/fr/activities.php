@@ -45,6 +45,13 @@ return [
 
     'all_responsibles' => 'Tous les responsables',
 
+    // Export
+    'objective' => 'Objectif spécifique',
+    'result' => 'Résultat',
+    'progress' => 'Progression',
+    'start_date' => 'Date début',
+    'end_date' => 'Date fin',
+
     // Progress history
     'no_progress_history' => 'Aucun historique de progression',
     'score' => 'Score',

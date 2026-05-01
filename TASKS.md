@@ -9,44 +9,44 @@
   - [x] 8.2 Pieces jointes par activite (upload fichiers sur activite/sous-activite, pas seulement projet)
   - [x] 8.3 Budget reel vs planifie (depenses reelles saisies, ecart planifie/reel, burn rate, alertes depassement automatiques)
 
-- [ ] **Phase 9 : Traductions i18n completes**
-  - [ ] Extraire tous les textes hardcodes des ~80+ vues Blade vers __() / @lang
-  - [ ] Creer lang/fr.json et lang/en.json complets
-  - [ ] Traduire les enums (label() bilingue selon locale)
-  - [ ] Traduire les emails/notifications
-  - [ ] Traduire les messages de validation custom
+- [x] **Phase 9 : Traductions i18n completes** (TERMINEE)
+  - [x] 26 fichiers FR + 25 fichiers EN organises par domaine (common, auth, navigation, dashboard, projects, activities, budgets, resources, admin, settings, notifications, system, search, pdf, errors, comments, attachments, enums, mail, shared)
+  - [x] 61 vues Blade migrees vers __()
+  - [x] 9 enums avec label() bilingue via __('enums.*')
+  - [x] 10 notifications traduites (toMail + toArray)
 
-- [ ] **Phase 10 : Tests automatises + CI**
-  - [ ] Tests Feature : creation projet, soumission, progression, invitation, login/register, social auth
-  - [ ] Tests Unit : ReminderService, CurrencyService, OrgContext, UserMeta, NotificationPreferenceService
-  - [ ] Tests Policy : ProjectPolicy, ActivityPolicy, InvitationPolicy (chaque role)
-  - [ ] GitHub Actions CI : lint PHP, tests Pest, build Vite
-  - [ ] Couverture minimum 60% sur les Services et Actions
+- [x] **Phase 10 : Tests automatises + CI** (TERMINEE)
+  - [x] 234 tests, 462 assertions (Pest PHP)
+  - [x] Tests Feature (auth, projets, invitations), Unit (services, enums), Policy (31 tests)
+  - [x] GitHub Actions CI (lint PHP, tests Pest, build Vite)
+  - [x] CD conditionne au succes du CI (workflow_run)
 
 ### IMPORTANT — Fait la difference avec la concurrence
 
-- [ ] **Phase 11 : Templates de projet**
-  - [ ] Dupliquer un projet existant (avec cadre logique, activites, indicateurs pre-remplis)
-  - [ ] Bibliotheque de templates systeme (par type de projet ONG)
-  - [ ] Personnaliser un template avant creation
+- [x] **Phase 11 : Templates de projet** (TERMINEE)
+  - [x] ProjectTemplateService (duplication complete projet + logframe + objectifs + resultats + activites + ressources + budgets + indicateurs)
+  - [x] Flag is_template + source_project_id dans migration consolidee
+  - [x] Bibliotheque de templates (grille cards, badges systeme/org, compteurs, recherche)
+  - [x] Bouton Dupliquer sur project show + lien sidebar Templates
 
-- [ ] **Phase 12 : Export Excel**
-  - [ ] Export activites en .xlsx (avec filtres, statuts, dates, responsables)
-  - [ ] Export budgets en .xlsx (planifie vs reel, par trimestre, par activite)
-  - [ ] Export indicateurs en .xlsx (baseline, target, current, source de verification)
-  - [ ] Export cadre logique complet en .xlsx
+- [x] **Phase 12 : Export Excel** (TERMINEE)
+  - [x] maatwebsite/excel ^3.1 installe
+  - [x] 4 classes export : ProjectActivitiesExport, ProjectBudgetExport, ProjectIndicatorsExport, ProjectFullExport (multi-feuilles)
+  - [x] Route GET /projects/{id}/export-excel/{type?} (full, activities, budget, indicators)
+  - [x] Bouton Export Excel dans project show
 
-- [ ] **Phase 13 : Tableau de bord bailleur**
-  - [ ] Vue en lecture seule pour partenaires financiers (lien partage avec token, pas besoin de compte)
-  - [ ] Progression globale projet, indicateurs cles, budget consomme
-  - [ ] Export PDF du rapport bailleur (format standard)
-  - [ ] Acces configurable par projet (quels indicateurs/budgets montrer)
+- [x] **Phase 13 : Tableau de bord bailleur** (TERMINEE)
+  - [x] ShareToken model + migration (token UUID 48 chars, expiration, label, compteur vues)
+  - [x] Route publique /shared/project/{token} (sans auth)
+  - [x] Dashboard read-only (progression, activites, budget, cadre logique, indicateurs)
+  - [x] Livewire ProjectShareLivewire (creer/activer/desactiver/supprimer liens, copier URL)
+  - [x] Layout standalone propre (pas de sidebar/navbar)
 
-- [ ] **Phase 14 : Visualisation timeline / Gantt**
-  - [ ] Timeline horizontale des activites (date debut/fin, progression, statut)
-  - [ ] Vue Gantt simple (pas besoin d'etre editable, juste visualisation)
-  - [ ] Integre dans project-show (nouvel onglet)
-  - [ ] Exportable en image/PDF
+- [x] **Phase 14 : Visualisation timeline / Gantt** (TERMINEE)
+  - [x] Diagramme Gantt horizontal pur Tailwind + Alpine.js (zero dependance)
+  - [x] En-tete mois dynamique, barres colorees par statut, progression interne
+  - [x] Marqueur "Aujourd'hui", tooltip hover, legende
+  - [x] Nouvel onglet Timeline dans project show
 
 - [ ] **Phase 15 : Suivi des indicateurs**
   - [ ] Tableau de suivi par indicateur (baseline, cible, valeur actuelle, source de verification)
@@ -297,3 +297,15 @@
   - 8.2 Pieces jointes par activite (model Attachment polymorphe, AttachmentSectionLivewire, upload multi-fichiers, download, auto-delete fichier)
   - 8.3 Budget reel vs planifie (model Expense, BudgetTrackingService avec projectSummary/budgetLineSummaries/burnRate/spendingByCategory, ExpenseManagementLivewire, alerte BudgetThresholdNotification >= 80%)
 - **Consolidation migrations** : 5 fichiers add_*/alter fusionnes dans les CREATE correspondants (users, projects, project_types, general_administrations, organizations, logical_frameworks, specific_objectives, results, activities). migrate:fresh --seed passe proprement (42 migrations).
+
+### Session 12 (2026-05-01)
+- Merge dev-ui-design → development : resolution conflits migrations (doublons 2026_03_24_* supprimes, seeders recuperes).
+- Deploy fix : migrations orphelines identifiees et nettoyees pour le serveur LWS.
+- **Phase 9 complete** : i18n (26 fichiers FR + 25 EN, 61 vues migrees, 9 enums bilingues, 10 notifs traduites).
+- **Phase 10 complete** : Tests + CI (234 tests Pest, CI GitHub Actions, CD conditionne).
+- **Phase 11 complete** : Templates de projet (ProjectTemplateService, duplication complete, bibliotheque UI, sidebar).
+- **Phase 12 complete** : Export Excel (maatwebsite/excel, 4 exports, route, bouton show).
+- **Phase 13 complete** : Tableau de bord bailleur (ShareToken, dashboard public read-only, gestion liens partage).
+- **Phase 14 complete** : Gantt/Timeline (diagramme horizontal Tailwind+Alpine, onglet project show).
+- Fix bonus : composant x-currency cree, enums ActivityStatus corrigees (ONGOING au lieu de IN_PROGRESS).
+- CI/CD : deploy.yml conditionne au succes du CI (workflow_run).

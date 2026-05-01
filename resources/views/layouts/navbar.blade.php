@@ -75,7 +75,7 @@
                     
                     @auth
                         <div class="nav-dropdown-divider"></div>
-                        <form action="{{ route('logout') }}" method="POST">
+                        <form action="{{ route('logout') }}" method="POST" onsubmit="localStorage.removeItem('darkMode');">
                             @csrf
                             <button type="submit" class="nav-dropdown-item w-full text-left text-error/80 hover:text-error dark:text-error/70 dark:hover:text-error">
                                 <x-lucide-log-out class="nav-icon" />

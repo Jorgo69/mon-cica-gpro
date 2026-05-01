@@ -23,6 +23,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public shared project dashboard (no auth required)
+Route::get('/shared/project/{token}', [\App\Http\Controllers\SharedProjectController::class, 'show'])
+    ->name('shared.project');
+
 
 Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
     ->middleware(['auth'])

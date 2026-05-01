@@ -35,6 +35,14 @@ return [
     'reference' => 'Référence',
     'notes' => 'Notes',
 
+    // Export
+    'title' => 'Budget',
+    'budget' => 'Budget',
+    'planned' => 'Planifié',
+    'quantity' => 'Quantité',
+    'unit_cost' => 'Coût unitaire',
+    'usage_percent' => '% Consommation',
+
     'confirm_delete_expense' => 'Supprimer cette dépense ?',
     'threshold_alert' => 'Le budget a atteint :percent% de consommation',
 

@@ -108,7 +108,11 @@ class Project extends Model
         return $this->hasMany(QualitativeEvaluation::class, 'project_id', 'id');
     }
 
-    // Autres relations et méthodes...
+    public function shareTokens()
+    {
+        return $this->hasMany(ShareToken::class);
+    }
+
     public function projectContext()
     {
         return $this->hasOne(ProjectContext::class);

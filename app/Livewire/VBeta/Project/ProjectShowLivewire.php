@@ -15,10 +15,11 @@ use App\Models\Risk;
 use App\Models\Budget;
 use App\Models\DynamicProjectField;
 use App\Enums\LogframeDisplayFormat;
+use App\Livewire\Traits\WithToastNotifications;
 
 class ProjectShowLivewire extends Component
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, WithToastNotifications;
 
     public $projectId;
     public $project;
@@ -36,6 +37,19 @@ class ProjectShowLivewire extends Component
         if (LogframeDisplayFormat::tryFrom($format)) {
             $this->logframeFormat = $format;
         }
+    }
+
+    public function toggleTemplate()
+    {
+        if (! $this->project) return;
+
+        $this->project->update(['is_template' => ! $this->project->is_template]);
+
+        $message = $this->project->is_template
+            ? __('projects.templates.marked')
+            : __('projects.templates.unmarked');
+
+        $this->notifyToast('success', $message);
     }
 
     /**

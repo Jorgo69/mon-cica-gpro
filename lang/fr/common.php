@@ -129,6 +129,19 @@ return [
     'minute' => 'minute',
     'minutes' => 'minutes',
 
+    // Exports
+    'export_excel' => 'Export Excel',
+    'export_pdf' => 'Export PDF',
+
+    // Indicateurs
+    'level' => 'Niveau',
+    'parent' => 'Parent',
+    'baseline' => 'Valeur de base',
+    'target' => 'Cible',
+    'verification_source' => 'Source de vérification',
+    'assumption' => 'Hypothèse',
+    'indicators' => 'Indicateurs',
+
     // Actions supplementaires
     'processing' => 'Traitement...',
     'update' => 'Mettre à jour',

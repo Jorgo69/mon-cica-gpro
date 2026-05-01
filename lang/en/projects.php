@@ -135,6 +135,13 @@ return [
         'executive_summary' => 'Executive summary',
     ],
 
+    // Timeline / Gantt
+    'timeline' => [
+        'no_data' => 'No data for the chart',
+        'no_data_desc' => 'Activities must have start and end dates to appear on the chart.',
+        'today' => 'Today',
+    ],
+
     // Templates
     'templates' => [
         'title' => 'Template Library',

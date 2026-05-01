@@ -28,6 +28,8 @@ class Indicator extends Model
         'assumption',
         'baseline_value',
         'target_value',
+        'current_value',
+        'unit',
         'creator_user_id',
         'order',
     ];
@@ -56,5 +58,44 @@ class Indicator extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_user_id');
+    }
+
+    public function measurements()
+    {
+        return $this->hasMany(IndicatorMeasurement::class)->orderByDesc('measured_at');
+    }
+
+    public function latestMeasurement()
+    {
+        return $this->hasOne(IndicatorMeasurement::class)->latestOfMany('measured_at');
+    }
+
+    public function progressPercent(): float
+    {
+        $baseline = (float) ($this->baseline_value ?? 0);
+        $target = (float) ($this->target_value ?? 0);
+        $current = (float) ($this->current_value ?? $baseline);
+
+        if ($target === $baseline) {
+            return 0;
+        }
+
+        return round(min(100, max(0, (($current - $baseline) / ($target - $baseline)) * 100)), 1);
+    }
+
+    public function trend(): string
+    {
+        $measurements = $this->measurements()->take(3)->get();
+
+        if ($measurements->count() < 2) {
+            return 'stable';
+        }
+
+        $latest = (float) $measurements->first()->value;
+        $previous = (float) $measurements->skip(1)->first()->value;
+
+        if ($latest > $previous) return 'up';
+        if ($latest < $previous) return 'down';
+        return 'stable';
     }
 }

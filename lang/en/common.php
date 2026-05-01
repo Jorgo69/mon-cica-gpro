@@ -128,4 +128,17 @@ return [
     'hours' => 'hours',
     'minute' => 'minute',
     'minutes' => 'minutes',
+
+    // Exports
+    'export_excel' => 'Excel Export',
+    'export_pdf' => 'PDF Export',
+
+    // Indicators
+    'level' => 'Level',
+    'parent' => 'Parent',
+    'baseline' => 'Baseline value',
+    'target' => 'Target',
+    'verification_source' => 'Verification source',
+    'assumption' => 'Assumption',
+    'indicators' => 'Indicators',
 ];
