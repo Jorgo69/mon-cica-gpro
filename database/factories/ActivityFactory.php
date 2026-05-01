@@ -20,7 +20,7 @@ class ActivityFactory extends Factory
             'organization_id' => \App\Models\Organization::factory(),
             'result_id' => \App\Models\Result::factory(),
             'description' => $this->faker->paragraph(),
-            'status' => 'En Cours',
+            'status' => \App\Enums\ActivityStatus::ONGOING,
         ];
     }
 }

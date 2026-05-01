@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'organization_id' => \App\Models\Organization::factory(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => \App\Enums\AccountType::MEMBER,
+            'role' => \App\Enums\AccountType::ORG_USER,
         ];
     }
 

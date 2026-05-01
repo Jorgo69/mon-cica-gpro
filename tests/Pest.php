@@ -1,59 +1,69 @@
 <?php
 
+use App\Enums\AccountType;
+use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/*
-|--------------------------------------------------------------------------
-| Test Case
-|--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
-|
-*/
-
+uses(TestCase::class)->in('Unit');
 uses(TestCase::class, RefreshDatabase::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
-| Expectations
+| Helpers
 |--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
-/*
-|--------------------------------------------------------------------------
-| Functions
-|--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
-*/
-
-function createOrgUser()
+function seedPermissions(): void
 {
-    $org = \App\Models\Organization::factory()->create();
-    $user = \App\Models\User::factory()->create(['organization_id' => $org->id]);
-    
-    return [$org, $user];
+    (new \Database\Seeders\PermissionSeeder())->run();
 }
 
-function loginAsUser()
+function createOrg(array $attrs = []): Organization
 {
-    [$org, $user] = createOrgUser();
+    return Organization::factory()->create($attrs);
+}
+
+function createUser(array $attrs = [], ?Organization $org = null): User
+{
+    if ($org) {
+        $attrs['organization_id'] = $org->id;
+    }
+
+    return User::factory()->create($attrs);
+}
+
+function createOrgAdmin(?Organization $org = null): User
+{
+    $org ??= createOrg();
+    return createUser(['role' => AccountType::ORG_ADMIN], $org);
+}
+
+function createOrgUser(?Organization $org = null): User
+{
+    $org ??= createOrg();
+    return createUser(['role' => AccountType::ORG_USER], $org);
+}
+
+function createRoot(): User
+{
+    return createUser([
+        'role' => AccountType::ROOT,
+        'organization_id' => null,
+    ]);
+}
+
+function createIndependent(): User
+{
+    return createUser([
+        'role' => AccountType::INDEPENDENT,
+        'organization_id' => null,
+    ]);
+}
+
+function loginAs(User $user): User
+{
     test()->actingAs($user);
-    
-    return [$org, $user];
+    return $user;
 }
