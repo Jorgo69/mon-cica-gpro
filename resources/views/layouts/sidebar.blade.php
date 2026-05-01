@@ -31,6 +31,15 @@
         </a>
         @endcan
 
+        {{-- Templates --}}
+        @can('view-projects')
+        <a href="{{ route('project.templates') }}"
+           class="nav-item @if(Route::is('project.templates')) nav-item-active @endif" wire:navigate>
+            <x-lucide-layout-template class="nav-icon" />
+            <span class="nav-label">{{ __('navigation.templates') }}</span>
+        </a>
+        @endcan
+
         {{-- Ressources --}}
         @can('view-projects')
         <a href="{{ route('resource.index') }}"

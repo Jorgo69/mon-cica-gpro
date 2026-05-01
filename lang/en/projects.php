@@ -135,4 +135,23 @@ return [
         'executive_summary' => 'Executive summary',
     ],
 
+    // Templates
+    'templates' => [
+        'title' => 'Template Library',
+        'subtitle' => 'Start quickly with a pre-configured project',
+        'use' => 'Use this template',
+        'no_templates' => 'No templates available',
+        'no_templates_desc' => 'There are no templates available yet. An administrator can mark an existing project as a template.',
+        'activities_count' => ':count activities',
+        'objectives_count' => ':count objectives',
+        'system_template' => 'System template',
+        'org_template' => 'Organization template',
+        'marked' => 'Project marked as template',
+        'unmarked' => 'Project removed from templates',
+        'mark_as_template' => 'Mark as template',
+        'unmark_template' => 'Remove from templates',
+        'duplicated' => 'Project successfully created from template',
+        'duplicate_project' => 'Duplicate project',
+    ],
+
 ];

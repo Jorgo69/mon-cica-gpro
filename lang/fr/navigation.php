@@ -12,6 +12,7 @@ return [
     // Sidebar items
     'dashboard' => 'Tableau de Bord',
     'projects' => 'Projets',
+    'templates' => 'Templates',
     'resources' => 'Ressources',
     'activities' => 'Activités',
     'supervision' => 'Supervision',

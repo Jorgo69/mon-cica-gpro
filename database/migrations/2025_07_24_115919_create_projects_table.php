@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('currency', 3)->default('XOF');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->boolean('is_template')->default(false);
+            $table->uuid('source_project_id')->nullable();
             $table->json('meta')->default('{}')->nullable();
             $table->uuid('created_by_user_id')->nullable();
             $table->uuid('updated_by_user_id')->nullable();

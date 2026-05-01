@@ -151,4 +151,23 @@ return [
         'no_dynamic_fields' => 'Aucun champ dynamique configuré pour ce type de projet',
     ],
 
+    // Templates
+    'templates' => [
+        'title' => 'Bibliothèque de Templates',
+        'subtitle' => 'Démarrez rapidement avec un projet pré-configuré',
+        'use' => 'Utiliser ce template',
+        'no_templates' => 'Aucun template disponible',
+        'no_templates_desc' => 'Il n\'y a pas encore de templates disponibles. Un administrateur peut marquer un projet existant comme template.',
+        'activities_count' => ':count activités',
+        'objectives_count' => ':count objectifs',
+        'system_template' => 'Template système',
+        'org_template' => 'Template organisation',
+        'marked' => 'Projet marqué comme template',
+        'unmarked' => 'Projet retiré des templates',
+        'mark_as_template' => 'Marquer comme template',
+        'unmark_template' => 'Retirer des templates',
+        'duplicated' => 'Projet créé avec succès depuis le template',
+        'duplicate_project' => 'Dupliquer le projet',
+    ],
+
 ];

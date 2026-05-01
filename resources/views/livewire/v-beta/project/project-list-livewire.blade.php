@@ -3,6 +3,9 @@
     {{-- Header Section --}}
     <x-ui.page-header :title="__('projects.title')" :subtitle="__('projects.subtitle')">
         <x-slot:actions>
+            <x-ui.button tag="a" :href="route('project.templates')" variant="outline" icon="layout-template" size="lg" wire:navigate>
+                {{ __('projects.templates.title') }}
+            </x-ui.button>
             <x-ui.button tag="a" :href="route('creator.proposal.project.create')" variant="accent" icon="plus-circle" size="lg" wire:navigate>
                 {{ __('projects.new_project') }}
             </x-ui.button>

@@ -11,6 +11,10 @@
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
                     {{ __('projects.show.premium_report') }}
                 </x-ui.button>
+                <x-ui.button tag="a" :href="route('project.templates')" variant="outline" icon="copy-plus" size="sm" wire:navigate
+                    x-data x-on:click.prevent="if(confirm('{{ __('projects.templates.duplicate_project') }} ?')) window.location='{{ route('project.templates') }}?duplicate={{ $project->id }}'">
+                    {{ __('projects.templates.duplicate_project') }}
+                </x-ui.button>
                 <x-ui.button tag="a" :href="route('project.list')" variant="ghost" icon="arrow-left" size="sm" wire:navigate>
                     {{ __('common.back') }}
                 </x-ui.button>

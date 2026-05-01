@@ -14,6 +14,9 @@ Route::middleware(['auth'])->prefix('v_beta')->group(function () {
         return redirect()->route('creator.proposal.project.create');
     })->middleware(['auth'])->name('project.create');
 
+    // Templates
+    Route::view('/project-templates', 'v_beta.project-templates')->name('project.templates');
+
     // Gestion Centrale Projet
     Route::view('/project-list', 'v_beta.project-list')->name('project.list');
     Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');

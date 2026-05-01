@@ -30,6 +30,8 @@ class Project extends Model
         'currency',
         'start_date',
         'end_date',
+        'is_template',
+        'source_project_id',
         'meta',
     ];
 
@@ -39,6 +41,7 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'general_objectives' => 'array',
+        'is_template' => 'boolean',
         'meta' => 'array',
     ];
 
