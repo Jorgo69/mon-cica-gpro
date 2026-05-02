@@ -3,6 +3,7 @@
 return [
 
     'title' => 'Liste des Activités',
+    'project_not_operational' => 'Le projet doit etre en cours ou en pause pour mettre a jour la progression.',
     'subtitle' => 'Gérez et suivez l\'avancement de vos activités',
 
     'search_placeholder' => 'Rechercher par projet lié...',

@@ -8,7 +8,14 @@
                         {{ __('common.edit') }}
                     </x-ui.button>
                 @endcan
-                <livewire:v-beta.a-i.ai-assistant-livewire context="summary" :projectId="$project->id" />
+                @if(\App\Services\AI\GeminiService::isConfigured())
+                <x-ui.button wire:click="aiGenerateSummary" variant="outline" icon="sparkles" size="sm"
+                    wire:loading.attr="disabled" wire:target="aiGenerateSummary"
+                    class="!text-purple-600 !border-purple-200 hover:!bg-purple-50 dark:!text-purple-400 dark:!border-purple-800">
+                    <span wire:loading.remove wire:target="aiGenerateSummary">{{ __('ai.generate_summary') }}</span>
+                    <span wire:loading wire:target="aiGenerateSummary">{{ __('ai.thinking') }}</span>
+                </x-ui.button>
+                @endif
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
                     {{ __('projects.show.premium_report') }}
                 </x-ui.button>
@@ -268,6 +275,33 @@
                 @endif
 
         </div>
+        {{-- AI Summary Modal --}}
+        @if($aiSummary ?? false)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" wire:click.self="$set('aiSummary', null)">
+            <div class="bg-card rounded-2xl shadow-2xl border border-purple-200 dark:border-purple-800 max-w-xl w-full mx-4 overflow-hidden">
+                <div class="p-4 bg-purple-50 dark:bg-purple-900/20 border-b border-purple-200 dark:border-purple-800 flex items-center justify-between">
+                    <span class="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <x-lucide-sparkles class="w-4 h-4" /> {{ __('ai.generate_summary') }}
+                    </span>
+                    <button wire:click="$set('aiSummary', null)" class="text-purple-400 hover:text-purple-600">
+                        <x-lucide-x class="w-4 h-4" />
+                    </button>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm text-body leading-relaxed whitespace-pre-line">{{ $aiSummary }}</p>
+                </div>
+                <div class="px-5 pb-4 flex justify-end gap-2">
+                    <button wire:click="aiGenerateSummary" class="text-[10px] font-bold text-purple-500 hover:text-purple-700 px-3 py-1.5 rounded-lg hover:bg-purple-50 transition-colors">
+                        {{ __('ai.regenerate') }}
+                    </button>
+                    <button wire:click="$set('aiSummary', null)" class="text-[10px] font-bold text-white bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg transition-colors">
+                        {{ __('common.close') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
+
     @else
         <x-ui.empty-state icon="folder-x" :title="__('projects.show.not_found')" :description="__('projects.show.not_found_desc')">
             <x-ui.button tag="a" :href="route('project.list')" variant="outline" icon="arrow-left" size="sm" wire:navigate>

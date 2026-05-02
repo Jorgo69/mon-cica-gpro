@@ -8,20 +8,27 @@ use Illuminate\Support\Facades\Log;
 
 class GeminiService
 {
+    protected string $provider; // 'gemini' or 'groq'
     protected string $apiKey;
     protected string $model;
-    protected string $baseUrl;
 
     public function __construct()
     {
-        $this->apiKey = config('gpro.ai.gemini_api_key', '');
-        $this->model = config('gpro.ai.gemini_model', 'gemini-2.0-flash');
-        $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+        // Auto-detect provider: Groq first (no geo-restriction), then Gemini
+        if (!empty(config('gpro.ai.groq_api_key'))) {
+            $this->provider = 'groq';
+            $this->apiKey = config('gpro.ai.groq_api_key');
+            $this->model = config('gpro.ai.groq_model', 'llama-3.3-70b-versatile');
+        } else {
+            $this->provider = 'gemini';
+            $this->apiKey = config('gpro.ai.gemini_api_key', '');
+            $this->model = config('gpro.ai.gemini_model', 'gemini-2.0-flash');
+        }
     }
 
     public static function isConfigured(): bool
     {
-        return !empty(config('gpro.ai.gemini_api_key'));
+        return !empty(config('gpro.ai.groq_api_key')) || !empty(config('gpro.ai.gemini_api_key'));
     }
 
     public function ask(string $prompt, string $systemInstruction = '', float $temperature = 0.7): ?string
@@ -30,6 +37,43 @@ class GeminiService
             return null;
         }
 
+        return $this->provider === 'groq'
+            ? $this->askGroq($prompt, $systemInstruction, $temperature)
+            : $this->askGemini($prompt, $systemInstruction, $temperature);
+    }
+
+    protected function askGroq(string $prompt, string $systemInstruction, float $temperature): ?string
+    {
+        try {
+            $messages = [];
+            if ($systemInstruction) {
+                $messages[] = ['role' => 'system', 'content' => $systemInstruction];
+            }
+            $messages[] = ['role' => 'user', 'content' => $prompt];
+
+            $response = Http::timeout(30)
+                ->withHeaders(['Authorization' => 'Bearer ' . $this->apiKey])
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => $this->model,
+                    'messages' => $messages,
+                    'temperature' => $temperature,
+                    'max_tokens' => 2048,
+                ]);
+
+            if ($response->successful()) {
+                return $response->json('choices.0.message.content');
+            }
+
+            Log::warning('Groq API error', ['status' => $response->status(), 'body' => $response->body()]);
+            return null;
+        } catch (\Exception $e) {
+            Log::warning('Groq API exception', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    protected function askGemini(string $prompt, string $systemInstruction, float $temperature): ?string
+    {
         try {
             $body = [
                 'contents' => [
@@ -47,8 +91,9 @@ class GeminiService
                 ];
             }
 
+            $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
             $response = Http::timeout(30)
-                ->post("{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}", $body);
+                ->post("{$baseUrl}/{$this->model}:generateContent?key={$this->apiKey}", $body);
 
             if ($response->successful()) {
                 return $response->json('candidates.0.content.parts.0.text');
@@ -62,13 +107,9 @@ class GeminiService
         }
     }
 
-    /**
-     * Cached ask — avoids duplicate requests for the same input.
-     */
     public function askCached(string $prompt, string $systemInstruction = '', int $ttl = 3600): ?string
     {
-        $cacheKey = 'gemini_' . md5($prompt . $systemInstruction);
-
+        $cacheKey = 'ai_' . md5($prompt . $systemInstruction);
         return Cache::remember($cacheKey, $ttl, fn () => $this->ask($prompt, $systemInstruction));
     }
 
@@ -108,13 +149,11 @@ class GeminiService
 
         if (!$result) return null;
 
-        // Extract JSON from response (Gemini sometimes wraps in markdown)
         $result = preg_replace('/```json\s*/', '', $result);
         $result = preg_replace('/```\s*/', '', $result);
         $result = trim($result);
 
         $decoded = json_decode($result, true);
-
         return is_array($decoded) ? $decoded : null;
     }
 
@@ -153,6 +192,6 @@ class GeminiService
             . "Mentionne les points critiques (retards, budgets) et une recommandation. "
             . "Sois direct et actionnable. Format texte simple.";
 
-        return $this->askCached($prompt, $system, 300); // Cache 5 min
+        return $this->askCached($prompt, $system, 300);
     }
 }

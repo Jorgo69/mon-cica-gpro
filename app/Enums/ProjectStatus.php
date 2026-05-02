@@ -35,6 +35,14 @@ enum ProjectStatus: string
         };
     }
 
+    /**
+     * Can activities be executed (progress, expenses, status changes)?
+     */
+    public function isOperational(): bool
+    {
+        return in_array($this, [self::ACTIVE, self::ON_HOLD]);
+    }
+
     public function hex(): string
     {
         return match($this) {

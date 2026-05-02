@@ -100,7 +100,7 @@ class OnboardingService
                 'desc' => __('onboarding.invite_team_desc'),
                 'icon' => 'user-plus',
                 'done' => $hasMembers || $hasInvitation,
-                'route' => 'admin.invitation.index',
+                'route' => 'admin.invitation.list',
             ],
             [
                 'key' => 'create_project',

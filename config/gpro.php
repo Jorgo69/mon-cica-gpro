@@ -136,10 +136,12 @@ return [
     | Plans et limites
     |--------------------------------------------------------------------------
     */
-    // AI (Gemini free tier)
+    // AI (Groq gratuit prioritaire, Gemini en fallback)
     'ai' => [
         'gemini_api_key' => env('GEMINI_API_KEY'),
         'gemini_model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+        'groq_api_key' => env('GROQ_API_KEY'),
+        'groq_model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
     ],
 
     // Payment

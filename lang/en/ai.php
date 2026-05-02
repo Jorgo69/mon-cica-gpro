@@ -12,7 +12,10 @@ return [
     'general_objective' => 'General objective',
     'apply' => 'Apply',
     'applied' => 'Suggestion applied',
+    'regenerate' => 'Regenerate',
+    'need_title' => 'Please fill in the project title first.',
     'error' => 'AI could not generate a response. Please try again.',
+    'logframe_hint' => 'Auto-generate objectives, results and activities',
     'dashboard_insight' => 'AI Analysis',
 
 ];

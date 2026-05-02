@@ -673,6 +673,244 @@ class ProposalProjectFormLivewire extends Component
     }
 
     // =========================================================================
+    // AI ASSISTANT (per-field)
+    // =========================================================================
+
+    public ?string $aiActiveField = null;
+    public ?string $aiSuggestion = null;
+    public ?array $aiLogframe = null;
+    public bool $aiLoading = false;
+
+    protected function getAiContext(): string
+    {
+        $parts = [];
+        if ($this->projectTitle) $parts[] = "Titre: {$this->projectTitle}";
+        if ($this->contextDescription) $parts[] = "Contexte: " . strip_tags($this->contextDescription);
+        if ($this->problemAnalysis) $parts[] = "Probleme: " . strip_tags($this->problemAnalysis);
+        if ($this->strategy) $parts[] = "Strategie: " . strip_tags($this->strategy);
+        if ($this->justification) $parts[] = "Justification: " . strip_tags($this->justification);
+        if ($this->projectStartDate) $parts[] = "Date debut: {$this->projectStartDate}";
+        if ($this->projectEndDate) $parts[] = "Date fin: {$this->projectEndDate}";
+        if (!empty($this->initialLogicalFramework['general_objective'])) {
+            $parts[] = "Objectif general: {$this->initialLogicalFramework['general_objective']}";
+        }
+        return implode("\n", $parts);
+    }
+
+    protected function getFieldPrompt(string $field): array
+    {
+        $locale = app()->getLocale();
+        $lang = $locale === 'fr' ? 'français' : 'English';
+        $base = "Tu es un expert en cadre logique et gestion de projets pour ONG. Reponds en {$lang}.";
+
+        $prompts = [
+            'contextDescription' => [
+                'instruction' => "{$base} Genere une description de contexte professionnelle (3-5 phrases). Decris le contexte, les enjeux et les besoins identifies.",
+                'label' => 'contexte du projet',
+            ],
+            'problemAnalysis' => [
+                'instruction' => "{$base} Redige une analyse du probleme (3-5 phrases). Identifie les causes racines, les consequences et l'urgence d'agir.",
+                'label' => 'analyse du probleme',
+            ],
+            'strategy' => [
+                'instruction' => "{$base} Propose une strategie d'intervention (3-4 phrases). Decris l'approche, les methodes et les partenariats envisages.",
+                'label' => 'strategie',
+            ],
+            'justification' => [
+                'instruction' => "{$base} Redige une justification du projet (3-4 phrases). Explique pourquoi ce projet est necessaire et pertinent.",
+                'label' => 'justification',
+            ],
+            'general_objective' => [
+                'instruction' => "{$base} Formule UN objectif general clair, mesurable et ambitieux (1-2 phrases). Utilise un verbe d'action (contribuer, renforcer, ameliorer...).",
+                'label' => 'objectif general du projet',
+            ],
+            'specific_objective' => [
+                'instruction' => "{$base} Formule UN objectif specifique SMART (Specifique, Mesurable, Atteignable, Realiste, Temporel). 1-2 phrases maximum. Doit contribuer a l'objectif general.",
+                'label' => 'objectif specifique',
+            ],
+            'result' => [
+                'instruction' => "{$base} Formule UN resultat attendu concret et mesurable (1-2 phrases). Un resultat decrit un changement observable qui contribue a l'objectif specifique.",
+                'label' => 'resultat attendu',
+            ],
+            'activity' => [
+                'instruction' => "{$base} Decris UNE activite concrete et actionnable (2-3 phrases). Precise ce qui sera fait, comment, et pour qui. L'activite doit contribuer au resultat attendu.",
+                'label' => 'description de l\'activite',
+            ],
+        ];
+
+        return $prompts[$field] ?? ['instruction' => "{$base} Genere du contenu pertinent.", 'label' => $field];
+    }
+
+    /**
+     * Build extra context from dynamic fields for AI.
+     * E.g., for result suggestion, include the parent specific objective.
+     */
+    protected function getAiDynamicContext(string $field, ?int $soIndex = null, ?int $rIndex = null): string
+    {
+        $extra = [];
+        if ($soIndex !== null && isset($this->specificObjectives[$soIndex])) {
+            $so = $this->specificObjectives[$soIndex];
+            if (!empty($so['description'])) {
+                $extra[] = "Objectif specifique parent: {$so['description']}";
+            }
+            if ($rIndex !== null && isset($so['results'][$rIndex])) {
+                $r = $so['results'][$rIndex];
+                if (!empty($r['description'])) {
+                    $extra[] = "Resultat parent: {$r['description']}";
+                }
+            }
+        }
+        return implode("\n", $extra);
+    }
+
+    public function aiGenerate(string $field, ?int $soIndex = null, ?int $rIndex = null, ?int $aIndex = null)
+    {
+        if (empty($this->projectTitle)) {
+            $this->notifyToast('warning', __('ai.need_title'));
+            return;
+        }
+
+        // Build a unique key for the active field
+        $fieldKey = $field;
+        if ($soIndex !== null) $fieldKey .= ".{$soIndex}";
+        if ($rIndex !== null) $fieldKey .= ".{$rIndex}";
+        if ($aIndex !== null) $fieldKey .= ".{$aIndex}";
+
+        $this->aiActiveField = $fieldKey;
+        $this->aiSuggestion = null;
+        $this->aiLoading = true;
+
+        $ai = app(\App\Services\AI\GeminiService::class);
+        $context = $this->getAiContext();
+        $dynamicContext = $this->getAiDynamicContext($field, $soIndex, $rIndex);
+        $fieldPrompt = $this->getFieldPrompt($field);
+
+        $fullContext = $context;
+        if ($dynamicContext) {
+            $fullContext .= "\n" . $dynamicContext;
+        }
+
+        $prompt = "Voici le projet :\n{$fullContext}\n\nGenere le contenu pour : {$fieldPrompt['label']}";
+
+        $this->aiSuggestion = $ai->ask($prompt, $fieldPrompt['instruction'], 0.85);
+
+        $this->aiLoading = false;
+        if (!$this->aiSuggestion) {
+            $this->aiActiveField = null;
+            $this->notifyToast('danger', __('ai.error'));
+        }
+    }
+
+    public function aiApply()
+    {
+        if (!$this->aiSuggestion || !$this->aiActiveField) return;
+
+        $fieldKey = $this->aiActiveField;
+        $parts = explode('.', $fieldKey);
+        $baseField = $parts[0];
+
+        // Dynamic fields: specific_objective.0, result.0, activity.0
+        if ($baseField === 'general_objective') {
+            $this->initialLogicalFramework['general_objective'] = $this->aiSuggestion;
+        } elseif ($baseField === 'specific_objective' && isset($parts[1])) {
+            $this->specificObjectives[$parts[1]]['description'] = $this->aiSuggestion;
+        } elseif ($baseField === 'result' && isset($parts[1])) {
+            // Step 4: expectedResults is a flat array
+            if (isset($this->expectedResults[$parts[1]])) {
+                $this->expectedResults[$parts[1]]['description'] = $this->aiSuggestion;
+            }
+        } elseif ($baseField === 'activity' && isset($parts[1])) {
+            // Step 5: activities flat array
+            if (isset($this->activities[$parts[1]])) {
+                $this->activities[$parts[1]]['description'] = $this->aiSuggestion;
+            }
+        } elseif (property_exists($this, $baseField)) {
+            $this->{$baseField} = $this->aiSuggestion;
+            $this->dispatch('ai-set-editor-content', name: $baseField, content: $this->aiSuggestion);
+        }
+
+        $this->aiSuggestion = null;
+        $this->aiActiveField = null;
+        $this->notifyToast('success', __('ai.applied'));
+    }
+
+    public function aiRegenerate()
+    {
+        if (!$this->aiActiveField) return;
+
+        $parts = explode('.', $this->aiActiveField);
+        $baseField = $parts[0];
+        $soIndex = isset($parts[1]) ? (int) $parts[1] : null;
+        $rIndex = isset($parts[2]) ? (int) $parts[2] : null;
+        $aIndex = isset($parts[3]) ? (int) $parts[3] : null;
+
+        $this->aiGenerate($baseField, $soIndex, $rIndex, $aIndex);
+    }
+
+    public function aiDismiss()
+    {
+        $this->aiSuggestion = null;
+        $this->aiActiveField = null;
+        $this->aiLogframe = null;
+    }
+
+    public function aiSuggestLogframe()
+    {
+        if (empty($this->projectTitle)) {
+            $this->notifyToast('warning', __('ai.need_title'));
+            return;
+        }
+        $this->aiLoading = true;
+        $this->aiLogframe = null;
+
+        $ai = app(\App\Services\AI\GeminiService::class);
+        $this->aiLogframe = $ai->suggestLogframe($this->projectTitle, strip_tags($this->contextDescription ?? ''));
+
+        $this->aiLoading = false;
+        if (!$this->aiLogframe) {
+            $this->notifyToast('danger', __('ai.error'));
+        }
+    }
+
+    public function aiApplyLogframe()
+    {
+        if (!$this->aiLogframe) return;
+
+        if (isset($this->aiLogframe['general_objective'])) {
+            $this->initialLogicalFramework['general_objective'] = $this->aiLogframe['general_objective'];
+        }
+
+        if (isset($this->aiLogframe['specific_objectives'])) {
+            $this->specificObjectives = [];
+            foreach ($this->aiLogframe['specific_objectives'] as $so) {
+                $results = [];
+                foreach ($so['results'] ?? [] as $r) {
+                    $activities = [];
+                    foreach ($r['activities'] ?? [] as $a) {
+                        $activities[] = [
+                            'description' => $a,
+                            'responsible_user_id' => '',
+                            'start_date' => '',
+                            'end_date' => '',
+                        ];
+                    }
+                    $results[] = [
+                        'description' => $r['description'] ?? '',
+                        'activities' => $activities,
+                    ];
+                }
+                $this->specificObjectives[] = [
+                    'description' => $so['description'] ?? '',
+                    'results' => $results,
+                ];
+            }
+        }
+
+        $this->aiLogframe = null;
+        $this->notifyToast('success', __('ai.applied'));
+    }
+
+    // =========================================================================
     // SUBMISSION & FINALIZATION
     // =========================================================================
 

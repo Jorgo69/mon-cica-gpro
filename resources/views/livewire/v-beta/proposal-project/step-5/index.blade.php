@@ -20,14 +20,24 @@
                     <div class="flex-1 space-y-6">
                         <input type="hidden" wire:model="activities.{{ $index }}.id">
                         
-                        <x-ui.input 
-                            label="Désignation de l'activité" 
-                            wire:model.defer="activities.{{ $index }}.description" 
-                            placeholder="Description de l'activité..." 
-                            icon="clipboard-list"
-                            :error="$errors->first('activities.' . $index . '.description')"
-                            required
-                        />
+                        <div>
+                            <div class="flex items-center mb-1">
+                                <label class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                                    Designation de l'activite <span class="text-rose-500">*</span>
+                                </label>
+                                <x-ui.ai-field-button field="activity" :soIndex="$index" />
+                            </div>
+                            <textarea
+                                wire:model.blur="activities.{{ $index }}.description"
+                                placeholder="Description de l'activite..."
+                                rows="2"
+                                class="block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all pl-4 pr-4"
+                            ></textarea>
+                            @error('activities.' . $index . '.description')
+                                <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p>
+                            @enderror
+                            <x-ui.ai-suggestion field="activity.{{ $index }}" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <x-ui.select 

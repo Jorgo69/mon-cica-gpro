@@ -29,7 +29,7 @@
         <div class="md:col-span-2">
             <x-ui.input 
                 label="{{ __('project.step_1.form.input_2') }}" 
-                wire:model.defer="projectTitle"
+                wire:model.blur="projectTitle"
                 placeholder="Ex: Système de gestion de projet IA"
                 icon="tag"
                 :error="$errors->first('projectTitle')"
@@ -37,10 +37,7 @@
             />
         </div>
 
-        {{-- AI Assistant: Generate Description --}}
-        <div class="md:col-span-2">
-            <livewire:v-beta.a-i.ai-assistant-livewire context="description" :projectTitle="$projectTitle ?? ''" />
-        </div>
+        {{-- (AI buttons are now per-field in step 2) --}}
 
         {{-- Project Code --}}
         <x-ui.input

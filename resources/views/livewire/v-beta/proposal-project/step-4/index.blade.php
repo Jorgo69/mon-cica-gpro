@@ -19,14 +19,25 @@
 
                     <div class="flex-1 space-y-3">
                         <input type="hidden" wire:model="expectedResults.{{ $index }}.id">
-                        <x-ui.rich-editor
-                            name="expectedResults.{{ $index }}.description"
-                            :value="$result['description'] ?? ''"
-                            label="Description du Resultat"
-                            :required="true"
-                            placeholder="Decrivez le resultat attendu..."
-                            :height="120"
-                        />
+
+                        <div>
+                            <div class="flex items-center mb-1">
+                                <label class="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                                    Description du Resultat <span class="text-rose-500">*</span>
+                                </label>
+                                <x-ui.ai-field-button field="result" :soIndex="$index" />
+                            </div>
+                            <textarea
+                                wire:model.blur="expectedResults.{{ $index }}.description"
+                                placeholder="Decrivez le resultat attendu..."
+                                rows="3"
+                                class="block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all pl-4 pr-4"
+                            ></textarea>
+                            @error('expectedResults.' . $index . '.description')
+                                <p class="text-[10px] text-rose-500 font-bold italic mt-1.5 ml-1 uppercase tracking-tight">{{ $message }}</p>
+                            @enderror
+                            <x-ui.ai-suggestion field="result.{{ $index }}" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+                        </div>
                     </div>
                 </div>
             </x-ui.card>

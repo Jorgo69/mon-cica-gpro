@@ -53,7 +53,9 @@ class SetOrganizationContext
             }
 
             // 4. On s'assure que le context Spatie est fixe pour cet utilisateur
-            setPermissionsTeamId($user->organization_id);
+            // Les rôles sont globaux (organization_id = null), donc on ne filtre pas par team
+            // Cela permet à ORG_ADMIN, MANAGER, MEMBER d'avoir leurs permissions partout
+            setPermissionsTeamId(null);
         }
 
         return $next($request);

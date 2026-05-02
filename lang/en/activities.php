@@ -3,6 +3,7 @@
 return [
 
     'title' => 'Activity List',
+    'project_not_operational' => 'Project must be active or on hold to update progress.',
     'subtitle' => 'Manage and track the progress of your activities',
 
     // Actions

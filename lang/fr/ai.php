@@ -12,7 +12,10 @@ return [
     'general_objective' => 'Objectif general',
     'apply' => 'Appliquer',
     'applied' => 'Suggestion appliquee',
+    'regenerate' => 'Regenerer',
+    'need_title' => 'Renseignez d\'abord le titre du projet.',
     'error' => 'L\'IA n\'a pas pu generer de reponse. Reessayez.',
+    'logframe_hint' => 'Genere automatiquement objectifs, resultats et activites',
     'dashboard_insight' => 'Analyse IA',
 
 ];

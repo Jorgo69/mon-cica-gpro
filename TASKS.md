@@ -320,3 +320,62 @@
 - **Phase 20 complete** : SaaS Plans adapte Afrique (Free/Pro/Enterprise, activation manuelle ROOT, pricing publique, paiement MoMo/gateway configurable, plans independants).
 - **Phase 21 complete** : PWA (manifest, service worker, icones, page offline, meta tags).
 - **Toutes les 21 phases sont terminees.** Projet pret pour v1.0.
+- **IA Gemini/Groq integree** : boutons IA par champ (step 2-5), resume executif modale, analyse dashboard.
+- **Fix resume IA** : modale au lieu d'inline (ne casse plus le layout).
+- **Fix logique metier** : projet en brouillon bloque la progression/depenses (isOperational).
+- **Google OAuth** : login/register avec compte Google (Socialite).
+
+## Phase 22 (planifiee) — IA configurable multi-niveau
+
+### Objectif
+Permettre a chaque niveau (ROOT, ORG_ADMIN, INDEPENDENT) de configurer son propre provider IA.
+
+### Architecture prevue
+
+```
+Priorite de resolution :
+  1. Config Org (si l'org a sa propre cle)
+  2. Config globale ROOT (cle dans .env ou dans l'interface)
+  3. Desactive (si aucune cle)
+```
+
+### Taches
+
+- [ ] 22.1 **Model AiConfig** : table `ai_configs` (configurable_type, configurable_id, provider, api_key_encrypted, base_url, model, enabled)
+  - polymorphe : Organization ou User (independant)
+  - `api_key` chiffre via `encrypt()`/`decrypt()` (jamais en clair en DB)
+
+- [ ] 22.2 **Service AiConfigResolver** : resout la config active pour l'utilisateur courant
+  - Org a sa config → utilise
+  - Org n'a pas → fallback sur global (.env)
+  - Admin org a desactive pour un membre → bloque
+  - Independant a sa config → utilise
+
+- [ ] 22.3 **Refactor GeminiService** → `AiService` generique
+  - Providers supportes : groq, gemini, openai, mistral, custom (url + key)
+  - Interface commune `ask(prompt, system, temperature)`
+  - Le provider est resolu dynamiquement par AiConfigResolver
+
+- [ ] 22.4 **UI ROOT : /system/ai-config**
+  - Provider global par defaut (Groq, Gemini, OpenAI, Custom)
+  - Cle API globale (masquee apres saisie)
+  - URL custom (pour IA locale)
+  - Toggle activer/desactiver IA globalement
+
+- [ ] 22.5 **UI ORG_ADMIN : /settings → onglet IA**
+  - Choix : "Utiliser l'IA globale" / "Configurer ma propre IA" / "Desactiver l'IA"
+  - Si propre IA : provider, cle, url, modele
+  - Toggle par membre : activer/desactiver l'IA pour chaque membre
+
+- [ ] 22.6 **UI INDEPENDENT : /settings → onglet IA**
+  - Meme interface que org_admin mais pour soi-meme
+
+- [ ] 22.7 **Middleware CheckAiAccess**
+  - Verifie que l'utilisateur a le droit d'utiliser l'IA avant chaque appel
+  - Retourne message explicite si desactive
+
+- [ ] 22.8 **Tests**
+  - Resolution de config (org > global > disabled)
+  - Chiffrement/dechiffrement cles
+  - Providers (groq, gemini, openai, custom)
+  - Permissions (admin coupe pour un membre)

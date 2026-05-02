@@ -58,11 +58,29 @@ class CreateOrganizationAction
                 throw new \Exception("Le rôle de base 'ORG_ADMIN' est introuvable. Veuillez vérifier vos seeders.");
             }
 
+            // S'assurer que le rôle a les permissions attendues
+            $expectedPermissions = [
+                'manage-organization', 'manage-users', 'manage-roles',
+                'view-projects', 'create-projects', 'edit-projects', 'delete-projects', 'validate-projects',
+                'manage-activities', 'track-progress', 'view-budgets', 'manage-budgets',
+                'invite-users', 'manage-invitations',
+            ];
+            foreach ($expectedPermissions as $perm) {
+                \App\Models\Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
+            }
+            if ($role->permissions()->count() === 0) {
+                $role->syncPermissions($expectedPermissions);
+                Log::info('[Action] CreateOrganization - Permissions re-synchronisées sur ORG_ADMIN');
+            }
+
             Log::info('[Action] CreateOrganization - Assignation du rôle', ['role_id' => $role->id]);
             $user->assignRole($role);
-            
+
             // On repasse sur le contexte de l'organisation pour la suite
             setPermissionsTeamId($organization->id);
+
+            // Forcer le rechargement des permissions en cache
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
             Log::info('[Action] CreateOrganization - Rôle assigné avec succès');
 
