@@ -98,6 +98,57 @@
                 </div>
             </form>
         </x-ui.section>
+
+        {{-- Ownership transfer (owner only) --}}
+        @if($isOwner)
+        <x-ui.section title="{{ __('settings.transfer.title') }}" icon="crown" :noPadding="false">
+            <div class="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800">
+                <div class="flex items-start gap-3">
+                    <x-lucide-crown class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-heading">{{ __('settings.transfer.you_are_owner') }}</p>
+                        <p class="text-xs text-muted mt-1">{{ __('settings.transfer.desc') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            @if($otherAdmins->count() > 0)
+                <div class="mt-4">
+                    <x-ui.button wire:click="openTransferModal" variant="outline" icon="arrow-right-left" size="sm">
+                        {{ __('settings.transfer.transfer_btn') }}
+                    </x-ui.button>
+                </div>
+            @else
+                <p class="text-xs text-muted mt-4">{{ __('settings.transfer.no_other_admin') }}</p>
+            @endif
+        </x-ui.section>
+        @endif
+
+        {{-- Transfer modal --}}
+        @if($showTransferModal)
+        <x-ui.modal :title="__('settings.transfer.modal_title')" closeAction="closeTransferModal" maxWidth="max-w-md">
+            <div class="space-y-4">
+                <div class="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl">
+                    <p class="text-xs text-amber-700 dark:text-amber-300">{{ __('settings.transfer.warning') }}</p>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.transfer.select_admin') }}</label>
+                    <select wire:model="transferTargetId" class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3">
+                        <option value="">-- {{ __('settings.transfer.choose') }} --</option>
+                        @foreach($otherAdmins as $admin)
+                            <option value="{{ $admin->id }}">{{ $admin->name }} ({{ $admin->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <x-slot:footer>
+                <x-ui.button wire:click="closeTransferModal" variant="outline" size="sm">{{ __('common.cancel') }}</x-ui.button>
+                <x-ui.button wire:click="transferOwnership" variant="accent" icon="arrow-right-left" size="sm">{{ __('settings.transfer.confirm') }}</x-ui.button>
+            </x-slot:footer>
+        </x-ui.modal>
+        @endif
     </div>
     @endif
 

@@ -211,6 +211,55 @@ class SettingsLivewire extends Component
         $this->notifyToast('success', __('common.saved'));
     }
 
+    // ─── Ownership Transfer (Owner only) ────────────────────
+
+    public $showTransferModal = false;
+    public string $transferTargetId = '';
+
+    public function openTransferModal()
+    {
+        $this->showTransferModal = true;
+        $this->transferTargetId = '';
+    }
+
+    public function closeTransferModal()
+    {
+        $this->showTransferModal = false;
+        $this->transferTargetId = '';
+    }
+
+    public function transferOwnership()
+    {
+        $user = auth()->user();
+        $org = $user->organization;
+
+        if (!$org || !$org->isOwner($user)) {
+            $this->notifyToast('error', __('settings.transfer.not_owner'));
+            return;
+        }
+
+        if (empty($this->transferTargetId)) {
+            $this->notifyToast('error', __('settings.transfer.select_target'));
+            return;
+        }
+
+        $target = \App\Models\User::where('id', $this->transferTargetId)
+            ->where('organization_id', $org->id)
+            ->where('role', AccountType::ORG_ADMIN)
+            ->first();
+
+        if (!$target) {
+            $this->notifyToast('error', __('settings.transfer.target_not_admin'));
+            return;
+        }
+
+        $org->update(['owner_user_id' => $target->id]);
+
+        $this->showTransferModal = false;
+        $this->transferTargetId = '';
+        $this->notifyToast('success', __('settings.transfer.success', ['name' => $target->name]));
+    }
+
     // ─── AI Configuration (ORG_ADMIN + INDEPENDENT) ─────────
 
     public string $aiMode = 'global'; // global, own, disabled
@@ -348,6 +397,18 @@ class SettingsLivewire extends Component
                 ->get(['id', 'name', 'email', 'meta']);
         }
 
+        // Ownership
+        $org = $user->organization;
+        $isOwner = $org && $org->isOwner($user);
+        $otherAdmins = collect();
+        if ($isOwner) {
+            $otherAdmins = \App\Models\User::where('organization_id', $org->id)
+                ->where('id', '!=', $user->id)
+                ->where('role', AccountType::ORG_ADMIN)
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']);
+        }
+
         return view('livewire.v-beta.settings.settings-livewire', [
             'socialAccounts' => auth()->user()->socialAccounts ?? collect(),
             'notificationTypes' => NotificationType::userConfigurable(),
@@ -355,6 +416,8 @@ class SettingsLivewire extends Component
             'showAiTab' => $showAiTab,
             'aiProviders' => AiProvider::cases(),
             'orgMembers' => $orgMembers,
+            'isOwner' => $isOwner,
+            'otherAdmins' => $otherAdmins,
         ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Actions\Invitation\RevokeInvitationAction;
 use App\Actions\Invitation\SendInvitationAction;
 use App\Enums\AccountType;
 use App\Enums\InvitationStatus;
+use App\Enums\PermissionLevel;
 use App\Livewire\Traits\WithToastNotifications;
 use App\Models\Invitation;
 use App\Models\Organization;
@@ -28,20 +29,8 @@ class InvitationManagementLivewire extends Component
 
     // Champs du formulaire d'invitation
     public $email = '';
-    public $selectedRole = 'member'; // single select: member, manager, admin
+    public int $selectedLevel = 2; // PermissionLevel value (1-4)
     public $organizationId = '';
-
-    /**
-     * Mapping: selectedRole -> [AccountType, Spatie Role]
-     */
-    public static function roleMapping(): array
-    {
-        return [
-            'member'  => ['account_type' => 'org_user',  'spatie_role' => 'MEMBER'],
-            'manager' => ['account_type' => 'org_user',  'spatie_role' => 'MANAGER'],
-            'admin'   => ['account_type' => 'org_admin', 'spatie_role' => 'ORG_ADMIN'],
-        ];
-    }
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -52,7 +41,7 @@ class InvitationManagementLivewire extends Component
     {
         $rules = [
             'email' => 'required|email|max:255',
-            'selectedRole' => 'required|in:member,manager,admin',
+            'selectedLevel' => 'required|integer|in:1,2,3,4',
         ];
 
         $user = auth()->user();
@@ -65,8 +54,8 @@ class InvitationManagementLivewire extends Component
 
     public function openModal()
     {
-        $this->reset(['email', 'selectedRole', 'organizationId']);
-        $this->selectedRole = 'member';
+        $this->reset(['email', 'selectedLevel', 'organizationId']);
+        $this->selectedLevel = 2;
 
         if (auth()->user()->role === AccountType::ROOT && session('acting_as_organization_id')) {
             $this->organizationId = session('acting_as_organization_id');
@@ -87,12 +76,12 @@ class InvitationManagementLivewire extends Component
 
         try {
             $user = auth()->user();
-            $mapping = self::roleMapping()[$this->selectedRole];
+            $level = PermissionLevel::from($this->selectedLevel);
 
             $data = [
                 'email' => $this->email,
-                'role' => $mapping['account_type'],
-                'spatie_role' => $mapping['spatie_role'],
+                'role' => $level->accountType()->value,
+                'spatie_role' => $level->spatieRole(),
             ];
 
             if ($user->role === AccountType::ROOT) {
@@ -104,7 +93,7 @@ class InvitationManagementLivewire extends Component
             $action->execute($data);
 
             $this->showModal = false;
-            $this->reset(['email', 'selectedRole', 'organizationId']);
+            $this->reset(['email', 'selectedLevel', 'organizationId']);
             $this->notifyToast('success', __('admin.invitations.invitation_sent'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
@@ -214,10 +203,10 @@ class InvitationManagementLivewire extends Component
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
             ->orderBy('created_at', 'desc');
 
-        // Roles disponibles selon le role de l'utilisateur courant
-        $availableRoles = ['member', 'manager'];
+        // Niveaux disponibles selon le role de l'utilisateur courant
+        $availableLevels = [PermissionLevel::OBSERVER, PermissionLevel::CONTRIBUTOR, PermissionLevel::MANAGER];
         if (in_array(auth()->user()->role, [AccountType::ROOT, AccountType::ORG_ADMIN])) {
-            $availableRoles[] = 'admin';
+            $availableLevels[] = PermissionLevel::ADMIN;
         }
 
         return view('livewire.v-beta.admin.invitation.invitation-management-livewire', [
@@ -225,7 +214,7 @@ class InvitationManagementLivewire extends Component
             'organizations' => auth()->user()->role === AccountType::ROOT
                 ? Organization::orderBy('name')->get()
                 : collect(),
-            'availableRoles' => $availableRoles,
+            'availableLevels' => $availableLevels,
             'statuses' => InvitationStatus::cases(),
         ]);
     }

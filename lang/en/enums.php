@@ -94,4 +94,18 @@ return [
     'ai_provider' => [
         'custom' => 'Custom (URL + key)',
     ],
+
+    // Permission Level
+    'permission_level' => [
+        'OBSERVER' => 'Observer',
+        'CONTRIBUTOR' => 'Contributor',
+        'MANAGER' => 'Manager',
+        'ADMIN' => 'Administrator',
+    ],
+    'permission_level_desc' => [
+        'OBSERVER' => 'Read-only: view projects, budgets and indicators.',
+        'CONTRIBUTOR' => 'Create projects, edit activities, track progress.',
+        'MANAGER' => 'Full project management: activities, budgets, deletion.',
+        'ADMIN' => 'Full access: members, settings, invitations, organization.',
+    ],
 ];

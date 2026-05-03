@@ -40,8 +40,7 @@
                 </x-slot:headers>
 
                 @php
-                    $roleLabels = ['ORG_ADMIN' => __('admin.invitations.roles.org_admin'), 'MANAGER' => __('admin.invitations.roles.manager'), 'MEMBER' => __('admin.invitations.roles.member'), 'SUPERVISOR' => __('admin.invitations.roles.supervisor')];
-                    $roleColors = ['ORG_ADMIN' => 'indigo', 'MANAGER' => 'blue', 'MEMBER' => 'gray', 'SUPERVISOR' => 'emerald'];
+                    use App\Enums\PermissionLevel;
                 @endphp
 
                 @foreach($invitations as $invitation)
@@ -53,8 +52,9 @@
                             <x-ui.table.td>{{ $invitation->organization?->name ?? '—' }}</x-ui.table.td>
                         @endif
                         <x-ui.table.td>
-                            <x-ui.badge :color="$roleColors[$invitation->spatie_role] ?? 'gray'" size="xs">
-                                {{ $roleLabels[$invitation->spatie_role] ?? $invitation->spatie_role }}
+                            @php $invLevel = PermissionLevel::fromSpatieRole($invitation->spatie_role); @endphp
+                            <x-ui.badge :color="$invLevel->color()" size="xs">
+                                {{ $invLevel->label() }}
                             </x-ui.badge>
                         </x-ui.table.td>
                         <x-ui.table.td>
@@ -117,14 +117,30 @@
                 </x-ui.select>
             @endif
 
-            <x-ui.select wire:model.live="selectedRole" :label="__('admin.invitations.role')" icon="shield-check">
-                @foreach($availableRoles as $r)
-                    <option value="{{ $r }}">{{ __('admin.invitations.roles.' . $r) }}</option>
-                @endforeach
-            </x-ui.select>
-            <p class="text-[10px] text-muted -mt-2 ml-1">
-                {{ __('admin.invitations.role_desc.' . $selectedRole) }}
-            </p>
+            {{-- Permission Level cards --}}
+            <div>
+                <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-3">{{ __('admin.invitations.role') }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                    @foreach($availableLevels as $level)
+                        <button type="button" wire:click="$set('selectedLevel', {{ $level->value }})"
+                            class="p-3 rounded-xl border-2 text-left transition-all
+                                {{ $selectedLevel === $level->value
+                                    ? 'border-accent bg-accent/5 shadow-sm'
+                                    : 'border-border-light bg-card hover:border-accent/30' }}">
+                            <div class="flex items-center gap-2 mb-1">
+                                <div class="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black
+                                    {{ $selectedLevel === $level->value ? 'bg-accent/10 text-accent' : 'bg-surface-alt text-muted' }}">
+                                    {{ $level->value }}
+                                </div>
+                                <span class="text-xs font-bold {{ $selectedLevel === $level->value ? 'text-accent' : 'text-heading' }}">
+                                    {{ $level->label() }}
+                                </span>
+                            </div>
+                            <p class="text-[9px] text-muted leading-relaxed">{{ $level->description() }}</p>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
 
             <x-slot:footer>
                 <x-ui.button type="button" wire:click="closeModal" variant="outline" size="sm">
