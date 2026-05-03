@@ -1,6 +1,6 @@
 <div class="space-y-8">
     {{-- AI Logframe Suggestion (full structure) --}}
-    @if(\App\Services\AI\GeminiService::isConfigured())
+    @if(\App\Services\AI\AiService::isConfigured())
         <div class="flex items-center gap-3">
             <button wire:click="aiSuggestLogframe" wire:loading.attr="disabled" type="button"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">

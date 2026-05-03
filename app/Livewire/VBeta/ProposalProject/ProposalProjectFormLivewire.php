@@ -780,7 +780,7 @@ class ProposalProjectFormLivewire extends Component
         $this->aiSuggestion = null;
         $this->aiLoading = true;
 
-        $ai = app(\App\Services\AI\GeminiService::class);
+        $ai = app(\App\Services\AI\AiService::class);
         $context = $this->getAiContext();
         $dynamicContext = $this->getAiDynamicContext($field, $soIndex, $rIndex);
         $fieldPrompt = $this->getFieldPrompt($field);
@@ -863,7 +863,7 @@ class ProposalProjectFormLivewire extends Component
         $this->aiLoading = true;
         $this->aiLogframe = null;
 
-        $ai = app(\App\Services\AI\GeminiService::class);
+        $ai = app(\App\Services\AI\AiService::class);
         $this->aiLogframe = $ai->suggestLogframe($this->projectTitle, strip_tags($this->contextDescription ?? ''));
 
         $this->aiLoading = false;

@@ -52,13 +52,19 @@ return [
     ],
 
     // InvitationNotification
+    'powered_by' => 'Propulse par',
+    'tagline' => 'Gestion intelligente de projets pour ONG',
+
     'invitation' => [
         'subject' => 'Invitation a rejoindre :organization',
         'line1' => '**:sender** vous invite a rejoindre l\'espace **:organization** sur :app.',
+        'line1_rich' => 'vous invite a rejoindre l\'organisation :organization sur ' . config('app.name') . ', la plateforme de gestion de projets.',
         'line2' => "Cliquez sur le bouton ci-dessous pour accepter l'invitation :",
         'action' => "Accepter l'invitation",
         'line3' => "Vous pouvez aussi utiliser ce code d'invitation : **:code**",
         'line4' => 'Ce code est valable 7 jours.',
+        'your_role' => 'Votre role',
+        'or_use_code' => 'Ou utilisez ce code d\'invitation :',
     ],
 
     // CommentPostedNotification

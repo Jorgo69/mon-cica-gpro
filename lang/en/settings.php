@@ -10,6 +10,20 @@ return [
     'language' => 'Language',
     'notifications' => 'Notifications',
     'linked_accounts' => 'Linked accounts',
+    'organization' => 'Organization',
+
+    // Organization Profile
+    'org_profile' => 'Organization Profile',
+    'org_logo' => 'Logo',
+    'upload_logo' => 'Change logo',
+    'remove_logo' => 'Remove logo',
+    'org_name' => 'Organization name',
+    'org_description' => 'Description',
+    'org_description_placeholder' => 'Briefly describe your organization (visible in emails and shared dashboards)...',
+    'org_website' => 'Website',
+    'org_contact_email' => 'Contact email',
+    'org_contact_phone' => 'Phone',
+    'org_branding_hint' => 'This information will appear in invitation emails and dashboards shared with your partners.',
 
     // Theme
     'theme' => [

@@ -325,57 +325,26 @@
 - **Fix logique metier** : projet en brouillon bloque la progression/depenses (isOperational).
 - **Google OAuth** : login/register avec compte Google (Socialite).
 
-## Phase 22 (planifiee) — IA configurable multi-niveau
+### Session 14 (2026-05-02)
+- **Phase 22 complete** (8 sous-taches) : IA configurable multi-niveau
+  - Enum AiProvider (5 providers : groq, gemini, openai, mistral, custom)
+  - Model AiConfig polymorphe + migration (cles chiffrees encrypt/decrypt)
+  - AiConfigResolver : cascade org config > global DB (ROOT) > .env > disabled
+  - Refactor GeminiService → AiService (providers dynamiques, OpenAI-compatible + Gemini natif)
+  - UI ROOT /system/ai-config (provider, cle masquee, test connexion, status .env)
+  - UI ORG_ADMIN + INDEPENDENT : onglet IA dans Settings (3 modes, toggle par membre)
+  - Middleware CheckAiAccess (bloque si IA indisponible)
+  - Sidebar ROOT : lien Configuration IA
+  - Traductions FR+EN completes (ai.config.*, navigation.ai_config, enums.ai_provider)
 
-### Objectif
-Permettre a chaque niveau (ROOT, ORG_ADMIN, INDEPENDENT) de configurer son propre provider IA.
+## Phase 22 (TERMINEE) — IA configurable multi-niveau
 
-### Architecture prevue
-
-```
-Priorite de resolution :
-  1. Config Org (si l'org a sa propre cle)
-  2. Config globale ROOT (cle dans .env ou dans l'interface)
-  3. Desactive (si aucune cle)
-```
-
-### Taches
-
-- [ ] 22.1 **Model AiConfig** : table `ai_configs` (configurable_type, configurable_id, provider, api_key_encrypted, base_url, model, enabled)
-  - polymorphe : Organization ou User (independant)
-  - `api_key` chiffre via `encrypt()`/`decrypt()` (jamais en clair en DB)
-
-- [ ] 22.2 **Service AiConfigResolver** : resout la config active pour l'utilisateur courant
-  - Org a sa config → utilise
-  - Org n'a pas → fallback sur global (.env)
-  - Admin org a desactive pour un membre → bloque
-  - Independant a sa config → utilise
-
-- [ ] 22.3 **Refactor GeminiService** → `AiService` generique
-  - Providers supportes : groq, gemini, openai, mistral, custom (url + key)
-  - Interface commune `ask(prompt, system, temperature)`
-  - Le provider est resolu dynamiquement par AiConfigResolver
-
-- [ ] 22.4 **UI ROOT : /system/ai-config**
-  - Provider global par defaut (Groq, Gemini, OpenAI, Custom)
-  - Cle API globale (masquee apres saisie)
-  - URL custom (pour IA locale)
-  - Toggle activer/desactiver IA globalement
-
-- [ ] 22.5 **UI ORG_ADMIN : /settings → onglet IA**
-  - Choix : "Utiliser l'IA globale" / "Configurer ma propre IA" / "Desactiver l'IA"
-  - Si propre IA : provider, cle, url, modele
-  - Toggle par membre : activer/desactiver l'IA pour chaque membre
-
-- [ ] 22.6 **UI INDEPENDENT : /settings → onglet IA**
-  - Meme interface que org_admin mais pour soi-meme
-
-- [ ] 22.7 **Middleware CheckAiAccess**
-  - Verifie que l'utilisateur a le droit d'utiliser l'IA avant chaque appel
-  - Retourne message explicite si desactive
-
-- [ ] 22.8 **Tests**
-  - Resolution de config (org > global > disabled)
-  - Chiffrement/dechiffrement cles
-  - Providers (groq, gemini, openai, custom)
-  - Permissions (admin coupe pour un membre)
+- [x] 22.1 **Enum AiProvider** (groq, gemini, openai, mistral, custom) avec label/icon/defaultModel/baseUrl/isOpenAiCompatible
+- [x] 22.2 **Model AiConfig** polymorphe (Organization ou User) + migration ai_configs, cles chiffrees encrypt()/decrypt()
+- [x] 22.3 **Service AiConfigResolver** : cascade org config > global DB > global .env > disabled. Toggle par membre via UserMeta
+- [x] 22.4 **Refactor GeminiService → AiService** : providers dynamiques, OpenAI-compatible (Groq/OpenAI/Mistral/Custom) + Gemini natif
+- [x] 22.5 **UI ROOT /system/ai-config** : provider, cle masquee, modele, URL custom, toggle on/off, bouton test, status .env
+- [x] 22.6 **UI ORG_ADMIN Settings → onglet IA** : 3 modes (global/own/disabled), config propre, toggle IA par membre
+- [x] 22.7 **UI INDEPENDENT Settings → onglet IA** : meme interface conditionnel
+- [x] 22.8 **Middleware CheckAiAccess** : bloque si IA non disponible (JSON ou abort 403)
+- [ ] 22.9 **Tests** (a faire separement)

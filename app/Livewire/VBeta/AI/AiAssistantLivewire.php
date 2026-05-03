@@ -3,7 +3,7 @@
 namespace App\Livewire\VBeta\AI;
 
 use App\Livewire\Traits\WithToastNotifications;
-use App\Services\AI\GeminiService;
+use App\Services\AI\AiService;
 use Livewire\Component;
 
 class AiAssistantLivewire extends Component
@@ -24,7 +24,7 @@ class AiAssistantLivewire extends Component
         $this->loading = true;
         $this->result = null;
 
-        $ai = app(GeminiService::class);
+        $ai = app(AiService::class);
         $this->result = $ai->generateProjectDescription($this->projectTitle, $this->projectDescription ?: null);
 
         $this->loading = false;
@@ -39,7 +39,7 @@ class AiAssistantLivewire extends Component
         $this->loading = true;
         $this->logframeSuggestion = null;
 
-        $ai = app(GeminiService::class);
+        $ai = app(AiService::class);
         $this->logframeSuggestion = $ai->suggestLogframe($this->projectTitle, $this->projectDescription);
 
         $this->loading = false;
@@ -66,7 +66,7 @@ class AiAssistantLivewire extends Component
         $budgetPlanned = $project->budgets->sum('total_cost');
         $budgetSpent = $project->expenses->sum('amount');
 
-        $ai = app(GeminiService::class);
+        $ai = app(AiService::class);
         $this->result = $ai->generateExecutiveSummary([
             'title' => $project->title,
             'status' => $project->status?->label() ?? 'N/A',

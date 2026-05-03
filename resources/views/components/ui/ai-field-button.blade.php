@@ -1,6 +1,6 @@
 @props(['field', 'soIndex' => null, 'rIndex' => null, 'aIndex' => null])
 
-@if(\App\Services\AI\GeminiService::isConfigured())
+@if(\App\Services\AI\AiService::isConfigured())
 @php
     $args = "'{$field}'";
     if ($soIndex !== null) $args .= ", {$soIndex}";

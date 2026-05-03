@@ -45,6 +45,13 @@ return [
     'admin_invitations' => 'Invite collaborators by email. They will receive a link to join your organization.',
     'admin_roles' => 'Roles define permissions. ORG_ADMIN manages the organization, MANAGER manages projects, MEMBER participates.',
 
+    // AI
+    'ai_button' => 'Click the AI button to auto-generate content. You can apply, regenerate or dismiss the suggestion.',
+    'ai_provider' => 'The provider is the AI service used. Groq is recommended (free, fast). You can change at any time.',
+    'ai_api_key' => 'The API key is provided by the provider. It is encrypted and secured. You can find it in the provider\'s console.',
+    'ai_model' => 'The model is the AI version. Leave empty to use the default model (recommended).',
+    'ai_toggle_member' => 'Disable AI for a member if you don\'t want them using your API key credits.',
+
     // FAQ link
     'need_more_help' => 'Need help? Check the <a href="/faq" class="text-accent underline">FAQ</a>.',
 

@@ -4,13 +4,23 @@
 
     {{-- Onglets --}}
     <div class="flex gap-2 mb-8 flex-wrap">
-        @foreach([
-            'appearance' => ['label' => __('settings.appearance'), 'icon' => 'palette'],
-            'language' => ['label' => __('settings.language'), 'icon' => 'languages'],
-            'notifications' => ['label' => __('settings.notifications'), 'icon' => 'bell'],
-            'accounts' => ['label' => __('settings.linked_accounts'), 'icon' => 'link'],
-            'plan' => ['label' => __('plans.plan'), 'icon' => 'crown'],
-        ] as $tab => $info)
+        @php
+            $tabs = [];
+            if (auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN) {
+                $tabs['organization'] = ['label' => __('settings.organization'), 'icon' => 'building-2'];
+            }
+            $tabs += [
+                'appearance' => ['label' => __('settings.appearance'), 'icon' => 'palette'],
+                'language' => ['label' => __('settings.language'), 'icon' => 'languages'],
+                'notifications' => ['label' => __('settings.notifications'), 'icon' => 'bell'],
+                'accounts' => ['label' => __('settings.linked_accounts'), 'icon' => 'link'],
+                'plan' => ['label' => __('plans.plan'), 'icon' => 'crown'],
+            ];
+            if ($showAiTab) {
+                $tabs['ai'] = ['label' => __('ai.config.title'), 'icon' => 'sparkles'];
+            }
+        @endphp
+        @foreach($tabs as $tab => $info)
             <button wire:click="$set('activeTab', '{{ $tab }}')"
                 class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all
                     {{ $activeTab === $tab
@@ -21,6 +31,75 @@
             </button>
         @endforeach
     </div>
+
+    {{-- TAB ORGANISATION (ORG_ADMIN only) --}}
+    @if($activeTab === 'organization' && auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN)
+    <div class="space-y-6">
+        <x-ui.section :title="__('settings.org_profile')" icon="building-2" :noPadding="false">
+            <form wire:submit="saveOrgProfile" class="space-y-5">
+
+                {{-- Logo --}}
+                <div>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-3">{{ __('settings.org_logo') }}</label>
+                    <div class="flex items-center gap-4">
+                        {{-- Preview --}}
+                        <div class="w-20 h-20 rounded-2xl border-2 border-dashed border-border flex items-center justify-center bg-surface overflow-hidden">
+                            @if($orgLogo)
+                                <img src="{{ $orgLogo->temporaryUrl() }}" class="w-full h-full object-contain" alt="Preview" />
+                            @elseif($orgLogoUrl)
+                                <img src="{{ $orgLogoUrl }}" class="w-full h-full object-contain" alt="Logo" />
+                            @else
+                                <x-lucide-building-2 class="w-8 h-8 text-muted" />
+                            @endif
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-accent bg-accent/5 rounded-xl hover:bg-accent/10 transition-colors">
+                                <x-lucide-upload class="w-4 h-4" />
+                                {{ __('settings.upload_logo') }}
+                                <input type="file" wire:model="orgLogo" accept="image/*" class="hidden" />
+                            </label>
+                            @if($orgLogoUrl)
+                                <button type="button" wire:click="removeOrgLogo" class="block text-xs text-error hover:underline">
+                                    {{ __('settings.remove_logo') }}
+                                </button>
+                            @endif
+                            <p class="text-[10px] text-muted">PNG, JPG, SVG. Max 2 Mo.</p>
+                        </div>
+                    </div>
+                    @error('orgLogo') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Name --}}
+                <x-ui.input wire:model="orgName" :label="__('settings.org_name')" required icon="building-2" />
+
+                {{-- Description --}}
+                <div>
+                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2 ml-1">{{ __('settings.org_description') }}</label>
+                    <textarea wire:model="orgDescription" rows="3" maxlength="1000"
+                        class="block w-full border-border bg-card text-body rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 px-4"
+                        placeholder="{{ __('settings.org_description_placeholder') }}"></textarea>
+                </div>
+
+                {{-- Contact info --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <x-ui.input wire:model="orgWebsite" :label="__('settings.org_website')" type="url" icon="globe" placeholder="https://..." />
+                    <x-ui.input wire:model="orgContactEmail" :label="__('settings.org_contact_email')" type="email" icon="mail" placeholder="contact@..." />
+                </div>
+
+                <x-ui.input wire:model="orgContactPhone" :label="__('settings.org_contact_phone')" icon="phone" placeholder="+229 ..." />
+
+                <p class="text-[10px] text-muted">{{ __('settings.org_branding_hint') }}</p>
+
+                <div class="flex justify-end">
+                    <x-ui.button type="submit" variant="accent" icon="save">
+                        {{ __('common.save') }}
+                    </x-ui.button>
+                </div>
+            </form>
+        </x-ui.section>
+    </div>
+    @endif
 
     {{-- TAB APPARENCE --}}
     @if($activeTab === 'appearance')
@@ -373,6 +452,190 @@
                 <a href="{{ route('pricing') }}" target="_blank" class="text-xs text-accent hover:underline">{{ __('plans.see_details') }}</a>
             </div>
         </x-ui.section>
+    </div>
+    @endif
+
+    {{-- TAB IA --}}
+    @if($activeTab === 'ai' && $showAiTab)
+    <div class="space-y-6">
+
+        {{-- Quick Guide (collapsible) --}}
+        <x-ui.section title="" icon="" :noPadding="true">
+            <div x-data="{ open: false }">
+                <button @click="open = !open" class="w-full p-4 flex items-center justify-between hover:bg-surface/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                            <x-lucide-book-open class="w-4 h-4 text-purple-500" />
+                        </div>
+                        <div class="text-left">
+                            <p class="text-xs font-bold text-heading">{{ __('ai.guide.title') }}</p>
+                            <p class="text-[10px] text-muted">{{ __('ai.guide.what_is_ai') }} — {{ __('ai.guide.how_to_get_key') }}</p>
+                        </div>
+                    </div>
+                    <x-lucide-chevron-down class="w-4 h-4 text-muted transition-transform" x-bind:class="open && 'rotate-180'" />
+                </button>
+
+                <div x-show="open" x-collapse class="px-4 pb-4 space-y-4">
+                    {{-- What is AI --}}
+                    <div class="p-3 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+                        <p class="text-xs text-body leading-relaxed">{!! __('ai.guide.what_is_ai_desc') !!}</p>
+                    </div>
+
+                    {{-- Where --}}
+                    <div>
+                        <p class="text-xs font-bold text-heading mb-1.5">{{ __('ai.guide.where_is_ai') }}</p>
+                        <ul class="space-y-1">
+                            @foreach(__('ai.guide.where_is_ai_items') as $item)
+                                <li class="flex items-start gap-2 text-[10px] text-body">
+                                    <x-lucide-check class="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                                    <span>{!! $item !!}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- How to get key --}}
+                    <div>
+                        <p class="text-xs font-bold text-heading mb-1.5">{{ __('ai.guide.how_to_get_key') }}</p>
+                        <ol class="space-y-1">
+                            @foreach(__('ai.guide.how_to_get_key_steps') as $i => $step)
+                                <li class="flex items-start gap-2 text-[10px] text-body">
+                                    <span class="w-4 h-4 rounded-full bg-accent/10 text-accent text-[9px] font-bold flex items-center justify-center shrink-0">{{ $i + 1 }}</span>
+                                    <span>{{ $step }}</span>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </div>
+
+                    {{-- Recommendation --}}
+                    <div class="p-3 bg-green-50 dark:bg-green-900/10 rounded-lg">
+                        <p class="text-[10px] text-body leading-relaxed">{!! __('ai.guide.recommended_desc') !!}</p>
+                    </div>
+
+                    {{-- Provider cards --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        @foreach($aiProviders as $p)
+                            <div class="p-2 bg-card rounded-lg border border-border-light text-center">
+                                <p class="text-[10px] font-bold text-heading">{{ $p->label() }}</p>
+                                <p class="text-[9px] text-muted">{{ $p->pricing() }}</p>
+                                @if($p->signupUrl())
+                                    <a href="{{ $p->signupUrl() }}" target="_blank" rel="noopener" class="text-[9px] text-accent hover:underline">{{ __('ai.guide.get_key_at') }} &rarr;</a>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Security --}}
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                        <p class="text-[10px] text-body leading-relaxed"><x-lucide-shield-check class="w-3 h-3 inline text-blue-500" /> {!! __('ai.guide.security_desc') !!}</p>
+                    </div>
+                </div>
+            </div>
+        </x-ui.section>
+
+        {{-- Mode selection --}}
+        <x-ui.section :title="__('ai.config.org_config')" icon="sparkles" :noPadding="false">
+            <p class="text-xs text-subtle mb-4">{{ __('ai.config.org_subtitle') }}</p>
+
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                @foreach([
+                    'global' => ['label' => __('ai.config.use_global'), 'icon' => 'globe', 'desc' => __('ai.config.use_global_desc')],
+                    'own' => ['label' => __('ai.config.use_own'), 'icon' => 'key', 'desc' => __('ai.config.use_own_desc')],
+                    'disabled' => ['label' => __('ai.config.disable_ai'), 'icon' => 'power-off', 'desc' => __('ai.config.disable_ai_desc')],
+                ] as $mode => $opt)
+                    <button wire:click="$set('aiMode', '{{ $mode }}')"
+                        class="p-4 rounded-xl border-2 text-center transition-all
+                            {{ $aiMode === $mode
+                                ? 'border-accent bg-accent/5 shadow-sm'
+                                : 'border-border-light bg-card hover:border-accent/30' }}">
+                        <div class="w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center
+                            {{ $aiMode === $mode ? 'bg-accent/10 text-accent' : 'bg-surface-alt text-muted' }}">
+                            <x-dynamic-component :component="'lucide-' . $opt['icon']" class="w-4 h-4" />
+                        </div>
+                        <p class="text-xs font-bold {{ $aiMode === $mode ? 'text-accent' : 'text-heading' }}">{{ $opt['label'] }}</p>
+                        <p class="text-[9px] text-subtle mt-0.5">{{ $opt['desc'] }}</p>
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Own config form --}}
+            @if($aiMode === 'own')
+            <div class="space-y-4 p-4 bg-surface rounded-xl border border-border-light">
+                <div>
+                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.provider') }}</label>
+                    <select wire:model.live="aiProvider" class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2">
+                        @foreach($aiProviders as $p)
+                            <option value="{{ $p->value }}">{{ $p->label() }} — {{ $p->pricing() }}</option>
+                        @endforeach
+                    </select>
+                    @php $selProvider = \App\Enums\AiProvider::tryFrom($aiProvider); @endphp
+                    @if($selProvider)
+                        <p class="text-[10px] text-muted mt-1">{{ $selProvider->description() }}</p>
+                        @if($selProvider->signupUrl())
+                            <a href="{{ $selProvider->signupUrl() }}" target="_blank" rel="noopener" class="text-[10px] text-accent hover:underline">
+                                {{ __('ai.guide.get_key_at') }} {{ $selProvider->label() }} &rarr;
+                            </a>
+                        @endif
+                    @endif
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.api_key') }}</label>
+                    @if($aiMaskedKey)
+                        <p class="text-[10px] text-muted mb-1">{{ __('ai.config.current_key') }}: <code class="bg-surface-alt px-1 rounded">{{ $aiMaskedKey }}</code></p>
+                    @endif
+                    <input type="password" wire:model="aiApiKey"
+                        placeholder="{{ $aiMaskedKey ? __('ai.config.leave_empty') : __('ai.config.enter_key') }}"
+                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
+                    <p class="text-[10px] text-muted mt-1">{{ __('ai.config.key_encrypted') }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.model') }}</label>
+                    <input type="text" wire:model="aiModel"
+                        placeholder="{{ \App\Enums\AiProvider::tryFrom($aiProvider)?->defaultModel() }}"
+                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
+                </div>
+
+                @if($aiProvider === 'custom')
+                <div>
+                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.base_url') }}</label>
+                    <input type="url" wire:model="aiBaseUrl"
+                        placeholder="https://your-ai-server.com/v1"
+                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
+                </div>
+                @endif
+            </div>
+            @endif
+
+            <div class="mt-4">
+                <x-ui.button wire:click="saveAiConfig" icon="save" wire:loading.attr="disabled">
+                    {{ __('common.save') }}
+                </x-ui.button>
+            </div>
+        </x-ui.section>
+
+        {{-- Member AI toggle (ORG_ADMIN only) --}}
+        @if(auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN && $orgMembers->count() > 0)
+        <x-ui.section :title="__('ai.config.member_toggle')" icon="users" :noPadding="false">
+            <p class="text-xs text-subtle mb-4">{{ __('ai.config.member_toggle_desc') }}</p>
+            <div class="space-y-2">
+                @foreach($orgMembers as $member)
+                    @php $disabled = (bool) ($member->getMeta('ai.disabled_by_admin') ?? false); @endphp
+                    <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+                        <div>
+                            <p class="text-sm font-bold text-heading">{{ $member->name }}</p>
+                            <p class="text-[10px] text-muted">{{ $member->email }}</p>
+                        </div>
+                        <button wire:click="toggleMemberAi('{{ $member->id }}')"
+                            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ !$disabled ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600' }}">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ !$disabled ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+        </x-ui.section>
+        @endif
     </div>
     @endif
 

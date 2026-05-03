@@ -13,6 +13,7 @@ return [
         'collaboration' => 'Collaboration',
         'budget' => 'Budget & Finance',
         'export' => 'Exports & Reports',
+        'ai' => 'Artificial Intelligence',
         'account' => 'Account & Security',
     ],
 
@@ -87,6 +88,58 @@ return [
             'q' => 'How to export to Excel?',
             'a' => 'Open a project, click "Excel Export" in the action bar. The file contains 3 tabs: Activities, Budget and Indicators.',
         ],
+        // AI
+        [
+            'category' => 'ai',
+            'q' => 'How does AI work in CICA-GPRO?',
+            'a' => 'AI is integrated to help you write your projects faster. It can <strong>generate descriptions</strong>, <strong>suggest logical frameworks</strong>, and <strong>analyze your statistics</strong>. Everything it generates is a suggestion: you stay in full control of your content.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Where to find AI buttons?',
+            'a' => 'AI buttons (purple with a sparkle icon) appear: <strong>1)</strong> Next to each field when creating a project (steps 2-5). <strong>2)</strong> On a project page: "AI Summary" button for an executive summary. <strong>3)</strong> On the dashboard: automatic analysis of your statistics.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Is AI free?',
+            'a' => 'By default, the platform provides free AI (Groq). If you want to use another provider (OpenAI, Anthropic, etc.), configure your own API key in <strong>Settings > AI tab</strong>. Some providers like Groq, Gemini and Cohere offer free tiers.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'How to configure my own AI key?',
+            'a' => '<strong>Organization admins</strong>: Settings > AI tab > "My own AI key" > choose a provider, paste your API key. <strong>Independents</strong>: same path. <strong>Members</strong>: you use your organization\'s configuration, contact your admin.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Where to get a free API key?',
+            'a' => 'We recommend <strong>Groq</strong> (free, fast, works everywhere): create an account at <a href="https://console.groq.com/keys" target="_blank" class="text-accent underline">console.groq.com</a>. Other free options: Google Gemini (blocked in some African countries), Cohere (1000 requests/month).',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Is my API key secure?',
+            'a' => 'Yes. Your key is <strong>encrypted</strong> in the database using Laravel\'s AES-256-CBC algorithm. No one — not even the system administrator — can see your key in plain text after entry. Only the system decrypts it when calling the AI.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'AI is not working, what to do?',
+            'a' => 'Check: <strong>1)</strong> That an API key is configured (Settings > AI or contact your admin). <strong>2)</strong> That the admin hasn\'t disabled AI for your account. <strong>3)</strong> That the project title is filled (AI needs context). <strong>4)</strong> That your quota isn\'t exhausted at the provider. When in doubt, click "Test connection" in the configuration.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Can the admin disable AI for a member?',
+            'a' => 'Yes. The organization admin can, in Settings > AI tab > "AI per member" section, enable or disable AI access for each member individually.',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Which AI providers are supported?',
+            'a' => '9 providers are supported: <strong>Groq</strong> (Llama, free), <strong>Google Gemini</strong> (free), <strong>OpenAI</strong> (ChatGPT), <strong>Anthropic</strong> (Claude), <strong>Mistral</strong> (French), <strong>DeepSeek</strong> (affordable), <strong>Cohere</strong> (free limited), <strong>Together AI</strong> (multi-model), and <strong>Custom</strong> (your own local AI server).',
+        ],
+        [
+            'category' => 'ai',
+            'q' => 'Can I use a local AI server (Ollama, vLLM)?',
+            'a' => 'Yes! Choose the "Custom" provider and enter your server URL (e.g., http://localhost:11434/v1 for Ollama). The server must be compatible with the OpenAI API format (chat/completions).',
+        ],
+
         [
             'category' => 'account',
             'q' => 'How to change my password?',

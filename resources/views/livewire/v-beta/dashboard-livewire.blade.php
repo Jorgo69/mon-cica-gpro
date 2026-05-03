@@ -25,9 +25,9 @@
         @endif
 
         {{-- AI Dashboard Analysis --}}
-        @if(\App\Services\AI\GeminiService::isConfigured() && $totalProjects > 0)
+        @if(\App\Services\AI\AiService::isConfigured() && $totalProjects > 0)
             @php
-                $aiAnalysis = app(\App\Services\AI\GeminiService::class)->analyzeDashboard([
+                $aiAnalysis = app(\App\Services\AI\AiService::class)->analyzeDashboard([
                     'total_projects' => $totalProjects,
                     'active' => $projectsInProgress,
                     'completed' => $projectsCompleted,

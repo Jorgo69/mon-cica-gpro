@@ -98,7 +98,7 @@ class ProjectShowLivewire extends Component
     {
         if (!$this->project) return;
 
-        $ai = app(\App\Services\AI\GeminiService::class);
+        $ai = app(\App\Services\AI\AiService::class);
         if (!$ai::isConfigured()) return;
 
         $activities = $this->project->getAllActivities();

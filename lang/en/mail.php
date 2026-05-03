@@ -52,13 +52,19 @@ return [
     ],
 
     // InvitationNotification
+    'powered_by' => 'Powered by',
+    'tagline' => 'Intelligent project management for NGOs',
+
     'invitation' => [
         'subject' => 'Invitation to join :organization',
         'line1' => '**:sender** invites you to join the **:organization** workspace on :app.',
+        'line1_rich' => 'invites you to join the :organization organization on ' . config('app.name') . ', the project management platform.',
         'line2' => 'Click the button below to accept the invitation:',
         'action' => 'Accept invitation',
         'line3' => 'You can also use this invitation code: **:code**',
         'line4' => 'This code is valid for 7 days.',
+        'your_role' => 'Your role',
+        'or_use_code' => 'Or use this invitation code:',
     ],
 
     // CommentPostedNotification

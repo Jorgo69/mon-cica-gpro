@@ -6,11 +6,23 @@
             :title="isset($projectTypeId) ? __('admin.types.edit_title') : __('admin.types.new_title')"
             :subtitle="__('admin.types.form_subtitle')" />
 
+        {{-- System type warning --}}
+        @if($isSystem)
+            <div class="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800/30 flex items-start gap-3">
+                <x-lucide-shield-check class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                <div>
+                    <p class="text-sm font-bold text-heading">Type systeme</p>
+                    <p class="text-xs text-muted">Ce type est fourni par la plateforme. Vous pouvez modifier la description, la categorie et les champs dynamiques, mais pas le nom.</p>
+                </div>
+            </div>
+        @endif
+
         {{-- Key Information --}}
         <x-ui.section :title="__('admin.types.key_info')" icon="info">
             <div class="space-y-4">
                 <x-ui.input wire:model.defer="name" name="name" :label="__('admin.types.name_label')" required
-                            :error="$errors->first('name')" :placeholder="__('admin.types.name_placeholder')" />
+                            :error="$errors->first('name')" :placeholder="__('admin.types.name_placeholder')"
+                            :disabled="$isSystem" />
                 
                 <div class="space-y-2">
                     <label class="block text-[11px] font-black text-subtle uppercase tracking-wider ml-1">{{ __('admin.types.description') }}</label>

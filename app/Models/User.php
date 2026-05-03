@@ -158,6 +158,11 @@ class User extends Authenticatable
         return $this->hasMany(FcmToken::class);
     }
 
+    public function aiConfig()
+    {
+        return $this->morphOne(AiConfig::class, 'configurable');
+    }
+
     public function routeNotificationForFcm(): array
     {
         return $this->fcmTokens()->pluck('token')->toArray();

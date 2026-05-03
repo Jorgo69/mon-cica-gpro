@@ -20,11 +20,28 @@ class InvitationManagementLivewire extends Component
     public $statusFilter = '';
     public $showModal = false;
 
+    // Modale de confirmation
+    public $showConfirmModal = false;
+    public $confirmType = ''; // 'resend' or 'revoke'
+    public $confirmInvitationId = '';
+    public $confirmEmail = '';
+
     // Champs du formulaire d'invitation
     public $email = '';
-    public $role = 'org_user';
-    public $spatieRole = 'MEMBER';
+    public $selectedRole = 'member'; // single select: member, manager, admin
     public $organizationId = '';
+
+    /**
+     * Mapping: selectedRole -> [AccountType, Spatie Role]
+     */
+    public static function roleMapping(): array
+    {
+        return [
+            'member'  => ['account_type' => 'org_user',  'spatie_role' => 'MEMBER'],
+            'manager' => ['account_type' => 'org_user',  'spatie_role' => 'MANAGER'],
+            'admin'   => ['account_type' => 'org_admin', 'spatie_role' => 'ORG_ADMIN'],
+        ];
+    }
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -35,11 +52,9 @@ class InvitationManagementLivewire extends Component
     {
         $rules = [
             'email' => 'required|email|max:255',
-            'role' => 'required|string',
-            'spatieRole' => 'required|string',
+            'selectedRole' => 'required|in:member,manager,admin',
         ];
 
-        // ROOT doit spécifier l'org (sauf si en impersonation, elle est auto-remplie)
         $user = auth()->user();
         if ($user->role === AccountType::ROOT) {
             $rules['organizationId'] = 'required|exists:organizations,id';
@@ -50,11 +65,9 @@ class InvitationManagementLivewire extends Component
 
     public function openModal()
     {
-        $this->reset(['email', 'role', 'spatieRole', 'organizationId']);
-        $this->role = 'org_user';
-        $this->spatieRole = 'MEMBER';
+        $this->reset(['email', 'selectedRole', 'organizationId']);
+        $this->selectedRole = 'member';
 
-        // ROOT en impersonation : auto-sélectionner l'org
         if (auth()->user()->role === AccountType::ROOT && session('acting_as_organization_id')) {
             $this->organizationId = session('acting_as_organization_id');
         }
@@ -74,13 +87,14 @@ class InvitationManagementLivewire extends Component
 
         try {
             $user = auth()->user();
+            $mapping = self::roleMapping()[$this->selectedRole];
+
             $data = [
                 'email' => $this->email,
-                'role' => $this->role,
-                'spatie_role' => $this->spatieRole,
+                'role' => $mapping['account_type'],
+                'spatie_role' => $mapping['spatie_role'],
             ];
 
-            // Déterminer l'org cible
             if ($user->role === AccountType::ROOT) {
                 $data['organization_id'] = $this->organizationId;
             } else {
@@ -90,33 +104,84 @@ class InvitationManagementLivewire extends Component
             $action->execute($data);
 
             $this->showModal = false;
-            $this->reset(['email', 'role', 'spatieRole', 'organizationId']);
-            $this->notifyToast('success', 'Invitation envoyée avec succès.', 'Envoyé');
+            $this->reset(['email', 'selectedRole', 'organizationId']);
+            $this->notifyToast('success', __('admin.invitations.invitation_sent'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            $this->notifyToast('error', $e->getMessage(), 'Erreur');
+            $this->notifyToast('error', $e->getMessage());
         }
+    }
+
+    public function openConfirm(string $type, string $invitationId)
+    {
+        $invitation = Invitation::find($invitationId);
+        if (!$invitation) return;
+
+        $this->confirmType = $type;
+        $this->confirmInvitationId = $invitationId;
+        $this->confirmEmail = $invitation->email;
+        $this->showConfirmModal = true;
+    }
+
+    public function executeConfirmedAction()
+    {
+        if ($this->confirmType === 'resend') {
+            $this->resend($this->confirmInvitationId);
+        } elseif ($this->confirmType === 'revoke') {
+            $this->revoke($this->confirmInvitationId);
+        }
+        $this->showConfirmModal = false;
+        $this->reset(['confirmType', 'confirmInvitationId', 'confirmEmail']);
+    }
+
+    public function closeConfirmModal()
+    {
+        $this->showConfirmModal = false;
+        $this->reset(['confirmType', 'confirmInvitationId', 'confirmEmail']);
+    }
+
+    public const RESEND_COOLDOWN_MINUTES = 5;
+
+    public function getResendCooldown(string $invitationId): int
+    {
+        $expiry = cache("invitation-resend-cooldown-{$invitationId}");
+        if (!$expiry) return 0;
+        return max(0, now()->diffInSeconds($expiry, false));
     }
 
     public function resend(string $invitationId)
     {
+        // Cooldown check
+        $remaining = $this->getResendCooldown($invitationId);
+        if ($remaining > 0) {
+            $minutes = ceil($remaining / 60);
+            $this->notifyToast('warning', __('admin.invitations.cooldown', ['minutes' => $minutes]));
+            return;
+        }
+
         $invitation = Invitation::findOrFail($invitationId);
 
         try {
-            (new SendInvitationAction)->execute([
+            $data = [
                 'email' => $invitation->email,
                 'role' => $invitation->role,
                 'spatie_role' => $invitation->spatie_role,
                 'organization_id' => $invitation->organization_id,
-            ]);
-
-            // Revoquer l'ancienne
+            ];
             (new RevokeInvitationAction)->execute($invitation);
+            (new SendInvitationAction)->execute($data);
 
-            $this->notifyToast('success', 'Nouvelle invitation envoyée.', 'Renvoyé');
+            // Set cooldown
+            cache()->put(
+                "invitation-resend-cooldown-{$invitationId}",
+                now()->addMinutes(self::RESEND_COOLDOWN_MINUTES),
+                self::RESEND_COOLDOWN_MINUTES * 60
+            );
+
+            $this->notifyToast('success', __('admin.invitations.invitation_resent'));
         } catch (\Throwable $e) {
-            $this->notifyToast('error', $e->getMessage(), 'Erreur');
+            $this->notifyToast('error', $e->getMessage());
         }
     }
 
@@ -124,7 +189,7 @@ class InvitationManagementLivewire extends Component
     {
         $invitation = Invitation::findOrFail($invitationId);
         (new RevokeInvitationAction)->execute($invitation);
-        $this->notifyToast('success', 'Invitation révoquée.', 'Révoqué');
+        $this->notifyToast('success', __('admin.invitations.invitation_revoked'));
     }
 
     public function updatingSearch()
@@ -149,15 +214,18 @@ class InvitationManagementLivewire extends Component
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
             ->orderBy('created_at', 'desc');
 
+        // Roles disponibles selon le role de l'utilisateur courant
+        $availableRoles = ['member', 'manager'];
+        if (in_array(auth()->user()->role, [AccountType::ROOT, AccountType::ORG_ADMIN])) {
+            $availableRoles[] = 'admin';
+        }
+
         return view('livewire.v-beta.admin.invitation.invitation-management-livewire', [
             'invitations' => $query->paginate(10),
             'organizations' => auth()->user()->role === AccountType::ROOT
                 ? Organization::orderBy('name')->get()
                 : collect(),
-            'accountTypes' => collect(AccountType::cases())
-                ->filter(fn ($t) => $t !== AccountType::ROOT)
-                ->values(),
-            'spatieRoles' => ['ORG_ADMIN', 'MANAGER', 'MEMBER', 'SUPERVISOR'],
+            'availableRoles' => $availableRoles,
             'statuses' => InvitationStatus::cases(),
         ]);
     }

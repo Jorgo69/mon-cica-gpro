@@ -8,10 +8,17 @@
                 <x-lucide-menu class="nav-icon" />
             </button>
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
-                    <x-lucide-handshake class="w-[18px] h-[18px] text-accent" />
-                </div>
-                <span class="text-[15px] font-bold text-heading tracking-tight hidden sm:block">{{ config('app.name') }}</span>
+                @php $navOrg = auth()->user()?->organization; @endphp
+                @if($navOrg?->logo_path)
+                    <img src="{{ asset('storage/' . $navOrg->logo_path) }}" alt="{{ $navOrg->name }}" class="w-8 h-8 rounded-lg object-contain" />
+                @else
+                    <div class="w-8 h-8 rounded-lg bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
+                        <x-lucide-handshake class="w-[18px] h-[18px] text-accent" />
+                    </div>
+                @endif
+                <span class="text-[15px] font-bold text-heading tracking-tight hidden sm:block">
+                    {{ $navOrg?->name ?? config('app.name') }}
+                </span>
             </a>
         </div>
         

@@ -40,6 +40,19 @@ class ProjectTypeListLivewire extends Component
     public function toggleActive($id)
     {
         $type = ProjectType::findOrFail($id);
+
+        // Only ROOT can toggle system types
+        if ($type->is_system && !OrgContext::isRoot()) {
+            $this->notifyToast('error', 'Seul l\'administrateur systeme peut modifier les types systeme.');
+            return;
+        }
+
+        // Org types: only own org or ROOT
+        if ($type->organization_id && $type->organization_id !== OrgContext::orgId() && !OrgContext::isRoot()) {
+            $this->notifyToast('error', 'Vous ne pouvez pas modifier ce type.');
+            return;
+        }
+
         $type->update(['is_active' => !$type->is_active]);
         $this->loadTypes();
         $this->notifyToast('success', $type->is_active ? 'Type active.' : 'Type masque.');
@@ -49,10 +62,12 @@ class ProjectTypeListLivewire extends Component
     {
         $orgId = OrgContext::orgId();
 
+        $query = ProjectType::with('dynamicFields');
+
         if (OrgContext::isRoot() && !OrgContext::isImpersonating()) {
-            $this->projectTypes = ProjectType::orderBy('is_system', 'desc')->orderBy('name')->get();
+            $this->projectTypes = $query->orderBy('is_system', 'desc')->orderBy('name')->get();
         } else {
-            $this->projectTypes = ProjectType::visibleForOrg($orgId)->orderBy('is_system', 'desc')->orderBy('name')->get();
+            $this->projectTypes = $query->visibleForOrg($orgId)->orderBy('is_system', 'desc')->orderBy('name')->get();
         }
     }
 

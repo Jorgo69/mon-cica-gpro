@@ -89,4 +89,9 @@ return [
         'CAD' => 'Dollar Canadien',
         'NGN' => 'Naira',
     ],
+
+    // AI Provider
+    'ai_provider' => [
+        'custom' => 'Personnalise (URL + cle)',
+    ],
 ];

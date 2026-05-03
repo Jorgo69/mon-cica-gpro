@@ -28,6 +28,9 @@ Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system'
     // Audit Logs (Global)
     Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
 
+    // AI Config (Global)
+    Route::view('/ai-config', 'v_beta.system.ai-config.index')->name('ai-config');
+
     // Org Switch (Entrer/Quitter une organisation) — GET pour eviter les problemes CSRF/Livewire
     Route::get('/org/{organizationId}/enter', [OrgSwitchController::class, 'enter'])->name('org.enter');
     Route::get('/org/leave', [OrgSwitchController::class, 'leave'])->name('org.leave');

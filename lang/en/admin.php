@@ -51,9 +51,23 @@ return [
         'expired' => 'Expired',
         'revoked' => 'Revoked',
         'confirm_revoke' => 'Are you sure you want to revoke this invitation?',
+        'cooldown' => 'Please wait :minutes minute(s) before resending.',
+        'cooldown_hint' => 'Anti-spam cooldown active',
         'invitation_sent' => 'Invitation sent successfully.',
         'invitation_resent' => 'Invitation resent successfully.',
         'invitation_revoked' => 'Invitation revoked.',
+        'roles' => [
+            'member' => 'Member',
+            'manager' => 'Manager',
+            'admin' => 'Administrator',
+            'org_admin' => 'Administrator',
+            'supervisor' => 'Supervisor',
+        ],
+        'role_desc' => [
+            'member' => 'Can view projects and track their activities.',
+            'manager' => 'Can create and manage projects, assign activities.',
+            'admin' => 'Full access: member management, projects, organization settings.',
+        ],
     ],
 
     // Trash

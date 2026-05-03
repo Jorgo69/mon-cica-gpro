@@ -40,6 +40,7 @@ return [
     'roles' => 'Roles',
     'permissions' => 'Permissions',
     'audit' => 'Audit',
+    'ai_config' => 'AI Configuration',
 
     // Navbar
     'search_placeholder' => 'Search...',

@@ -101,10 +101,24 @@ return [
         'no_invitations_detail' => 'Invitez des membres à rejoindre votre organisation.',
         'confirm_resend' => 'Renvoyer une nouvelle invitation ?',
         'confirm_revoke' => 'Révoquer cette invitation ?',
+        'cooldown' => 'Veuillez patienter :minutes minute(s) avant de renvoyer.',
+        'cooldown_hint' => 'Cooldown anti-spam actif',
         'target_organization' => 'Organisation cible',
         'select_organization' => 'Sélectionner une organisation',
         'account_type' => 'Type de compte',
         'email_placeholder' => 'collaborateur@exemple.com',
+        'roles' => [
+            'member' => 'Membre',
+            'manager' => 'Gestionnaire',
+            'admin' => 'Administrateur',
+            'org_admin' => 'Administrateur',
+            'supervisor' => 'Superviseur',
+        ],
+        'role_desc' => [
+            'member' => 'Peut consulter les projets et suivre ses activites.',
+            'manager' => 'Peut creer et gerer des projets, assigner des activites.',
+            'admin' => 'Acces complet : gestion des membres, projets, parametres de l\'organisation.',
+        ],
     ],
 
     // Project types

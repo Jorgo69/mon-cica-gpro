@@ -8,7 +8,7 @@
                         {{ __('common.edit') }}
                     </x-ui.button>
                 @endcan
-                @if(\App\Services\AI\GeminiService::isConfigured())
+                @if(\App\Services\AI\AiService::isConfigured())
                 <x-ui.button wire:click="aiGenerateSummary" variant="outline" icon="sparkles" size="sm"
                     wire:loading.attr="disabled" wire:target="aiGenerateSummary"
                     class="!text-purple-600 !border-purple-200 hover:!bg-purple-50 dark:!text-purple-400 dark:!border-purple-800">

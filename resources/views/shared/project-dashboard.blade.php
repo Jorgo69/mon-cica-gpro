@@ -12,12 +12,19 @@
     <header class="bg-card border-b border-border-light sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                    <x-lucide-share-2 class="w-4 h-4 text-accent" />
-                </div>
+                @php $shareOrg = $project->organization; @endphp
+                @if($shareOrg?->logo_path)
+                    <img src="{{ asset('storage/' . $shareOrg->logo_path) }}" alt="{{ $shareOrg->name }}" class="w-8 h-8 rounded-lg object-contain" />
+                @else
+                    <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                        <x-lucide-share-2 class="w-4 h-4 text-accent" />
+                    </div>
+                @endif
                 <div>
                     <h1 class="text-sm font-bold text-heading">{{ $project->title }}</h1>
-                    <p class="text-[10px] text-muted">{{ $project->project_code }} &middot; {{ __('shared.read_only') }}</p>
+                    <p class="text-[10px] text-muted">
+                        {{ $shareOrg?->name ?? config('app.name') }} &middot; {{ $project->project_code }} &middot; {{ __('shared.read_only') }}
+                    </p>
                 </div>
             </div>
             @if($shareToken->label)

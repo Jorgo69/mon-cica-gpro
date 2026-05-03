@@ -1,5 +1,5 @@
 <div>
-    @if(!\App\Services\AI\GeminiService::isConfigured())
+    @if(!\App\Services\AI\AiService::isConfigured())
         {{-- AI not configured, don't render anything --}}
     @else
         {{-- Trigger Button --}}

@@ -38,6 +38,7 @@ return [
     'global_audit_logs' => 'Logs d\'audit global',
     'administration' => 'Administration',
     'management' => 'Gestion',
+    'ai_config' => 'Configuration IA',
 
     // Navbar
     'search_placeholder' => 'Rechercher...',

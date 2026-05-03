@@ -18,6 +18,11 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'slug',
+        'logo_path',
+        'website',
+        'contact_email',
+        'contact_phone',
+        'description',
         'status',
         'plan',
         'plan_activated_at',
@@ -91,5 +96,20 @@ class Organization extends Model
     public function hasFeature(string $feature): bool
     {
         return $this->currentPlan()->hasFeature($feature);
+    }
+
+    public function aiConfig()
+    {
+        return $this->morphOne(AiConfig::class, 'configurable');
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo_path ? asset('storage/' . $this->logo_path) : null;
+    }
+
+    public function hasLogo(): bool
+    {
+        return !empty($this->logo_path);
     }
 }

@@ -2,47 +2,66 @@
 
 namespace App\Services\AI;
 
+use App\Enums\AiProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class GeminiService
+class AiService
 {
-    protected string $provider; // 'gemini' or 'groq'
-    protected string $apiKey;
+    protected ?AiProvider $provider;
+    protected ?string $apiKey;
+    protected string $baseUrl;
     protected string $model;
 
     public function __construct()
     {
-        // Auto-detect provider: Groq first (no geo-restriction), then Gemini
-        if (!empty(config('gpro.ai.groq_api_key'))) {
-            $this->provider = 'groq';
-            $this->apiKey = config('gpro.ai.groq_api_key');
-            $this->model = config('gpro.ai.groq_model', 'llama-3.3-70b-versatile');
+        $config = AiConfigResolver::resolve();
+
+        if ($config) {
+            $this->provider = $config['provider'];
+            $this->apiKey = $config['api_key'];
+            $this->baseUrl = $config['base_url'];
+            $this->model = $config['model'];
         } else {
-            $this->provider = 'gemini';
-            $this->apiKey = config('gpro.ai.gemini_api_key', '');
-            $this->model = config('gpro.ai.gemini_model', 'gemini-2.0-flash');
+            $this->provider = null;
+            $this->apiKey = null;
+            $this->baseUrl = '';
+            $this->model = '';
         }
     }
 
     public static function isConfigured(): bool
     {
-        return !empty(config('gpro.ai.groq_api_key')) || !empty(config('gpro.ai.gemini_api_key'));
+        return AiConfigResolver::isAvailable();
     }
 
     public function ask(string $prompt, string $systemInstruction = '', float $temperature = 0.7): ?string
     {
-        if (!self::isConfigured()) {
+        if (!$this->provider || !$this->apiKey) {
             return null;
         }
 
-        return $this->provider === 'groq'
-            ? $this->askGroq($prompt, $systemInstruction, $temperature)
-            : $this->askGemini($prompt, $systemInstruction, $temperature);
+        if ($this->provider === AiProvider::GEMINI) {
+            return $this->askGemini($prompt, $systemInstruction, $temperature);
+        }
+
+        if ($this->provider === AiProvider::ANTHROPIC) {
+            return $this->askAnthropic($prompt, $systemInstruction, $temperature);
+        }
+
+        if ($this->provider === AiProvider::COHERE) {
+            return $this->askCohere($prompt, $systemInstruction, $temperature);
+        }
+
+        // All other providers use OpenAI-compatible format
+        return $this->askOpenAiCompatible($prompt, $systemInstruction, $temperature);
     }
 
-    protected function askGroq(string $prompt, string $systemInstruction, float $temperature): ?string
+    /**
+     * OpenAI-compatible API (Groq, OpenAI, Mistral, Custom).
+     */
+    protected function askOpenAiCompatible(string $prompt, string $systemInstruction, float $temperature): ?string
     {
         try {
             $messages = [];
@@ -51,9 +70,11 @@ class GeminiService
             }
             $messages[] = ['role' => 'user', 'content' => $prompt];
 
+            $url = rtrim($this->baseUrl, '/') . '/chat/completions';
+
             $response = Http::timeout(30)
                 ->withHeaders(['Authorization' => 'Bearer ' . $this->apiKey])
-                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                ->post($url, [
                     'model' => $this->model,
                     'messages' => $messages,
                     'temperature' => $temperature,
@@ -64,14 +85,24 @@ class GeminiService
                 return $response->json('choices.0.message.content');
             }
 
-            Log::warning('Groq API error', ['status' => $response->status(), 'body' => $response->body()]);
+            Log::warning('AI API error', [
+                'provider' => $this->provider->value,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             return null;
         } catch (\Exception $e) {
-            Log::warning('Groq API exception', ['message' => $e->getMessage()]);
+            Log::warning('AI API exception', [
+                'provider' => $this->provider->value,
+                'message' => $e->getMessage(),
+            ]);
             return null;
         }
     }
 
+    /**
+     * Google Gemini API (different format).
+     */
     protected function askGemini(string $prompt, string $systemInstruction, float $temperature): ?string
     {
         try {
@@ -91,9 +122,9 @@ class GeminiService
                 ];
             }
 
-            $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
-            $response = Http::timeout(30)
-                ->post("{$baseUrl}/{$this->model}:generateContent?key={$this->apiKey}", $body);
+            $url = rtrim($this->baseUrl, '/') . "/models/{$this->model}:generateContent?key={$this->apiKey}";
+
+            $response = Http::timeout(30)->post($url, $body);
 
             if ($response->successful()) {
                 return $response->json('candidates.0.content.parts.0.text');
@@ -103,6 +134,80 @@ class GeminiService
             return null;
         } catch (\Exception $e) {
             Log::warning('Gemini API exception', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    /**
+     * Anthropic Messages API (Claude).
+     */
+    protected function askAnthropic(string $prompt, string $systemInstruction, float $temperature): ?string
+    {
+        try {
+            $body = [
+                'model' => $this->model,
+                'max_tokens' => 2048,
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ];
+
+            if ($systemInstruction) {
+                $body['system'] = $systemInstruction;
+            }
+
+            $url = rtrim($this->baseUrl, '/') . '/messages';
+
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'x-api-key' => $this->apiKey,
+                    'anthropic-version' => '2023-06-01',
+                    'content-type' => 'application/json',
+                ])
+                ->post($url, $body);
+
+            if ($response->successful()) {
+                return $response->json('content.0.text');
+            }
+
+            Log::warning('Anthropic API error', ['status' => $response->status(), 'body' => $response->body()]);
+            return null;
+        } catch (\Exception $e) {
+            Log::warning('Anthropic API exception', ['message' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    /**
+     * Cohere Chat API (different format).
+     */
+    protected function askCohere(string $prompt, string $systemInstruction, float $temperature): ?string
+    {
+        try {
+            $body = [
+                'model' => $this->model,
+                'message' => $prompt,
+                'temperature' => $temperature,
+            ];
+
+            if ($systemInstruction) {
+                $body['preamble'] = $systemInstruction;
+            }
+
+            $url = rtrim($this->baseUrl, '/') . '/chat';
+
+            $response = Http::timeout(30)
+                ->withHeaders(['Authorization' => 'Bearer ' . $this->apiKey])
+                ->post($url, $body);
+
+            if ($response->successful()) {
+                return $response->json('text');
+            }
+
+            Log::warning('Cohere API error', ['status' => $response->status(), 'body' => $response->body()]);
+            return null;
+        } catch (\Exception $e) {
+            Log::warning('Cohere API exception', ['message' => $e->getMessage()]);
             return null;
         }
     }

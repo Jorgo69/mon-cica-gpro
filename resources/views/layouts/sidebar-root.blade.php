@@ -57,6 +57,12 @@
             <span class="nav-label">{{ __('navigation.audit_logs') }}</span>
         </a>
 
+        <a href="{{ route('system.ai-config') }}"
+           class="nav-item @if(Route::is('system.ai-config*')) nav-item-active @endif">
+            <x-lucide-sparkles class="nav-icon text-purple-500" />
+            <span class="nav-label">{{ __('navigation.ai_config') }}</span>
+        </a>
+
         {{-- ── PARAMÈTRES ── --}}
         <p class="sidebar-section-title">{{ __('navigation.settings_section') }}</p>
 
