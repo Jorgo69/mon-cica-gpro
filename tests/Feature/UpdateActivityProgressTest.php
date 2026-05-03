@@ -21,7 +21,7 @@ it('updates activity progress and notifies stakeholders', function () {
     Notification::fake();
 
     // Setup hierarchy
-    $project = Project::factory()->create(['organization_id' => $this->org->id, 'creator_user_id' => $this->user->id]);
+    $project = Project::factory()->create(['organization_id' => $this->org->id, 'creator_user_id' => $this->user->id, 'status' => \App\Enums\ProjectStatus::ACTIVE]);
     $logFrame = LogicalFramework::factory()->create(['project_id' => $project->id]);
     $objective = SpecificObjective::factory()->create(['logical_framework_id' => $logFrame->id]);
     $result = Result::factory()->create(['specific_objective_id' => $objective->id]);
@@ -58,7 +58,7 @@ it('updates activity progress and notifies stakeholders', function () {
 it('does not notify the user who performed the update', function () {
     Notification::fake();
 
-    $project = Project::factory()->create(['organization_id' => $this->org->id, 'creator_user_id' => $this->user->id]);
+    $project = Project::factory()->create(['organization_id' => $this->org->id, 'creator_user_id' => $this->user->id, 'status' => \App\Enums\ProjectStatus::ACTIVE]);
     $logFrame = LogicalFramework::factory()->create(['project_id' => $project->id]);
     $objective = SpecificObjective::factory()->create(['logical_framework_id' => $logFrame->id]);
     $result = Result::factory()->create(['specific_objective_id' => $objective->id]);
