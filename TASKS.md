@@ -337,6 +337,17 @@
   - Sidebar ROOT : lien Configuration IA
   - Traductions FR+EN completes (ai.config.*, navigation.ai_config, enums.ai_provider)
 
+### Session 15 (2026-05-03)
+- **Phase 22 enrichie** : 9 providers (+ Anthropic, DeepSeek, Cohere, Together), guides integres dans UI, 10 FAQ IA, support API Anthropic/Cohere natif
+- **Branding org** : migration logo_path/website/contact_email/contact_phone/description, upload logo dans Settings, navbar co-branding, dashboard bailleur logo
+- **Email invitation refait** : template HTML custom co-brande (logo org, role assigne, inviteur, footer pro)
+- **Fix invitations** : tableau deborde corrige (x-ui.section pattern), 1 seul select role (member/manager/admin mapping auto), modale confirmation (x-ui.modal), cooldown 5min anti-spam, fix resend (revoke avant send)
+- **Fix types projet** : categories query corrigee (project_category), badges Systeme/Global/Org, delete masque sur types systeme, toggleActive restreint ROOT, nom disabled sur types systeme
+- **Composant x-ui.confirm-modal** reutilisable (Alpine.js)
+- **Composant x-ui.input** : support prop disabled
+- **Fix tests** : 234 tests OK (isOperational status ACTIVE, Spatie teamId null)
+- **Planification** : Phases 23 (profil enrichi), 24 (owner + niveaux), 25 (RGPD), 26 (gpro:install)
+
 ## Phase 22 (TERMINEE) — IA configurable multi-niveau
 
 - [x] 22.1 **Enum AiProvider** (groq, gemini, openai, mistral, custom) avec label/icon/defaultModel/baseUrl/isOpenAiCompatible
@@ -348,3 +359,79 @@
 - [x] 22.7 **UI INDEPENDENT Settings → onglet IA** : meme interface conditionnel
 - [x] 22.8 **Middleware CheckAiAccess** : bloque si IA non disponible (JSON ou abort 403)
 - [ ] 22.9 **Tests** (a faire separement)
+
+## Phase 23 (planifiee) — Profil enrichi
+
+### Objectif
+Pays/villes collaboratives, telephone formate par pays, oeil mot de passe.
+
+### Taches
+
+- [ ] 23.1 **JSON pays** : `config/countries.php` (250 pays, code ISO, nom FR/EN, prefixe tel, nb digits tel)
+- [ ] 23.2 **Table cities** : migration (name, country_code, usage_count), Model City, autocompletion anonyme
+- [ ] 23.3 **Migration profil** : ajouter `country_code`, `city` sur users
+- [ ] 23.4 **Vue profil** : select pays + input ville autocompletion + telephone (prefixe auto selon pays, format dynamique)
+- [ ] 23.5 **API autocompletion ville** : endpoint `/api/cities?q=&country=`, auto-creation si nouvelle
+- [ ] 23.6 **Validation telephone** : regex dynamique selon pays (nb digits depuis config)
+- [ ] 23.7 **Oeil mot de passe** : verifier toggle show/hide partout (login, register, profil, change password)
+
+## Phase 24 (planifiee) — Owner org + Niveaux permissions
+
+### Objectif
+Separer owner/admin, niveaux visuels pour les permissions, protection du createur d'org.
+
+### Architecture prevue
+
+```
+Niveaux :
+  1. Observateur   → view-projects, view-activities (lecture seule)
+  2. Contributeur  → + edit-activities, add-comments, track-progress
+  3. Gestionnaire  → + create-projects, manage-activities, manage-budgets
+  4. Administrateur → + manage-members, manage-settings, invite-users
+```
+
+### Taches
+
+- [ ] 24.1 **Owner sur org** : migration `owner_user_id` sur organizations, relation, auto-assigne a la creation
+- [ ] 24.2 **Transfert ownership** : UI dans Settings, seulement vers un autre admin, modale de confirmation
+- [ ] 24.3 **Enum PermissionLevel** : 4 niveaux (observateur, contributeur, gestionnaire, administrateur) avec mapping permissions Spatie
+- [ ] 24.4 **UI niveaux** : cartes visuelles dans membres + invitations (remplace select role brut)
+- [ ] 24.5 **Protection owner** : ne peut pas etre supprime/retrograde, doit transferer avant de quitter
+- [ ] 24.6 **Adaptation invitations** : utiliser PermissionLevel au lieu de spatie_role brut
+
+## Phase 25 (planifiee) — RGPD complet
+
+### Objectif
+Export donnees par role, suppression/anonymisation, prevenance 30j, politique de retention.
+
+### Regles
+
+```
+Suppression membre : anonymisation (nom→"Utilisateur supprime", email→hash), activites detachees
+Suppression admin  : bloquer si seul owner, forcer transfert ownership
+Suppression org    : email prevenance 30j → soft-delete → membres detaches → hard-delete apres 30j
+Export membre      : ses donnees perso (profil, activites, commentaires, notifs) en JSON
+Export admin       : ses donnees + export org (projets, membres, budgets, activites) en JSON+CSV
+Export independant : ses donnees + ses projets en JSON
+```
+
+### Taches
+
+- [ ] 25.1 **Export donnees perso** : refactorer GdprExportService, adapter par role (membre/admin/independant)
+- [ ] 25.2 **Export org** (admin) : projets, membres, budgets, activites en JSON + CSV (ZIP)
+- [ ] 25.3 **Suppression membre** : anonymisation, detachement activites
+- [ ] 25.4 **Suppression admin** : bloquer si seul owner, forcer transfert
+- [ ] 25.5 **Suppression org** : email prevenance 30j → soft-delete → membres detaches
+- [ ] 25.6 **UI suppression** : section danger dans Settings (confirmation email + mot de passe)
+- [ ] 25.7 **Politique retention** : commande `gpro:cleanup-deleted` (hard-delete orgs soft-deleted > 30j), scheduler
+
+## Phase 26 (planifiee) — Commande gpro:install (Open Source)
+
+### Objectif
+Permettre une installation standalone sans ROOT. Pour la version Open Source.
+
+### Taches
+
+- [ ] 26.1 **Commande `php artisan gpro:install`** : interactive, cree la premiere org + premier ORG_ADMIN (owner), seed permissions/categories/types, configure .env
+- [ ] 26.2 **Detection mode** : config `gpro.mode` = 'saas' (avec ROOT) ou 'standalone' (sans ROOT), conditionne la sidebar et les routes system
+- [ ] 26.3 **Documentation** : README pour l'installation Open Source

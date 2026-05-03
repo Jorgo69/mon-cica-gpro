@@ -34,6 +34,11 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        // Register city in collaborative city table (anonymous)
+        if ($request->ville && $request->pays) {
+            \App\Models\City::findOrCreateAndIncrement($request->ville, $request->pays);
+        }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 

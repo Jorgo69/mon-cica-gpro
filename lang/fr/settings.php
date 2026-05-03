@@ -88,6 +88,7 @@ return [
         'sex' => 'Sexe',
         'country' => 'Pays',
         'city' => 'Ville',
+        'city_placeholder' => 'Tapez le nom de votre ville...',
 
         'saved' => 'Profil mis à jour',
 

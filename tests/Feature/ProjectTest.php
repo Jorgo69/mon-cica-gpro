@@ -87,8 +87,8 @@ test('project show page works for owner', function () {
     $org = createOrg();
     $user = createOrgAdmin($org);
 
-    // Spatie teams mode: set team context to user's org before assigning role
-    setPermissionsTeamId($org->id);
+    // Spatie teams mode: roles are global (org_id=null)
+    setPermissionsTeamId(null);
     $user->assignRole('ORG_ADMIN');
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 

@@ -88,6 +88,7 @@ return [
         'sex' => 'Gender',
         'country' => 'Country',
         'city' => 'City',
+        'city_placeholder' => 'Type your city name...',
 
         'saved' => 'Profile updated',
 
