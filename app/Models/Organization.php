@@ -18,6 +18,7 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'slug',
+        'owner_user_id',
         'logo_path',
         'website',
         'contact_email',
@@ -49,6 +50,11 @@ class Organization extends Model
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
     }
 
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
     public function users()
     {
         return $this->hasMany(User::class);
@@ -57,6 +63,12 @@ class Organization extends Model
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function isOwner(?User $user = null): bool
+    {
+        $user = $user ?? auth()->user();
+        return $user && $this->owner_user_id === $user->id;
     }
 
     public function currentPlan(): \App\Enums\Plan

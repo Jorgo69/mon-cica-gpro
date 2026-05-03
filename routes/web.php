@@ -93,6 +93,9 @@ Route::middleware('auth')->group(function () {
         return response()->json(['error' => 'invalid key'], 422);
     })->name('user-meta.update');
 
+    // City autocomplete
+    Route::get('/api/cities', [\App\Http\Controllers\Api\CityController::class, 'search'])->name('api.cities.search');
+
     // FCM push tokens
     Route::post('/api/fcm-tokens', [\App\Http\Controllers\Api\FcmTokenController::class, 'store'])->name('fcm-token.store');
     Route::delete('/api/fcm-tokens/{token}', [\App\Http\Controllers\Api\FcmTokenController::class, 'destroy'])->name('fcm-token.destroy');

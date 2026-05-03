@@ -144,9 +144,16 @@ class MemberManagementLivewire extends Component
     public function delete(DeleteMemberAction $deleteAction)
     {
         $this->authorize('delete', $this->selectedMember);
-        
+
+        // Protect org owner from deletion
+        $org = $this->selectedMember->organization;
+        if ($org && $org->isOwner($this->selectedMember)) {
+            $this->notifyToast('error', 'Le proprietaire de l\'organisation ne peut pas etre supprime. Transferez d\'abord la propriete.');
+            return;
+        }
+
         $deleteAction->execute($this->selectedMember);
-        
+
         $this->closeModal();
         $this->notifyToast('success', 'Le membre a été supprimé de l\'organisation.', 'Suppression effectuée');
     }

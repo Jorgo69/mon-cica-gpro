@@ -25,6 +25,24 @@ return [
     'org_contact_phone' => 'Phone',
     'org_branding_hint' => 'This information will appear in invitation emails and dashboards shared with your partners.',
 
+    // Ownership transfer
+    'transfer' => [
+        'title' => 'Organization Ownership',
+        'you_are_owner' => 'You are the owner of this organization.',
+        'desc' => 'The owner has full control: cannot be removed or demoted. You can transfer this role to another administrator.',
+        'transfer_btn' => 'Transfer ownership',
+        'no_other_admin' => 'Add another administrator first to be able to transfer ownership.',
+        'modal_title' => 'Transfer ownership',
+        'warning' => 'Warning: after the transfer, you will remain an administrator but will no longer be the owner. This action is only reversible by the new owner.',
+        'select_admin' => 'New owner administrator',
+        'choose' => 'Choose an administrator',
+        'confirm' => 'Transfer',
+        'success' => 'Ownership transferred to :name.',
+        'not_owner' => 'You are not the owner of this organization.',
+        'select_target' => 'Please select an administrator.',
+        'target_not_admin' => 'The target must be an administrator of your organization.',
+    ],
+
     // Theme
     'theme' => [
         'title' => 'Interface theme',
@@ -88,6 +106,7 @@ return [
         'sex' => 'Gender',
         'country' => 'Country',
         'city' => 'City',
+        'city_placeholder' => 'Type your city name...',
 
         'saved' => 'Profile updated',
 

@@ -94,4 +94,18 @@ return [
     'ai_provider' => [
         'custom' => 'Personnalise (URL + cle)',
     ],
+
+    // Permission Level
+    'permission_level' => [
+        'OBSERVER' => 'Observateur',
+        'CONTRIBUTOR' => 'Contributeur',
+        'MANAGER' => 'Gestionnaire',
+        'ADMIN' => 'Administrateur',
+    ],
+    'permission_level_desc' => [
+        'OBSERVER' => 'Consultation uniquement : voir les projets, budgets et indicateurs.',
+        'CONTRIBUTOR' => 'Creer des projets, modifier les activites, suivre la progression.',
+        'MANAGER' => 'Gerer les projets complets : activites, budgets, suppression.',
+        'ADMIN' => 'Acces total : membres, parametres, invitations, organisation.',
+    ],
 ];

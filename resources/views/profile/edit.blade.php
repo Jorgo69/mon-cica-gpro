@@ -101,12 +101,6 @@
                         </div>
 
                         <div>
-                            <label for="telephone" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.phone') }}</label>
-                            <input id="telephone" name="telephone" type="text" value="{{ old('telephone', $user->telephone) }}"
-                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
-                        </div>
-
-                        <div>
                             <label for="sexe" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.sex') }}</label>
                             <select id="sexe" name="sexe"
                                 class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
@@ -116,16 +110,64 @@
                             </select>
                         </div>
 
-                        <div>
+                        {{-- Pays (select avec drapeau) --}}
+                        <div x-data="{ selectedCountry: '{{ old('pays', $user->pays) }}' }">
                             <label for="pays" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.country') }}</label>
-                            <input id="pays" name="pays" type="text" value="{{ old('pays', $user->pays) }}"
-                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                            <select id="pays" name="pays" x-model="selectedCountry"
+                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
+                                <option value="">{{ __('common.not_specified') }}</option>
+                                @foreach(config('countries') as $country)
+                                    <option value="{{ $country['code'] }}" {{ old('pays', $user->pays) === $country['code'] ? 'selected' : '' }}>
+                                        {{ $country['flag'] }} {{ app()->getLocale() === 'fr' ? $country['name_fr'] : $country['name_en'] }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
-                        <div>
+                        {{-- Ville (autocompletion collaborative) --}}
+                        <div x-data="{
+                            query: '{{ old('ville', $user->ville) }}',
+                            suggestions: [],
+                            showSuggestions: false,
+                            async search() {
+                                if (this.query.length < 2) { this.suggestions = []; this.showSuggestions = false; return; }
+                                const country = document.getElementById('pays').value;
+                                const res = await fetch(`/api/cities?q=${encodeURIComponent(this.query)}&country=${country}`, { credentials: 'same-origin' });
+                                this.suggestions = await res.json();
+                                this.showSuggestions = this.suggestions.length > 0;
+                            },
+                            select(name) {
+                                this.query = name;
+                                this.showSuggestions = false;
+                            }
+                        }" class="relative">
                             <label for="ville" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.city') }}</label>
-                            <input id="ville" name="ville" type="text" value="{{ old('ville', $user->ville) }}"
+                            <input id="ville" name="ville" type="text" x-model="query" @input.debounce.300ms="search()" @click.away="showSuggestions = false" autocomplete="off"
+                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                                placeholder="{{ __('settings.profile.city_placeholder') }}" />
+                            {{-- Suggestions dropdown --}}
+                            <div x-show="showSuggestions" x-cloak class="absolute z-20 mt-1 w-full bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                <template x-for="s in suggestions" :key="s.name">
+                                    <button type="button" @click="select(s.name)" class="w-full text-left px-4 py-2.5 text-sm text-body hover:bg-surface transition-colors flex items-center justify-between">
+                                        <span x-text="s.name"></span>
+                                        <span class="text-[9px] text-muted" x-text="s.count > 1 ? s.count + ' utilisateurs' : ''"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Telephone (prefixe auto selon pays) --}}
+                        @php
+                            $userCountry = old('pays', $user->pays);
+                            $countryData = $userCountry ? collect(config('countries'))->firstWhere('code', $userCountry) : null;
+                            $phonePlaceholder = $countryData ? $countryData['prefix'] . ' ' . $countryData['example'] ?? '' : '+229 01 97 00 00 00';
+                        @endphp
+                        <div>
+                            <label for="telephone" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.phone') }}</label>
+                            <input id="telephone" name="telephone" type="tel" value="{{ old('telephone', $user->telephone) }}"
+                                placeholder="{{ $phonePlaceholder }}"
                                 class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                            @error('telephone') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -159,24 +201,42 @@
                     @method('put')
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div>
+                        <div x-data="{ show: false }">
                             <label for="current_password" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.current_password') }}</label>
-                            <input id="current_password" name="current_password" type="password"
-                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                            <div class="relative">
+                                <input id="current_password" name="current_password" :type="show ? 'text' : 'password'"
+                                    class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 pr-11 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-muted hover:text-accent transition-colors">
+                                    <x-lucide-eye x-show="!show" class="w-4 h-4" />
+                                    <x-lucide-eye-off x-show="show" class="w-4 h-4" />
+                                </button>
+                            </div>
                             @error('current_password', 'updatePassword') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+                        <div x-data="{ show: false }">
                             <label for="password" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.new_password') }}</label>
-                            <input id="password" name="password" type="password"
-                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                            <div class="relative">
+                                <input id="password" name="password" :type="show ? 'text' : 'password'"
+                                    class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 pr-11 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-muted hover:text-accent transition-colors">
+                                    <x-lucide-eye x-show="!show" class="w-4 h-4" />
+                                    <x-lucide-eye-off x-show="show" class="w-4 h-4" />
+                                </button>
+                            </div>
                             @error('password', 'updatePassword') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+                        <div x-data="{ show: false }">
                             <label for="password_confirmation" class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.profile.confirm_password') }}</label>
-                            <input id="password_confirmation" name="password_confirmation" type="password"
-                                class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                            <div class="relative">
+                                <input id="password_confirmation" name="password_confirmation" :type="show ? 'text' : 'password'"
+                                    class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 pr-11 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all" />
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-4 flex items-center text-muted hover:text-accent transition-colors">
+                                    <x-lucide-eye x-show="!show" class="w-4 h-4" />
+                                    <x-lucide-eye-off x-show="show" class="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 

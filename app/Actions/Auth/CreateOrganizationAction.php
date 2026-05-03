@@ -23,11 +23,12 @@ class CreateOrganizationAction
         return DB::transaction(function () use ($user, $name) {
             Log::info('[Action] CreateOrganization - Début transaction');
 
-            // 1. Créer l'organisation
+            // 1. Créer l'organisation avec l'utilisateur comme owner
             $organization = Organization::create([
                 'name' => $name,
                 'slug' => Str::slug($name),
                 'status' => 'trial',
+                'owner_user_id' => $user->id,
             ]);
 
             Log::info('[Action] CreateOrganization - Organisation créée', ['id' => $organization->id]);

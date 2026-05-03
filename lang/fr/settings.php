@@ -25,6 +25,24 @@ return [
     'org_contact_phone' => 'Telephone',
     'org_branding_hint' => 'Ces informations apparaitront dans les emails d\'invitation et les tableaux de bord partages avec vos partenaires.',
 
+    // Ownership transfer
+    'transfer' => [
+        'title' => 'Propriete de l\'organisation',
+        'you_are_owner' => 'Vous etes le proprietaire de cette organisation.',
+        'desc' => 'Le proprietaire a le controle total : il ne peut pas etre supprime ou retrograde. Vous pouvez transferer ce role a un autre administrateur.',
+        'transfer_btn' => 'Transferer la propriete',
+        'no_other_admin' => 'Ajoutez d\'abord un autre administrateur pour pouvoir transferer la propriete.',
+        'modal_title' => 'Transferer la propriete',
+        'warning' => 'Attention : apres le transfert, vous resterez administrateur mais ne serez plus proprietaire. Cette action est reversible uniquement par le nouveau proprietaire.',
+        'select_admin' => 'Nouvel admin proprietaire',
+        'choose' => 'Choisir un administrateur',
+        'confirm' => 'Transferer',
+        'success' => 'Propriete transferee a :name.',
+        'not_owner' => 'Vous n\'etes pas le proprietaire de cette organisation.',
+        'select_target' => 'Selectionnez un administrateur.',
+        'target_not_admin' => 'Le destinataire doit etre un administrateur de votre organisation.',
+    ],
+
     // Theme
     'theme' => [
         'title' => 'Thème de l\'interface',
@@ -88,6 +106,7 @@ return [
         'sex' => 'Sexe',
         'country' => 'Pays',
         'city' => 'Ville',
+        'city_placeholder' => 'Tapez le nom de votre ville...',
 
         'saved' => 'Profil mis à jour',
 
