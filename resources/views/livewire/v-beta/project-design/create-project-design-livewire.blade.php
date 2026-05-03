@@ -15,7 +15,7 @@
 
         <div class="bg-card overflow-hidden shadow-xl sm:rounded-lg">
             <div class="p-6 sm:px-20 bg-card border-b border-border">
-                <h1 class="text-3xl font-bold text-heading mb-6">Créer un Nouveau Projet de Conception</h1>
+                <h1 class="text-3xl font-bold text-heading mb-6">{{ __('projects.design.create_title') }}</h1>
                 {{-- Conteneur principal du formulaire avec Alpine.js et Livewire --}}
                 {{-- RETRAIT DE wire:ignore.self POUR PERMETTRE LA MISE À JOUR DU FORMULAIRE --}}
                 
@@ -49,7 +49,7 @@
 
                     {{-- Colonne de navigation des étapes --}}
                     <div class="lg:w-1/4 bg-surface-alt p-6 rounded-lg shadow-inner">
-                        <h2 class="text-xl font-semibold text-heading mb-4">Étapes</h2>
+                        <h2 class="text-xl font-semibold text-heading mb-4">{{ __('projects.design.steps') }}</h2>
                         <ul class="space-y-3">
                             <template x-for="(step, index) in stepDetails" :key="index">
                                 <li class="flex items-center space-x-3 cursor-pointer p-2 rounded-md transition-colors"
@@ -72,7 +72,7 @@
 
                         {{-- Barre de progression --}}
                         <div class="mt-8">
-                            <div class="text-sm font-medium text-body mb-2">Progression</div>
+                            <div class="text-sm font-medium text-body mb-2">{{ __('projects.design.progress') }}</div>
                             <div class="w-full bg-border rounded-full h-2.5">
                                 <div x-ref="progressBarFill" class="bg-accent h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
                             </div>
@@ -87,16 +87,16 @@
 
                         {{-- Fenêtre 1 : Informations Générales & Contexte IA --}}
                         <div x-show="currentStep === 1" class="space-y-6">
-                            <h2 class="text-2xl font-semibold text-heading mb-4">Informations Clés du Projet</h2>
-                            <p class="text-body mb-6">Renseignez les détails administratifs de base et le contexte initial pour l'assistance de l'IA.</p>
+                            <h2 class="text-2xl font-semibold text-heading mb-4">{{ __('projects.design.key_info') }}</h2>
+                            <p class="text-body mb-6">{{ __('projects.design.key_info_desc') }}</p>
 
                             <div class="bg-info/5 border border-info/20 text-info p-4 rounded-lg mb-6">
-                                <p class="font-semibold">Conseil IA :</p>
-                                <p>Des informations précises sur le titre, le code et une description générale enrichissent la compréhension initiale de l'IA pour des suggestions pertinentes.</p>
+                                <p class="font-semibold">{{ __('projects.design.ai_tip') }} :</p>
+                                <p>{{ __('projects.design.ai_tip_desc') }}</p>
                             </div>
 
                             <div>
-                                <label for="projectTitle" class="block text-sm font-medium text-body">Titre du Projet <span class="text-error">*</span></label>
+                                <label for="projectTitle" class="block text-sm font-medium text-body">{{ __('projects.design.project_title') }} <span class="text-error">*</span></label>
                                 <input type="text" id="projectTitle" wire:model.defer="projectTitle"
                                        class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent"
                                        placeholder="Ex: Système de gestion de projet IA">
@@ -104,7 +104,7 @@
                             </div>
 
                             <div>
-                                <label for="projectCode" class="block text-sm font-medium text-body">Code du Projet <span class="text-error">*</span></label>
+                                <label for="projectCode" class="block text-sm font-medium text-body">{{ __('projects.design.project_code') }} <span class="text-error">*</span></label>
                                 <input type="text" id="projectCode" wire:model.defer="projectCode"
                                        class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent"
                                        placeholder="Ex: PRJ-ALPHA-001">
@@ -112,7 +112,7 @@
                             </div>
 
                             <div>
-                                <label for="projectShortTitle" class="block text-sm font-medium text-body">Titre Abrégé (Optionnel)</label>
+                                <label for="projectShortTitle" class="block text-sm font-medium text-body">{{ __('projects.design.short_title') }}</label>
                                 <input type="text" id="projectShortTitle" wire:model.defer="projectShortTitle"
                                        class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent"
                                        placeholder="Ex: SysGProj IA">
@@ -120,7 +120,7 @@
                             </div>
 
                             <div>
-                                <label for="projectDescriptionGeneral" class="block text-sm font-medium text-body">Description Générale du Projet (Optionnel)</label>
+                                <label for="projectDescriptionGeneral" class="block text-sm font-medium text-body">{{ __('projects.design.general_description') }}</label>
                                 <textarea id="projectDescriptionGeneral" wire:model.defer="projectDescriptionGeneral" rows="3"
                                           class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent"
                                           placeholder="Fournissez un aperçu général du projet."></textarea>
@@ -129,13 +129,13 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="projectStartDate" class="block text-sm font-medium text-body">Date de Début <span class="text-error">*</span></label>
+                                    <label for="projectStartDate" class="block text-sm font-medium text-body">{{ __('projects.design.start_date') }} <span class="text-error">*</span></label>
                                     <input type="date" id="projectStartDate" wire:model.defer="projectStartDate"
                                            class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent">
                                     @error('projectStartDate') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
-                                    <label for="projectEndDate" class="block text-sm font-medium text-body">Date de Fin <span class="text-error">*</span></label>
+                                    <label for="projectEndDate" class="block text-sm font-medium text-body">{{ __('projects.design.end_date') }} <span class="text-error">*</span></label>
                                     <input type="date" id="projectEndDate" wire:model.defer="projectEndDate"
                                            class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent">
                                     @error('projectEndDate') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
@@ -143,14 +143,14 @@
                             </div>
 
                             <div>
-                                <label for="projectStatus" class="block text-sm font-medium text-body">Statut du Projet <span class="text-error">*</span></label>
+                                <label for="projectStatus" class="block text-sm font-medium text-body">{{ __('projects.design.project_status') }} <span class="text-error">*</span></label>
                                 <select id="projectStatus" wire:model.defer="projectStatus"
                                         class="mt-1 block w-full rounded-md shadow-sm border-border bg-card text-heading focus:border-accent focus:ring-accent">
-                                    <option value="draft">Brouillon</option>
-                                    <option value="active">Actif</option>
-                                    <option value="completed">Terminé</option>
-                                    <option value="on_hold">En attente</option>
-                                    <option value="cancelled">Annulé</option>
+                                    <option value="draft">{{ __('common.draft') }}</option>
+                                    <option value="active">{{ __('common.active') }}</option>
+                                    <option value="completed">{{ __('common.completed') }}</option>
+                                    <option value="on_hold">{{ __('common.pending') }}</option>
+                                    <option value="cancelled">{{ __('common.cancelled') }}</option>
                                 </select>
                                 @error('projectStatus') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -466,7 +466,7 @@
                         <div class="flex justify-between items-center mt-8">
                             @if ($currentStep > 1)
                                 <button type="button" wire:click="previousStep" class="px-6 py-3 bg-surface-alt text-heading rounded-lg hover:bg-border transition-colors font-semibold">
-                                    Précédent
+                                    {{ __('common.previous') }}
                                 </button>
                             @else
                                 <div></div>
@@ -475,12 +475,12 @@
                             @if ($currentStep < $totalSteps)
                                 {{-- Changed type to 'button' and added wire:click="nextStep" --}}
                                 <button type="button" wire:click="nextStep" class="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors font-semibold">
-                                    Suivant
+                                    {{ __('common.next') }}
                                 </button>
                             @else
                                 {{-- This button will trigger the final submitForm --}}
                                 <button type="submit" class="px-6 py-3 bg-success text-white rounded-lg hover:bg-success-dark transition-colors font-semibold">
-                                    Soumettre le Projet
+                                    {{ __('common.submit') }}
                                 </button>
                             @endif
                         </div>

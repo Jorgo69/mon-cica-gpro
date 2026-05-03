@@ -1,42 +1,42 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Gestion des Membres" subtitle="Ajoutez, modifiez et gérez les membres de votre équipe">
+    <x-ui.page-header :title="__('admin.members.title')" :subtitle="__('admin.members.subtitle')">
         <x-slot:actions>
-            <x-ui.button wire:click="openModal('create')" variant="accent" icon="user-plus" loadingText="Chargement...">
-                Ajouter un membre
+            <x-ui.button wire:click="openModal('create')" variant="accent" icon="user-plus" :loadingText="__('common.loading')">
+                {{ __('admin.members.add') }}
             </x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
 
     {{-- Search --}}
     <div class="mb-6">
-        <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher un membre..." icon="search" />
+        <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('admin.members.search_placeholder')" icon="search" />
     </div>
 
     @include('messages.index')
 
     {{-- Table --}}
-    <x-ui.section title="Membres" icon="users" :noPadding="true">
+    <x-ui.section :title="__('admin.members.section')" icon="users" :noPadding="true">
         @if ($members->isEmpty())
-            <x-ui.empty-state icon="users" title="Aucun membre trouvé" description="Ajoutez votre premier membre d'équipe." />
+            <x-ui.empty-state icon="users" :title="__('admin.members.no_members')" :description="__('admin.members.no_members_desc')" />
         @else
             <x-ui.table>
                 <x-slot:headers>
                     <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('name')">
                         <div class="flex items-center gap-1">
-                            Nom
+                            {{ __('admin.members.name') }}
                             @if ($sortField === 'name')
                                 <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
                             @endif
                         </div>
                     </x-ui.table.th>
-                    <x-ui.table.th>Email</x-ui.table.th>
-                    <x-ui.table.th class="hidden lg:table-cell">Téléphone</x-ui.table.th>
-                    <x-ui.table.th>Rôle</x-ui.table.th>
-                    <x-ui.table.th class="hidden md:table-cell">Département</x-ui.table.th>
-                    <x-ui.table.th class="hidden xl:table-cell">Pays</x-ui.table.th>
-                    <x-ui.table.th class="hidden xl:table-cell">Ville</x-ui.table.th>
-                    <x-ui.table.th align="right">Actions</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.members.email') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden lg:table-cell">{{ __('admin.members.phone') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.members.role') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden md:table-cell">{{ __('admin.members.department') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden xl:table-cell">{{ __('admin.members.country') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden xl:table-cell">{{ __('admin.members.city') }}</x-ui.table.th>
+                    <x-ui.table.th align="right">{{ __('admin.members.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
                 @foreach ($members as $member)
@@ -81,7 +81,7 @@
     {{-- Modal : Livewire contrôle la présence via @if --}}
     @if($showModal)
         <x-ui.modal :show="true" 
-                    :title="match($modalType) { 'create' => 'Ajouter un membre', 'edit' => 'Modifier le membre', 'view' => 'Détails du membre', 'delete' => 'Confirmer la suppression', default => 'Membre' }"
+                    :title="match($modalType) { 'create' => __('admin.members.modal_add'), 'edit' => __('admin.members.modal_edit'), 'view' => __('admin.members.modal_details'), 'delete' => __('admin.members.modal_confirm_delete'), default => __('admin.members.section') }"
                     :dismissable="$modalType !== 'delete'"
                     id="member-management">
 
@@ -94,13 +94,13 @@
             @elseif ($modalType === 'view')
                 <div class="space-y-4 text-sm">
                     @foreach([
-                        ['Nom', $name, 'user'], 
-                        ['Email', $email, 'mail'], 
-                        ['Téléphone', $telephone, 'phone'], 
-                        ['Rôle', $role instanceof \App\Enums\AccountType ? $role->label() : $role, 'shield'], 
-                        ['Département', $department, 'building'], 
-                        ['Pays', $pays, 'globe'], 
-                        ['Ville', $ville, 'map-pin']
+                        [__('admin.members.name'), $name, 'user'],
+                        [__('admin.members.email'), $email, 'mail'],
+                        [__('admin.members.phone'), $telephone, 'phone'],
+                        [__('admin.members.role'), $role instanceof \App\Enums\AccountType ? $role->label() : $role, 'shield'],
+                        [__('admin.members.department'), $department, 'building'],
+                        [__('admin.members.country'), $pays, 'globe'],
+                        [__('admin.members.city'), $ville, 'map-pin']
                     ] as [$label, $val, $icon])
                         <div class="flex items-start gap-3">
                             <div class="mt-0.5 p-1.5 rounded-lg bg-surface text-muted">
@@ -108,7 +108,7 @@
                             </div>
                             <div class="flex flex-col gap-0.5">
                                 <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ $label }}</span>
-                                <span class="text-[13px] font-semibold text-body">{{ $val ?? 'Non renseigné' }}</span>
+                                <span class="text-[13px] font-semibold text-body">{{ $val ?? __('admin.members.not_specified') }}</span>
                             </div>
                         </div>
                     @endforeach
@@ -119,12 +119,12 @@
                     <div class="w-16 h-16 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4">
                         <x-lucide-alert-triangle class="w-8 h-8" />
                     </div>
-                    <h3 class="text-lg font-bold text-heading mb-2">Supprimer le membre ?</h3>
-                    <p class="text-sm text-subtle">Voulez-vous vraiment supprimer <strong class="text-error">{{ $name }}</strong> ? Cette action est irréversible.</p>
+                    <h3 class="text-lg font-bold text-heading mb-2">{{ __('admin.members.delete_confirm_title') }}</h3>
+                    <p class="text-sm text-subtle">{!! __('admin.members.confirm_delete_text', ['name' => '<strong class="text-error">' . e($name) . '</strong>']) !!}</p>
                 </div>
                 <x-slot:footer>
-                    <x-ui.button wire:click="closeModal" variant="ghost">Annuler</x-ui.button>
-                    <x-ui.button wire:click="delete" variant="danger" icon="trash-2" loadingText="Suppression...">Supprimer définitivement</x-ui.button>
+                    <x-ui.button wire:click="closeModal" variant="ghost">{{ __('common.cancel') }}</x-ui.button>
+                    <x-ui.button wire:click="delete" variant="danger" icon="trash-2" loadingText="Suppression...">{{ __('admin.members.delete_permanently') }}</x-ui.button>
                 </x-slot:footer>
             @endif
         </x-ui.modal>

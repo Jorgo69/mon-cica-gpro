@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Non Trouvée</title>
+    <title>404 - {{ __('errors.404.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -20,10 +20,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-blue-800 mb-4">404</h1>
-            <h2 class="text-2xl font-semibold text-blue-700 mb-6">Page Non Trouvée</h2>
-            <p class="text-accent mb-8">Désolé, la page que vous recherchez n'existe pas ou a été déplacée.</p>
+            <h2 class="text-2xl font-semibold text-blue-700 mb-6">{{ __('errors.404.title') }}</h2>
+            <p class="text-accent mb-8">{{ __('errors.404.message') }}</p>
             <a href="/dashboard" class="inline-block bg-accent hover:bg-accent-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Retour à l'accueil
+                {{ __('errors.back_home') }}
             </a>
         </div>
     </div>

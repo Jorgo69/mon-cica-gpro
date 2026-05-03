@@ -13,14 +13,7 @@ enum AdminCategoryType: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::PROJECT_STATUS => 'Statut de projet',
-            self::ACTIVITY_STATUS => 'Statut d\'activite',
-            self::PROJECT_CATEGORY => 'Categorie de projet',
-            self::BUDGET_CATEGORY => 'Categorie budgetaire',
-            self::RESOURCE_TYPE => 'Type de ressource',
-            self::DOCUMENT_TYPE => 'Type de document',
-        };
+        return __('enums.admin_category_type.' . $this->value);
     }
 
     public function icon(): string

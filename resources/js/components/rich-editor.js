@@ -12,6 +12,21 @@ export default function richEditor({ uniqueId, content = '', placeholder = 'Écr
         updatedAt: Date.now(),
 
         init() {
+            // Listen for AI-generated content
+            const editorName = uniqueId.replace('editor-', '').replace(/-/g, '').toLowerCase()
+            Livewire.on('ai-set-editor-content', ({ name, content: newContent }) => {
+                if (name.toLowerCase().replace(/-/g, '') === editorName) {
+                    if (_editor) {
+                        _editor.commands.setContent('<p>' + newContent + '</p>')
+                        const textarea = document.getElementById(uniqueId)
+                        if (textarea) {
+                            textarea.value = _editor.getHTML()
+                            textarea.dispatchEvent(new Event('input', { bubbles: true }))
+                        }
+                    }
+                }
+            })
+
             _editor = new Editor({
                 element: this.$refs.editorContent,
                 extensions: [

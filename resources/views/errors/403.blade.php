@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>403 - Interdit</title>
+    <title>403 - {{ __('errors.403.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -20,10 +20,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-red-800 mb-4">403</h1>
-            <h2 class="text-2xl font-semibold text-red-700 mb-6">Accès Refusé</h2>
-            <p class="text-error mb-8">Désolé, vous n'avez pas les permissions nécessaires pour accéder à cette ressource.</p>
+            <h2 class="text-2xl font-semibold text-red-700 mb-6">{{ __('errors.403.title') }}</h2>
+            <p class="text-error mb-8">{{ __('errors.403.message') }}</p>
             <a href="/dashboard" class="inline-block bg-error hover:bg-error-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Retour à l'accueil
+                {{ __('errors.back_home') }}
             </a>
         </div>
     </div>

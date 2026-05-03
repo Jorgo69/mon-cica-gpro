@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 - Erreur Serveur</title>
+    <title>500 - {{ __('errors.500.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -21,10 +21,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-red-800 mb-4">500</h1>
-            <h2 class="text-2xl font-semibold text-red-700 mb-6">Erreur Interne du Serveur</h2>
-            <p class="text-error mb-8">Désolé, quelque chose s'est mal passé de notre côté. Notre équipe technique a été notifiée.</p>
+            <h2 class="text-2xl font-semibold text-red-700 mb-6">{{ __('errors.500.title') }}</h2>
+            <p class="text-error mb-8">{{ __('errors.500.message') }}</p>
             <a href="/dashboard" class="inline-block bg-error hover:bg-error-dark text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Retour à l'accueil
+                {{ __('errors.back_home') }}
             </a>
         </div>
     </div>

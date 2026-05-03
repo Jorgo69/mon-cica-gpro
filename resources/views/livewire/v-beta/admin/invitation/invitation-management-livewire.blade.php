@@ -1,138 +1,179 @@
-<div>
-    <x-ui.page-header title="Invitations" subtitle="Gérez les invitations à rejoindre votre organisation">
-        <x-ui.button wire:click="openModal" variant="accent" size="md">
-            <x-lucide-send class="w-4 h-4 mr-1.5" />
-            Inviter un membre
-        </x-ui.button>
+<x-ui.page-layout>
+    <x-ui.page-header :title="__('admin.invitations.title')" :subtitle="__('admin.invitations.subtitle')">
+        <x-slot:actions>
+            <x-ui.button wire:click="openModal" variant="accent" icon="send" size="lg">
+                {{ __('admin.invitations.invite_member') }}
+            </x-ui.button>
+        </x-slot:actions>
     </x-ui.page-header>
 
     {{-- Filtres --}}
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
         <div class="flex-1">
-            <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher par email..." />
+            <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('admin.invitations.search_by_email')" icon="search" />
         </div>
         <x-ui.select wire:model.live="statusFilter">
-            <option value="">Tous les statuts</option>
+            <option value="">{{ __('admin.invitations.all_statuses') }}</option>
             @foreach($statuses as $status)
                 <option value="{{ $status->value }}">{{ $status->label() }}</option>
             @endforeach
         </x-ui.select>
     </div>
 
-    {{-- Table --}}
-    <x-ui.card>
-        <x-ui.table>
-            <x-slot name="head">
-                <x-ui.table.th>Email</x-ui.table.th>
-                <x-ui.table.th>Organisation</x-ui.table.th>
-                <x-ui.table.th>Rôle</x-ui.table.th>
-                <x-ui.table.th>Statut</x-ui.table.th>
-                <x-ui.table.th>Invité par</x-ui.table.th>
-                <x-ui.table.th>Expire le</x-ui.table.th>
-                <x-ui.table.th>Code</x-ui.table.th>
-                <x-ui.table.th>Actions</x-ui.table.th>
-            </x-slot>
+    @php $isRoot = \App\Services\OrgContext::isRoot() && !session('acting_as_organization_id'); @endphp
 
-            <x-slot name="body">
-                @forelse($invitations as $invitation)
+    {{-- Table --}}
+    <x-ui.section :title="__('admin.invitations.title')" icon="mail" :noPadding="true">
+        @if($invitations->isEmpty())
+            <x-ui.empty-state icon="mail" :title="__('admin.invitations.no_invitations')" :description="__('admin.invitations.no_invitations_detail')" />
+        @else
+            <x-ui.table>
+                <x-slot:headers>
+                    <x-ui.table.th>{{ __('admin.invitations.email') }}</x-ui.table.th>
+                    @if($isRoot)
+                        <x-ui.table.th>{{ __('admin.invitations.organization') }}</x-ui.table.th>
+                    @endif
+                    <x-ui.table.th>{{ __('admin.invitations.role') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.invitations.status') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('admin.invitations.expires_at') }}</x-ui.table.th>
+                    <x-ui.table.th align="right">{{ __('admin.invitations.actions') }}</x-ui.table.th>
+                </x-slot:headers>
+
+                @php
+                    $roleLabels = ['ORG_ADMIN' => __('admin.invitations.roles.org_admin'), 'MANAGER' => __('admin.invitations.roles.manager'), 'MEMBER' => __('admin.invitations.roles.member'), 'SUPERVISOR' => __('admin.invitations.roles.supervisor')];
+                    $roleColors = ['ORG_ADMIN' => 'indigo', 'MANAGER' => 'blue', 'MEMBER' => 'gray', 'SUPERVISOR' => 'emerald'];
+                @endphp
+
+                @foreach($invitations as $invitation)
                     <x-ui.table.row>
                         <x-ui.table.td>
-                            <span class="font-medium text-heading">{{ $invitation->email }}</span>
+                            <span class="font-medium text-heading text-sm">{{ $invitation->email }}</span>
                         </x-ui.table.td>
-                        <x-ui.table.td>{{ $invitation->organization?->name ?? '—' }}</x-ui.table.td>
+                        @if($isRoot)
+                            <x-ui.table.td>{{ $invitation->organization?->name ?? '—' }}</x-ui.table.td>
+                        @endif
                         <x-ui.table.td>
-                            <x-ui.badge :color="$invitation->spatie_role === 'ORG_ADMIN' ? 'indigo' : ($invitation->spatie_role === 'MANAGER' ? 'blue' : 'gray')">
-                                {{ $invitation->spatie_role }}
+                            <x-ui.badge :color="$roleColors[$invitation->spatie_role] ?? 'gray'" size="xs">
+                                {{ $roleLabels[$invitation->spatie_role] ?? $invitation->spatie_role }}
                             </x-ui.badge>
                         </x-ui.table.td>
                         <x-ui.table.td>
-                            <x-ui.badge :color="$invitation->status->color()">
+                            <x-ui.badge :color="$invitation->status->color()" size="xs">
                                 {{ $invitation->status->label() }}
                             </x-ui.badge>
                         </x-ui.table.td>
-                        <x-ui.table.td>{{ $invitation->invitedBy?->name ?? '—' }}</x-ui.table.td>
                         <x-ui.table.td>
-                            <span class="{{ $invitation->isExpired() ? 'text-error' : 'text-subtle' }}">
+                            <span class="text-xs {{ $invitation->isExpired() ? 'text-error' : 'text-subtle' }}">
                                 {{ $invitation->expires_at->format('d/m/Y H:i') }}
                             </span>
                         </x-ui.table.td>
-                        <x-ui.table.td>
-                            <code class="text-xs bg-surface-alt px-2 py-1 rounded font-mono">{{ $invitation->code }}</code>
-                        </x-ui.table.td>
-                        <x-ui.table.td>
+                        <x-ui.table.td align="right">
                             @if($invitation->status === \App\Enums\InvitationStatus::PENDING)
-                                <div class="flex gap-2">
-                                    <button wire:click="resend('{{ $invitation->id }}')"
-                                            wire:confirm="Renvoyer une nouvelle invitation ?"
-                                            class="text-accent hover:text-accent-dark text-sm font-medium">
-                                        Renvoyer
-                                    </button>
-                                    <button wire:click="revoke('{{ $invitation->id }}')"
-                                            wire:confirm="Révoquer cette invitation ?"
-                                            class="text-error hover:text-error-dark text-sm font-medium">
-                                        Révoquer
+                                @php $cooldown = $this->getResendCooldown($invitation->id); @endphp
+                                <div class="flex items-center justify-end gap-1">
+                                    @if($cooldown > 0)
+                                        <span class="text-[10px] text-muted font-medium px-2" title="{{ __('admin.invitations.cooldown_hint') }}">
+                                            {{ ceil($cooldown / 60) }}min
+                                        </span>
+                                    @else
+                                        <button wire:click="openConfirm('resend', '{{ $invitation->id }}')"
+                                                class="p-1.5 rounded-lg text-accent hover:bg-accent/10 transition-colors" title="{{ __('admin.invitations.resend') }}">
+                                            <x-lucide-repeat class="w-4 h-4" />
+                                        </button>
+                                    @endif
+                                    <button wire:click="openConfirm('revoke', '{{ $invitation->id }}')"
+                                            class="p-1.5 rounded-lg text-error hover:bg-error/10 transition-colors" title="{{ __('admin.invitations.revoke') }}">
+                                        <x-lucide-x-circle class="w-4 h-4" />
                                     </button>
                                 </div>
                             @else
-                                <span class="text-muted text-sm">—</span>
+                                <span class="text-muted">—</span>
                             @endif
                         </x-ui.table.td>
                     </x-ui.table.row>
-                @empty
-                    <x-ui.table.row>
-                        <x-ui.table.td colspan="8">
-                            <x-ui.empty-state
-                                icon="mail"
-                                title="Aucune invitation"
-                                description="Invitez des membres à rejoindre votre organisation." />
-                        </x-ui.table.td>
-                    </x-ui.table.row>
-                @endforelse
-            </x-slot>
-        </x-ui.table>
+                @endforeach
+            </x-ui.table>
+        @endif
 
-        <div class="mt-4">
-            {{ $invitations->links() }}
-        </div>
-    </x-ui.card>
+        @if($invitations->isNotEmpty())
+            <div class="px-6 py-4 border-t border-border-light">
+                {{ $invitations->links() }}
+            </div>
+        @endif
+    </x-ui.section>
 
     {{-- Modal d'invitation --}}
     @if($showModal)
-    <x-ui.modal title="Inviter un membre">
+    <x-ui.modal :title="__('admin.invitations.invite_member')" closeAction="closeModal">
         <form wire:submit="sendInvitation" class="space-y-4">
-            <x-ui.input wire:model="email" label="Email" type="email" required placeholder="collaborateur@exemple.com" />
+            <x-ui.input wire:model="email" :label="__('admin.invitations.email')" type="email" required :placeholder="__('admin.invitations.email_placeholder')" />
 
-            @if(auth()->user()->role === \App\Enums\AccountType::ROOT && !session('acting_as_organization_id'))
-                <x-ui.select wire:model="organizationId" label="Organisation cible" required>
-                    <option value="">Sélectionner une organisation</option>
+            @if($isRoot)
+                <x-ui.select wire:model="organizationId" :label="__('admin.invitations.target_organization')" required>
+                    <option value="">{{ __('admin.invitations.select_organization') }}</option>
                     @foreach($organizations as $org)
                         <option value="{{ $org->id }}">{{ $org->name }}</option>
                     @endforeach
                 </x-ui.select>
             @endif
 
-            <x-ui.select wire:model="role" label="Type de compte">
-                @foreach($accountTypes as $type)
-                    <option value="{{ $type->value }}">{{ $type->label() }}</option>
+            <x-ui.select wire:model.live="selectedRole" :label="__('admin.invitations.role')" icon="shield-check">
+                @foreach($availableRoles as $r)
+                    <option value="{{ $r }}">{{ __('admin.invitations.roles.' . $r) }}</option>
                 @endforeach
             </x-ui.select>
+            <p class="text-[10px] text-muted -mt-2 ml-1">
+                {{ __('admin.invitations.role_desc.' . $selectedRole) }}
+            </p>
 
-            <x-ui.select wire:model="spatieRole" label="Rôle">
-                @foreach($spatieRoles as $r)
-                    <option value="{{ $r }}">{{ $r }}</option>
-                @endforeach
-            </x-ui.select>
-
-            <div class="flex justify-end gap-3 pt-4">
-                <x-ui.button type="button" wire:click="$set('showModal', false)" variant="secondary">
-                    Annuler
+            <x-slot:footer>
+                <x-ui.button type="button" wire:click="closeModal" variant="outline" size="sm">
+                    {{ __('common.cancel') }}
                 </x-ui.button>
-                <x-ui.button type="submit" variant="accent">
-                    <x-lucide-send class="w-4 h-4 mr-1.5" />
-                    Envoyer l'invitation
+                <x-ui.button type="submit" variant="accent" icon="send" size="sm">
+                    {{ __('admin.invitations.send') }}
                 </x-ui.button>
-            </div>
+            </x-slot:footer>
         </form>
     </x-ui.modal>
     @endif
-</div>
+
+    {{-- Modal de confirmation (resend / revoke) --}}
+    @if($showConfirmModal)
+    <x-ui.modal title="" closeAction="closeConfirmModal" maxWidth="max-w-sm">
+        <div class="text-center space-y-4">
+            {{-- Icon --}}
+            <div class="flex justify-center">
+                @if($confirmType === 'resend')
+                    <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                        <x-lucide-repeat class="w-6 h-6 text-accent" />
+                    </div>
+                @else
+                    <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
+                        <x-lucide-x-circle class="w-6 h-6 text-error" />
+                    </div>
+                @endif
+            </div>
+
+            {{-- Title --}}
+            <h3 class="text-base font-bold text-heading">
+                {{ $confirmType === 'resend' ? __('admin.invitations.confirm_resend') : __('admin.invitations.confirm_revoke') }}
+            </h3>
+
+            {{-- Email --}}
+            <p class="text-sm text-subtle">
+                <span class="font-medium text-heading">{{ $confirmEmail }}</span>
+            </p>
+        </div>
+
+        <x-slot:footer>
+            <x-ui.button wire:click="closeConfirmModal" variant="outline" size="sm">
+                {{ __('common.cancel') }}
+            </x-ui.button>
+            <x-ui.button wire:click="executeConfirmedAction" variant="{{ $confirmType === 'revoke' ? 'danger' : 'accent' }}" size="sm">
+                {{ $confirmType === 'resend' ? __('admin.invitations.resend') : __('admin.invitations.revoke') }}
+            </x-ui.button>
+        </x-slot:footer>
+    </x-ui.modal>
+    @endif
+</x-ui.page-layout>

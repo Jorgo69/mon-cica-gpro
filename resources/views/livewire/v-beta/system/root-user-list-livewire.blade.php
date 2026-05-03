@@ -5,21 +5,21 @@
             <div class="w-full md:w-80">
                 <x-ui.input
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Rechercher par nom ou email..."
+                    placeholder="{{ __('system.root_user_list.search_placeholder') }}"
                     icon="search"
                 />
             </div>
             <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <select wire:model.live="organizationFilter"
                     class="block w-full sm:w-52 border-border bg-card text-heading rounded-2xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 px-4 transition-all">
-                    <option value="">Toutes les organisations</option>
+                    <option value="">{{ __('system.root_user_list.all_orgs') }}</option>
                     @foreach($organizations as $org)
                         <option value="{{ $org->id }}">{{ $org->name }}</option>
                     @endforeach
                 </select>
                 <select wire:model.live="roleFilter"
                     class="block w-full sm:w-52 border-border bg-card text-heading rounded-2xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 px-4 transition-all">
-                    <option value="">Tous les roles</option>
+                    <option value="">{{ __('system.root_user_list.all_roles') }}</option>
                     @foreach($accountTypes as $type)
                         <option value="{{ $type->value }}">{{ $type->label() }}</option>
                     @endforeach
@@ -28,15 +28,15 @@
         </div>
 
         {{-- Table --}}
-        <x-ui.section title="Utilisateurs globaux" icon="users" :noPadding="true">
+        <x-ui.section :title="__('system.root_user_list.section_title')" icon="users" :noPadding="true">
             <x-ui.table>
                 <x-slot:headers>
-                    <x-ui.table.th>Utilisateur</x-ui.table.th>
-                    <x-ui.table.th>Role</x-ui.table.th>
-                    <x-ui.table.th class="hidden md:table-cell">Organisation</x-ui.table.th>
-                    <x-ui.table.th>Statut</x-ui.table.th>
-                    <x-ui.table.th class="hidden lg:table-cell">Date</x-ui.table.th>
-                    <x-ui.table.th align="right">Actions</x-ui.table.th>
+                    <x-ui.table.th>{{ __('system.root_user_list.user') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('common.role') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden md:table-cell">{{ __('system.root_user_list.organization') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('common.status') }}</x-ui.table.th>
+                    <x-ui.table.th class="hidden lg:table-cell">{{ __('common.date') }}</x-ui.table.th>
+                    <x-ui.table.th align="right">{{ __('common.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
                 @forelse($users as $user)
@@ -57,21 +57,21 @@
                         {{-- Role --}}
                         <x-ui.table.td>
                             <x-ui.badge :variant="$user->role?->color() ?? 'slate'" size="sm">
-                                {{ $user->role?->label() ?? 'Inconnu' }}
+                                {{ $user->role?->label() ?? __('system.root_user_list.unknown') }}
                             </x-ui.badge>
                         </x-ui.table.td>
 
                         {{-- Organisation --}}
                         <x-ui.table.td class="hidden md:table-cell">
-                            <span class="text-subtle text-sm">{{ $user->organization?->name ?? 'Aucune' }}</span>
+                            <span class="text-subtle text-sm">{{ $user->organization?->name ?? __('system.root_user_list.no_org') }}</span>
                         </x-ui.table.td>
 
                         {{-- Statut (verifie / bloque) --}}
                         <x-ui.table.td>
                             @if($user->email_verified_at)
-                                <x-ui.badge variant="emerald" size="sm">Verifie</x-ui.badge>
+                                <x-ui.badge variant="emerald" size="sm">{{ __('system.root_user_list.verified') }}</x-ui.badge>
                             @else
-                                <x-ui.badge variant="rose" size="sm">Bloque</x-ui.badge>
+                                <x-ui.badge variant="rose" size="sm">{{ __('system.root_user_list.blocked') }}</x-ui.badge>
                             @endif
                         </x-ui.table.td>
 
@@ -89,7 +89,7 @@
                                         variant="ghost"
                                         size="sm"
                                         :icon="$user->email_verified_at ? 'lock' : 'unlock'"
-                                        wire:confirm="{{ $user->email_verified_at ? 'Bloquer cet utilisateur ?' : 'Debloquer cet utilisateur ?' }}"
+                                        wire:confirm="{{ $user->email_verified_at ? __('system.root_user_list.confirm_block') : __('system.root_user_list.confirm_unblock') }}"
                                     />
                                 @endif
                                 <x-ui.button
@@ -97,7 +97,7 @@
                                     variant="ghost"
                                     size="sm"
                                     icon="key"
-                                    wire:confirm="Envoyer un lien de reinitialisation de mot de passe a {{ $user->email }} ?"
+                                    wire:confirm="{{ __('system.root_user_list.confirm_reset', ['email' => $user->email]) }}"
                                 />
                             </div>
                         </x-ui.table.td>
@@ -105,7 +105,7 @@
                 @empty
                     <x-ui.table.row>
                         <x-ui.table.td colspan="6" class="py-16 text-center">
-                            <x-ui.empty-state icon="users" title="Aucun utilisateur" description="Aucun utilisateur ne correspond aux criteres de recherche." />
+                            <x-ui.empty-state icon="users" :title="__('system.root_user_list.no_user')" :description="__('system.root_user_list.no_user_desc')" />
                         </x-ui.table.td>
                     </x-ui.table.row>
                 @endforelse

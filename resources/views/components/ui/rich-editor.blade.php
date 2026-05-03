@@ -17,9 +17,12 @@
 
 <div class="space-y-2">
     @if ($label)
-        <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
-            {{ $label }}@if ($required) <span class="text-rose-500">*</span>@endif
-        </label>
+        <div class="flex items-center">
+            <label class="block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em] ml-1">
+                {{ $label }}@if ($required) <span class="text-rose-500">*</span>@endif
+            </label>
+            {{ $afterLabel ?? '' }}
+        </div>
     @endif
 
     {{-- Editor container — Livewire ne touche pas ce bloc --}}

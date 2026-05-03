@@ -13,14 +13,14 @@ enum ProjectStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::DRAFT => 'Brouillon',
-            self::PENDING => 'En attente',
-            self::ACTIVE => 'En cours',
-            self::ON_HOLD => 'En pause',
-            self::COMPLETED => 'Terminé',
-            self::CANCELLED => 'Annulé',
-        };
+        return __('enums.project_status.' . match($this) {
+            self::DRAFT => 'draft',
+            self::PENDING => 'pending',
+            self::ACTIVE => 'active',
+            self::ON_HOLD => 'on_hold',
+            self::COMPLETED => 'completed',
+            self::CANCELLED => 'cancelled',
+        });
     }
 
     public function color(): string
@@ -33,6 +33,14 @@ enum ProjectStatus: string
             self::COMPLETED => 'success',
             self::CANCELLED => 'error',
         };
+    }
+
+    /**
+     * Can activities be executed (progress, expenses, status changes)?
+     */
+    public function isOperational(): bool
+    {
+        return in_array($this, [self::ACTIVE, self::ON_HOLD]);
     }
 
     public function hex(): string

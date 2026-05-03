@@ -5,20 +5,20 @@
             <div class="flex items-center gap-3 w-full md:w-96">
                 <x-ui.input 
                     wire:model.live.debounce.300ms="search" 
-                    placeholder="Filtrer les permissions..." 
+                    placeholder="{{ __('system.perm_management.search_placeholder') }}"
                     icon="search" 
                 />
             </div>
         </div>
 
         {{-- Table --}}
-        <x-ui.section title="Clés de Droits d'Accès" icon="key" :noPadding="true">
+        <x-ui.section :title="__('system.perm_management.section_title')" icon="key" :noPadding="true">
             <x-ui.table>
                 <x-slot:headers>
-                    <x-ui.table.th>Permission</x-ui.table.th>
-                    <x-ui.table.th>Guard</x-ui.table.th>
-                    <x-ui.table.th>Protection</x-ui.table.th>
-                    <x-ui.table.th align="right">Actions</x-ui.table.th>
+                    <x-ui.table.th>{{ __('system.perm_management.permission') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('system.perm_management.guard') }}</x-ui.table.th>
+                    <x-ui.table.th>{{ __('system.perm_management.protection') }}</x-ui.table.th>
+                    <x-ui.table.th align="right">{{ __('common.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
                 @forelse($permissions as $permission)
@@ -38,12 +38,12 @@
                             @if($isProtected)
                                 <div class="flex items-center gap-1.5 text-rose-500">
                                     <x-lucide-lock class="w-3 h-3" />
-                                    <span class="text-[10px] font-bold uppercase tracking-wider italic">Critique Système</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider italic">{{ __('system.perm_management.critical') }}</span>
                                 </div>
                             @else
                                 <div class="flex items-center gap-1.5 text-success">
                                     <x-lucide-unlock class="w-3 h-3" />
-                                    <span class="text-[10px] font-bold uppercase tracking-wider">Libre</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider">{{ __('system.perm_management.free') }}</span>
                                 </div>
                             @endif
                         </x-ui.table.td>
@@ -53,7 +53,7 @@
                                 @if(!$isProtected)
                                     <x-ui.button variant="ghost" size="sm" icon="trash-2" class="text-rose-500/70 hover:text-rose-500" 
                                         wire:click="deletePermission('{{ $permission->id }}')"
-                                        wire:confirm="Attention : la suppression d'une permission peut impacter les accès aux fonctionnalités. Confirmer la suppression ?" />
+                                        wire:confirm="{{ __('system.perm_management.confirm_delete_perm') }}" />
                                 @endif
                             </div>
                         </x-ui.table.td>
@@ -61,7 +61,7 @@
                 @empty
                     <x-ui.table.row>
                         <x-ui.table.td colspan="4" class="py-16 text-center">
-                            <x-ui.empty-state icon="key" title="Aucune permission" description="Aucune règle d'accès personnalisée n'est encore définie." />
+                            <x-ui.empty-state icon="key" :title="__('system.perm_management.no_perm')" :description="__('system.perm_management.no_perm_desc')" />
                         </x-ui.table.td>
                     </x-ui.table.row>
                 @endforelse
@@ -77,29 +77,29 @@
     @if($showModal)
         <x-ui.modal 
             :show="true" 
-            :title="$selectedPermission ? 'Éditer la Permission' : 'Nouvelle Règle d\'Accès'" 
+            :title="$selectedPermission ? __('system.perm_management.modal_edit_title') : __('system.perm_management.modal_create_title')"
             id="perm-modal"
         >
             <form wire:submit.prevent="save" class="space-y-6">
                 <div>
                     <x-ui.input 
                         wire:model="name" 
-                        label="Nom Identifiant (slug)" 
-                        placeholder="Ex: rapport.valider" 
+                        :label="__('system.perm_management.label_name')"
+                        :placeholder="__('system.perm_management.placeholder_name')"
                         icon="key" 
                         required
                         :error="$errors->first('name')"
                     />
                     <p class="mt-2 text-[10px] text-subtle font-medium leading-relaxed">
                         <x-lucide-info class="inline w-3 h-3 mr-1" />
-                        Utilisez des points (.) ou des tirets (-) pour structurer vos noms technique de permission.
+                        {{ __('system.perm_management.hint') }}
                     </p>
                 </div>
 
                 <x-slot:footer>
-                    <x-ui.button variant="ghost" wire:click="closeModal">Annuler</x-ui.button>
-                    <x-ui.button type="submit" variant="accent" icon="check" loadingText="Sauvegarde...">
-                        {{ $selectedPermission ? 'Mettre à jour' : 'Ajouter au système' }}
+                    <x-ui.button variant="ghost" wire:click="closeModal">{{ __('common.cancel') }}</x-ui.button>
+                    <x-ui.button type="submit" variant="accent" icon="check" :loadingText="__('system.perm_management.saving')">
+                        {{ $selectedPermission ? __('system.perm_management.update') : __('system.perm_management.add_to_system') }}
                     </x-ui.button>
                 </x-slot:footer>
             </form>

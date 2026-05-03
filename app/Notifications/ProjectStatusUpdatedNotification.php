@@ -24,20 +24,24 @@ class ProjectStatusUpdatedNotification extends Notification implements ShouldQue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Projet \"{$this->project->title}\" — Statut modifié")
-            ->greeting("Bonjour {$notifiable->name},")
-            ->line("Le statut du projet **{$this->project->title}** a été modifié.")
-            ->line("**{$this->oldStatus}** → **{$this->newStatus}**")
-            ->action('Voir le projet', route('project.show', $this->project->id))
-            ->salutation('— ' . config('app.name'));
+            ->subject(__('mail.project_status_updated.subject', ['project' => $this->project->title]))
+            ->greeting(__('mail.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.project_status_updated.line1', ['project' => $this->project->title]))
+            ->line(__('mail.project_status_updated.line2', ['old_status' => $this->oldStatus, 'new_status' => $this->newStatus]))
+            ->action(__('mail.project_status_updated.action'), route('project.show', $this->project->id))
+            ->salutation(__('mail.salutation', ['app' => config('app.name')]));
     }
 
     public function toArray(object $notifiable): array
     {
         return [
             'project_id' => $this->project->id,
-            'title' => 'Statut Projet Modifié',
-            'message' => "Le projet \"{$this->project->title}\" est passé de {$this->oldStatus} à {$this->newStatus}.",
+            'title' => __('mail.project_status_updated.title'),
+            'message' => __('mail.project_status_updated.message', [
+                'project' => $this->project->title,
+                'old_status' => $this->oldStatus,
+                'new_status' => $this->newStatus,
+            ]),
             'action_url' => route('project.show', $this->project->id),
         ];
     }

@@ -2,10 +2,10 @@
     <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-heading flex items-center gap-2">
             <x-lucide-history class="w-5 h-5 text-accent" />
-            Historique des activités
+            {{ __('system.audit.title') }}
         </h3>
         <div class="text-xs text-muted">
-            Total: {{ $activities->total() }} évènements
+            {{ __('system.audit.total_events', ['count' => $activities->total()]) }}
         </div>
     </div>
 
@@ -36,7 +36,7 @@
                         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-sm text-heading">
-                                    {{ $activity->causer->name ?? 'Système' }}
+                                    {{ $activity->causer->name ?? __('system.audit.system') }}
                                 </span>
                                 <span class="text-xs text-subtle">
                                     {{ $activity->description }}
@@ -67,7 +67,7 @@
                             </div>
                         @elseif($activity->event === 'created')
                              <div class="text-xs text-subtle italic">
-                                Données initiales enregistrées.
+                                {{ __('system.audit.initial_data') }}
                              </div>
                         @endif
                     </div>
@@ -75,7 +75,7 @@
             @empty
                 <div class="py-8 text-center text-muted">
                     <x-lucide-ghost class="w-8 h-8 mx-auto mb-2 opacity-20" />
-                    <p class="text-sm">Aucune activité enregistrée pour le moment.</p>
+                    <p class="text-sm">{{ __('system.audit.no_activity') }}</p>
                 </div>
             @endforelse
         </div>

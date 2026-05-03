@@ -89,6 +89,12 @@ class ActivityPolicy
             return false;
         }
 
+        // Project must be operational (active or on_hold) to track progress
+        $project = $activity->result?->specificObjective?->logicalFramework?->project;
+        if ($project && !$project->status->isOperational()) {
+            return false;
+        }
+
         return (string) $user->organization_id === (string) $activity->organization_id;
     }
 

@@ -44,8 +44,9 @@ class ProjectTypeFormLivewire extends Component
             $this->addField();
         }
 
-        $this->projectCategories = GeneralAdministration::where('type', 'project_type_category')
+        $this->projectCategories = GeneralAdministration::where('type', \App\Enums\AdminCategoryType::PROJECT_CATEGORY->value)
             ->where('is_active', true)
+            ->orderBy('name')
             ->get();
     }
 

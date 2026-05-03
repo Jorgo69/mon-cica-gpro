@@ -86,7 +86,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'MEMBER', 'guard_name' => 'web', 'organization_id' => null]
         );
         $member->syncPermissions([
-            'view-projects', 'track-progress'
+            'view-projects', 'create-projects', 'track-progress'
         ]);
 
         // SUPERVISOR : Superviseur / Bailleur

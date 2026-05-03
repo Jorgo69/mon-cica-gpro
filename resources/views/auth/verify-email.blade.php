@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-subtle">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
+        {{ __('auth.verify_email_text') }}
     </div>
 
     @if (session('status') == 'verification-link-sent')
@@ -15,7 +15,7 @@
 
             <div>
                 <x-primary-button>
-                    {{ __('Resend Verification Email') }}
+                    {{ __('auth.resend_verification') }}
                 </x-primary-button>
             </div>
         </form>
@@ -24,7 +24,7 @@
             @csrf
 
             <button type="submit" class="underline text-sm text-subtle hover:text-heading dark:hover:text-heading rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-gray-800">
-                {{ __('Log Out') }}
+                {{ __('auth.logout') }}
             </button>
         </form>
     </div>

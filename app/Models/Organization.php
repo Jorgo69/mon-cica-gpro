@@ -18,7 +18,16 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'slug',
+        'logo_path',
+        'website',
+        'contact_email',
+        'contact_phone',
+        'description',
         'status',
+        'plan',
+        'plan_activated_at',
+        'plan_expires_at',
+        'plan_notes',
         'meta',
     ];
 
@@ -28,6 +37,9 @@ class Organization extends Model
 
     protected $casts = [
         'status' => \App\Enums\OrganizationStatus::class,
+        'plan' => \App\Enums\Plan::class,
+        'plan_activated_at' => 'datetime',
+        'plan_expires_at' => 'datetime',
         'meta' => 'array',
     ];
 
@@ -45,5 +57,59 @@ class Organization extends Model
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function currentPlan(): \App\Enums\Plan
+    {
+        return $this->plan ?? \App\Enums\Plan::FREE;
+    }
+
+    public function isPlanActive(): bool
+    {
+        $plan = $this->currentPlan();
+
+        if ($plan === \App\Enums\Plan::FREE) {
+            return true;
+        }
+
+        if ($this->plan_expires_at && $this->plan_expires_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canCreateProject(): bool
+    {
+        $max = $this->currentPlan()->maxProjects();
+        if ($max === -1) return true;
+        return $this->projects()->count() < $max;
+    }
+
+    public function canAddMember(): bool
+    {
+        $max = $this->currentPlan()->maxMembers();
+        if ($max === -1) return true;
+        return $this->users()->count() < $max;
+    }
+
+    public function hasFeature(string $feature): bool
+    {
+        return $this->currentPlan()->hasFeature($feature);
+    }
+
+    public function aiConfig()
+    {
+        return $this->morphOne(AiConfig::class, 'configurable');
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo_path ? asset('storage/' . $this->logo_path) : null;
+    }
+
+    public function hasLogo(): bool
+    {
+        return !empty($this->logo_path);
     }
 }

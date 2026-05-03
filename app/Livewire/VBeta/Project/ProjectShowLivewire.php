@@ -14,10 +14,11 @@ use App\Models\Risk;
 use App\Models\Budget;
 use App\Models\DynamicProjectField;
 use App\Enums\LogframeDisplayFormat;
+use App\Livewire\Traits\WithToastNotifications;
 
 class ProjectShowLivewire extends Component
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, WithToastNotifications;
 
     public $projectId;
     public $project;
@@ -35,6 +36,19 @@ class ProjectShowLivewire extends Component
         if (LogframeDisplayFormat::tryFrom($format)) {
             $this->logframeFormat = $format;
         }
+    }
+
+    public function toggleTemplate()
+    {
+        if (! $this->project) return;
+
+        $this->project->update(['is_template' => ! $this->project->is_template]);
+
+        $message = $this->project->is_template
+            ? __('projects.templates.marked')
+            : __('projects.templates.unmarked');
+
+        $this->notifyToast('success', $message);
     }
 
     /**
@@ -75,6 +89,38 @@ class ProjectShowLivewire extends Component
     }
 
     
+
+    // ─── AI Summary ──────────────────────────────────────────
+    public ?string $aiSummary = null;
+
+    public function aiGenerateSummary()
+    {
+        if (!$this->project) return;
+
+        $ai = app(\App\Services\AI\AiService::class);
+        if (!$ai::isConfigured()) return;
+
+        $activities = $this->project->getAllActivities();
+        $budgetPlanned = $this->project->budgets->sum('total_cost');
+        $budgetSpent = $this->project->expenses->sum('amount');
+
+        $this->aiSummary = $ai->generateExecutiveSummary([
+            'title' => $this->project->title,
+            'status' => $this->project->status?->label() ?? 'N/A',
+            'progress' => $this->project->calculateProjectProgress(),
+            'total_activities' => $activities->count(),
+            'completed_activities' => $activities->where('status', \App\Enums\ActivityStatus::COMPLETED)->count(),
+            'overdue_activities' => $activities->where('status', \App\Enums\ActivityStatus::OVERDUE)->count(),
+            'planned_budget' => number_format($budgetPlanned, 0, ',', ' '),
+            'spent_budget' => number_format($budgetSpent, 0, ',', ' '),
+            'start_date' => $this->project->start_date?->format('d/m/Y') ?? 'N/A',
+            'end_date' => $this->project->end_date?->format('d/m/Y') ?? 'N/A',
+        ]);
+
+        if (!$this->aiSummary) {
+            $this->notifyToast('danger', __('ai.error'));
+        }
+    }
 
     /**
      * Rend la vue du composant.

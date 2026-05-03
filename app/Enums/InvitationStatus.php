@@ -11,12 +11,12 @@ enum InvitationStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::PENDING => 'En attente',
-            self::ACCEPTED => 'Acceptée',
-            self::EXPIRED => 'Expirée',
-            self::REVOKED => 'Révoquée',
-        };
+        return __('enums.invitation_status.' . match($this) {
+            self::PENDING => 'pending',
+            self::ACCEPTED => 'accepted',
+            self::EXPIRED => 'expired',
+            self::REVOKED => 'revoked',
+        });
     }
 
     public function color(): string

@@ -7,6 +7,7 @@
     'required' => false,
     'icon' => null,
     'error' => null,
+    'disabled' => false,
 ])
 
 @php
@@ -52,9 +53,10 @@
             @if(!$hasWireModel) value="{{ $inputValue }}" @endif
             placeholder="{{ $placeholder }}"
             @if($required) required aria-required="true" @endif
+            @if($disabled) disabled @endif
             @if($error) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
             {{ $attributes->merge([
-                'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all ' . ($icon ? 'pl-11' : 'pl-4') . ' ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '') . ' ' . ($type === 'password' ? 'pr-11' : 'pr-4')
+                'class' => 'block w-full border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-accent/20 focus:border-accent sm:text-sm py-3 transition-all ' . ($icon ? 'pl-11' : 'pl-4') . ' ' . ($error ? 'border-rose-500 ring-2 ring-rose-500/20' : '') . ' ' . ($type === 'password' ? 'pr-11' : 'pr-4') . ' ' . ($disabled ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800' : '')
             ]) }}
         >
         

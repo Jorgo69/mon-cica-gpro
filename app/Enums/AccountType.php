@@ -11,12 +11,12 @@ enum AccountType: string
 
     public function label(): string
     {
-        return match($this) {
-            self::ROOT => 'Super Administrateur',
-            self::ORG_ADMIN => 'Administrateur Espace',
-            self::ORG_USER => 'Collaborateur',
-            self::INDEPENDENT => 'Indépendant',
-        };
+        return __('enums.account_type.' . match($this) {
+            self::ROOT => 'root',
+            self::ORG_ADMIN => 'org_admin',
+            self::ORG_USER => 'org_user',
+            self::INDEPENDENT => 'independent',
+        });
     }
 
     public function color(): string

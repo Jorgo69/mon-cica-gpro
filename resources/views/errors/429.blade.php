@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>429 - Trop de Requêtes</title>
+    <title>429 - {{ __('errors.429.title') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -26,10 +26,10 @@
                 </svg>
             </div>
             <h1 class="text-5xl font-bold text-purple-800 mb-4">429</h1>
-            <h2 class="text-2xl font-semibold text-purple-700 mb-6">Trop de Requêtes</h2>
-            <p class="text-purple-600 mb-8">Désolé, vous avez envoyé trop de requêtes en peu de temps. Veuillez patienter avant de réessayer.</p>
+            <h2 class="text-2xl font-semibold text-purple-700 mb-6">{{ __('errors.429.title') }}</h2>
+            <p class="text-purple-600 mb-8">{{ __('errors.429.message') }}</p>
             <a href="/dashboard" class="inline-block bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-                Réessayer
+                {{ __('errors.retry') }}
             </a>
         </div>
     </div>

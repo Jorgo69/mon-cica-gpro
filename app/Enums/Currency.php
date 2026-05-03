@@ -15,16 +15,7 @@ enum Currency: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::XOF => 'Franc CFA (BCEAO)',
-            self::EUR => 'Euro',
-            self::USD => 'Dollar US',
-            self::GBP => 'Livre Sterling',
-            self::XAF => 'Franc CFA (BEAC)',
-            self::NGN => 'Naira',
-            self::CHF => 'Franc Suisse',
-            self::CAD => 'Dollar Canadien',
-        };
+        return __('enums.currency.' . $this->value);
     }
 
     public function symbol(): string

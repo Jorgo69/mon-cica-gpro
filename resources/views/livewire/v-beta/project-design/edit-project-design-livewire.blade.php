@@ -16,13 +16,13 @@
 
         <div class="bg-card overflow-hidden shadow-xl sm:rounded-lg">
             <div class="p-6 sm:px-20 bg-card border-b border-border">
-                <h1 class="text-3xl font-bold text-heading mb-6">Modifier le Projet : <span class="text-accent">{{ $projectTitle }}</span></h1>
+                <h1 class="text-3xl font-bold text-heading mb-6">{{ __('projects.design.edit_title') }} : <span class="text-accent">{{ $projectTitle }}</span></h1>
 
                 {{-- Wizard Navigation --}}
                 <div x-data="{ currentStep: @entangle('currentStep'), totalSteps: @entangle('totalSteps'), stepDetails: @entangle('stepDetails'), updateProgress: function() { const progress = (this.currentStep / this.totalSteps) * 100; this.$refs.progressBarFill.style.width = `${progress}%`; }, init() { this.updateProgress(); this.$watch('currentStep', () => this.updateProgress()); Livewire.on('stepChanged', () => { this.updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); }); Livewire.on('showAlert', (data) => { Swal.fire({ title: data.title, text: data.text, icon: data.icon, confirmButtonText: data.confirmButtonText }); }); } }" class="flex flex-col lg:flex-row gap-8">
                     {{-- Colonne de navigation des étapes --}}
                     <div class="lg:w-1/4 bg-surface-alt p-6 rounded-lg shadow-inner">
-                        <h2 class="text-xl font-semibold text-heading mb-4">Étapes</h2>
+                        <h2 class="text-xl font-semibold text-heading mb-4">{{ __('projects.design.steps') }}</h2>
                         <ul class="space-y-3">
                             <template x-for="(step, index) in stepDetails" :key="index">
                                 <li class="flex items-center space-x-3 cursor-pointer p-2 rounded-md transition-colors"
@@ -39,7 +39,7 @@
                         {{-- Barre de progression --}}
                         <div class="mt-8">
                             <div class="text-sm font-medium text-body mb-1">
-                                Progression
+                                {{ __('projects.design.progress') }}
                             </div>
                             <div class="w-full bg-border rounded-full h-2.5">
                                 <div x-ref="progressBarFill" class="bg-accent h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
@@ -53,55 +53,55 @@
                             {{-- Étape 1: Informations Clés --}}
                             @if ($currentStep == 1)
                                 <div class="bg-card rounded-lg shadow-md p-6">
-                                    <h2 class="text-2xl font-semibold text-heading mb-4">Informations Clés du Projet</h2>
+                                    <h2 class="text-2xl font-semibold text-heading mb-4">{{ __('projects.design.key_info') }}</h2>
                                     <p class="text-subtle mb-6">Mettez à jour les détails de base de votre projet.</p>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {{-- Titre du Projet --}}
                                         <div>
-                                            <label for="projectTitle" class="block text-sm font-medium text-body">Titre du Projet</label>
+                                            <label for="projectTitle" class="block text-sm font-medium text-body">{{ __('projects.design.project_title') }}</label>
                                             <input type="text" id="projectTitle" wire:model.defer="projectTitle" class="form-input mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading">
                                             @error('projectTitle') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                         </div>
 
                                         {{-- Code du Projet --}}
                                         <div>
-                                            <label for="projectCode" class="block text-sm font-medium text-body">Code du Projet</label>
+                                            <label for="projectCode" class="block text-sm font-medium text-body">{{ __('projects.design.project_code') }}</label>
                                             <input type="text" id="projectCode" wire:model.defer="projectCode" class="form-input mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading">
                                             @error('projectCode') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                         </div>
 
                                         {{-- Date de Début --}}
                                         <div>
-                                            <label for="projectStartDate" class="block text-sm font-medium text-body">Date de Début</label>
+                                            <label for="projectStartDate" class="block text-sm font-medium text-body">{{ __('projects.design.start_date') }}</label>
                                             <input type="date" id="projectStartDate" wire:model.defer="projectStartDate" class="form-input mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading">
                                             @error('projectStartDate') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                         </div>
 
                                         {{-- Date de Fin --}}
                                         <div>
-                                            <label for="projectEndDate" class="block text-sm font-medium text-body">Date de Fin</label>
+                                            <label for="projectEndDate" class="block text-sm font-medium text-body">{{ __('projects.design.end_date') }}</label>
                                             <input type="date" id="projectEndDate" wire:model.defer="projectEndDate" class="form-input mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading">
                                             @error('projectEndDate') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                     <div class="mt-6">
-                                        <label for="projectDescriptionGeneral" class="block text-sm font-medium text-body">Description Générale</label>
+                                        <label for="projectDescriptionGeneral" class="block text-sm font-medium text-body">{{ __('projects.design.general_description') }}</label>
                                         <textarea id="projectDescriptionGeneral" wire:model.defer="projectDescriptionGeneral" rows="4" class="form-textarea mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading"></textarea>
                                         @error('projectDescriptionGeneral') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="mt-6">
-                                        <label for="problemAnalysis" class="block text-sm font-medium text-body">Analyse du Problème</label>
+                                        <label for="problemAnalysis" class="block text-sm font-medium text-body">{{ __('projects.show.problem_analysis') }}</label>
                                         <textarea id="problemAnalysis" wire:model.defer="problemAnalysis" rows="4" class="form-textarea mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading"></textarea>
                                         @error('problemAnalysis') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="mt-6">
-                                        <label for="strategy" class="block text-sm font-medium text-body">Stratégie</label>
+                                        <label for="strategy" class="block text-sm font-medium text-body">{{ __('projects.show.strategy') }}</label>
                                         <textarea id="strategy" wire:model.defer="strategy" rows="4" class="form-textarea mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading"></textarea>
                                         @error('strategy') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="mt-6">
-                                        <label for="justification" class="block text-sm font-medium text-body">Justification</label>
+                                        <label for="justification" class="block text-sm font-medium text-body">{{ __('projects.show.justification') }}</label>
                                         <textarea id="justification" wire:model.defer="justification" rows="4" class="form-textarea mt-1 block w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading"></textarea>
                                         @error('justification') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
                                     </div>
@@ -134,7 +134,7 @@
                                             @foreach ($existingDocuments as $document)
                                                 <li class="flex items-center justify-between text-body">
                                                     <span>{{ $document['file_name'] }}</span>
-                                                    <button type="button" wire:click="removeExistingDocument('{{ $document['id'] }}')" class="text-error hover:text-error-dark text-sm">Supprimer</button>
+                                                    <button type="button" wire:click="removeExistingDocument('{{ $document['id'] }}')" class="text-error hover:text-error-dark text-sm">{{ __('common.delete') }}</button>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -266,7 +266,7 @@
                                                             </div>
                                                             <div class="w-1/3">
                                                                 <select wire:model.defer="specificObjectives.{{ $objIndex }}.results.{{ $resIndex }}.activities.{{ $actIndex }}.responsible" class="form-select w-full rounded-md shadow-sm dark:bg-surface-alt dark:text-heading text-sm">
-                                                                    <option value="">Responsable</option>
+                                                                    <option value="">{{ __('common.responsible') }}</option>
                                                                     @foreach ($users as $user)
                                                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                                     @endforeach
@@ -297,7 +297,7 @@
                             <div class="flex justify-between items-center mt-8">
                                 @if ($currentStep > 1)
                                     <button type="button" wire:click="previousStep" class="px-6 py-3 bg-surface-alt text-heading rounded-lg hover:bg-border transition-colors font-semibold">
-                                        Précédent
+                                        {{ __('common.previous') }}
                                     </button>
                                 @else
                                     <div></div>
@@ -305,11 +305,11 @@
 
                                 @if ($currentStep < $totalSteps)
                                     <button type="button" wire:click="nextStep" class="px-6 py-3 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors font-semibold">
-                                        Suivant
+                                        {{ __('common.next') }}
                                     </button>
                                 @else
                                     <button type="submit" class="px-6 py-3 bg-success text-white rounded-lg hover:bg-success-dark transition-colors font-semibold">
-                                        Mettre à jour le Projet
+                                        {{ __('common.save') }}
                                     </button>
                                 @endif
                             </div>

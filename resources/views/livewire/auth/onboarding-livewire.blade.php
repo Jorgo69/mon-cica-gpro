@@ -1,7 +1,7 @@
 <div x-data="{ step: @entangle('step') }" class="space-y-8">
     <div class="text-center">
-        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">Onboarding</h2>
-        <p class="text-xs text-subtle font-medium mt-1">Configurez votre environnement de travail professionnel.</p>
+        <h2 class="text-2xl font-black text-heading uppercase tracking-tighter">{{ __('auth.onboarding') }}</h2>
+        <p class="text-xs text-subtle font-medium mt-1">{{ __('auth.onboarding_subtitle') }}</p>
     </div>
 
     <div class="text-center">
@@ -9,7 +9,7 @@
             @csrf
             <button type="submit" class="inline-flex items-center gap-1.5 text-xs text-muted hover:text-subtle dark:hover:text-body transition-colors">
                 <x-lucide-log-out class="w-3.5 h-3.5" />
-                Se déconnecter
+                {{ __('auth.logout') }}
             </button>
         </form>
     </div>
@@ -26,8 +26,8 @@
                         <x-lucide-plus-circle class="w-6 h-6" />
                     </div>
                     <div>
-                        <h3 class="font-bold text-heading text-sm">Créer un espace</h3>
-                        <p class="text-[11px] text-subtle mt-0.5">Lancez une nouvelle organisation pour votre équipe.</p>
+                        <h3 class="font-bold text-heading text-sm">{{ __('auth.create_workspace') }}</h3>
+                        <p class="text-[11px] text-subtle mt-0.5">{{ __('auth.create_workspace_desc') }}</p>
                     </div>
                 </div>
             </button>
@@ -38,8 +38,8 @@
                         <x-lucide-users class="w-6 h-6" />
                     </div>
                     <div>
-                        <h3 class="font-bold text-heading text-sm">Rejoindre une équipe</h3>
-                        <p class="text-[11px] text-subtle mt-0.5">Utilisez un code d'invitation pour rejoindre un projet.</p>
+                        <h3 class="font-bold text-heading text-sm">{{ __('auth.join_team') }}</h3>
+                        <p class="text-[11px] text-subtle mt-0.5">{{ __('auth.join_team_desc') }}</p>
                     </div>
                 </div>
             </button>
@@ -50,8 +50,8 @@
                         <x-lucide-user class="w-6 h-6" />
                     </div>
                     <div>
-                        <h3 class="font-bold text-heading text-sm">Travailler en Indépendant</h3>
-                        <p class="text-[11px] text-subtle mt-0.5">Utilisez CICA-GPRO gratuitement sans organisation.</p>
+                        <h3 class="font-bold text-heading text-sm">{{ __('auth.work_independent') }}</h3>
+                        <p class="text-[11px] text-subtle mt-0.5">{{ __('auth.work_independent_desc') }}</p>
                     </div>
                 </div>
             </button>
@@ -67,8 +67,8 @@
     >
         <form wire:submit="createOrganization" class="space-y-6">
             <x-ui.input 
-                label="Nom de l'Organisation" 
-                placeholder="Ex: Cave Tech, ONG Humanitaire..."
+                label="{{ __('auth.organization_name') }}"
+                placeholder="{{ __('auth.organization_placeholder') }}"
                 wire:model="organizationName"
                 icon="building"
                 required 
@@ -77,10 +77,10 @@
 
             <div class="flex items-center gap-3 pt-2">
                 <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
-                    Retour
+                    {{ __('common.back') }}
                 </x-ui.button>
                 <x-ui.button type="submit" variant="primary" icon="check" class="flex-1">
-                    Finaliser la création
+                    {{ __('auth.finalize_creation') }}
                 </x-ui.button>
             </div>
         </form>
@@ -95,8 +95,8 @@
     >
         <form wire:submit="joinOrganization" class="space-y-6">
             <x-ui.input 
-                label="Code d'Invitation" 
-                placeholder="Entrez le code reçu par email"
+                label="{{ __('auth.invitation_code') }}"
+                placeholder="{{ __('auth.invitation_code_placeholder') }}"
                 wire:model="inviteCode"
                 icon="key"
                 required 
@@ -105,10 +105,10 @@
 
             <div class="flex items-center gap-3 pt-2">
                 <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
-                    Retour
+                    {{ __('common.back') }}
                 </x-ui.button>
                 <x-ui.button type="submit" variant="primary" icon="send" class="flex-1">
-                    Rejoindre l'espace
+                    {{ __('auth.join_workspace') }}
                 </x-ui.button>
             </div>
         </form>
@@ -127,18 +127,18 @@
             </div>
             
             <div>
-                <h3 class="text-xl font-black text-heading uppercase tracking-tight">Travailler en Indépendant</h3>
+                <h3 class="text-xl font-black text-heading uppercase tracking-tight">{{ __('auth.work_independent') }}</h3>
                 <p class="text-xs text-subtle font-medium mt-2 max-w-sm mx-auto">
-                    Vous allez configurer un compte complet sans être rattaché à une organisation. Vous pourrez rejoindre une équipe plus tard.
+                    {{ __('auth.independent_confirm_text') }}
                 </p>
             </div>
 
             <div class="flex items-center gap-3 pt-4">
                 <x-ui.button type="button" variant="ghost" icon="arrow-left" @click="step = 'choice'">
-                    Retour
+                    {{ __('common.back') }}
                 </x-ui.button>
                 <x-ui.button type="submit" variant="primary" icon="check" class="flex-1">
-                    Confirmer le choix
+                    {{ __('auth.confirm_choice') }}
                 </x-ui.button>
             </div>
         </form>

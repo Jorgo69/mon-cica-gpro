@@ -1,21 +1,21 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Corbeille" subtitle="Gérez les éléments supprimés — restaurez ou supprimez définitivement" />
+    <x-ui.page-header :title="__('admin.trash.title')" :subtitle="__('admin.trash.subtitle')" />
 
     <div class="space-y-6">
 
         {{-- Membres supprimés --}}
-        <x-ui.section title="Membres supprimés" icon="user-x" :noPadding="false">
+        <x-ui.section :title="__('admin.trash.members_section')" icon="user-x" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllUsers" class="rounded border-border text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Nom</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Email</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">Rôle</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.name') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">{{ __('admin.trash.email') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">{{ __('admin.trash.role') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.deleted_at') }}</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
@@ -35,7 +35,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6"><x-ui.empty-state icon="user-check" title="Aucun membre supprimé" /></td></tr>
+                            <tr><td colspan="6"><x-ui.empty-state icon="user-check" :title="__('admin.trash.no_members')" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -44,16 +44,16 @@
         </x-ui.section>
 
         {{-- Types de projet supprimés --}}
-        <x-ui.section title="Types de projet supprimés" icon="layout-grid" :noPadding="false">
+        <x-ui.section :title="__('admin.trash.project_types_section')" icon="layout-grid" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllTypes" class="rounded border-border text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Nom</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Catégorie</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.name') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">{{ __('admin.trash.category') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.deleted_at') }}</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
@@ -72,7 +72,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5"><x-ui.empty-state icon="check-circle" title="Aucun type supprimé" /></td></tr>
+                            <tr><td colspan="5"><x-ui.empty-state icon="check-circle" :title="__('admin.trash.no_types')" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -81,17 +81,17 @@
         </x-ui.section>
 
         {{-- Projets supprimés --}}
-        <x-ui.section title="Projets supprimés" icon="folder-minus" :noPadding="false">
+        <x-ui.section :title="__('admin.trash.projects_section')" icon="folder-minus" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllProjects" class="rounded border-border text-accent focus:ring-accent"></th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Titre</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">Code</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">Statut</th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Supprimé le</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.title_col') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden md:table-cell">{{ __('admin.trash.code') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest hidden lg:table-cell">{{ __('admin.trash.status') }}</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.deleted_at') }}</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
@@ -117,7 +117,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6"><x-ui.empty-state icon="check-circle" title="Aucun projet supprimé" /></td></tr>
+                            <tr><td colspan="6"><x-ui.empty-state icon="check-circle" :title="__('admin.trash.no_projects')" /></td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -130,7 +130,7 @@
     {{-- Modal --}}
     @if ($showModal)
         <x-ui.modal :show="$showModal"
-                     :title="$modalType === 'view' ? 'Détails de l\'élément' : 'Suppression définitive'"
+                     :title="$modalType === 'view' ? __('admin.trash.view_details') : __('admin.trash.permanent_delete')"
                      wire:close="$set('showModal', false)">
             @if ($modalType === 'view' && $selectedItem)
                 <div class="space-y-2">
@@ -149,12 +149,12 @@
                     <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mx-auto mb-4">
                         <x-lucide-alert-triangle class="w-6 h-6 text-error" />
                     </div>
-                    <p class="text-sm text-body mb-2">Cette action est <strong class="text-error">irréversible</strong>.</p>
-                    <p class="text-sm text-subtle">Voulez-vous supprimer définitivement cet élément ?</p>
+                    <p class="text-sm text-body mb-2">{!! __('admin.trash.irreversible') !!}</p>
+                    <p class="text-sm text-subtle">{{ __('admin.trash.confirm_permanent_delete') }}</p>
                 </div>
                 <x-slot:footer>
-                    <x-ui.button wire:click="$set('showModal', false)" variant="outline" size="sm">Annuler</x-ui.button>
-                    <x-ui.button wire:click="forceDelete('{{ $selectedItem->id }}','{{ $selectedModel }}')" variant="danger" icon="trash-2" size="sm">Supprimer définitivement</x-ui.button>
+                    <x-ui.button wire:click="$set('showModal', false)" variant="outline" size="sm">{{ __('common.cancel') }}</x-ui.button>
+                    <x-ui.button wire:click="forceDelete('{{ $selectedItem->id }}','{{ $selectedModel }}')" variant="danger" icon="trash-2" size="sm">{{ __('common.delete_permanently') }}</x-ui.button>
                 </x-slot:footer>
             @endif
         </x-ui.modal>

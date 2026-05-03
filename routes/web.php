@@ -23,6 +23,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// PWA offline page
+Route::view('/offline', 'offline')->name('offline');
+
+// Pricing page (public)
+Route::view('/pricing', 'pricing')->name('pricing');
+
+// Legal pages (public)
+Route::view('/privacy', 'legal.privacy')->name('legal.privacy');
+Route::view('/terms', 'legal.terms')->name('legal.terms');
+
+// Public shared project dashboard (no auth required)
+Route::get('/shared/project/{token}', [\App\Http\Controllers\SharedProjectController::class, 'show'])
+    ->name('shared.project');
+
+// FAQ (auth required)
+Route::get('/faq', \App\Livewire\VBeta\FaqLivewire::class)
+    ->middleware(['auth'])
+    ->name('faq');
+
 
 Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
     ->middleware(['auth'])
@@ -53,6 +72,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::view('setting', 'v_beta.settings.index')->name('setting');
+
+    // GDPR - Export personal data
+    Route::get('/profile/export-data', function () {
+        $data = \App\Services\GdprExportService::export(auth()->user());
+        $filename = 'mes-donnees-' . now()->format('Y-m-d') . '.json';
+        return response()->json($data, 200, [
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    })->name('profile.export-data');
 
     // Mini API pour persister les preferences (theme toggle navbar, etc.)
     Route::post('/api/user-meta', function (\Illuminate\Http\Request $request) {

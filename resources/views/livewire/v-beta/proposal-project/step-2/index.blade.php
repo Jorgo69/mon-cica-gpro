@@ -1,38 +1,58 @@
 <div class="space-y-6">
     <div class="space-y-6">
-        {{-- RICH TEXT EDITORS --}}
+        {{-- RICH TEXT EDITORS avec AI --}}
         <div class="space-y-4">
-            <x-ui.rich-editor
-                name="contextDescription"
-                :value="$contextDescription"
-                label="Contexte du Projet"
-                :required="true"
-                placeholder="Decrivez le contexte du projet..."
-            />
+            <div>
+                <x-ui.rich-editor
+                    name="contextDescription"
+                    :value="$contextDescription"
+                    label="Contexte du Projet"
+                    :required="true"
+                    placeholder="Decrivez le contexte du projet..."
+                >
+                    <x-slot:afterLabel><x-ui.ai-field-button field="contextDescription" /></x-slot:afterLabel>
+                </x-ui.rich-editor>
+                <x-ui.ai-suggestion field="contextDescription" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+            </div>
 
-            <x-ui.rich-editor
-                name="problemAnalysis"
-                :value="$problemAnalysis"
-                label="Analyse du probleme"
-                placeholder="Decrivez la problematique..."
-            />
+            <div>
+                <x-ui.rich-editor
+                    name="problemAnalysis"
+                    :value="$problemAnalysis"
+                    label="Analyse du probleme"
+                    placeholder="Decrivez la problematique..."
+                >
+                    <x-slot:afterLabel><x-ui.ai-field-button field="problemAnalysis" /></x-slot:afterLabel>
+                </x-ui.rich-editor>
+                <x-ui.ai-suggestion field="problemAnalysis" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <x-ui.rich-editor
-                    name="strategy"
-                    :value="$strategy"
-                    label="Strategie"
-                    placeholder="Decrivez la strategie..."
-                    :height="150"
-                />
+                <div>
+                    <x-ui.rich-editor
+                        name="strategy"
+                        :value="$strategy"
+                        label="Strategie"
+                        placeholder="Decrivez la strategie..."
+                        :height="150"
+                    >
+                        <x-slot:afterLabel><x-ui.ai-field-button field="strategy" /></x-slot:afterLabel>
+                    </x-ui.rich-editor>
+                    <x-ui.ai-suggestion field="strategy" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+                </div>
 
-                <x-ui.rich-editor
-                    name="justification"
-                    :value="$justification"
-                    label="Justification"
-                    placeholder="Justifiez le projet..."
-                    :height="150"
-                />
+                <div>
+                    <x-ui.rich-editor
+                        name="justification"
+                        :value="$justification"
+                        label="Justification"
+                        placeholder="Justifiez le projet..."
+                        :height="150"
+                    >
+                        <x-slot:afterLabel><x-ui.ai-field-button field="justification" /></x-slot:afterLabel>
+                    </x-ui.rich-editor>
+                    <x-ui.ai-suggestion field="justification" :activeField="$aiActiveField" :suggestion="$aiSuggestion" :loading="$aiLoading" />
+                </div>
             </div>
         </div>
 

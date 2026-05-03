@@ -22,10 +22,10 @@
 
         {{-- Header --}}
         <div class="flex items-center justify-between px-5 py-3 border-b border-border-light dark:border-surface-alt">
-            <h3 class="text-sm font-black text-body">Notifications</h3>
+            <h3 class="text-sm font-black text-body">{{ __('notifications.title') }}</h3>
             @if($unreadCount > 0)
                 <button wire:click="markAllAsRead" class="text-[10px] font-bold text-accent hover:text-accent/80 uppercase tracking-widest transition-colors">
-                    Tout marquer lu
+                    {{ __('notifications.mark_all_read') }}
                 </button>
             @endif
         </div>
@@ -58,7 +58,7 @@
 
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-bold text-body {{ $isUnread ? '' : 'font-medium' }}">
-                                {{ $data['title'] ?? 'Notification' }}
+                                {{ $data['title'] ?? __('notifications.title') }}
                             </p>
                             <p class="text-[11px] text-subtle mt-0.5 line-clamp-2">
                                 {{ $data['message'] ?? '' }}
@@ -76,7 +76,7 @@
             @empty
                 <div class="px-5 py-10 text-center">
                     <x-lucide-bell-off class="w-8 h-8 mx-auto text-body dark:text-subtle mb-2" />
-                    <p class="text-sm text-muted">Aucune notification</p>
+                    <p class="text-sm text-muted">{{ __('notifications.no_notifications') }}</p>
                 </div>
             @endforelse
         </div>

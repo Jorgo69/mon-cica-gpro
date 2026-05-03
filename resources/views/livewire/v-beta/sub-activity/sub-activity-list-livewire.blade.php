@@ -7,7 +7,7 @@
             {{-- Bouton Nouveau Projet --}}
             <a href="{{ route('creator.proposal.project.create') }}" class="inline-flex items-center px-4 py-2 bg-accent border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-accent-dark active:bg-blue-800 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
-                Nouveau Projet
+                {{ __('sub_activities.new_project') }}
             </a>
         </div>
 
@@ -15,7 +15,7 @@
         <div class="bg-card overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-heading">
                 @if ($subActivities->isEmpty())
-                    <p class="text-center text-subtle">Aucun projet trouvé pour cette sélection.</p>
+                    <p class="text-center text-subtle">{{ __('sub_activities.no_items') }}</p>
                 @else
                     <table class="min-w-full divide-y divide-border dark:divide-border">
                         <thead class="bg-surface dark:bg-surface-alt">
@@ -91,8 +91,8 @@
                                         {{ \Carbon\Carbon::parse($activity->end_date)->format('d/m/Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('project.show', $activity->id) }}" class="text-accent hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">Voir</a>
-                                        <a href="{{ route('creator.proposal.project.edit', $activity->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Modifier</a>
+                                        <a href="{{ route('project.show', $activity->id) }}" class="text-accent hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-200 mr-2">{{ __('sub_activities.view') }}</a>
+                                        <a href="{{ route('creator.proposal.project.edit', $activity->id) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">{{ __('sub_activities.edit') }}</a>
                                     </td>
                                 </tr>
                             @endforeach

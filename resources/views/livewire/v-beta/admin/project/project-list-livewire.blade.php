@@ -1,21 +1,21 @@
 <x-ui.page-layout>
 
-    <x-ui.page-header title="Tous les Projets" subtitle="Vue d'administration de tous les projets du système" />
+    <x-ui.page-header :title="__('admin.projects.title')" :subtitle="__('admin.projects.subtitle')" />
 
     {{-- Filters --}}
     <x-ui.card class="mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <x-ui.input wire:model.live.debounce.300ms="search" placeholder="Rechercher un projet..." icon="search" />
+            <x-ui.input wire:model.live.debounce.300ms="search" :placeholder="__('admin.projects.search_placeholder')" icon="search" />
 
             <x-ui.select wire:model.live="statusFilter" icon="filter">
-                <option value="">Tous les statuts</option>
+                <option value="">{{ __('admin.projects.all_statuses') }}</option>
                 @foreach ($projectStatuses as $status)
                     <option value="{{ $status->value }}">{{ $status->label() }}</option>
                 @endforeach
             </x-ui.select>
 
             <x-ui.select wire:model.live="responsibleUserFilter" icon="user">
-                <option value="">Tous les responsables</option>
+                <option value="">{{ __('admin.projects.all_responsibles') }}</option>
                 @foreach ($availableUsers as $userOption)
                     <option value="{{ $userOption->id }}">{{ $userOption->name }}</option>
                 @endforeach
@@ -24,31 +24,31 @@
     </x-ui.card>
 
     {{-- Table --}}
-    <x-ui.section title="Projets" icon="folder" :noPadding="false">
+    <x-ui.section :title="__('admin.projects.section')" icon="folder" :noPadding="false">
         <div class="overflow-x-auto -mx-6">
             @if ($projects->isEmpty())
-                <x-ui.empty-state icon="folder-open" title="Aucun projet trouvé" description="Modifiez vos filtres ou attendez que des projets soient créés." />
+                <x-ui.empty-state icon="folder-open" :title="__('admin.projects.no_projects')" :description="__('admin.projects.no_projects_desc')" />
             @else
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('title')">
-                                <div class="flex items-center gap-1">Titre @if ($sortField === 'title') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
+                                <div class="flex items-center gap-1">{{ __('admin.projects.title_col') }} @if ($sortField === 'title') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('project_code')">
-                                <div class="flex items-center gap-1">Code @if ($sortField === 'project_code') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
+                                <div class="flex items-center gap-1">{{ __('admin.projects.code') }} @if ($sortField === 'project_code') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('status')">
-                                <div class="flex items-center gap-1">Statut @if ($sortField === 'status') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
+                                <div class="flex items-center gap-1">{{ __('admin.projects.status') }} @if ($sortField === 'status') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>
+                            <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.projects.responsible') }}</th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('start_date')">
-                                <div class="flex items-center gap-1">Début @if ($sortField === 'start_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
+                                <div class="flex items-center gap-1">{{ __('admin.projects.start_date') }} @if ($sortField === 'start_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('end_date')">
-                                <div class="flex items-center gap-1">Fin @if ($sortField === 'end_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
+                                <div class="flex items-center gap-1">{{ __('admin.projects.end_date') }} @if ($sortField === 'end_date') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>
                             </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">Actions</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.projects.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">

@@ -10,6 +10,7 @@ use App\Enums\AccountType;
 use App\Enums\ProjectStatus;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectStatsQueryService
 {
@@ -42,12 +43,15 @@ class ProjectStatsQueryService
             $this->applyUserFilters($user, $projectQuery, $activityQuery);
         }
 
-        return $this->formatStats(
-            $projectQuery, 
-            $activityQuery, 
-            $budgetQuery, 
+        // Cache key per user + period (5 minutes TTL)
+        $cacheKey = "dashboard_stats_{$user->id}_{$startDate?->timestamp}_{$endDate?->timestamp}";
+
+        return Cache::remember($cacheKey, 300, fn () => $this->formatStats(
+            $projectQuery,
+            $activityQuery,
+            $budgetQuery,
             $progressQuery
-        );
+        ));
     }
 
     private function applyUserFilters($user, Builder $projectQuery, Builder $activityQuery): void

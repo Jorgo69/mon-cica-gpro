@@ -11,10 +11,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ActivityProgressUpdatedNotification;
 
-uses(RefreshDatabase::class);
-
 beforeEach(function () {
-    [$this->org, $this->user] = loginAsUser();
+    $this->org = createOrg();
+    $this->user = createOrgUser($this->org);
+    loginAs($this->user);
 });
 
 it('updates activity progress and notifies stakeholders', function () {

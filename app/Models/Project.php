@@ -30,6 +30,8 @@ class Project extends Model
         'currency',
         'start_date',
         'end_date',
+        'is_template',
+        'source_project_id',
         'meta',
     ];
 
@@ -39,6 +41,7 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'general_objectives' => 'array',
+        'is_template' => 'boolean',
         'meta' => 'array',
     ];
 
@@ -105,7 +108,11 @@ class Project extends Model
         return $this->hasMany(QualitativeEvaluation::class, 'project_id', 'id');
     }
 
-    // Autres relations et méthodes...
+    public function shareTokens()
+    {
+        return $this->hasMany(ShareToken::class);
+    }
+
     public function projectContext()
     {
         return $this->hasOne(ProjectContext::class);

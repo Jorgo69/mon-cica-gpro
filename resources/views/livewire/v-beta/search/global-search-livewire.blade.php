@@ -61,7 +61,7 @@
                     x-ref="searchInput"
                     wire:model.live.debounce.250ms="search"
                     type="text"
-                    placeholder="Rechercher un projet, une activite, un membre..."
+                    placeholder="{{ __('search.placeholder') }}"
                     class="flex-1 bg-transparent border-none text-sm font-medium text-heading focus:ring-0 focus:outline-none placeholder-muted"
                 />
                 <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-surface border border-border-light text-[9px] font-black text-muted">ESC</kbd>
@@ -78,8 +78,8 @@
                         @if(!empty($recentSearches))
                         <div class="mb-4">
                             <div class="flex items-center justify-between px-2 mb-2">
-                                <span class="text-[9px] font-black text-muted uppercase tracking-widest">Recherches recentes</span>
-                                <button wire:click="clearRecentSearches" class="text-[9px] font-bold text-subtle hover:text-accent transition-colors">Effacer</button>
+                                <span class="text-[9px] font-black text-muted uppercase tracking-widest">{{ __('search.recent_searches') }}</span>
+                                <button wire:click="clearRecentSearches" class="text-[9px] font-bold text-subtle hover:text-accent transition-colors">{{ __('search.clear') }}</button>
                             </div>
                             @foreach($recentSearches as $index => $recent)
                                 <button wire:click="setSearchFromRecent({{ $index }})"
@@ -95,7 +95,7 @@
                         {{-- Actions rapides --}}
                         @if(!empty($quickActions))
                         <div>
-                            <span class="text-[9px] font-black text-muted uppercase tracking-widest px-2 block mb-2">Actions rapides</span>
+                            <span class="text-[9px] font-black text-muted uppercase tracking-widest px-2 block mb-2">{{ __('search.quick_actions') }}</span>
                             @foreach($quickActions as $action)
                                 <a href="{{ $action['url'] }}"
                                     data-search-item
@@ -116,7 +116,7 @@
                         @if(empty($recentSearches) && empty($quickActions))
                         <div class="p-8 text-center">
                             <x-lucide-search class="w-8 h-8 text-muted mx-auto mb-3 opacity-50" />
-                            <p class="text-xs font-bold text-muted">Commencez a taper pour rechercher...</p>
+                            <p class="text-xs font-bold text-muted">{{ __('search.start_typing') }}</p>
                         </div>
                         @endif
                     </div>
@@ -125,8 +125,8 @@
                     {{-- Aucun resultat --}}
                     <div class="p-8 text-center">
                         <x-lucide-search-x class="w-10 h-10 text-muted mx-auto mb-3 opacity-50" />
-                        <p class="text-sm font-bold text-heading">Aucun resultat</p>
-                        <p class="text-xs text-subtle mt-1">Aucun element ne correspond a "{{ $search }}"</p>
+                        <p class="text-sm font-bold text-heading">{{ __('search.no_results_title') }}</p>
+                        <p class="text-xs text-subtle mt-1">{{ __('search.no_match', ['query' => $search]) }}</p>
                     </div>
 
                 @else
@@ -164,13 +164,13 @@
             <div class="px-4 py-2.5 bg-surface/50 dark:bg-surface-alt/30 border-t border-border-light flex items-center justify-between">
                 <div class="flex items-center gap-4 text-[9px] font-bold text-muted">
                     <span class="inline-flex items-center gap-1">
-                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">&uarr;&darr;</kbd> naviguer
+                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">&uarr;&darr;</kbd> {{ __('search.navigate') }}
                     </span>
                     <span class="inline-flex items-center gap-1">
-                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">&crarr;</kbd> ouvrir
+                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">&crarr;</kbd> {{ __('search.open') }}
                     </span>
                     <span class="inline-flex items-center gap-1">
-                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">esc</kbd> fermer
+                        <kbd class="px-1 py-0.5 rounded bg-card border border-border-light shadow-sm text-[8px]">esc</kbd> {{ __('common.close') }}
                     </span>
                 </div>
                 <span class="text-[9px] font-black text-muted uppercase tracking-widest">CICA-GPRO</span>

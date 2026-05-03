@@ -17,10 +17,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Description --}}
                         <div class="md:col-span-2">
-                            <x-ui.input 
-                                label="Description"
+                            <x-ui.input
+                                :label="__('sub_activities.description')"
                                 wire:model.defer="subActivitiesData.{{ $index }}.description"
-                                placeholder="Décrivez cette sous-activité..."
+                                :placeholder="__('sub_activities.description_placeholder')"
                                 required
                             />
                             @error('subActivitiesData.'.$index.'.description') 
@@ -29,9 +29,9 @@
                         </div>
                         
                         {{-- Date de début --}}
-                        <x-ui.input 
-                            type="date" 
-                            label="Date de début"
+                        <x-ui.input
+                            type="date"
+                            :label="__('sub_activities.start_date')"
                             wire:model.live="subActivitiesData.{{ $index }}.start_date"
                             min="{{ $activityStartDate }}"
                             max="{{ $activityEndDate }}"
@@ -39,9 +39,9 @@
                         />
 
                         {{-- Date de fin --}}
-                        <x-ui.input 
+                        <x-ui.input
                             type="date"
-                            label="Date de fin"
+                            :label="__('sub_activities.end_date')"
                             wire:model.live="subActivitiesData.{{ $index }}.end_date"
                             min="{{ $activityStartDate }}"
                             max="{{ $activityEndDate }}"
@@ -49,11 +49,11 @@
                         />
 
                         {{-- Responsable --}}
-                        <x-ui.select 
-                            label="Responsable"
+                        <x-ui.select
+                            :label="__('sub_activities.responsible')"
                             wire:model.defer="subActivitiesData.{{ $index }}.responsible_user_id"
                         >
-                            <option value="">Sélectionner un responsable</option>
+                            <option value="">{{ __('sub_activities.select_responsible') }}</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
@@ -68,7 +68,7 @@
                             >
                                 <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $subActivitiesData[$index]['is_milestone'] ? 'translate-x-4' : 'translate-x-0' }}"></span>
                             </button>
-                            <span class="text-sm font-medium text-subtle">Marquer comme jalon (important)</span>
+                            <span class="text-sm font-medium text-subtle">{{ __('sub_activities.mark_as_milestone') }}</span>
                         </div>
                     </div>
                 </x-ui.card>
@@ -79,35 +79,35 @@
         <div class="flex items-center justify-between pt-4 border-t border-border-light dark:border-surface-alt">
             <div>
                 @if(!$editing)
-                    <x-ui.button 
-                        type="button" 
+                    <x-ui.button
+                        type="button"
                         wire:click="addBlankSubActivity"
-                        variant="ghost" 
-                        size="sm" 
+                        variant="ghost"
+                        size="sm"
                         icon="plus"
                     >
-                        Ajouter une autre
+                        {{ __('sub_activities.add_another') }}
                     </x-ui.button>
                 @endif
             </div>
 
             <div class="flex items-center gap-2">
-                <x-ui.button 
+                <x-ui.button
                     type="button"
                     wire:click="$parent.closeModalForSubActivity"
                     variant="ghost"
                     size="md"
                 >
-                    Annuler
+                    {{ __('common.cancel') }}
                 </x-ui.button>
-                <x-ui.button 
+                <x-ui.button
                     type="submit"
                     variant="accent"
                     size="md"
                     wire:loading.attr="disabled"
                 >
-                    <span wire:loading.remove>{{ $editing ? 'Mettre à jour' : 'Enregistrer' }}</span>
-                    <span wire:loading>Traitement...</span>
+                    <span wire:loading.remove>{{ $editing ? __('common.update') : __('common.save') }}</span>
+                    <span wire:loading>{{ __('common.processing') }}</span>
                 </x-ui.button>
             </div>
         </div>
