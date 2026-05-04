@@ -1,8 +1,9 @@
 {
-    "name": "laravel/laravel",
+    "name": "cave-tech/cica-gpro",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "version": "2.0.0",
+    "description": "CICA-GPRO — Systeme intelligent de gestion de projets (Cadre Logique)",
+    "keywords": ["gpro", "logframe", "project-management", "ngo", "multi-tenant"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

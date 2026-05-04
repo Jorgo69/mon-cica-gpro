@@ -1,8 +1,9 @@
-# CICA-GPRO — Systeme Intelligent de Gestion de Projets
+# CICA-GPRO v2.0 — Systeme Intelligent de Gestion de Projets
 
+[![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)]()
 [![Laravel 12](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
 [![Livewire 3](https://img.shields.io/badge/Livewire-3.x-blue.svg)](https://livewire.laravel.com)
-[![Pest](https://img.shields.io/badge/Tests-431%20passed-brightgreen.svg)](https://pestphp.com)
+[![Pest](https://img.shields.io/badge/Tests-462%20passed-brightgreen.svg)](https://pestphp.com)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **CICA-GPRO** est une plateforme open source de gestion de projets basee sur le **Cadre Logique (LogFrame)**. Concue pour les ONG, associations et organisations de developpement, elle combine une architecture multi-tenant robuste avec une experience utilisateur moderne.
@@ -70,7 +71,7 @@ Disponible en deux modes :
 | Auth | Sanctum, Spatie Permission, Socialite |
 | Exports | PDF Studio (DomPDF), PHPWord, Maatwebsite Excel |
 | Notifications | Database, Mail, Firebase FCM |
-| Tests | Pest PHP (431 tests, 916 assertions) |
+| Tests | Pest PHP (462 tests, 997 assertions) |
 | CI/CD | GitHub Actions |
 
 ---
