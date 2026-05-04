@@ -25,7 +25,6 @@ class Organization extends Model
         'contact_phone',
         'description',
         'status',
-        'plan',
         'plan_id',
         'plan_activated_at',
         'plan_expires_at',
@@ -34,7 +33,7 @@ class Organization extends Model
     ];
 
     protected $attributes = [
-        'status' => 'trial',
+        'status' => 'trial', // OrganizationStatus::TRIAL->value
     ];
 
     protected $casts = [

@@ -3,10 +3,16 @@
 namespace App\Services;
 
 use App\Actions\Invitation\AcceptInvitationAction;
+use App\Enums\AccountType;
+use App\Enums\OrganizationStatus;
+use App\Enums\PermissionLevel;
+use App\Models\Organization;
 use App\Models\SocialAccount;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 
@@ -33,13 +39,18 @@ class SocialAuthService
                 return $user;
             }
 
-            // 3. Creer un nouveau user (sans password)
-            $user = User::create([
-                'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Utilisateur',
-                'email' => $socialUser->getEmail(),
-                'password' => bcrypt(Str::random(32)),
-                'email_verified_at' => now(),
-            ]);
+            // 3. Creer un nouveau user
+            // Selfhosted first user → auto admin
+            if (isSelfHosted() && DB::table('users')->lockForUpdate()->count() === 0) {
+                $user = $this->createFirstAdminSocial($socialUser);
+            } else {
+                $user = User::create([
+                    'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Utilisateur',
+                    'email' => $socialUser->getEmail(),
+                    'password' => Hash::make(Str::random(32)),
+                    'email_verified_at' => now(),
+                ]);
+            }
 
             $this->createSocialAccount($user, $provider, $socialUser);
 
@@ -70,6 +81,36 @@ class SocialAuthService
         return $user->socialAccounts()
             ->where('provider', $provider)
             ->delete() > 0;
+    }
+
+    private function createFirstAdminSocial(SocialiteUser $socialUser): User
+    {
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder', '--force' => true]);
+
+        $orgName = config('app.name', 'Mon Organisation');
+        $org = Organization::create([
+            'name' => $orgName,
+            'slug' => Str::slug($orgName),
+            'status' => OrganizationStatus::ACTIVE,
+        ]);
+
+        $user = User::create([
+            'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'Administrateur',
+            'email' => $socialUser->getEmail(),
+            'password' => Hash::make(Str::random(32)),
+            'role' => AccountType::ORG_ADMIN,
+            'organization_id' => $org->id,
+            'email_verified_at' => now(),
+        ]);
+
+        $org->update(['owner_user_id' => $user->id]);
+
+        setPermissionsTeamId(null);
+        $level = PermissionLevel::ADMIN;
+        $user->assignRole($level->spatieRole());
+        $user->syncPermissions($level->permissions());
+
+        return $user;
     }
 
     private function createSocialAccount(User $user, string $provider, SocialiteUser $socialUser): SocialAccount

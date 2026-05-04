@@ -27,7 +27,7 @@ class CreateOrganizationAction
             $organization = Organization::create([
                 'name' => $name,
                 'slug' => Str::slug($name),
-                'status' => 'trial',
+                'status' => \App\Enums\OrganizationStatus::TRIAL,
                 'owner_user_id' => $user->id,
             ]);
 
