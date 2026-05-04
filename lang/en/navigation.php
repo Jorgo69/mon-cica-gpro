@@ -56,5 +56,6 @@ return [
     'leave_org' => 'Leave workspace',
     'import' => 'Excel Import',
     'calendar' => 'Calendar',
+    'map' => 'Map',
 
 ];

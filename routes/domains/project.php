@@ -20,6 +20,9 @@ Route::middleware(['auth'])->prefix('v_beta')->group(function () {
     // Calendrier
     Route::view('/calendar', 'v_beta.calendar.index')->name('calendar');
 
+    // Carte geographique
+    Route::view('/map', 'v_beta.map.index')->name('map');
+
     // Gestion Centrale Projet
     Route::view('/project-list', 'pages.project.list')->name('project.list');
     Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');

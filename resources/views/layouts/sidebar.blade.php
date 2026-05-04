@@ -73,6 +73,13 @@
             <span class="nav-label">{{ __('navigation.calendar') }}</span>
         </a>
 
+        {{-- Carte --}}
+        <a href="{{ route('map') }}"
+           class="nav-item @if(Route::is('map*')) nav-item-active @endif">
+            <x-lucide-map class="nav-icon" />
+            <span class="nav-label">{{ __('navigation.map') }}</span>
+        </a>
+
 
         {{-- ── SYSTÈME (ROOT / SYSTEM_ADMIN) ── --}}
         @if (auth()->user()->role === \App\Enums\AccountType::ROOT)

@@ -56,5 +56,6 @@ return [
     'leave_org' => 'Quitter l\'espace',
     'import' => 'Import Excel',
     'calendar' => 'Calendrier',
+    'map' => 'Carte',
 
 ];
