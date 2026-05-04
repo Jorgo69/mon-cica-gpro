@@ -246,6 +246,12 @@ return [
         'item_deleted' => 'Item permanently deleted.',
     ],
 
+    // Org permissions view
+    'permissions' => [
+        'title' => 'Organization Permissions',
+        'subtitle' => 'View permissions for each member',
+    ],
+
     // Projects (admin list)
     'projects' => [
         'title' => 'All Projects',

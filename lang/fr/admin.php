@@ -38,6 +38,12 @@ return [
         'permissions_updated' => 'Permissions mises à jour.',
     ],
 
+    // Org permissions view
+    'permissions' => [
+        'title' => 'Permissions de l\'organisation',
+        'subtitle' => 'Consultez les permissions de chaque membre',
+    ],
+
     // Categories
     'categories' => [
         'title' => 'Gestion des Catégories',

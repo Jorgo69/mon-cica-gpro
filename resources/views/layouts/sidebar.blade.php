@@ -137,6 +137,12 @@
                     <a href="{{ route('admin.exchange-rates') }}" class="nav-submenu-item @if(Route::is('admin.exchange-rates*')) nav-submenu-item-active @endif">
                         {{ __('navigation.exchange_rates') }}
                     </a>
+                    <a href="{{ route('admin.permissions') }}" class="nav-submenu-item @if(Route::is('admin.permissions*')) nav-submenu-item-active @endif">
+                        {{ __('navigation.permissions') }}
+                    </a>
+                    <a href="{{ route('admin.audit') }}" class="nav-submenu-item @if(Route::is('admin.audit*')) nav-submenu-item-active @endif">
+                        {{ __('navigation.audit') }}
+                    </a>
                     <a href="{{ route('admin.trash.management') }}" class="nav-submenu-item @if(Route::is('admin.trash.management*')) nav-submenu-item-active @endif">
                         {{ __('navigation.trash') }}
                     </a>

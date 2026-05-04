@@ -495,10 +495,10 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 
 ---
 
-## Bugs connus (a traiter)
+## Bugs connus (corriges)
 
-- [ ] **Audit org admin** : les org_admin n'ont pas acces a l'audit de leur propre organisation (actuellement ROOT only). Ajouter route admin + vue scopee par org.
-- [ ] **Permissions org admin** : les org_admin ne voient pas les permissions de leur org. Ajouter vue admin des roles/permissions scopes a l'org.
+- [x] **Audit org admin** : route admin.audit ajoutee, reutilise ActivityHistoryLivewire (deja scope par org), lien sidebar
+- [x] **Permissions org admin** : OrgPermissionsLivewire cree, route admin.permissions, vue avec liste membres + niveau + permissions detaillees
 
 ## Backlog (Groupe E — post v1.0)
 
