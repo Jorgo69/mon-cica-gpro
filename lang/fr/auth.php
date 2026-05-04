@@ -75,4 +75,9 @@ return [
     'confirm_password_title' => 'Confirmer le mot de passe',
     'confirm_password_text' => 'Ceci est une zone sécurisée. Veuillez confirmer votre mot de passe avant de continuer.',
 
+    // Social auth
+    'social_failed' => 'Echec de l\'authentification avec :provider. Veuillez reessayer.',
+    'social_no_email' => 'Impossible de recuperer votre adresse email depuis :provider.',
+    'social_no_account' => 'Aucun compte associe. Veuillez d\'abord vous inscrire.',
+
 ];

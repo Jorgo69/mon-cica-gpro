@@ -18,6 +18,10 @@ class SocialAuthController extends Controller
             abort(404);
         }
 
+        // Store intent (login or register) in session for the callback
+        $intent = request()->query('intent', 'login');
+        session(['social_auth_intent' => in_array($intent, ['login', 'register']) ? $intent : 'login']);
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -27,28 +31,36 @@ class SocialAuthController extends Controller
             abort(404);
         }
 
+        $intent = session()->pull('social_auth_intent', 'login');
+
         try {
             $socialUser = Socialite::driver($provider)->user();
         } catch (\Exception $e) {
-            return redirect()->route('login')
-                ->with('error', 'Echec de l\'authentification avec ' . ucfirst($provider) . '. Veuillez reessayer.');
+            return redirect()->route($intent === 'register' ? 'register' : 'login')
+                ->with('error', __('auth.social_failed', ['provider' => ucfirst($provider)]));
         }
 
         if (!$socialUser->getEmail()) {
-            return redirect()->route('login')
-                ->with('error', 'Impossible de recuperer votre adresse email depuis ' . ucfirst($provider) . '.');
+            return redirect()->route($intent === 'register' ? 'register' : 'login')
+                ->with('error', __('auth.social_no_email', ['provider' => ucfirst($provider)]));
         }
 
-        $user = $service->handleCallback($provider, $socialUser);
+        $result = $service->handleCallback($provider, $socialUser, $intent);
 
-        Auth::login($user, remember: true);
+        // If login intent but no account exists → refuse, redirect to register
+        if ($result === null) {
+            return redirect()->route('register')
+                ->with('error', __('auth.social_no_account'));
+        }
+
+        Auth::login($result, remember: true);
         session()->regenerate();
 
         // Auto-accept invitation si token en session
-        $service->handleInvitation($user);
+        $service->handleInvitation($result);
 
         // Nouveau user sans org → onboarding
-        if (!$user->organization_id && !$user->is_independent) {
+        if (!$result->organization_id && !$result->is_independent) {
             return redirect()->route('onboarding');
         }
 

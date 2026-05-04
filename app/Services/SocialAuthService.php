@@ -18,10 +18,14 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
 
 class SocialAuthService
 {
-    public function handleCallback(string $provider, SocialiteUser $socialUser): User
+    /**
+     * @param string $intent 'login' or 'register'
+     * @return User|null null if login intent but no account exists
+     */
+    public function handleCallback(string $provider, SocialiteUser $socialUser, string $intent = 'login'): ?User
     {
-        return DB::transaction(function () use ($provider, $socialUser) {
-            // 1. Cherche un social account existant
+        return DB::transaction(function () use ($provider, $socialUser, $intent) {
+            // 1. Cherche un social account existant → login OK (both intents)
             $socialAccount = SocialAccount::where('provider', $provider)
                 ->where('provider_id', $socialUser->getId())
                 ->first();
@@ -31,7 +35,7 @@ class SocialAuthService
                 return $socialAccount->user;
             }
 
-            // 2. Cherche un user existant par email
+            // 2. Cherche un user existant par email → lie le social account + login
             $user = User::where('email', $socialUser->getEmail())->first();
 
             if ($user) {
@@ -39,8 +43,13 @@ class SocialAuthService
                 return $user;
             }
 
-            // 3. Creer un nouveau user
-            // Selfhosted first user → auto admin
+            // 3. Aucun compte existant
+            // Si intent = login → refuser (pas de creation de compte depuis la page login)
+            if ($intent === 'login') {
+                return null;
+            }
+
+            // Intent = register → creer le compte
             if (isSelfHosted() && DB::table('users')->lockForUpdate()->count() === 0) {
                 $user = $this->createFirstAdminSocial($socialUser);
             } else {

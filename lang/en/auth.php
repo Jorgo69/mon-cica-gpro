@@ -75,4 +75,9 @@ return [
     'confirm_password_title' => 'Confirm password',
     'confirm_password_text' => 'This is a secure area. Please confirm your password before continuing.',
 
+    // Social auth
+    'social_failed' => 'Authentication with :provider failed. Please try again.',
+    'social_no_email' => 'Could not retrieve your email address from :provider.',
+    'social_no_account' => 'No account found. Please register first.',
+
 ];
