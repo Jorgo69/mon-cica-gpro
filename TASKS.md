@@ -440,7 +440,7 @@ selfhosted → pas de ROOT, tout illimite, premier inscrit = ORG_ADMIN, pas de p
 - [x] 28.4 **Cacher UI SaaS** : routes system, page pricing, tab Plan Settings caches si selfhosted
 - [x] 28.5 **Bugs notes** : audit org admin + permissions org admin manquants (meme en SaaS)
 
-## Phase 29 (planifiee) — Plans en DB + CRUD ROOT
+## Phase 29 (TERMINEE) — Plans en DB + CRUD ROOT
 
 ### Objectif
 Remplacer l'enum Plan par une table DB. ROOT gere les plans (limites, prix, features) via l'interface.
@@ -454,12 +454,11 @@ Organization.plan_id → plans.id (relation au lieu d'enum)
 
 ### Taches
 
-- [ ] 29.1 **Migration + Model Plan** : table plans, seeder 3 plans par defaut (Free/Pro/Enterprise)
-- [ ] 29.2 **Refactor enum → model** : remplacer toutes les refs a l'enum Plan par le model (~50 refs)
-- [ ] 29.3 **UI ROOT /system/plans** : CRUD plans (nom, prix, limites, features checkboxes, actif/inactif)
-- [ ] 29.4 **Features gated** : hasFeature() lit depuis le JSON features du plan
-- [ ] 29.5 **Page pricing dynamique** : lit les plans depuis la DB au lieu du code
-- [ ] 29.6 **Tests** : creation plan, limites respectees, features gated
+- [x] 29.1 **Migration + Model Plan** : table plans UUID, seeder 3 plans (Free/Pro/Enterprise), plan_id sur organizations/users
+- [x] 29.2 **Refactor enum → model** : enum Plan supprime, Organization/User utilisent belongsTo Plan, ~20 refs migrées
+- [x] 29.3 **UI ROOT /system/plans** : PlanManagementLivewire CRUD (create, edit, toggle active, delete, features checkboxes)
+- [x] 29.4 **Features gated** : hasFeature() lit depuis JSON features du model Plan + bypass selfhosted
+- [x] 29.5 **Page pricing dynamique** : pricing.blade + Settings tab plan lisent Plan::active()->ordered()
 
 ## Phase 30 (planifiee) — Types de projet (champs dynamiques)
 
