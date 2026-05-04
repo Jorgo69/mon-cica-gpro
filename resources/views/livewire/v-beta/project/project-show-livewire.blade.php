@@ -19,6 +19,9 @@
                 <x-ui.button tag="a" :href="route('projects.export.pdf', [ $project->id, 'template' => 'modern'])" variant="accent" icon="file-down" size="sm">
                     {{ __('projects.show.premium_report') }}
                 </x-ui.button>
+                <x-ui.button wire:click="generateReport('docx')" variant="outline" icon="file-text" size="sm">
+                    {{ __('reports.export_docx') }}
+                </x-ui.button>
                 <x-ui.button tag="a" :href="route('projects.export.excel', $project->id)" variant="outline" icon="file-spreadsheet" size="sm">
                     {{ __('common.export_excel') }}
                 </x-ui.button>

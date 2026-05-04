@@ -20,6 +20,10 @@ class Kernel extends ConsoleKernel
 
         // RGPD : purge organisations expirees (30j apres suppression planifiee)
         $schedule->command('gpro:purge-expired-orgs')->dailyAt('03:00');
+
+        // Rapports trimestriels : 1er du mois a 06h (jan, avr, jul, oct)
+        $schedule->command('gpro:generate-reports --format=pdf')
+            ->quarterlyOn(1, '06:00');
     }
 
     protected function commands(): void

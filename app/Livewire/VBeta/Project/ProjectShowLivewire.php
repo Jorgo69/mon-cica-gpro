@@ -172,6 +172,23 @@ class ProjectShowLivewire extends Component
             || $user->id === $this->project->creator_user_id;
     }
 
+    // ─── Reports ──────────────────────────────────────────
+
+    public function generateReport(string $format = 'pdf')
+    {
+        try {
+            $service = new \App\Services\ReportService();
+            $path = $format === 'docx'
+                ? $service->generateDocx($this->project)
+                : $service->generatePdf($this->project);
+
+            $this->notifyToast('success', __('reports.generated'));
+            return response()->download($path)->deleteFileAfterSend(false);
+        } catch (\Exception $e) {
+            $this->notifyToast('error', __('reports.generation_error') . ': ' . $e->getMessage());
+        }
+    }
+
     // ─── Workflow ─────────────────────────────────────────
 
     public string $workflowComment = '';
