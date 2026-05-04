@@ -81,7 +81,7 @@ class GdprExportService
                 ->toArray(),
             'projects' => $org->projects()
                 ->withoutGlobalScopes()
-                ->with(['logicalFrameworks.specificObjectives.results.activities'])
+                ->with(['logicalFramework.specificObjectives.results.activities'])
                 ->get()
                 ->map(fn ($p) => [
                     'title' => $p->title,
@@ -91,8 +91,8 @@ class GdprExportService
                     'end_date' => $p->end_date?->toDateString(),
                     'progress' => $p->calculateProjectProgress(),
                     'created_at' => $p->created_at?->toISOString(),
-                    'objectives' => $p->logicalFrameworks->flatMap(fn ($lf) =>
-                        $lf->specificObjectives->map(fn ($so) => [
+                    'objectives' => $p->logicalFramework
+                        ? $p->logicalFramework->specificObjectives->map(fn ($so) => [
                             'description' => $so->description,
                             'results' => $so->results->map(fn ($r) => [
                                 'description' => $r->description,
@@ -102,8 +102,8 @@ class GdprExportService
                                     'progress' => $a->progress_percentage,
                                 ])->toArray(),
                             ])->toArray(),
-                        ])
-                    )->toArray(),
+                        ])->toArray()
+                        : [],
                 ])
                 ->toArray(),
             'budgets' => \App\Models\Budget::withoutGlobalScopes()

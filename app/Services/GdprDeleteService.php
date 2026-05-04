@@ -47,7 +47,7 @@ class GdprDeleteService
                 'ville' => null,
                 'department' => null,
                 'password' => bcrypt(Str::random(32)),
-                'meta' => null,
+                'meta' => '{}',
                 'remember_token' => null,
                 'organization_id' => null,
                 'role' => null,
