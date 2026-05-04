@@ -36,6 +36,9 @@ Route::middleware(['auth', 'account_type:system_admin'])->prefix('v1/system')->n
     // AI Config (Global)
     Route::view('/ai-config', 'v1.system.ai-config.index')->name('ai-config');
 
+    // Plugins / Marketplace
+    Route::view('/plugins', 'v1.system.plugins.index')->name('plugins');
+
     // Org Switch (Entrer/Quitter une organisation) — GET pour eviter les problemes CSRF/Livewire
     Route::get('/org/{organizationId}/enter', [OrgSwitchController::class, 'enter'])->name('org.enter');
     Route::get('/org/leave', [OrgSwitchController::class, 'leave'])->name('org.leave');

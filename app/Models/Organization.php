@@ -64,6 +64,18 @@ class Organization extends Model
         return $this->hasMany(Project::class);
     }
 
+    public function plugins()
+    {
+        return $this->belongsToMany(Plugin::class, 'organization_plugin')
+            ->withPivot(['is_enabled', 'settings'])
+            ->withTimestamps();
+    }
+
+    public function activePlugins()
+    {
+        return $this->plugins()->wherePivot('is_enabled', true);
+    }
+
     public function isOwner(?User $user = null): bool
     {
         $user = $user ?? auth()->user();

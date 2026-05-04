@@ -147,6 +147,17 @@ return [
     | Plans et limites
     |--------------------------------------------------------------------------
     */
+    /*
+    |--------------------------------------------------------------------------
+    | Plugins / Marketplace
+    |--------------------------------------------------------------------------
+    */
+    'plugins' => [
+        'enabled' => env('GPRO_PLUGINS_ENABLED', true),
+        'path' => env('GPRO_PLUGINS_PATH', 'plugins'),
+        'catalog_url' => env('GPRO_PLUGIN_CATALOG_URL', null),
+    ],
+
     // AI (Groq gratuit prioritaire, Gemini en fallback)
     'ai' => [
         'gemini_api_key' => env('GEMINI_API_KEY'),

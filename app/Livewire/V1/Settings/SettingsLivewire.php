@@ -617,6 +617,25 @@ class SettingsLivewire extends Component
         $user = auth()->user();
 
         $showAiTab = in_array($user->role, [AccountType::ORG_ADMIN, AccountType::INDEPENDENT]);
+    public function togglePlugin(string $pluginId): void
+    {
+        $user = auth()->user();
+        if ($user->role !== AccountType::ORG_ADMIN || !$user->organization_id) {
+            return;
+        }
+
+        $plugin = \App\Models\Plugin::active()->find($pluginId);
+        if (!$plugin) return;
+
+        if ($plugin->isEnabledForOrg($user->organization_id)) {
+            $plugin->disableForOrg($user->organization_id);
+            $this->notifyToast('info', "{$plugin->name} desactive pour votre organisation.");
+        } else {
+            $plugin->enableForOrg($user->organization_id);
+            $this->notifyToast('success', "{$plugin->name} active pour votre organisation.");
+        }
+    }
+
         $orgMembers = collect();
         if ($user->role === AccountType::ORG_ADMIN && $user->organization_id) {
             $orgMembers = \App\Models\User::where('organization_id', $user->organization_id)
@@ -640,6 +659,10 @@ class SettingsLivewire extends Component
         // Org deletion scheduled?
         $orgDeletionScheduled = $org ? $org->getMeta('deletion_scheduled_at') : null;
 
+        // Plugins available for this org
+        $availablePlugins = \App\Models\Plugin::active()->get();
+        $orgPluginIds = $org ? $org->activePlugins()->pluck('plugins.id')->toArray() : [];
+
         return view('livewire.v1.settings.settings-livewire', [
             'socialAccounts' => auth()->user()->socialAccounts ?? collect(),
             'notificationTypes' => NotificationType::userConfigurable(),
@@ -650,6 +673,8 @@ class SettingsLivewire extends Component
             'isOwner' => $isOwner,
             'otherAdmins' => $otherAdmins,
             'orgDeletionScheduled' => $orgDeletionScheduled,
+            'availablePlugins' => $availablePlugins,
+            'orgPluginIds' => $orgPluginIds,
         ]);
     }
 }

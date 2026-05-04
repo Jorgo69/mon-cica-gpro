@@ -21,5 +21,10 @@ class AppServiceProvider extends ServiceProvider
     {
         \App\Observers\WebhookObserver::bootProjectEvents();
         \App\Observers\WebhookObserver::bootActivityEvents();
+
+        // Boot active plugins (safe: no-op if table doesn't exist yet)
+        if (config('gpro.plugins.enabled', true)) {
+            \App\Services\PluginManager::boot();
+        }
     }
 }
