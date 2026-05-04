@@ -160,4 +160,20 @@ return [
         'not_independent' => 'Only independent users can create an organization.',
     ],
 
+    // API tokens
+    'api' => [
+        'title' => 'API Tokens',
+        'desc' => 'Generate tokens to access the REST API from your external applications.',
+        'token_name_placeholder' => 'Token name (e.g.: My App)',
+        'create_token' => 'Create token',
+        'token_created' => 'Token created successfully.',
+        'token_warning' => 'Copy this token now. It won\'t be shown again.',
+        'token_revoked' => 'Token revoked.',
+        'confirm_revoke' => 'Revoke this token? Applications using it will lose access.',
+        'revoke' => 'Revoke',
+        'created' => 'Created',
+        'last_used' => 'Last used',
+        'no_tokens' => 'No API tokens. Create one to get started.',
+    ],
+
 ];

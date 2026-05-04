@@ -160,4 +160,20 @@ return [
         'not_independent' => 'Seuls les utilisateurs indépendants peuvent créer une organisation.',
     ],
 
+    // API tokens
+    'api' => [
+        'title' => 'Tokens API',
+        'desc' => 'Generez des tokens pour acceder a l\'API REST depuis vos applications externes.',
+        'token_name_placeholder' => 'Nom du token (ex: Mon App)',
+        'create_token' => 'Creer un token',
+        'token_created' => 'Token cree avec succes.',
+        'token_warning' => 'Copiez ce token maintenant. Il ne sera plus affiche.',
+        'token_revoked' => 'Token revoque.',
+        'confirm_revoke' => 'Revoquer ce token ? Les applications l\'utilisant perdront l\'acces.',
+        'revoke' => 'Revoquer',
+        'created' => 'Cree',
+        'last_used' => 'Derniere utilisation',
+        'no_tokens' => 'Aucun token API. Creez-en un pour commencer.',
+    ],
+
 ];

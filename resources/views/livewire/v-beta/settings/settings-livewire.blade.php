@@ -19,6 +19,7 @@
             if ($showAiTab) {
                 $tabs['ai'] = ['label' => __('ai.config.title'), 'icon' => 'sparkles'];
             }
+            $tabs['api'] = ['label' => 'API', 'icon' => 'plug'];
         @endphp
         @foreach($tabs as $tab => $info)
             <button wire:click="$set('activeTab', '{{ $tab }}')"
@@ -712,6 +713,88 @@
             </div>
         </x-ui.section>
         @endif
+    </div>
+    @endif
+
+    {{-- TAB API --}}
+    @if($activeTab === 'api')
+    <div class="space-y-6">
+        <x-ui.section :title="__('settings.api.title')" icon="plug" :noPadding="false">
+            <p class="text-xs text-muted mb-4">{{ __('settings.api.desc') }}</p>
+
+            {{-- Create token --}}
+            <div class="flex gap-2 mb-6">
+                <input type="text" wire:model="newTokenName" class="input-field flex-1 text-xs" placeholder="{{ __('settings.api.token_name_placeholder') }}">
+                <x-ui.button wire:click="createApiToken" variant="accent" icon="plus" size="sm">
+                    {{ __('settings.api.create_token') }}
+                </x-ui.button>
+            </div>
+            @error('newTokenName') <p class="text-xs text-error -mt-4 mb-4">{{ $message }}</p> @enderror
+
+            {{-- Show new token (once) --}}
+            @if($plainTextToken)
+                <div class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 mb-4" x-data="{ copied: false }">
+                    <p class="text-xs font-bold text-amber-700 dark:text-amber-300 mb-2">
+                        <x-lucide-alert-triangle class="w-3.5 h-3.5 inline" />
+                        {{ __('settings.api.token_warning') }}
+                    </p>
+                    <div class="flex gap-2">
+                        <code class="flex-1 bg-white dark:bg-black/20 p-2 rounded text-[10px] font-mono text-heading break-all" id="api-token">{{ $plainTextToken }}</code>
+                        <button @click="navigator.clipboard.writeText(document.getElementById('api-token').textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                                class="px-3 py-1 bg-accent text-white text-xs font-bold rounded-lg flex-shrink-0">
+                            <span x-show="!copied"><x-lucide-copy class="w-3.5 h-3.5" /></span>
+                            <span x-show="copied"><x-lucide-check class="w-3.5 h-3.5" /></span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Existing tokens --}}
+            @php $tokens = auth()->user()->tokens; @endphp
+            @if($tokens->count() > 0)
+                <div class="space-y-2">
+                    @foreach($tokens as $token)
+                        <div class="flex items-center justify-between p-3 bg-surface rounded-xl">
+                            <div>
+                                <p class="text-xs font-bold text-heading">{{ $token->name }}</p>
+                                <p class="text-[10px] text-muted">{{ __('settings.api.created') }} {{ $token->created_at->diffForHumans() }}
+                                    @if($token->last_used_at) · {{ __('settings.api.last_used') }} {{ $token->last_used_at->diffForHumans() }} @endif
+                                </p>
+                            </div>
+                            <button wire:click="revokeApiToken('{{ $token->id }}')"
+                                    wire:confirm="{{ __('settings.api.confirm_revoke') }}"
+                                    class="text-xs text-error font-bold hover:underline">
+                                {{ __('settings.api.revoke') }}
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-xs text-muted text-center py-4">{{ __('settings.api.no_tokens') }}</p>
+            @endif
+        </x-ui.section>
+
+        {{-- API docs hint --}}
+        <x-ui.section title="Endpoints" icon="book-open" :noPadding="false">
+            <div class="text-xs text-body space-y-1.5 font-mono">
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/me</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/projects</p>
+                <p><span class="text-blue-500 font-bold">POST</span> /api/v1/projects</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/projects/{id}</p>
+                <p><span class="text-amber-500 font-bold">PUT</span> /api/v1/projects/{id}</p>
+                <p><span class="text-error font-bold">DEL</span> /api/v1/projects/{id}</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/projects/{id}/activities</p>
+                <p><span class="text-blue-500 font-bold">POST</span> /api/v1/projects/{id}/activities</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/activities</p>
+                <p><span class="text-amber-500 font-bold">PUT</span> /api/v1/activities/{id}</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/members</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/stats</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/notifications</p>
+                <p><span class="text-blue-500 font-bold">POST</span> /api/v1/notifications/{id}/read</p>
+                <p><span class="text-emerald-500 font-bold">GET</span> /api/v1/audit-logs</p>
+            </div>
+            <p class="text-[10px] text-muted mt-3">Header: <code class="bg-surface px-1 rounded">Authorization: Bearer YOUR_TOKEN</code></p>
+        </x-ui.section>
     </div>
     @endif
 

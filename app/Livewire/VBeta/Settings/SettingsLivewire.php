@@ -525,6 +525,27 @@ class SettingsLivewire extends Component
         }
     }
 
+    // ─── API Tokens ────────────────────────────────────────
+
+    public string $newTokenName = '';
+    public ?string $plainTextToken = null;
+
+    public function createApiToken(): void
+    {
+        $this->validate(['newTokenName' => 'required|string|min:2|max:50']);
+
+        $token = auth()->user()->createToken($this->newTokenName);
+        $this->plainTextToken = $token->plainTextToken;
+        $this->newTokenName = '';
+        $this->notifyToast('success', __('settings.api.token_created'));
+    }
+
+    public function revokeApiToken(string $tokenId): void
+    {
+        auth()->user()->tokens()->where('id', $tokenId)->delete();
+        $this->notifyToast('success', __('settings.api.token_revoked'));
+    }
+
     public function render()
     {
         $user = auth()->user();
