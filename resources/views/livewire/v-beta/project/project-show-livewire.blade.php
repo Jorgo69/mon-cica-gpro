@@ -197,6 +197,61 @@
                         </x-ui.section>
                     @endforeach
                 @endif
+
+                {{-- Section 4: Membres du projet --}}
+                @if($project->organization_id)
+                <x-ui.section :title="__('projects.members.title')" icon="users">
+                    {{-- Current members --}}
+                    <div class="space-y-2 mb-4">
+                        @forelse($projectMembers as $member)
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-surface">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
+                                        <span class="text-xs font-black text-accent">{{ strtoupper(substr($member->name, 0, 2)) }}</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-heading">{{ $member->name }}</p>
+                                        <p class="text-[10px] text-muted">{{ $member->email }}</p>
+                                    </div>
+                                    @if($member->pivot->role === 'creator')
+                                        <span class="px-1.5 py-0.5 bg-accent/10 text-accent text-[8px] font-black rounded-full uppercase">{{ __('projects.members.creator') }}</span>
+                                    @endif
+                                </div>
+                                @if($member->pivot->role !== 'creator' && (auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN || auth()->id() === $project->creator_user_id))
+                                    <button wire:click="removeProjectMember('{{ $member->id }}')"
+                                            wire:confirm="{{ __('projects.members.confirm_remove') }}"
+                                            class="text-error hover:text-error/80 transition-colors">
+                                        <x-lucide-x class="w-4 h-4" />
+                                    </button>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="text-xs text-muted">{{ __('projects.members.no_members') }}</p>
+                        @endforelse
+                    </div>
+
+                    {{-- Add member (ORG_ADMIN or creator only) --}}
+                    @if(auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN || auth()->id() === $project->creator_user_id)
+                        <div class="relative">
+                            <input type="text" wire:model.live.debounce.300ms="memberSearchQuery"
+                                   class="input-field w-full text-xs"
+                                   placeholder="{{ __('projects.members.search_placeholder') }}">
+                            @if($availableMembers->count() > 0)
+                                <div class="absolute z-20 top-full mt-1 left-0 right-0 bg-card border border-border-light rounded-xl shadow-xl p-2 space-y-1">
+                                    @foreach($availableMembers as $avail)
+                                        <button wire:click="addProjectMember('{{ $avail->id }}')"
+                                                class="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-surface transition-colors flex items-center gap-2">
+                                            <x-lucide-user-plus class="w-3.5 h-3.5 text-accent" />
+                                            <span class="font-bold text-heading">{{ $avail->name }}</span>
+                                            <span class="text-muted">{{ $avail->email }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </x-ui.section>
+                @endif
             @endif
 
             @if($activeTab === 'logframe')

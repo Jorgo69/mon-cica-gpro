@@ -148,4 +148,16 @@ return [
         'org_scheduled_warning' => 'Cette organisation est programmée pour être supprimée. Vous pouvez annuler cette action.',
     ],
 
+    // Independent → Organization
+    'org_create' => [
+        'title' => 'Créer mon organisation',
+        'desc' => 'Vous êtes actuellement en mode indépendant. Créez votre organisation pour inviter des membres et collaborer.',
+        'name_label' => 'Nom de l\'organisation',
+        'name_placeholder' => 'Ex: Mon ONG',
+        'info' => 'Vos projets existants seront automatiquement migrés vers votre nouvelle organisation. Vous deviendrez administrateur.',
+        'submit' => 'Créer l\'organisation',
+        'success' => 'Organisation ":org" créée ! Vous êtes maintenant administrateur.',
+        'not_independent' => 'Seuls les utilisateurs indépendants peuvent créer une organisation.',
+    ],
+
 ];

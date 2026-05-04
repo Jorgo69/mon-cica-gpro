@@ -161,4 +161,16 @@ return [
         'duplicate_project' => 'Duplicate project',
     ],
 
+    // Project members
+    'members' => [
+        'title' => 'Project Members',
+        'creator' => 'Creator',
+        'added' => ':name added to project.',
+        'removed' => ':name removed from project.',
+        'cannot_remove_creator' => 'The project creator cannot be removed.',
+        'no_members' => 'No members assigned.',
+        'search_placeholder' => 'Search a member to add...',
+        'confirm_remove' => 'Remove this member from the project?',
+    ],
+
 ];

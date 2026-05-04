@@ -49,6 +49,13 @@ class Project extends Model
     {
         parent::boot();
         static::creating(fn ($model) => $model->{$model->getKeyName()} = (string) Str::orderedUuid());
+
+        // Auto-assign creator as project member
+        static::created(function ($project) {
+            if ($project->creator_user_id) {
+                $project->addMember(User::find($project->creator_user_id), 'creator');
+            }
+        });
     }
 
     public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
@@ -67,6 +74,39 @@ class Project extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_user_id', 'id');
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'project_members')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function addMember(User $user, string $role = 'member'): void
+    {
+        if (!$this->members()->where('user_id', $user->id)->exists()) {
+            $this->members()->attach($user->id, ['role' => $role]);
+        }
+    }
+
+    public function removeMember(User $user): void
+    {
+        $this->members()->detach($user->id);
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        // ORG_ADMIN and ROOT see all projects in their org
+        if (in_array($user->role, [\App\Enums\AccountType::ORG_ADMIN, \App\Enums\AccountType::ROOT])) {
+            return $query;
+        }
+
+        // Others see only projects they are assigned to or created
+        return $query->where(function ($q) use ($user) {
+            $q->where('creator_user_id', $user->id)
+              ->orWhereHas('members', fn ($m) => $m->where('user_id', $user->id));
+        });
     }
     public function projectType()
     {

@@ -460,38 +460,31 @@ Organization.plan_id → plans.id (relation au lieu d'enum)
 - [x] 29.4 **Features gated** : hasFeature() lit depuis JSON features du model Plan + bypass selfhosted
 - [x] 29.5 **Page pricing dynamique** : pricing.blade + Settings tab plan lisent Plan::active()->ordered()
 
-## Phase 30 (planifiee) — Types de projet (champs dynamiques)
+## Phase 30 (TERMINEE — deja implementee) — Types de projet (champs dynamiques)
 
 ### Objectif
 Les types de projet ont des champs personnalises. Lors de la creation d'un projet, les champs apparaissent et les reponses sont stockees.
 
-### Architecture
+### Constat
+Tout etait deja implemente avant la planification de cette phase :
 
-```
-project_types : id, name, organization_id (null=systeme), is_system, is_active
-project_type_fields : id, project_type_id, label, field_type (text/textarea/select/date/number), options (JSON), is_required, sort_order
-project_type_field_values : id, project_id, project_type_field_id, value
-```
+- [x] 30.1 **Champs dynamiques** : table dynamic_project_fields existe, valeurs stockees dans general_objectives JSON
+- [x] 30.2 **UI types** : ProjectTypeFormLivewire CRUD complet (champs, options, sections, render_as)
+- [x] 30.3 **Integration creation projet** : dynamic-fields-section.blade.php dans ProposalProjectFormLivewire
+- [x] 30.4 **Validation** : is_required dans rules() avec types (numeric, date, array, string)
+- [x] 30.5 **Affichage** : project-show-livewire.blade.php section dediee avec delimiteurs
+- [x] 30.6 **Visibilite** : is_system + HasVisibilityScope trait sur ProjectType
 
-### Taches
-
-- [ ] 30.1 **Champs dynamiques** : migration project_type_fields + project_type_field_values
-- [ ] 30.2 **UI types** : formulaire CRUD champs dans le type (drag & drop order, types de champ)
-- [ ] 30.3 **Integration creation projet** : etape dynamique qui affiche les champs du type selectionne
-- [ ] 30.4 **Validation** : is_required respecte cote serveur
-- [ ] 30.5 **Affichage** : reponses visibles dans la page projet (section dediee)
-- [ ] 30.6 **Visibilite** : types systeme (non supprimables), types org (prives), types ROOT (globaux)
-
-## Phase 31 (planifiee) — Independant → Org + Scoping projets
+## Phase 31 (TERMINEE) — Independant → Org + Scoping projets
 
 ### Objectif
 Un independant peut creer son org (migration de compte). Les permissions sont scopees par projet assigne.
 
 ### Taches
 
-- [ ] 31.1 **Migration independant → org** : bouton "Creer mon organisation", change role, migre projets
-- [ ] 31.2 **Scoping projets** : contributeur/gestionnaire ne voit que les projets ou il est assigne
-- [ ] 31.3 **Assignation projet** : UI pour assigner des membres a un projet
+- [x] 31.1 **Migration independant → org** : IndependentToOrgService + bouton Settings "Creer mon organisation" + migre projets + AI config
+- [x] 31.2 **Scoping projets** : table project_members, scope visibleTo() (ORG_ADMIN voit tout, autres voient assignes), auto-assign creator
+- [x] 31.3 **Assignation projet** : section membres dans project show, recherche + ajout/suppression, protection creator
 
 ## Phase 32 (planifiee) — Permissions avancees
 

@@ -178,4 +178,16 @@ return [
         'duplicate_project' => 'Dupliquer le projet',
     ],
 
+    // Project members
+    'members' => [
+        'title' => 'Membres du projet',
+        'creator' => 'Créateur',
+        'added' => ':name ajouté au projet.',
+        'removed' => ':name retiré du projet.',
+        'cannot_remove_creator' => 'Le créateur du projet ne peut pas être retiré.',
+        'no_members' => 'Aucun membre assigné.',
+        'search_placeholder' => 'Rechercher un membre à ajouter...',
+        'confirm_remove' => 'Retirer ce membre du projet ?',
+    ],
+
 ];

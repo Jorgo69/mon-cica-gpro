@@ -6,7 +6,7 @@
     <div class="flex gap-2 mb-8 flex-wrap">
         @php
             $tabs = [];
-            if (auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN) {
+            if (in_array(auth()->user()->role, [\App\Enums\AccountType::ORG_ADMIN, \App\Enums\AccountType::INDEPENDENT])) {
                 $tabs['organization'] = ['label' => __('settings.organization'), 'icon' => 'building-2'];
             }
             $tabs += [
@@ -32,8 +32,33 @@
         @endforeach
     </div>
 
-    {{-- TAB ORGANISATION (ORG_ADMIN only) --}}
-    @if($activeTab === 'organization' && auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN)
+    {{-- TAB ORGANISATION (ORG_ADMIN + INDEPENDENT) --}}
+    @if($activeTab === 'organization' && auth()->user()->role === \App\Enums\AccountType::INDEPENDENT)
+    <div class="space-y-6">
+        <x-ui.section :title="__('settings.org_create.title')" icon="building-2" :noPadding="false">
+            <p class="text-sm text-body mb-4">{{ __('settings.org_create.desc') }}</p>
+
+            <form wire:submit="createOrganization" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.org_create.name_label') }}</label>
+                    <input type="text" wire:model="newOrgName" class="input-field w-full" placeholder="{{ __('settings.org_create.name_placeholder') }}">
+                    @error('newOrgName') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                    <p class="text-xs text-amber-700 dark:text-amber-300">
+                        <x-lucide-info class="w-3.5 h-3.5 inline" />
+                        {{ __('settings.org_create.info') }}
+                    </p>
+                </div>
+
+                <x-ui.button type="submit" variant="accent" icon="building-2">
+                    {{ __('settings.org_create.submit') }}
+                </x-ui.button>
+            </form>
+        </x-ui.section>
+    </div>
+    @elseif($activeTab === 'organization' && auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN)
     <div class="space-y-6">
         <x-ui.section :title="__('settings.org_profile')" icon="building-2" :noPadding="false">
             <form wire:submit="saveOrgProfile" class="space-y-5">

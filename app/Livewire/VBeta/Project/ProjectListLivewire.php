@@ -74,15 +74,8 @@ class ProjectListLivewire extends Component
     {
         $user = Auth::user();
 
-        $projects = Project::query();
-
-        // Filtrer par projets créés par l'utilisateur ou où l'utilisateur est responsable d'activités
-        // $projects->where(function ($query) use ($user) {
-        //     $query->where('creator_user_id', $user->id)
-        //           ->orWhereHas('logicalFramework.specificObjectives.results.activities', function ($subQuery) use ($user) {
-        //               $subQuery->where('responsible_user_id', $user->id);
-        //           });
-        // });
+        $projects = Project::query()
+            ->visibleTo($user);
 
         // Appliquer la recherche textuelle
         if ($this->search) {

@@ -19,6 +19,7 @@ class SettingsLivewire extends Component
     use WithToastNotifications, WithFileUploads;
 
     public string $activeTab = 'appearance';
+    public string $newOrgName = '';
     public string $theme = 'light';
     public string $locale = 'fr';
     public string $density = 'comfortable';
@@ -496,6 +497,32 @@ class SettingsLivewire extends Component
 
         \App\Services\GdprDeleteService::cancelOrgDeletion($org);
         $this->notifyToast('success', __('settings.delete.org_cancelled'));
+    }
+
+    // ─── Independent → Organization ─────────────────────────
+
+    public function createOrganization()
+    {
+        $user = auth()->user();
+
+        if ($user->role !== AccountType::INDEPENDENT) {
+            $this->notifyToast('error', __('settings.org_create.not_independent'));
+            return;
+        }
+
+        $this->validate([
+            'newOrgName' => 'required|string|min:2|max:100',
+        ]);
+
+        try {
+            $service = new \App\Services\IndependentToOrgService();
+            $org = $service->migrate($user, $this->newOrgName);
+
+            $this->notifyToast('success', __('settings.org_create.success', ['org' => $org->name]));
+            $this->redirect(route('settings'), navigate: true);
+        } catch (\Exception $e) {
+            $this->notifyToast('error', $e->getMessage());
+        }
     }
 
     public function render()

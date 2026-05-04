@@ -148,4 +148,16 @@ return [
         'org_scheduled_warning' => 'This organization is scheduled for deletion. You can cancel this action.',
     ],
 
+    // Independent → Organization
+    'org_create' => [
+        'title' => 'Create my organization',
+        'desc' => 'You are currently in independent mode. Create your organization to invite members and collaborate.',
+        'name_label' => 'Organization name',
+        'name_placeholder' => 'E.g.: My NGO',
+        'info' => 'Your existing projects will be automatically migrated to your new organization. You will become administrator.',
+        'submit' => 'Create organization',
+        'success' => 'Organization ":org" created! You are now administrator.',
+        'not_independent' => 'Only independent users can create an organization.',
+    ],
+
 ];

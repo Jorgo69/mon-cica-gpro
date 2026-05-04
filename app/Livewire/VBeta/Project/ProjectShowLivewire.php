@@ -122,11 +122,77 @@ class ProjectShowLivewire extends Component
         }
     }
 
+    // ─── Project Members ───────────────────────────────────
+
+    public string $memberSearchQuery = '';
+
+    public function addProjectMember(string $userId): void
+    {
+        $user = auth()->user();
+        if (!$this->canManageMembers($user)) {
+            $this->notifyToast('error', __('common.unauthorized'));
+            return;
+        }
+
+        $member = \App\Models\User::where('organization_id', $this->project->organization_id)
+            ->where('id', $userId)
+            ->first();
+
+        if (!$member) return;
+
+        $this->project->addMember($member);
+        $this->memberSearchQuery = '';
+        $this->notifyToast('success', __('projects.members.added', ['name' => $member->name]));
+    }
+
+    public function removeProjectMember(string $userId): void
+    {
+        $user = auth()->user();
+        if (!$this->canManageMembers($user)) {
+            $this->notifyToast('error', __('common.unauthorized'));
+            return;
+        }
+
+        // Cannot remove the creator
+        if ($userId === $this->project->creator_user_id) {
+            $this->notifyToast('error', __('projects.members.cannot_remove_creator'));
+            return;
+        }
+
+        $member = \App\Models\User::find($userId);
+        if ($member) {
+            $this->project->removeMember($member);
+            $this->notifyToast('success', __('projects.members.removed', ['name' => $member->name]));
+        }
+    }
+
+    protected function canManageMembers(\App\Models\User $user): bool
+    {
+        return $user->role === \App\Enums\AccountType::ORG_ADMIN
+            || $user->id === $this->project->creator_user_id;
+    }
+
     /**
      * Rend la vue du composant.
      */
     public function render()
     {
-        return view('livewire.project.show');
+        $projectMembers = $this->project->members()->get();
+
+        $availableMembers = collect();
+        if ($this->memberSearchQuery && $this->project->organization_id) {
+            $existingIds = $projectMembers->pluck('id')->toArray();
+            $availableMembers = \App\Models\User::where('organization_id', $this->project->organization_id)
+                ->whereNotIn('id', $existingIds)
+                ->where(fn ($q) => $q->where('name', 'like', "%{$this->memberSearchQuery}%")
+                    ->orWhere('email', 'like', "%{$this->memberSearchQuery}%"))
+                ->limit(5)
+                ->get(['id', 'name', 'email']);
+        }
+
+        return view('livewire.project.show', [
+            'projectMembers' => $projectMembers,
+            'availableMembers' => $availableMembers,
+        ]);
     }
 }
