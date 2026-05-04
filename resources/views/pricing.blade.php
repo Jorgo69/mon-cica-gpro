@@ -16,12 +16,12 @@
             <p class="text-sm text-muted mt-2">{{ __('plans.pricing_subtitle') }}</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach(\App\Enums\Plan::cases() as $plan)
+        @php $plans = \App\Models\Plan::active()->ordered()->get(); @endphp
+
+        <div class="grid grid-cols-1 md:grid-cols-{{ min($plans->count(), 3) }} gap-6">
+            @foreach($plans as $plan)
                 @php
-                    $config = config("gpro.plans.{$plan->value}");
-                    $limits = $config['limits'];
-                    $isPopular = $plan === \App\Enums\Plan::PRO;
+                    $isPopular = $plan->slug === 'pro';
                 @endphp
                 <div class="relative bg-card rounded-2xl border {{ $isPopular ? 'border-accent shadow-xl shadow-accent/10' : 'border-border-light' }} p-6 flex flex-col">
                     @if($isPopular)
@@ -33,19 +33,19 @@
                     <div class="mb-6">
                         <h2 class="text-lg font-black {{ $plan->color() }}">{{ $plan->label() }}</h2>
                         <div class="mt-3">
-                            <span class="text-3xl font-black text-heading">{{ $config['price'] }}</span>
-                            <span class="text-xs text-muted">/{{ $config['price_period'] }}</span>
+                            <span class="text-3xl font-black text-heading">{{ $plan->formattedPrice() }}</span>
+                            <span class="text-xs text-muted">/{{ $plan->billing_period === 'month' ? __('plans.month') : __('plans.year') }}</span>
                         </div>
                     </div>
 
                     <div class="flex-1 space-y-3 mb-6">
                         <div class="flex items-center gap-2 text-xs">
                             <x-lucide-folder class="w-4 h-4 text-accent" />
-                            <span>{{ $limits['max_projects'] === -1 ? __('plans.unlimited') : $limits['max_projects'] }} {{ __('plans.projects') }}</span>
+                            <span>{{ $plan->maxProjects() === -1 ? __('plans.unlimited') : $plan->maxProjects() }} {{ __('plans.projects') }}</span>
                         </div>
                         <div class="flex items-center gap-2 text-xs">
                             <x-lucide-users class="w-4 h-4 text-accent" />
-                            <span>{{ $limits['max_members'] === -1 ? __('plans.unlimited') : $limits['max_members'] }} {{ __('plans.members') }}</span>
+                            <span>{{ $plan->maxMembers() === -1 ? __('plans.unlimited') : $plan->maxMembers() }} {{ __('plans.members') }}</span>
                         </div>
 
                         @php
@@ -65,8 +65,8 @@
                         @endphp
 
                         @foreach($allFeatures as $key => $label)
-                            <div class="flex items-center gap-2 text-xs {{ in_array($key, $limits['features']) ? 'text-body' : 'text-muted/40 line-through' }}">
-                                @if(in_array($key, $limits['features']))
+                            <div class="flex items-center gap-2 text-xs {{ $plan->hasFeature($key) ? 'text-body' : 'text-muted/40 line-through' }}">
+                                @if($plan->hasFeature($key))
                                     <x-lucide-check class="w-4 h-4 text-success" />
                                 @else
                                     <x-lucide-x class="w-4 h-4 text-muted/30" />

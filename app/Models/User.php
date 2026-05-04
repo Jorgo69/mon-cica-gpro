@@ -68,7 +68,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'role' => AccountType::class,
-        'plan' => \App\Enums\Plan::class,
         'plan_activated_at' => 'datetime',
         'plan_expires_at' => 'datetime',
         'meta' => 'array',
@@ -119,18 +118,23 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
+    public function planRelation()
+    {
+        return $this->belongsTo(\App\Models\Plan::class, 'plan_id');
+    }
+
     /**
      * Get the effective plan for this user.
      * For org members: uses the organization's plan.
      * For independents: uses their own plan.
      */
-    public function effectivePlan(): \App\Enums\Plan
+    public function effectivePlan(): \App\Models\Plan
     {
         if ($this->role === AccountType::INDEPENDENT || !$this->organization_id) {
-            return $this->plan ?? \App\Enums\Plan::FREE;
+            return $this->planRelation ?? \App\Models\Plan::defaultPlan();
         }
 
-        return $this->organization?->currentPlan() ?? \App\Enums\Plan::FREE;
+        return $this->organization?->currentPlan() ?? \App\Models\Plan::defaultPlan();
     }
 
     public function isPlanActive(): bool
@@ -138,7 +142,8 @@ class User extends Authenticatable
         if (isSelfHosted()) return true;
 
         if ($this->role === AccountType::INDEPENDENT || !$this->organization_id) {
-            if ($this->plan === \App\Enums\Plan::FREE || !$this->plan) return true;
+            $plan = $this->planRelation ?? \App\Models\Plan::defaultPlan();
+            if ($plan->is_default || $plan->price === 0) return true;
             return !$this->plan_expires_at || !$this->plan_expires_at->isPast();
         }
 

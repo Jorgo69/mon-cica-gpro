@@ -91,6 +91,9 @@
                     <a href="{{ route('system.organizations') }}" class="nav-submenu-item @if(Route::is('system.organizations*')) nav-submenu-item-active @endif">
                         {{ __('navigation.organizations') }}
                     </a>
+                    <a href="{{ route('system.plans') }}" class="nav-submenu-item @if(Route::is('system.plans*')) nav-submenu-item-active @endif">
+                        {{ __('plans.plan') }}
+                    </a>
                     <a href="{{ route('system.audit.logs') }}" class="nav-submenu-item @if(Route::is('system.audit.logs*')) nav-submenu-item-active @endif">
                         {{ __('navigation.global_audit_logs') }}
                     </a>

@@ -26,6 +26,7 @@ class Organization extends Model
         'description',
         'status',
         'plan',
+        'plan_id',
         'plan_activated_at',
         'plan_expires_at',
         'plan_notes',
@@ -38,7 +39,6 @@ class Organization extends Model
 
     protected $casts = [
         'status' => \App\Enums\OrganizationStatus::class,
-        'plan' => \App\Enums\Plan::class,
         'plan_activated_at' => 'datetime',
         'plan_expires_at' => 'datetime',
         'meta' => 'array',
@@ -71,16 +71,23 @@ class Organization extends Model
         return $user && $this->owner_user_id === $user->id;
     }
 
-    public function currentPlan(): \App\Enums\Plan
+    public function planRelation()
     {
-        return $this->plan ?? \App\Enums\Plan::FREE;
+        return $this->belongsTo(Plan::class, 'plan_id');
+    }
+
+    public function currentPlan(): Plan
+    {
+        return $this->planRelation ?? Plan::defaultPlan();
     }
 
     public function isPlanActive(): bool
     {
+        if (isSelfHosted()) return true;
+
         $plan = $this->currentPlan();
 
-        if ($plan === \App\Enums\Plan::FREE) {
+        if ($plan->is_default || $plan->price === 0) {
             return true;
         }
 

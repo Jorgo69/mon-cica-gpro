@@ -42,5 +42,23 @@ return [
     'manual_payment' => 'Or contact us for payment:',
     'compare' => 'Compare plans',
     'see_details' => 'See all details',
+    'month' => 'month',
+    'year' => 'year',
+    'free_price' => 'Free',
+
+    // Plan management (ROOT)
+    'plan_management' => 'Plan Management',
+    'plan_management_desc' => 'Configure the platform pricing plans.',
+    'new_plan' => 'New plan',
+    'edit_plan' => 'Edit plan',
+    'default' => 'Default',
+    'price' => 'Price',
+    'currency' => 'Currency',
+    'billing_period' => 'Billing period',
+    'max_projects' => 'Max projects',
+    'max_members' => 'Max members',
+    'features' => 'Features',
+    'sort_order' => 'Sort order',
+    'confirm_delete' => 'Delete this plan? Organizations on this plan will be moved to the default plan.',
 
 ];

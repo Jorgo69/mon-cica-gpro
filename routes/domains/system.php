@@ -30,6 +30,9 @@ Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system'
     // Audit Logs (Global)
     Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
 
+    // Plans management
+    Route::view('/plans', 'v_beta.system.plans.index')->name('plans');
+
     // AI Config (Global)
     Route::view('/ai-config', 'v_beta.system.ai-config.index')->name('ai-config');
 

@@ -418,7 +418,7 @@ Corriger les bugs connus et nettoyer avant d'avancer.
 - [x] 27.5 **Fix meta deprecated** : mobile-web-app-capable remplace apple-mobile-web-app-capable
 - [x] 27.6 **Fix export Excel** : strip_tags sur 4 champs indicateurs (baseline, target, verification_source, assumption)
 
-## Phase 28 (planifiee) — GPRO_MODE saas/selfhosted
+## Phase 28 (TERMINEE) — GPRO_MODE saas/selfhosted
 
 ### Objectif
 Separer clairement le mode SaaS (toi, avec ROOT, plans payants) du mode selfhosted (open source, tout illimite).
@@ -434,11 +434,11 @@ selfhosted → pas de ROOT, tout illimite, premier inscrit = ORG_ADMIN, pas de p
 
 ### Taches
 
-- [ ] 28.1 **Config gpro.mode** dans config/gpro.php + helper isSelfHosted()
-- [ ] 28.2 **Premier user auto-admin** : si selfhosted + User::count() === 0, le register cree ORG_ADMIN + org + seed permissions
-- [ ] 28.3 **Bypass limites plans** : canCreateProject/canAddMember retournent true si selfhosted
-- [ ] 28.4 **Cacher UI SaaS** : page pricing, sidebar ROOT, routes system cachees si selfhosted
-- [ ] 28.5 **Tests** : mode saas vs selfhosted
+- [x] 28.1 **Config gpro.mode** dans config/gpro.php + helpers isSelfHosted()/isSaas() dans helpers.php
+- [x] 28.2 **Premier user auto-admin** : RegisterUserAction cree ORG_ADMIN + org + permissions si selfhosted + premier user
+- [x] 28.3 **Bypass limites plans** : canCreateProject/canAddMember/hasFeature/isPlanActive retournent true si selfhosted
+- [x] 28.4 **Cacher UI SaaS** : routes system, page pricing, tab Plan Settings caches si selfhosted
+- [x] 28.5 **Bugs notes** : audit org admin + permissions org admin manquants (meme en SaaS)
 
 ## Phase 29 (planifiee) — Plans en DB + CRUD ROOT
 

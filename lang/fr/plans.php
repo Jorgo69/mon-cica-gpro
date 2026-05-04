@@ -42,5 +42,23 @@ return [
     'manual_payment' => 'Ou contactez-nous pour le paiement :',
     'compare' => 'Comparer les plans',
     'see_details' => 'Voir tous les details',
+    'month' => 'mois',
+    'year' => 'an',
+    'free_price' => 'Gratuit',
+
+    // Plan management (ROOT)
+    'plan_management' => 'Gestion des Plans',
+    'plan_management_desc' => 'Configurez les plans tarifaires de la plateforme.',
+    'new_plan' => 'Nouveau plan',
+    'edit_plan' => 'Modifier le plan',
+    'default' => 'Par defaut',
+    'price' => 'Prix',
+    'currency' => 'Devise',
+    'billing_period' => 'Periode de facturation',
+    'max_projects' => 'Max projets',
+    'max_members' => 'Max membres',
+    'features' => 'Fonctionnalites',
+    'sort_order' => 'Ordre d\'affichage',
+    'confirm_delete' => 'Supprimer ce plan ? Les organisations sur ce plan passeront au plan par defaut.',
 
 ];

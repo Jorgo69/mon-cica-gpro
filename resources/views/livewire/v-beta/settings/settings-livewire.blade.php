@@ -421,7 +421,7 @@
                 <div>
                     <p class="text-xl font-black {{ $currentPlan->color() }}">{{ $currentPlan->label() }}</p>
                     <p class="text-xs text-muted">
-                        {{ $currentPlan->price() }}/{{ config("gpro.plans.{$currentPlan->value}.price_period") }}
+                        {{ $currentPlan->formattedPrice() }}/{{ $currentPlan->billing_period === 'month' ? __('plans.month') : __('plans.year') }}
                         @if($expiresAt)
                             &middot; {{ __('plans.expires') }}: {{ $expiresAt->format('d/m/Y') }}
                             @if($expiresAt->isPast())
@@ -457,7 +457,7 @@
             @endif
 
             {{-- Upgrade CTA --}}
-            @if($currentPlan !== \App\Enums\Plan::ENTERPRISE)
+            @if(!$currentPlan->isUnlimited())
                 <div class="p-4 bg-accent/5 rounded-xl border border-accent/20">
                     <p class="text-sm font-bold text-heading mb-2">{{ __('plans.upgrade_title') }}</p>
 
@@ -491,10 +491,10 @@
         {{-- Plan comparison --}}
         <x-ui.section title="{{ __('plans.compare') }}" icon="layout-grid" :noPadding="false">
             <div class="grid grid-cols-3 gap-3 text-center text-xs">
-                @foreach(\App\Enums\Plan::cases() as $p)
-                    <div class="p-3 rounded-xl {{ $currentPlan === $p ? 'bg-accent/10 border border-accent/30' : 'bg-surface' }}">
+                @foreach(\App\Models\Plan::active()->ordered()->get() as $p)
+                    <div class="p-3 rounded-xl {{ $currentPlan->id === $p->id ? 'bg-accent/10 border border-accent/30' : 'bg-surface' }}">
                         <p class="font-black {{ $p->color() }} mb-1">{{ $p->label() }}</p>
-                        <p class="text-[10px] text-muted">{{ $p->price() }}</p>
+                        <p class="text-[10px] text-muted">{{ $p->formattedPrice() }}</p>
                         <p class="text-[10px] text-body mt-1">{{ $p->maxProjects() === -1 ? '∞' : $p->maxProjects() }} proj. / {{ $p->maxMembers() === -1 ? '∞' : $p->maxMembers() }} memb.</p>
                     </div>
                 @endforeach

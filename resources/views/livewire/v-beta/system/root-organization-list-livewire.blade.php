@@ -48,12 +48,12 @@
                                 <div x-show="open" @click.away="open = false" x-cloak
                                      class="absolute z-30 top-full mt-1 left-0 bg-card border border-border-light rounded-xl shadow-xl p-3 w-56 space-y-2">
                                     <p class="text-[9px] font-black text-muted uppercase tracking-widest mb-2">{{ __('plans.change_plan') }}</p>
-                                    @foreach(\App\Enums\Plan::cases() as $p)
-                                        <button wire:click="changePlan('{{ $org->id }}', '{{ $p->value }}', 12)"
+                                    @foreach(\App\Models\Plan::active()->ordered()->get() as $p)
+                                        <button wire:click="changePlan('{{ $org->id }}', '{{ $p->id }}', 12)"
                                                 @click="open = false"
-                                                class="w-full text-left px-2 py-1.5 rounded-lg text-xs hover:bg-surface transition-colors flex items-center justify-between {{ $plan === $p ? 'bg-accent/10 text-accent font-bold' : 'text-body' }}">
+                                                class="w-full text-left px-2 py-1.5 rounded-lg text-xs hover:bg-surface transition-colors flex items-center justify-between {{ $plan->id === $p->id ? 'bg-accent/10 text-accent font-bold' : 'text-body' }}">
                                             <span>{{ $p->label() }}</span>
-                                            <span class="text-[9px] text-muted">{{ $p->price() }}</span>
+                                            <span class="text-[9px] text-muted">{{ $p->formattedPrice() }}</span>
                                         </button>
                                     @endforeach
                                     @if($org->plan_expires_at)

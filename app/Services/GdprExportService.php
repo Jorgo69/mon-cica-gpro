@@ -68,7 +68,7 @@ class GdprExportService
                 'name' => $org->name,
                 'slug' => $org->slug,
                 'status' => $org->status?->value,
-                'plan' => $org->plan?->value,
+                'plan' => $org->currentPlan()->slug,
                 'description' => $org->description,
                 'website' => $org->website,
                 'contact_email' => $org->contact_email,

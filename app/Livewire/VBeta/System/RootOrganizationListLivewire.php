@@ -4,7 +4,7 @@ namespace App\Livewire\VBeta\System;
 
 use App\Enums\AccountType;
 use App\Enums\OrganizationStatus;
-use App\Enums\Plan;
+use App\Models\Plan;
 use App\Livewire\Traits\WithToastNotifications;
 use App\Models\Organization;
 use Livewire\Component;
@@ -63,15 +63,15 @@ class RootOrganizationListLivewire extends Component
         $this->notifyToast('success', "Le statut de \"{$org->name}\" a été changé en : {$label}.", 'Statut modifié');
     }
 
-    public function changePlan(string $orgId, string $plan, ?int $months = null): void
+    public function changePlan(string $orgId, string $planId, ?int $months = null): void
     {
         $org = Organization::findOrFail($orgId);
-        $newPlan = Plan::tryFrom($plan);
+        $newPlan = Plan::find($planId);
 
         if (! $newPlan) return;
 
         $org->update([
-            'plan' => $newPlan,
+            'plan_id' => $newPlan->id,
             'plan_activated_at' => now(),
             'plan_expires_at' => $months ? now()->addMonths($months) : null,
         ]);
@@ -79,7 +79,7 @@ class RootOrganizationListLivewire extends Component
         activity('plan_change')
             ->causedBy(auth()->user())
             ->performedOn($org)
-            ->withProperties(['plan' => $plan, 'months' => $months])
+            ->withProperties(['plan' => $newPlan->slug, 'months' => $months])
             ->log("Plan change en {$newPlan->label()} pour {$org->name}");
 
         $this->notifyToast('success', __('plans.plan_updated', ['org' => $org->name, 'plan' => $newPlan->label()]));
