@@ -348,93 +348,171 @@
 - **Fix tests** : 234 tests OK (isOperational status ACTIVE, Spatie teamId null)
 - **Planification** : Phases 23 (profil enrichi), 24 (owner + niveaux), 25 (RGPD), 26 (gpro:install)
 
+### Session 16 (2026-05-04)
+- **Phase 23 complete** : config/countries.php (76 pays), table cities + Model City (autocompletion collaborative), API /api/cities, vue profil (select pays, ville autocomplete, tel formate), validation tel dynamique, oeil mdp
+- **Phase 24 complete** : PermissionLevel enum (4 niveaux), composant permission-level-picker, PermissionSeeder sync, owner org + transfert ownership, protection owner, fix PolicyTest
+- **Phase 25 complete** : GdprExportService (exportPersonal + exportOrganization), GdprDeleteService (anonymisation, protection owner, scheduleOrgDeletion 30j), OrgDeletionScheduledNotification, PurgeExpiredOrganizations command (scheduled daily 03h), zone danger Settings (export + delete + org deletion), traductions FR+EN
+- **Phase 26 complete** : commande gpro:install interactive (migrate, seed, creer org + admin owner)
+- **Fix CI** : build Vite assets avant les tests (ci.yml)
+- **Planification** : Phases 27-32 + Backlog (Groupe E)
+
 ## Phase 22 (TERMINEE) — IA configurable multi-niveau
 
-- [x] 22.1 **Enum AiProvider** (groq, gemini, openai, mistral, custom) avec label/icon/defaultModel/baseUrl/isOpenAiCompatible
-- [x] 22.2 **Model AiConfig** polymorphe (Organization ou User) + migration ai_configs, cles chiffrees encrypt()/decrypt()
-- [x] 22.3 **Service AiConfigResolver** : cascade org config > global DB > global .env > disabled. Toggle par membre via UserMeta
-- [x] 22.4 **Refactor GeminiService → AiService** : providers dynamiques, OpenAI-compatible (Groq/OpenAI/Mistral/Custom) + Gemini natif
-- [x] 22.5 **UI ROOT /system/ai-config** : provider, cle masquee, modele, URL custom, toggle on/off, bouton test, status .env
-- [x] 22.6 **UI ORG_ADMIN Settings → onglet IA** : 3 modes (global/own/disabled), config propre, toggle IA par membre
-- [x] 22.7 **UI INDEPENDENT Settings → onglet IA** : meme interface conditionnel
-- [x] 22.8 **Middleware CheckAiAccess** : bloque si IA non disponible (JSON ou abort 403)
-- [ ] 22.9 **Tests** (a faire separement)
+- [x] 22.1 Enum AiProvider (9 providers : groq, gemini, openai, anthropic, mistral, deepseek, cohere, together, custom)
+- [x] 22.2 Model AiConfig polymorphe + migration (cles chiffrees)
+- [x] 22.3 AiConfigResolver : cascade org > global DB > .env > disabled
+- [x] 22.4 AiService remplace GeminiService (support Anthropic/Cohere natif)
+- [x] 22.5 UI ROOT /system/ai-config (guide integre, catalogue providers, test connexion)
+- [x] 22.6 UI ORG_ADMIN + INDEPENDENT Settings onglet IA (guide, 3 modes, toggle membre)
+- [x] 22.7 Middleware CheckAiAccess
+- [x] 22.8 FAQ IA (10 questions FR+EN)
 
-## Phase 23 (planifiee) — Profil enrichi
+## Phase 23 (TERMINEE) — Profil enrichi
+
+- [x] 23.1 config/countries.php (76 pays, Afrique prioritaire, prefixe tel, nb digits)
+- [x] 23.2 Table cities + Model City (autocompletion collaborative anonyme)
+- [x] 23.3 Migration profil : country_code + city sur users
+- [x] 23.4 Vue profil : select pays + ville autocomplete + telephone formate
+- [x] 23.5 API /api/cities?q=&country= (auto-creation si nouvelle)
+- [x] 23.6 Validation telephone regex dynamique selon pays
+- [x] 23.7 Oeil mot de passe sur tous les champs password
+
+## Phase 24 (TERMINEE) — Owner org + Niveaux permissions
+
+- [x] 24.1 Owner sur org (migration owner_user_id, relation, auto-assigne)
+- [x] 24.2 Transfert ownership (UI Settings, modale, protection)
+- [x] 24.3 Enum PermissionLevel (4 niveaux + mapping Spatie)
+- [x] 24.4 Composant permission-level-picker (cartes visuelles)
+- [x] 24.5 Protection owner (ne peut pas etre supprime/retrograde)
+- [x] 24.6 Invitations adaptees (PermissionLevel dans le picker)
+
+## Phase 25 (TERMINEE) — RGPD complet
+
+- [x] 25.1 GdprExportService : exportPersonal() + exportOrganization()
+- [x] 25.2 Export org complet (projets, membres, budgets, activites, invitations) JSON
+- [x] 25.3 Anonymisation membre (nom, email hash, detachement activites, cleanup)
+- [x] 25.4 Protection suppression admin (bloquer si seul owner)
+- [x] 25.5 Suppression org planifiee (30j grace, notification tous membres)
+- [x] 25.6 Zone danger Settings (export data, delete account, delete org, mot de passe)
+- [x] 25.7 Commande gpro:purge-expired-orgs (scheduled daily 03h)
+
+## Phase 26 (TERMINEE) — Commande gpro:install
+
+- [x] 26.1 Commande interactive (migrate, seed, creer org + admin owner)
+- [x] 26.2 Detection admin existant, validation email/password
+- [x] 26.3 Storage link + optimize:clear automatique
+
+---
+
+## Phase 27 (planifiee) — Fix bugs + nettoyage
 
 ### Objectif
-Pays/villes collaboratives, telephone formate par pays, oeil mot de passe.
+Corriger les bugs connus et nettoyer avant d'avancer.
 
 ### Taches
 
-- [ ] 23.1 **JSON pays** : `config/countries.php` (250 pays, code ISO, nom FR/EN, prefixe tel, nb digits tel)
-- [ ] 23.2 **Table cities** : migration (name, country_code, usage_count), Model City, autocompletion anonyme
-- [ ] 23.3 **Migration profil** : ajouter `country_code`, `city` sur users
-- [ ] 23.4 **Vue profil** : select pays + input ville autocompletion + telephone (prefixe auto selon pays, format dynamique)
-- [ ] 23.5 **API autocompletion ville** : endpoint `/api/cities?q=&country=`, auto-creation si nouvelle
-- [ ] 23.6 **Validation telephone** : regex dynamique selon pays (nb digits depuis config)
-- [ ] 23.7 **Oeil mot de passe** : verifier toggle show/hide partout (login, register, profil, change password)
+- [ ] 27.1 **Fix markdown IA** : strip markdown dans textarea/input, convertir en HTML dans rich editors
+- [ ] 27.2 **Fix Settings IA** : mountAiConfig() dans render() ecrase les changements — deplacer dans mount()
+- [ ] 27.3 **Fix dark mode** : persistence dans certains cas
+- [ ] 27.4 **Fix traductions** : cles brutes qui s'affichent par endroits
+- [ ] 27.5 **Fix meta deprecated** : apple-mobile-web-app-capable → mobile-web-app-capable
+- [ ] 27.6 **Fix export Excel** : balises HTML dans les cellules
 
-## Phase 24 (planifiee) — Owner org + Niveaux permissions
+## Phase 28 (planifiee) — GPRO_MODE saas/selfhosted
 
 ### Objectif
-Separer owner/admin, niveaux visuels pour les permissions, protection du createur d'org.
+Separer clairement le mode SaaS (toi, avec ROOT, plans payants) du mode selfhosted (open source, tout illimite).
 
-### Architecture prevue
+### Architecture
 
 ```
-Niveaux :
-  1. Observateur   → view-projects, view-activities (lecture seule)
-  2. Contributeur  → + edit-activities, add-comments, track-progress
-  3. Gestionnaire  → + create-projects, manage-activities, manage-budgets
-  4. Administrateur → + manage-members, manage-settings, invite-users
+.env : GPRO_MODE=saas | selfhosted
+
+saas       → ROOT existe, plans actifs, limites respectees, page pricing visible
+selfhosted → pas de ROOT, tout illimite, premier inscrit = ORG_ADMIN, pas de pricing
 ```
 
 ### Taches
 
-- [x] 24.1 **Owner sur org** : migration `owner_user_id` sur organizations, relation, auto-assigne a la creation
-- [x] 24.2 **Transfert ownership** : UI dans Settings, seulement vers un autre admin, modale de confirmation
-- [x] 24.3 **Enum PermissionLevel** : 4 niveaux (observateur, contributeur, gestionnaire, administrateur) avec mapping permissions Spatie
-- [x] 24.4 **UI niveaux** : composant `x-ui.permission-level-picker` (cartes visuelles), integre dans form membre
-- [x] 24.5 **Protection owner** : ne peut pas etre supprime/retrograde, doit transferer avant de quitter
-- [ ] 24.6 **Adaptation invitations** : utiliser PermissionLevel au lieu de spatie_role brut
-- [ ] 24.7 **Scoping par projet** : les permissions s'appliquent uniquement aux ressources assignees au membre (pas les projets des autres)
-- [ ] 24.8 **Personnalisation permissions par membre** : apres choix du niveau, l'admin peut cocher/decocher des permissions individuelles (ecran detail membre)
-- [ ] 24.9 **Niveaux ROOT** : sous-niveaux pour ROOT (full, support, comptable) — pour quand tu auras des collabs
+- [ ] 28.1 **Config gpro.mode** dans config/gpro.php + helper isSelfHosted()
+- [ ] 28.2 **Premier user auto-admin** : si selfhosted + User::count() === 0, le register cree ORG_ADMIN + org + seed permissions
+- [ ] 28.3 **Bypass limites plans** : canCreateProject/canAddMember retournent true si selfhosted
+- [ ] 28.4 **Cacher UI SaaS** : page pricing, sidebar ROOT, routes system cachees si selfhosted
+- [ ] 28.5 **Tests** : mode saas vs selfhosted
 
-## Phase 25 (planifiee) — RGPD complet
+## Phase 29 (planifiee) — Plans en DB + CRUD ROOT
 
 ### Objectif
-Export donnees par role, suppression/anonymisation, prevenance 30j, politique de retention.
+Remplacer l'enum Plan par une table DB. ROOT gere les plans (limites, prix, features) via l'interface.
 
-### Regles
+### Architecture
 
 ```
-Suppression membre : anonymisation (nom→"Utilisateur supprime", email→hash), activites detachees
-Suppression admin  : bloquer si seul owner, forcer transfert ownership
-Suppression org    : email prevenance 30j → soft-delete → membres detaches → hard-delete apres 30j
-Export membre      : ses donnees perso (profil, activites, commentaires, notifs) en JSON
-Export admin       : ses donnees + export org (projets, membres, budgets, activites) en JSON+CSV
-Export independant : ses donnees + ses projets en JSON
+Table plans : id, name, slug, price, currency, billing_period, max_projects, max_members, features (JSON), is_active, sort_order
+Organization.plan_id → plans.id (relation au lieu d'enum)
 ```
 
 ### Taches
 
-- [ ] 25.1 **Export donnees perso** : refactorer GdprExportService, adapter par role (membre/admin/independant)
-- [ ] 25.2 **Export org** (admin) : projets, membres, budgets, activites en JSON + CSV (ZIP)
-- [ ] 25.3 **Suppression membre** : anonymisation, detachement activites
-- [ ] 25.4 **Suppression admin** : bloquer si seul owner, forcer transfert
-- [ ] 25.5 **Suppression org** : email prevenance 30j → soft-delete → membres detaches
-- [ ] 25.6 **UI suppression** : section danger dans Settings (confirmation email + mot de passe)
-- [ ] 25.7 **Politique retention** : commande `gpro:cleanup-deleted` (hard-delete orgs soft-deleted > 30j), scheduler
+- [ ] 29.1 **Migration + Model Plan** : table plans, seeder 3 plans par defaut (Free/Pro/Enterprise)
+- [ ] 29.2 **Refactor enum → model** : remplacer toutes les refs a l'enum Plan par le model (~50 refs)
+- [ ] 29.3 **UI ROOT /system/plans** : CRUD plans (nom, prix, limites, features checkboxes, actif/inactif)
+- [ ] 29.4 **Features gated** : hasFeature() lit depuis le JSON features du plan
+- [ ] 29.5 **Page pricing dynamique** : lit les plans depuis la DB au lieu du code
+- [ ] 29.6 **Tests** : creation plan, limites respectees, features gated
 
-## Phase 26 (planifiee) — Commande gpro:install (Open Source)
+## Phase 30 (planifiee) — Types de projet (champs dynamiques)
 
 ### Objectif
-Permettre une installation standalone sans ROOT. Pour la version Open Source.
+Les types de projet ont des champs personnalises. Lors de la creation d'un projet, les champs apparaissent et les reponses sont stockees.
+
+### Architecture
+
+```
+project_types : id, name, organization_id (null=systeme), is_system, is_active
+project_type_fields : id, project_type_id, label, field_type (text/textarea/select/date/number), options (JSON), is_required, sort_order
+project_type_field_values : id, project_id, project_type_field_id, value
+```
 
 ### Taches
 
-- [ ] 26.1 **Commande `php artisan gpro:install`** : interactive, cree la premiere org + premier ORG_ADMIN (owner), seed permissions/categories/types, configure .env
-- [ ] 26.2 **Detection mode** : config `gpro.mode` = 'saas' (avec ROOT) ou 'standalone' (sans ROOT), conditionne la sidebar et les routes system
-- [ ] 26.3 **Documentation** : README pour l'installation Open Source
+- [ ] 30.1 **Champs dynamiques** : migration project_type_fields + project_type_field_values
+- [ ] 30.2 **UI types** : formulaire CRUD champs dans le type (drag & drop order, types de champ)
+- [ ] 30.3 **Integration creation projet** : etape dynamique qui affiche les champs du type selectionne
+- [ ] 30.4 **Validation** : is_required respecte cote serveur
+- [ ] 30.5 **Affichage** : reponses visibles dans la page projet (section dediee)
+- [ ] 30.6 **Visibilite** : types systeme (non supprimables), types org (prives), types ROOT (globaux)
+
+## Phase 31 (planifiee) — Independant → Org + Scoping projets
+
+### Objectif
+Un independant peut creer son org (migration de compte). Les permissions sont scopees par projet assigne.
+
+### Taches
+
+- [ ] 31.1 **Migration independant → org** : bouton "Creer mon organisation", change role, migre projets
+- [ ] 31.2 **Scoping projets** : contributeur/gestionnaire ne voit que les projets ou il est assigne
+- [ ] 31.3 **Assignation projet** : UI pour assigner des membres a un projet
+
+## Phase 32 (planifiee) — Permissions avancees
+
+### Taches
+
+- [ ] 32.1 **Personnalisation par membre** : apres choix du niveau, cocher/decocher permissions individuelles
+- [ ] 32.2 **Niveaux ROOT** : full, support, comptable (quand tu auras des collabs)
+
+---
+
+## Backlog (Groupe E — post v1.0)
+
+Ordonne par priorite :
+
+- [ ] **Import Excel propre** : bulk import activites/projets depuis fichier Excel, nettoyer HTML dans exports
+- [ ] **Calendrier** : vue calendrier (FullCalendar.js) des activites/deadlines, drag & drop reprogrammation, export iCal
+- [ ] **Workflow approbation** : brouillon → soumis → revise → approuve → actif, avec roles valideurs et notifications
+- [ ] **Rapports automatiques** : generation trimestrielle PDF/DOCX (progression, budgets, retards), envoi email auto
+- [ ] **Carte geographique** : Leaflet.js + OpenStreetMap, projets positionnes par pays/ville, popup details
+- [ ] **API publique** : REST API v1 (projets, activites, progression), authentification Sanctum, documentation Swagger
+- [ ] **Webhooks** : notifications vers URLs externes (projet cree, activite terminee, budget depasse)
+- [ ] **WebSockets** : collaboration temps reel (Laravel Reverb/Pusher + Echo), notifications instantanees, "X est en train de..."
+- [ ] **Marketplace plugins** : systeme d'extensions (plugins rapport USAID, integration Sage, formulaires ODK, alertes SMS)
