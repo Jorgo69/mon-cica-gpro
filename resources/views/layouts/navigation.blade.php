@@ -20,7 +20,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
-                @livewire('v-beta.notifications.notification-center-livewire')
+                @livewire('v1.notifications.notification-center-livewire')
                 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">

@@ -191,7 +191,7 @@
                         </div>
 
                         {{-- Contenu selon le format choisi --}}
-                        @include('livewire.v-beta.project.logframe.format-' . $logframeFormat)
+                        @include('livewire.v1.project.logframe.format-' . $logframeFormat)
 
                     @endif
 
@@ -227,7 +227,7 @@
 
                 @if($activeTab === 'tracking')
                     {{-- Section: Suivi de progression --}}
-                    @livewire('v-beta.project.project-progress-comparison-livewire', ['projectId' => $project->id])
+                    @livewire('v1.project.project-progress-comparison-livewire', ['projectId' => $project->id])
                 @endif
 
                 @if($activeTab === 'history')

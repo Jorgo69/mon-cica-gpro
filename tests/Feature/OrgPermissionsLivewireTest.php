@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\VBeta\Admin\OrgPermissionsLivewire;
+use App\Livewire\V1\Admin\OrgPermissionsLivewire;
 use Livewire\Livewire;
 
 test('org permissions page renders for org admin', function () {

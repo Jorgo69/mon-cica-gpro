@@ -146,7 +146,7 @@ $project->status = ProjectStatus::ACTIVE; // CORRECT
 ```php
 <?php
 
-namespace App\Livewire\VBeta\MonDomaine;
+namespace App\Livewire\V1\MonDomaine;
 
 use App\Livewire\Traits\WithToastNotifications;
 use Livewire\Component;
@@ -169,7 +169,7 @@ class MonListLivewire extends Component
             ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->paginate(10);
 
-        return view('livewire.v-beta.mon-domaine.mon-list-livewire', compact('items'));
+        return view('livewire.v1.mon-domaine.mon-list-livewire', compact('items'));
     }
 }
 ```

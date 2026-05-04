@@ -10,31 +10,31 @@ use Illuminate\Support\Facades\Route;
  */
 // System routes only available in SaaS mode
 if (isSaas()) {
-Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system')->name('system.')->group(function () {
+Route::middleware(['auth', 'account_type:system_admin'])->prefix('v1/system')->name('system.')->group(function () {
     // Dashboard ROOT
-    Route::view('/dashboard', 'v_beta.system.dashboard.index')->name('dashboard');
+    Route::view('/dashboard', 'v1.system.dashboard.index')->name('dashboard');
 
     // Organisations
-    Route::view('/organizations', 'v_beta.system.organizations.index')->name('organizations');
+    Route::view('/organizations', 'v1.system.organizations.index')->name('organizations');
 
     // Utilisateurs globaux
-    Route::view('/users', 'v_beta.system.users.index')->name('users');
+    Route::view('/users', 'v1.system.users.index')->name('users');
 
     // Emails / Suppression list
-    Route::view('/emails', 'v_beta.system.emails.index')->name('emails');
+    Route::view('/emails', 'v1.system.emails.index')->name('emails');
 
     // Rôles & Permissions
-    Route::view('/roles', 'v_beta.system.roles.index')->name('roles');
-    Route::view('/permissions', 'v_beta.system.permissions.index')->name('permissions');
+    Route::view('/roles', 'v1.system.roles.index')->name('roles');
+    Route::view('/permissions', 'v1.system.permissions.index')->name('permissions');
 
     // Audit Logs (Global)
-    Route::view('/audit/logs', 'v_beta.admin.audit.index')->name('audit.logs');
+    Route::view('/audit/logs', 'v1.admin.audit.index')->name('audit.logs');
 
     // Plans management
-    Route::view('/plans', 'v_beta.system.plans.index')->name('plans');
+    Route::view('/plans', 'v1.system.plans.index')->name('plans');
 
     // AI Config (Global)
-    Route::view('/ai-config', 'v_beta.system.ai-config.index')->name('ai-config');
+    Route::view('/ai-config', 'v1.system.ai-config.index')->name('ai-config');
 
     // Org Switch (Entrer/Quitter une organisation) — GET pour eviter les problemes CSRF/Livewire
     Route::get('/org/{organizationId}/enter', [OrgSwitchController::class, 'enter'])->name('org.enter');

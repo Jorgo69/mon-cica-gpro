@@ -139,7 +139,7 @@
         {{ $slot }}
     </div>
 
-    @livewire('v-beta.search.global-search-livewire')
+    @livewire('v1.search.global-search-livewire')
     <x-ui.toast-notifications />
     <x-ui.offline-banner />
 

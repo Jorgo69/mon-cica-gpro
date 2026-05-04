@@ -26,7 +26,7 @@
         <x-ui.modal :show="true"
                     :title="$editingCategoryId ? 'Modifier la categorie' : 'Nouvelle categorie'"
                     id="category-management">
-            @livewire('v-beta.admin.category.category-modal-form-livewire', [
+            @livewire('v1.admin.category.category-modal-form-livewire', [
                 'editingCategoryId' => $editingCategoryId,
             ], key('category-form-' . ($editingCategoryId ?? 'new')))
         </x-ui.modal>

@@ -45,7 +45,7 @@ Format : date, decision, raison, alternatives ecartees.
 **Decision :** Decouper les routes web en fichiers par domaine : `system.php`, `admin.php`, `project.php`, `resource.php`.
 **Raison :** Clarte et maintenabilite. Chaque domaine a ses middleware et prefixes isoles. Evite un `web.php` monolithique.
 **Alternatives ecartees :** Tout dans web.php (ingerable a terme), route groups dans un seul fichier (moins lisible).
-**Impact :** Toute nouvelle route doit aller dans le fichier de domaine correspondant. Les prefixes sont `v_beta/system/`, `v_beta/admin/`, `v_beta/`.
+**Impact :** Toute nouvelle route doit aller dans le fichier de domaine correspondant. Les prefixes sont `v1/system/`, `v1/admin/`, `v1/`.
 
 ### [2026-04-25] Model Indicator polymorphe pour indicateurs multiples
 **Decision :** Creer un model `Indicator` avec relation polymorphe `indicatorable` (morphMany) vers LogicalFramework, SpecificObjective et Result, au lieu de stocker les indicateurs comme champs texte uniques.

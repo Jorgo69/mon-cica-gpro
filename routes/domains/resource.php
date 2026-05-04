@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->prefix('v_beta')->group(function () {
+Route::middleware(['auth'])->prefix('v1')->group(function () {
     // Ressources
     Route::view('/resource/management', 'pages.resource.index')->name('resource.index');
 

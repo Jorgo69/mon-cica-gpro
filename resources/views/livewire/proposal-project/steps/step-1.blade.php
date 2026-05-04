@@ -79,6 +79,6 @@
     
     {{-- Dynamic Fields --}}
     <div class="mt-8 pt-8 border-t border-border-light dark:border-surface-alt">
-        @include('livewire.v-beta.proposal-project.dynamic-fields-section')
+        @include('livewire.v1.proposal-project.dynamic-fields-section')
     </div>
 </div>

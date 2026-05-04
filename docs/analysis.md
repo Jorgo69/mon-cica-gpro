@@ -39,10 +39,10 @@ Le système est structuré autour du cycle de vie d'un projet :
 
 ## 4. Organisation du Code
 - **Models (`app/Models/`)** : Reflètent fidèlement la structure de la base de données avec des relations Eloquent bien définies.
-- **Controllers (`app/Http/Controllers/VBeta/`)** : Gèrent la logique de haut niveau, notamment les exports (Word/PDF) et les vues principales.
-- **Composants Livewire (`app/Livewire/VBeta/`)** : Gèrent l'essentiel de l'interactivité (formulaires de création de projet, édition du cadre logique, gestion des membres).
+- **Controllers (`app/Http/Controllers/V1/`)** : Gèrent la logique de haut niveau, notamment les exports (Word/PDF) et les vues principales.
+- **Composants Livewire (`app/Livewire/V1/`)** : Gèrent l'essentiel de l'interactivité (formulaires de création de projet, édition du cadre logique, gestion des membres).
 - **Helpers (`app/Helpers/helpers.php`)** : Fonctions utilitaires pour le formuatage des dates et des textes (extraits, dates amicales).
-- **Routes (`routes/web.php`)** : Organisées en groupes (Admin IT, Membre ONG) sous le préfixe `v_beta`.
+- **Routes (`routes/web.php`)** : Organisées en groupes (Admin IT, Membre ONG) sous le préfixe `v1`.
 
 ## 5. Fonctionnalités Clés
 1. **Formulaires Dynamiques** : L'administrateur définit des champs (texte, sélection, date) qui s'affichent lors de la création d'un projet selon son type.

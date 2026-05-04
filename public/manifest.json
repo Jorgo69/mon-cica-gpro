@@ -58,13 +58,13 @@
         {
             "name": "Nouveau Projet",
             "short_name": "Projet",
-            "url": "/v_beta/creator-proposal/proposal-project/create",
+            "url": "/v1/creator-proposal/proposal-project/create",
             "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
         },
         {
             "name": "Mes Activites",
             "short_name": "Activites",
-            "url": "/v_beta/activity-list",
+            "url": "/v1/activity-list",
             "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
         }
     ]

@@ -64,7 +64,7 @@
 
                                 {{-- Historique de progression --}}
                                 <h4 class="text-md font-bold mt-6 mb-2 text-heading">Historique de progression</h4>
-                                @livewire('v-beta.activity.activity-progress-history-livewire', ['activityId' => $activity->id], key('history-' . $activity->id))
+                                @livewire('v1.activity.activity-progress-history-livewire', ['activityId' => $activity->id], key('history-' . $activity->id))
 
                             </div>
                         @else

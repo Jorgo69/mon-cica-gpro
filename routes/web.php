@@ -44,12 +44,12 @@ Route::get('/ical/feed', [\App\Http\Controllers\IcalFeedController::class, 'feed
     ->name('ical.feed');
 
 // FAQ (auth required)
-Route::get('/faq', \App\Livewire\VBeta\FaqLivewire::class)
+Route::get('/faq', \App\Livewire\V1\FaqLivewire::class)
     ->middleware(['auth'])
     ->name('faq');
 
 
-Route::get('dashboard', \App\Livewire\VBeta\DashboardLivewire::class)
+Route::get('dashboard', \App\Livewire\V1\DashboardLivewire::class)
     ->middleware(['auth'])
     ->name('dashboard');
 
@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::view('setting', 'v_beta.settings.index')->name('setting');
+    Route::view('setting', 'v1.settings.index')->name('setting');
 
     // GDPR - Export personal data
     Route::get('/profile/export-data', function () {

@@ -39,7 +39,7 @@
             </button>
             
             <!-- Notifications -->
-            @livewire('v-beta.notifications.notification-center-livewire')
+            @livewire('v1.notifications.notification-center-livewire')
             
             <!-- Profile Menu -->
             <div class="relative ml-1">

@@ -187,7 +187,7 @@ app/
   Http/
     Controllers/   # Controllers minces (routing vers Livewire)
     Middleware/     # AccountType, SetOrgContext, CheckAiAccess
-  Livewire/        # Composants Livewire (VBeta/)
+  Livewire/        # Composants Livewire (V1/)
   Models/          # Eloquent models (UUID, Multitenantable)
   Notifications/   # 10 notifications (database + mail + FCM)
   Services/        # Logique metier (Workflow, Budget, RGPD, IA)
