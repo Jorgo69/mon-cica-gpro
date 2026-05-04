@@ -143,6 +143,20 @@ function friendly_date($date)
     }
 }
 
+if (!function_exists('isSelfHosted')) {
+    function isSelfHosted(): bool
+    {
+        return config('gpro.mode') === 'selfhosted';
+    }
+}
+
+if (!function_exists('isSaas')) {
+    function isSaas(): bool
+    {
+        return config('gpro.mode') !== 'selfhosted';
+    }
+}
+
 if (!function_exists('notify')) {
     /**
      * Dispatch a global notification using the custom Notifier.

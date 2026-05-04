@@ -404,19 +404,19 @@
 
 ---
 
-## Phase 27 (planifiee) — Fix bugs + nettoyage
+## Phase 27 (TERMINEE) — Fix bugs + nettoyage
 
 ### Objectif
 Corriger les bugs connus et nettoyer avant d'avancer.
 
 ### Taches
 
-- [ ] 27.1 **Fix markdown IA** : strip markdown dans textarea/input, convertir en HTML dans rich editors
-- [ ] 27.2 **Fix Settings IA** : mountAiConfig() dans render() ecrase les changements — deplacer dans mount()
-- [ ] 27.3 **Fix dark mode** : persistence dans certains cas
-- [ ] 27.4 **Fix traductions** : cles brutes qui s'affichent par endroits
-- [ ] 27.5 **Fix meta deprecated** : apple-mobile-web-app-capable → mobile-web-app-capable
-- [ ] 27.6 **Fix export Excel** : balises HTML dans les cellules
+- [x] 27.1 **Fix markdown IA** : AiService::stripMarkdown() applique sur generateProjectDescription, generateExecutiveSummary, analyzeDashboard
+- [x] 27.2 **Fix Settings IA** : deja corrige (loadAiConfig dans mount(), pas render())
+- [x] 27.3 **Fix dark mode** : window.dispatchEvent theme-changed depuis boutons Settings pour sync navbar
+- [x] 27.4 **Fix traductions** : 60+ cles EN ajoutees (admin.php, system.php), permission_level FR
+- [x] 27.5 **Fix meta deprecated** : mobile-web-app-capable remplace apple-mobile-web-app-capable
+- [x] 27.6 **Fix export Excel** : strip_tags sur 4 champs indicateurs (baseline, target, verification_source, assumption)
 
 ## Phase 28 (planifiee) — GPRO_MODE saas/selfhosted
 
@@ -502,6 +502,11 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [ ] 32.2 **Niveaux ROOT** : full, support, comptable (quand tu auras des collabs)
 
 ---
+
+## Bugs connus (a traiter)
+
+- [ ] **Audit org admin** : les org_admin n'ont pas acces a l'audit de leur propre organisation (actuellement ROOT only). Ajouter route admin + vue scopee par org.
+- [ ] **Permissions org admin** : les org_admin ne voient pas les permissions de leur org. Ajouter vue admin des roles/permissions scopes a l'org.
 
 ## Backlog (Groupe E — post v1.0)
 

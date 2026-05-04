@@ -4,6 +4,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mode de fonctionnement
+    |--------------------------------------------------------------------------
+    |
+    | 'saas'       → ROOT existe, plans actifs, limites respectees, pricing visible
+    | 'selfhosted' → pas de ROOT, tout illimite, premier inscrit = ORG_ADMIN
+    |
+    */
+    'mode' => env('GPRO_MODE', 'saas'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Types de projet systeme
     |--------------------------------------------------------------------------
     |

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
  * Routes globales pour la configuration du système, rôles, permissions et organisations.
  * Protégé par le middleware account_type pour garantir l'isolation totale.
  */
+// System routes only available in SaaS mode
+if (isSaas()) {
 Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system')->name('system.')->group(function () {
     // Dashboard ROOT
     Route::view('/dashboard', 'v_beta.system.dashboard.index')->name('dashboard');
@@ -35,3 +37,4 @@ Route::middleware(['auth', 'account_type:system_admin'])->prefix('v_beta/system'
     Route::get('/org/{organizationId}/enter', [OrgSwitchController::class, 'enter'])->name('org.enter');
     Route::get('/org/leave', [OrgSwitchController::class, 'leave'])->name('org.leave');
 });
+} // end isSaas()

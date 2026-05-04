@@ -135,6 +135,8 @@ class User extends Authenticatable
 
     public function isPlanActive(): bool
     {
+        if (isSelfHosted()) return true;
+
         if ($this->role === AccountType::INDEPENDENT || !$this->organization_id) {
             if ($this->plan === \App\Enums\Plan::FREE || !$this->plan) return true;
             return !$this->plan_expires_at || !$this->plan_expires_at->isPast();
@@ -145,6 +147,8 @@ class User extends Authenticatable
 
     public function hasFeature(string $feature): bool
     {
+        if (isSelfHosted()) return true;
+
         return $this->effectivePlan()->hasFeature($feature);
     }
 

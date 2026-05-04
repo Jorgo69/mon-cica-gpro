@@ -26,8 +26,10 @@ Route::get('/', function () {
 // PWA offline page
 Route::view('/offline', 'offline')->name('offline');
 
-// Pricing page (public)
-Route::view('/pricing', 'pricing')->name('pricing');
+// Pricing page (public, SaaS only)
+if (isSaas()) {
+    Route::view('/pricing', 'pricing')->name('pricing');
+}
 
 // Legal pages (public)
 Route::view('/privacy', 'legal.privacy')->name('legal.privacy');

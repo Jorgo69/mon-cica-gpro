@@ -93,6 +93,8 @@ class Organization extends Model
 
     public function canCreateProject(): bool
     {
+        if (isSelfHosted()) return true;
+
         $max = $this->currentPlan()->maxProjects();
         if ($max === -1) return true;
         return $this->projects()->count() < $max;
@@ -100,6 +102,8 @@ class Organization extends Model
 
     public function canAddMember(): bool
     {
+        if (isSelfHosted()) return true;
+
         $max = $this->currentPlan()->maxMembers();
         if ($max === -1) return true;
         return $this->users()->count() < $max;
@@ -107,6 +111,8 @@ class Organization extends Model
 
     public function hasFeature(string $feature): bool
     {
+        if (isSelfHosted()) return true;
+
         return $this->currentPlan()->hasFeature($feature);
     }
 

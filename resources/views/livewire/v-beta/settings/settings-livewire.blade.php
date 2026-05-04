@@ -14,7 +14,7 @@
                 'language' => ['label' => __('settings.language'), 'icon' => 'languages'],
                 'notifications' => ['label' => __('settings.notifications'), 'icon' => 'bell'],
                 'accounts' => ['label' => __('settings.linked_accounts'), 'icon' => 'link'],
-                'plan' => ['label' => __('plans.plan'), 'icon' => 'crown'],
+                ...( isSaas() ? ['plan' => ['label' => __('plans.plan'), 'icon' => 'crown']] : [] ),
             ];
             if ($showAiTab) {
                 $tabs['ai'] = ['label' => __('ai.config.title'), 'icon' => 'sparkles'];
@@ -399,8 +399,8 @@
     </div>
     @endif
 
-    {{-- TAB PLAN --}}
-    @if($activeTab === 'plan')
+    {{-- TAB PLAN (SaaS only) --}}
+    @if($activeTab === 'plan' && isSaas())
     <div class="space-y-6">
         @php
             $user = auth()->user();
