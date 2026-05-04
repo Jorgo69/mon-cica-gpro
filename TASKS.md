@@ -365,6 +365,9 @@
 - **README** : badges 431 tests, chiffres a jour
 - **Rename V1** : VBeta/v-beta/v_beta → V1/v1 (220 fichiers : namespaces, vues, routes, manifest, docs)
 - **431 tests, 916 assertions** tous verts sur les deux branches
+- **E8 WebSockets** : Reverb + Echo, 5 events, 4 channels + presence, OFF par defaut
+- **E9 Marketplace** : PluginManager, 8 hooks, plugin USAID, commande artisan, catalogue remote
+- **462 tests, 997 assertions** apres E8+E9
 
 ## Phase 22 (TERMINEE) — IA configurable multi-niveau
 
@@ -522,10 +525,8 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] **E6 Carte geographique** : Leaflet CDN, 40 pays geocodes, marqueurs colores par statut, popups, filtre, lien sidebar
 - [x] **E7 Webhooks** : 10 events, HMAC-SHA256 signature, auto-disable apres 10 echecs, UI CRUD dans Settings
 
-### A faire
-
-- [ ] **E8 WebSockets** : infrastructure temps reel (Laravel Reverb + Echo), events broadcasting, notifications instantanees — desactive par defaut (BROADCAST_DRIVER=log), activable quand serveur dispo
-- [ ] **E9 Marketplace plugins** : systeme d'extensions (plugins rapport USAID, integration Sage, formulaires ODK, alertes SMS)
+- [x] **E8 WebSockets** : Laravel Reverb + Echo, 5 events broadcasting, 4 channels prives + 1 presence, trait DispatchesBroadcastEvents, composant online-users, OFF par defaut (BROADCAST_DRIVER=log)
+- [x] **E9 Marketplace plugins** : PluginManager (discover/boot/enable/disable), enum PluginHookPoint (8 hooks), Event PluginHook, Model Plugin + pivot org, UI ROOT marketplace, UI org toggle, plugin exemple USAID, commande gpro:plugin, catalogue remote configurable
 
 ### Solidification v1.0 (TERMINEE)
 
