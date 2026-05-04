@@ -38,6 +38,9 @@
                 <x-lucide-sun x-show="darkMode" class="nav-icon" x-cloak />
             </button>
             
+            <!-- Online Users (presence) -->
+            <x-ui.online-users :orgId="auth()->user()?->organization_id" />
+
             <!-- Notifications -->
             @livewire('v1.notifications.notification-center-livewire')
             

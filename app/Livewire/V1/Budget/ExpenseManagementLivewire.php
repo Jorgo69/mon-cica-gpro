@@ -8,13 +8,14 @@ use App\Models\Expense;
 use App\Models\Project;
 use App\Notifications\BudgetThresholdNotification;
 use App\Services\BudgetTrackingService;
+use App\Traits\DispatchesBroadcastEvents;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ExpenseManagementLivewire extends Component
 {
-    use WithPagination, WithToastNotifications;
+    use WithPagination, WithToastNotifications, DispatchesBroadcastEvents;
 
     public string $projectId;
     public bool $showModal = false;
@@ -143,6 +144,7 @@ class ExpenseManagementLivewire extends Component
 
         if ($summary['used_percent'] >= 80 && $project->creator) {
             $project->creator->notify(new BudgetThresholdNotification($project, $summary['used_percent']));
+            $this->broadcastBudgetAlert($project->organization_id, $project->id, $project->title, $summary['used_percent']);
         }
     }
 }

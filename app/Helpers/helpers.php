@@ -157,6 +157,13 @@ if (!function_exists('isSaas')) {
     }
 }
 
+if (!function_exists('isBroadcastingEnabled')) {
+    function isBroadcastingEnabled(): bool
+    {
+        return !in_array(config('broadcasting.default'), ['null', 'log'], true);
+    }
+}
+
 if (!function_exists('notify')) {
     /**
      * Dispatch a global notification using the custom Notifier.

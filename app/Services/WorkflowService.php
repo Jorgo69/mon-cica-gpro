@@ -8,10 +8,12 @@ use App\Models\Project;
 use App\Models\ProjectApproval;
 use App\Models\User;
 use App\Notifications\ProjectWorkflowNotification;
+use App\Traits\DispatchesBroadcastEvents;
 use Illuminate\Support\Facades\DB;
 
 class WorkflowService
 {
+    use DispatchesBroadcastEvents;
     public function transition(Project $project, User $actor, ProjectStatus $targetStatus, ?string $comment = null): ProjectApproval
     {
         $currentStatus = $project->status;
@@ -41,6 +43,7 @@ class WorkflowService
             ]);
 
             $this->notifyStakeholders($project, $actor, $action, $comment);
+            $this->broadcastProjectUpdated($project, $action);
 
             return $approval;
         });

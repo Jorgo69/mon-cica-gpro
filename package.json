@@ -22,6 +22,8 @@
         "@tiptap/extension-underline": "^3.22.4",
         "@tiptap/starter-kit": "^3.22.4",
         "firebase": "^12.12.1",
-        "puppeteer": "^24.42.0"
+        "laravel-echo": "^2.3.4",
+        "puppeteer": "^24.42.0",
+        "pusher-js": "^8.5.0"
     }
 }

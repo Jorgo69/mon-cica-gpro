@@ -356,6 +356,16 @@
 - **Fix CI** : build Vite assets avant les tests (ci.yml)
 - **Planification** : Phases 27-32 + Backlog (Groupe E)
 
+### Session 17 (2026-05-04)
+- **Solidification v1.0** : 65 nouveaux tests (API v1 31 tests, RGPD 17 tests, webhooks 4 tests, budget 4 tests, shared project 5 tests, iCal 4 tests)
+- **Bugs RGPD corriges** : GdprDeleteService meta NOT NULL (crash prod), GdprExportService relation singuliere (RelationNotFoundException)
+- **Nettoyage** : 15 vues orphelines supprimees, fichier copie orphelin, 0 dd/dump residuel
+- **Seed demo enrichi** : mesures indicateurs (tendances), commentaires activites, lien partage bailleur
+- **.env.example complet** : GPRO_MODE, social auth, Firebase, payment, commentaires
+- **README** : badges 431 tests, chiffres a jour
+- **Rename V1** : VBeta/v-beta/v_beta → V1/v1 (220 fichiers : namespaces, vues, routes, manifest, docs)
+- **431 tests, 916 assertions** tous verts sur les deux branches
+
 ## Phase 22 (TERMINEE) — IA configurable multi-niveau
 
 - [x] 22.1 Enum AiProvider (9 providers : groq, gemini, openai, anthropic, mistral, deepseek, cohere, together, custom)
@@ -512,7 +522,17 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] **E6 Carte geographique** : Leaflet CDN, 40 pays geocodes, marqueurs colores par statut, popups, filtre, lien sidebar
 - [x] **E7 Webhooks** : 10 events, HMAC-SHA256 signature, auto-disable apres 10 echecs, UI CRUD dans Settings
 
-### A faire (post v2.0)
+### A faire
 
-- [ ] **E8 WebSockets** : collaboration temps reel (Laravel Reverb/Pusher + Echo), notifications instantanees — necessite config serveur
+- [ ] **E8 WebSockets** : infrastructure temps reel (Laravel Reverb + Echo), events broadcasting, notifications instantanees — desactive par defaut (BROADCAST_DRIVER=log), activable quand serveur dispo
 - [ ] **E9 Marketplace plugins** : systeme d'extensions (plugins rapport USAID, integration Sage, formulaires ODK, alertes SMS)
+
+### Solidification v1.0 (TERMINEE)
+
+- [x] **Audit qualite** : 65 nouveaux tests (431 total, 916 assertions) — API v1, RGPD, webhooks, budget, shared project, iCal
+- [x] **Nettoyage** : 15 vues orphelines supprimees, fichier copie supprime, 0 dd/dump, 0 TODO residuel
+- [x] **Bugs RGPD** : GdprDeleteService meta NOT NULL, GdprExportService relation logicalFramework singulier
+- [x] **README** : badges et chiffres a jour (431 tests)
+- [x] **Seed demo** : mesures indicateurs, commentaires, lien partage bailleur
+- [x] **.env.example** : complet (GPRO_MODE, social auth, Firebase, payment)
+- [x] **Rename V1** : VBeta/v-beta/v_beta → V1/v1 (220 fichiers, namespaces, vues, routes)

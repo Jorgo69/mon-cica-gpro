@@ -2,6 +2,7 @@
 
 namespace App\Livewire\V1\Notifications;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class NotificationCenterLivewire extends Component
@@ -10,6 +11,24 @@ class NotificationCenterLivewire extends Component
     public $notifications = [];
 
     public function mount()
+    {
+        $this->loadNotifications();
+    }
+
+    public function getListeners()
+    {
+        $userId = auth()->id();
+
+        if (!$userId || !isBroadcastingEnabled()) {
+            return [];
+        }
+
+        return [
+            "echo-private:user.{$userId},.NewNotification" => 'refreshNotifications',
+        ];
+    }
+
+    public function refreshNotifications(): void
     {
         $this->loadNotifications();
     }

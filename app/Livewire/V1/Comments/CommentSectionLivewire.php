@@ -6,12 +6,13 @@ use App\Livewire\Traits\WithToastNotifications;
 use App\Models\Comment;
 use App\Models\User;
 use App\Notifications\CommentPostedNotification;
+use App\Traits\DispatchesBroadcastEvents;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class CommentSectionLivewire extends Component
 {
-    use WithToastNotifications;
+    use WithToastNotifications, DispatchesBroadcastEvents;
 
     public string $commentableType;
     public string $commentableId;
@@ -44,6 +45,14 @@ class CommentSectionLivewire extends Component
         $comment->load('user');
 
         $this->notifyParticipants($comment, $mentions);
+
+        // Broadcast to project channel if activity comment
+        if ($this->commentableType === \App\Models\Activity::class) {
+            $activity = \App\Models\Activity::find($this->commentableId);
+            if ($activity?->result?->specificObjective?->logicalFramework?->project_id) {
+                $this->broadcastCommentPosted($comment, $activity->result->specificObjective->logicalFramework->project_id);
+            }
+        }
 
         $this->body = '';
         $this->replyingTo = null;
