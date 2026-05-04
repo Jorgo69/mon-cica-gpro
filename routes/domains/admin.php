@@ -24,6 +24,9 @@ Route::middleware(['auth', 'account_type:org_admin,independent,system_admin'])->
     // Taux de change
     Route::get('/exchange-rates', \App\Livewire\VBeta\Admin\ExchangeRateManagementLivewire::class)->name('exchange-rates');
 
+    // Import Excel
+    Route::view('/import', 'v_beta.admin.import.index')->name('import');
+
     // Audit (org-scoped)
     Route::view('/audit', 'v_beta.admin.audit.index')->name('audit');
 

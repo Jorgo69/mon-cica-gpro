@@ -137,6 +137,9 @@
                     <a href="{{ route('admin.exchange-rates') }}" class="nav-submenu-item @if(Route::is('admin.exchange-rates*')) nav-submenu-item-active @endif">
                         {{ __('navigation.exchange_rates') }}
                     </a>
+                    <a href="{{ route('admin.import') }}" class="nav-submenu-item @if(Route::is('admin.import*')) nav-submenu-item-active @endif">
+                        {{ __('navigation.import') }}
+                    </a>
                     <a href="{{ route('admin.permissions') }}" class="nav-submenu-item @if(Route::is('admin.permissions*')) nav-submenu-item-active @endif">
                         {{ __('navigation.permissions') }}
                     </a>

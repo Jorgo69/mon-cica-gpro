@@ -54,5 +54,6 @@ return [
     'supervision_mode' => 'Mode supervision',
     'viewing_org' => 'Vous êtes dans l\'espace :name',
     'leave_org' => 'Quitter l\'espace',
+    'import' => 'Import Excel',
 
 ];

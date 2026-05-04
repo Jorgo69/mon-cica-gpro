@@ -54,5 +54,6 @@ return [
     'supervision_mode' => 'Supervision mode',
     'viewing_org' => 'You are viewing :name\'s workspace',
     'leave_org' => 'Leave workspace',
+    'import' => 'Excel Import',
 
 ];
