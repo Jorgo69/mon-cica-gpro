@@ -1,39 +1,118 @@
-# Guide de Contribution 🤝
+# Guide de Contribution
 
-Merci de contribuer au projet **CICA-GPRO** ! Voici les directives pour assurer la qualité et la cohérence de notre codebase.
+Merci de contribuer a **CICA-GPRO** ! Ce guide vous aide a demarrer.
 
-## 🏺 Standards de Codage
+## Prerequis
 
-Nous suivons les standards PSR-12 avec quelques règles spécifiques au projet :
+- PHP 8.2+
+- Composer 2
+- Node.js 18+ / npm
+- SQLite (dev) ou MySQL/PostgreSQL (prod)
 
-1.  **Actions & Services** : La logique métier DOIT être encapsulée dans des classes `Action` (pour les écritures) ou `QueryService` (pour les lectures). Évitez au maximum la logique lourde dans les contrôleurs ou les composants Livewire.
-2.  **Multi-Tenancy** : Toutes les nouvelles entités liées aux organisations DOIVENT utiliser le trait `Multitenantable` et inclure `organization_id` et `creator_user_id`.
-3.  **Audit Logs** : Activez le trait `LogsActivity` de Spatie sur toutes les entités critiques.
-4.  **UI Components** : Utilisez exclusivement les composants situés dans `resources/views/components/ui` (préfixe `x-ui`) pour garantir l'uniformité du design et le support du mode sombre.
-
-## 🧪 Tests
-
-Toute nouvelle fonctionnalité ou correction de bug DOIT être accompagnée d'un test Pest.
+## Installation locale
 
 ```bash
-# Lancer les tests
-php artisan test
+git clone https://github.com/cave-tech/cica-gpro.git
+cd cica-gpro
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan gpro:install
+npm run dev
+php artisan serve
 ```
 
-## 🌳 Workflow Git
+## Workflow Git
 
-1.  Créez une branche descriptive (`feature/nom-feature` ou `fix/nom-bug`).
-2.  Privilégiez les **commits atomiques** (un commit par petite modification logique).
-3.  Assurez-vous que les tests passent avant de pousser.
-4.  Ouvrez une Pull Request avec une description détaillée des changements.
+1. Fork le projet
+2. Creez une branche depuis `development` :
+   - `feature/nom-feature` pour une fonctionnalite
+   - `fix/nom-bug` pour une correction
+3. Codez, testez, commitez
+4. Ouvrez une Pull Request vers `development`
 
-## 📝 Conventions de Nommage
+## Conventions de code
 
--   **Classes PHP** : PascalCase.
--   **Méthodes/Propriétés** : camelCase.
--   **Vues Blade** : kebab-case.
--   **Tables** : snake_case, au pluriel.
+### PHP / Laravel
+- **PSR-12** pour le style
+- **Eloquent** pour toutes les requetes DB (pas de raw SQL)
+- **UUID** pour toutes les primary keys
+- **Trait Multitenantable** sur tout model lie a une organisation
+- **Trait LogsActivity** (Spatie) sur les models metier importants
+- **Enums PHP** pour les statuts avec `label()`, `color()`, `icon()`
+- **Services** pour la logique metier, controllers minces
+- **SoftDeletes** sur les entites principales
 
----
+### Frontend
+- **Tailwind CSS** uniquement (pas de CSS custom sauf necessite)
+- **Alpine.js** pour les interactions JS legeres
+- **Composants `x-ui.*`** pour l'uniformite du design
+- Pas de jQuery
 
-*L'excellence technique est le moteur de notre réussite. Marina-Cleaned-Reset-Final-Cleanup-Ending-Suffix-Now-Stop-Joking-Haha-Actually-Serious-Now. (On garde le cap !)*
+### Nommage
+- Classes PHP : `PascalCase`
+- Methodes/proprietes : `camelCase`
+- Vues Blade : `kebab-case`
+- Tables DB : `snake_case` pluriel
+- Composants Livewire : suffixe `Livewire` (ex: `ProjectListLivewire`)
+
+## Tests
+
+Toute nouvelle fonctionnalite ou correction **doit** inclure des tests.
+
+```bash
+# Tous les tests
+php artisan test
+
+# En parallele
+php artisan test --parallel
+
+# Un fichier specifique
+php artisan test tests/Feature/MonTest.php
+```
+
+Framework : [Pest PHP](https://pestphp.com). Helpers dans `tests/Pest.php`.
+
+## Structure du projet
+
+```
+app/
+  Actions/       — Actions metier (RegisterUser, SaveMember...)
+  Console/       — Commandes artisan
+  Enums/         — Statuts, types (PHP enums)
+  Events/        — Events broadcasting
+  Http/
+    Controllers/V1/  — Controllers minces
+    Middleware/       — AccountType, SetOrgContext...
+  Livewire/V1/   — Composants Livewire
+  Models/        — Eloquent (UUID, Multitenantable)
+  Notifications/ — 14 notifications (database + mail + FCM)
+  Services/      — Logique metier
+  Traits/        — Multitenantable, HasMeta...
+
+plugins/         — Plugins (systeme d'extensions)
+routes/domains/  — Routes par domaine (system, admin, project, resource)
+```
+
+## Plugins
+
+GPRO supporte un systeme de plugins. Pour creer un plugin :
+
+```
+plugins/votre-vendor/votre-plugin/
+  plugin.json          — Manifeste (nom, hooks, permissions)
+  src/
+    VotreServiceProvider.php
+  resources/views/     — Vues Blade (optionnel)
+```
+
+Voir `plugins/gpro/usaid-report/` comme exemple.
+
+## i18n
+
+Toutes les chaines utilisateur passent par `__()`. Fichiers dans `lang/fr/` et `lang/en/`.
+
+## Questions ?
+
+Ouvrez une [issue](https://github.com/cave-tech/cica-gpro/issues) ou contactez l'equipe.
