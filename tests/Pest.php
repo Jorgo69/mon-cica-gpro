@@ -59,6 +59,7 @@ function createIndependent(): User
     return createUser([
         'role' => AccountType::INDEPENDENT,
         'organization_id' => null,
+        'is_independent' => true,
     ]);
 }
 
