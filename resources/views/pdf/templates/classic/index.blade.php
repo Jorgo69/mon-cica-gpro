@@ -95,20 +95,11 @@
                 <div class="mb-6">
                     <h4 class="text-sm font-bold border-b border-border mb-3">{{ ucfirst($section) }}</h4>
                     <div class="space-y-4">
+                        @php $fieldValues = $project->general_objectives ?? []; @endphp
                         @foreach($fields as $fieldDef)
-                             @php
-                                $targetField = $fieldDef['target_project_field'];
-                                $value = null;
-                                if (isset($project->$targetField)) {
-                                    if (is_array($project->$targetField)) {
-                                        $value = $project->$targetField[$fieldDef['question_text']] ?? null;
-                                    } else {
-                                        $pattern = '/' . preg_quote($fieldDef['delimiter_start'], '/') . '(.*?)' . preg_quote($fieldDef['delimiter_end'], '/') . '/s';
-                                        if (preg_match($pattern, $project->$targetField, $matches)) {
-                                            $value = $matches[1];
-                                        }
-                                    }
-                                }
+                            @php
+                                $value = $fieldValues[$fieldDef['field_name']] ?? null;
+                                if (is_array($value)) $value = implode(', ', $value);
                             @endphp
                             @if($value)
                                 <div>

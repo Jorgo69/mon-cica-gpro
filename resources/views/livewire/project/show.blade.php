@@ -154,16 +154,11 @@
                     @foreach($dynamicFormFields as $section => $fields)
                         <x-ui.section :title="ucfirst($section)" icon="puzzle">
                             <div class="space-y-4">
+                                @php $fieldValues = $project->general_objectives ?? []; @endphp
                                 @foreach($fields as $fieldDef)
                                     @php
-                                        $targetField = $fieldDef['target_project_field'];
-                                        $value = null;
-                                        if (isset($project->$targetField)) {
-                                            $pattern = '/' . preg_quote($fieldDef['delimiter_start'], '/') . '(.*?)' . preg_quote($fieldDef['delimiter_end'], '/') . '/s';
-                                            if (preg_match($pattern, $project->$targetField, $matches)) {
-                                                $value = $matches[1];
-                                            }
-                                        }
+                                        $value = $fieldValues[$fieldDef['field_name']] ?? null;
+                                        if (is_array($value)) $value = implode(', ', $value);
                                     @endphp
                                     @if($value)
                                         <div>

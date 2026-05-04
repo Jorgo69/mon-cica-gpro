@@ -31,4 +31,15 @@ enum FieldType: string
             self::NUMBER => 'hash',
         };
     }
+
+    public function color(): string
+    {
+        return match($this) {
+            self::TEXT => 'text-blue-500',
+            self::SELECT => 'text-purple-500',
+            self::DATE => 'text-amber-500',
+            self::TEXTAREA => 'text-emerald-500',
+            self::NUMBER => 'text-rose-500',
+        };
+    }
 }
