@@ -43,6 +43,7 @@ class User extends Authenticatable
         'ville',
         'department',
         'password',
+        'email_verified_at',
         'plan_id',
         'plan_activated_at',
         'plan_expires_at',
