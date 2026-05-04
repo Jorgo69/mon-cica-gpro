@@ -24,6 +24,10 @@ return [
         'joined_at' => 'Joined on',
         'last_active' => 'Last active',
         'permission_level' => 'Permission level',
+        'customize_permissions' => 'Customize permissions',
+        'permissions_list' => 'Permissions',
+        'save_permissions' => 'Save permissions',
+        'permissions_updated' => 'Permissions updated.',
 
         'no_members' => 'No members found',
         'no_members_desc' => 'No members found for this organization.',

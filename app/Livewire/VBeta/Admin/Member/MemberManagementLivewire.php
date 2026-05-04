@@ -32,6 +32,11 @@ class MemberManagementLivewire extends Component
     // Champs formulaire (liés directement au x-ui.input/select)
     public $name, $email, $password, $telephone, $sexe, $numero_identification, $pays, $ville, $role, $department, $image;
 
+    // Permission customization
+    public int $selectedPermissionLevel = 2;
+    public array $customPermissions = [];
+    public bool $showPermissions = false;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'sortField' => ['except' => 'created_at'],
@@ -82,10 +87,18 @@ class MemberManagementLivewire extends Component
     /**
      * Ouvre le modal spécifié.
      */
+    public function updatedSelectedPermissionLevel(): void
+    {
+        $level = PermissionLevel::tryFrom($this->selectedPermissionLevel);
+        if ($level) {
+            $this->customPermissions = $level->permissions();
+        }
+    }
+
     public function openModal($type, $id = null)
     {
         $this->authorize('viewAny', User::class);
-        
+
         $this->resetValidation();
         $this->resetForm();
         $this->modalType = $type;
@@ -96,10 +109,49 @@ class MemberManagementLivewire extends Component
             if ($this->selectedMember) {
                 $this->authorize('view', $this->selectedMember);
                 $this->fill($this->selectedMember->toArray());
-                // On s'assure que le role est bien l'enum value pour le select
                 $this->role = $this->selectedMember->role->value;
+
+                // Load current permissions
+                $this->customPermissions = $this->selectedMember->getAllPermissions()->pluck('name')->toArray();
+
+                // Detect level from permissions
+                $this->selectedPermissionLevel = $this->detectLevel($this->customPermissions);
+                $this->showPermissions = ($type === 'edit');
             }
         }
+    }
+
+    protected function detectLevel(array $permissions): int
+    {
+        // Find the highest level whose base permissions are all present
+        $detected = PermissionLevel::OBSERVER;
+        foreach (PermissionLevel::cases() as $level) {
+            $basePerms = $level->permissions();
+            if (empty(array_diff($basePerms, $permissions))) {
+                $detected = $level;
+            }
+        }
+        return $detected->value;
+    }
+
+    public function savePermissions(): void
+    {
+        if (!$this->selectedMember) return;
+
+        $level = PermissionLevel::tryFrom($this->selectedPermissionLevel);
+        if (!$level) return;
+
+        // Sync role
+        $this->selectedMember->syncRoles([$level->spatieRole()]);
+
+        // Update account type
+        $this->selectedMember->update(['role' => $level->accountType()]);
+
+        // Sync custom permissions
+        $this->selectedMember->syncPermissions($this->customPermissions);
+
+        $this->notifyToast('success', __('admin.members.permissions_updated'));
+        $this->showPermissions = false;
     }
 
     /**
@@ -165,6 +217,9 @@ class MemberManagementLivewire extends Component
     private function resetForm()
     {
         $this->reset(['name', 'email', 'password', 'telephone', 'sexe', 'numero_identification', 'pays', 'ville', 'role', 'department', 'image', 'selectedMember']);
+        $this->selectedPermissionLevel = 2;
+        $this->customPermissions = [];
+        $this->showPermissions = false;
     }
 
     /**
@@ -177,6 +232,9 @@ class MemberManagementLivewire extends Component
 
     public function render(MemberQueryService $queryService)
     {
+        // All permissions available in the system for the checkboxes
+        $allPermissions = collect(PermissionLevel::ADMIN->permissions())->unique()->sort()->values();
+
         return view('livewire.v-beta.admin.member.member-management-livewire', [
             'members' => $queryService->list(
                 search: $this->search,
@@ -184,6 +242,8 @@ class MemberManagementLivewire extends Component
                 sortDirection: $this->sortDirection,
             ),
             'assignableRoles' => auth()->user()->role->assignableRoles(),
+            'allPermissions' => $allPermissions,
+            'permissionLevels' => PermissionLevel::cases(),
         ]);
     }
 }

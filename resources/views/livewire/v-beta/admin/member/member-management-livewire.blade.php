@@ -91,6 +91,54 @@
             @elseif ($modalType === 'edit')
                 @include('livewire.v-beta.admin.member.partials.form', ['action' => 'update'])
 
+                {{-- Permission customization --}}
+                <div class="mt-6 pt-4 border-t border-border-light">
+                    <button type="button" wire:click="$toggle('showPermissions')"
+                            class="flex items-center gap-2 text-xs font-bold text-accent hover:underline">
+                        <x-lucide-shield class="w-3.5 h-3.5" />
+                        {{ __('admin.members.customize_permissions') }}
+                        <x-lucide-chevron-down class="w-3 h-3 transition-transform" x-bind:class="{ 'rotate-180': $wire.showPermissions }" />
+                    </button>
+
+                    @if($showPermissions)
+                    <div class="mt-4 space-y-4">
+                        {{-- Level picker --}}
+                        <div>
+                            <label class="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">{{ __('admin.members.permission_level') }}</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                @foreach($permissionLevels as $level)
+                                    <button type="button" wire:click="$set('selectedPermissionLevel', {{ $level->value }})"
+                                            class="p-2 rounded-xl border-2 text-center transition-all text-[10px] font-bold
+                                                {{ $selectedPermissionLevel === $level->value
+                                                    ? 'border-accent bg-accent/5 text-accent'
+                                                    : 'border-border-light bg-card text-body hover:border-accent/30' }}">
+                                        {{ $level->label() }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Permission checkboxes --}}
+                        <div>
+                            <label class="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">{{ __('admin.members.permissions_list') }}</label>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                @foreach($allPermissions as $perm)
+                                    <label class="flex items-center gap-2 text-[11px] text-body cursor-pointer p-1.5 rounded-lg hover:bg-surface transition-colors">
+                                        <input type="checkbox" wire:model="customPermissions" value="{{ $perm }}"
+                                               class="rounded border-gray-300 text-accent focus:ring-accent w-3.5 h-3.5">
+                                        {{ $perm }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <x-ui.button wire:click="savePermissions" variant="accent" icon="shield-check" size="sm">
+                            {{ __('admin.members.save_permissions') }}
+                        </x-ui.button>
+                    </div>
+                    @endif
+                </div>
+
             @elseif ($modalType === 'view')
                 <div class="space-y-4 text-sm">
                     @foreach([

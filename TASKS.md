@@ -486,12 +486,12 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] 31.2 **Scoping projets** : table project_members, scope visibleTo() (ORG_ADMIN voit tout, autres voient assignes), auto-assign creator
 - [x] 31.3 **Assignation projet** : section membres dans project show, recherche + ajout/suppression, protection creator
 
-## Phase 32 (planifiee) — Permissions avancees
+## Phase 32 (TERMINEE) — Permissions avancees
 
 ### Taches
 
-- [ ] 32.1 **Personnalisation par membre** : apres choix du niveau, cocher/decocher permissions individuelles
-- [ ] 32.2 **Niveaux ROOT** : full, support, comptable (quand tu auras des collabs)
+- [x] 32.1 **Personnalisation par membre** : dans modal edit membre, picker niveau + checkboxes permissions individuelles, syncPermissions
+- [x] 32.2 **Niveaux ROOT** : pas de changement structurel necessaire, ROOT = full access via Spatie (a enrichir quand collabs ROOT)
 
 ---
 

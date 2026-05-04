@@ -32,6 +32,10 @@ return [
         'section' => 'Membres',
         'not_specified' => 'Non renseigné',
         'permission_level' => 'Niveau de permission',
+        'customize_permissions' => 'Personnaliser les permissions',
+        'permissions_list' => 'Permissions',
+        'save_permissions' => 'Enregistrer les permissions',
+        'permissions_updated' => 'Permissions mises à jour.',
     ],
 
     // Categories
