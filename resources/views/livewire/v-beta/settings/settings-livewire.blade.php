@@ -19,6 +19,9 @@
             if ($showAiTab) {
                 $tabs['ai'] = ['label' => __('ai.config.title'), 'icon' => 'sparkles'];
             }
+            if (auth()->user()->organization_id) {
+                $tabs['webhooks'] = ['label' => 'Webhooks', 'icon' => 'webhook'];
+            }
             $tabs['api'] = ['label' => 'API', 'icon' => 'plug'];
         @endphp
         @foreach($tabs as $tab => $info)
@@ -713,6 +716,77 @@
             </div>
         </x-ui.section>
         @endif
+    </div>
+    @endif
+
+    {{-- TAB WEBHOOKS --}}
+    @if($activeTab === 'webhooks' && auth()->user()->organization_id)
+    <div class="space-y-6">
+        <x-ui.section :title="__('settings.webhooks.title')" icon="webhook" :noPadding="false">
+            <p class="text-xs text-muted mb-4">{{ __('settings.webhooks.desc') }}</p>
+
+            {{-- Form --}}
+            <div class="space-y-3 mb-6 p-4 bg-surface rounded-xl">
+                <div>
+                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.webhooks.url') }}</label>
+                    <input type="url" wire:model="webhookUrl" class="input-field w-full text-xs" placeholder="https://example.com/webhook">
+                    @error('webhookUrl') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.webhooks.label') }}</label>
+                    <input type="text" wire:model="webhookLabel" class="input-field w-full text-xs" placeholder="{{ __('settings.webhooks.label_placeholder') }}">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-heading block mb-2">{{ __('settings.webhooks.events') }}</label>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        @foreach(\App\Models\Webhook::AVAILABLE_EVENTS as $event)
+                            <label class="flex items-center gap-2 text-[11px] text-body cursor-pointer">
+                                <input type="checkbox" wire:model="webhookEvents" value="{{ $event }}"
+                                       class="rounded border-gray-300 text-accent focus:ring-accent w-3.5 h-3.5">
+                                {{ $event }}
+                            </label>
+                        @endforeach
+                    </div>
+                    @error('webhookEvents') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div class="flex gap-2">
+                    <x-ui.button wire:click="saveWebhook" variant="accent" icon="plus" size="sm">
+                        {{ $editingWebhookId ? __('common.save') : __('settings.webhooks.add') }}
+                    </x-ui.button>
+                    @if($editingWebhookId)
+                        <x-ui.button wire:click="resetWebhookForm" variant="ghost" size="sm">{{ __('common.cancel') }}</x-ui.button>
+                    @endif
+                </div>
+            </div>
+
+            {{-- List --}}
+            @php $webhooks = \App\Models\Webhook::where('organization_id', auth()->user()->organization_id)->latest()->get(); @endphp
+            @forelse($webhooks as $wh)
+                <div class="flex items-center justify-between p-3 rounded-xl {{ $wh->is_active ? 'bg-card border border-border-light' : 'bg-surface/50 opacity-60' }} mb-2">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-heading truncate">{{ $wh->label ?: $wh->url }}</p>
+                        <p class="text-[10px] text-muted truncate">{{ $wh->url }}</p>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            @foreach($wh->events as $evt)
+                                <span class="px-1 py-0.5 bg-accent/10 text-accent text-[8px] font-bold rounded">{{ $evt }}</span>
+                            @endforeach
+                        </div>
+                        @if($wh->failure_count > 0)
+                            <p class="text-[9px] text-error mt-1">{{ $wh->failure_count }} {{ __('settings.webhooks.failures') }}</p>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-2 ml-3">
+                        <button wire:click="toggleWebhook('{{ $wh->id }}')" class="text-[10px] font-bold {{ $wh->is_active ? 'text-warning' : 'text-success' }}">
+                            {{ $wh->is_active ? __('common.deactivate') : __('common.activate') }}
+                        </button>
+                        <button wire:click="editWebhook('{{ $wh->id }}')" class="text-[10px] font-bold text-accent">{{ __('common.edit') }}</button>
+                        <button wire:click="deleteWebhook('{{ $wh->id }}')" wire:confirm="{{ __('settings.webhooks.confirm_delete') }}" class="text-[10px] font-bold text-error">{{ __('common.delete') }}</button>
+                    </div>
+                </div>
+            @empty
+                <p class="text-xs text-muted text-center py-4">{{ __('settings.webhooks.no_webhooks') }}</p>
+            @endforelse
+        </x-ui.section>
     </div>
     @endif
 

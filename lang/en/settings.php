@@ -176,4 +176,20 @@ return [
         'no_tokens' => 'No API tokens. Create one to get started.',
     ],
 
+    // Webhooks
+    'webhooks' => [
+        'title' => 'Webhooks',
+        'desc' => 'Receive real-time notifications in your external applications.',
+        'url' => 'Webhook URL',
+        'label' => 'Label (optional)',
+        'label_placeholder' => 'E.g.: My Slack integration',
+        'events' => 'Events',
+        'add' => 'Add webhook',
+        'saved' => 'Webhook saved.',
+        'deleted' => 'Webhook deleted.',
+        'confirm_delete' => 'Delete this webhook?',
+        'no_webhooks' => 'No webhooks configured.',
+        'failures' => 'consecutive failure(s)',
+    ],
+
 ];

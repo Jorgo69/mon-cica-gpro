@@ -525,6 +525,72 @@ class SettingsLivewire extends Component
         }
     }
 
+    // ─── Webhooks ──────────────────────────────────────────
+
+    public string $webhookUrl = '';
+    public string $webhookLabel = '';
+    public array $webhookEvents = [];
+    public ?string $editingWebhookId = null;
+
+    public function saveWebhook(): void
+    {
+        $this->validate([
+            'webhookUrl' => 'required|url|max:500',
+            'webhookLabel' => 'nullable|string|max:100',
+            'webhookEvents' => 'required|array|min:1',
+        ]);
+
+        $orgId = auth()->user()->organization_id;
+        if (!$orgId) return;
+
+        $data = [
+            'organization_id' => $orgId,
+            'url' => $this->webhookUrl,
+            'label' => $this->webhookLabel ?: null,
+            'events' => $this->webhookEvents,
+        ];
+
+        if ($this->editingWebhookId) {
+            \App\Models\Webhook::where('id', $this->editingWebhookId)
+                ->where('organization_id', $orgId)
+                ->update($data);
+        } else {
+            \App\Models\Webhook::create($data);
+        }
+
+        $this->resetWebhookForm();
+        $this->notifyToast('success', __('settings.webhooks.saved'));
+    }
+
+    public function editWebhook(string $id): void
+    {
+        $wh = \App\Models\Webhook::where('organization_id', auth()->user()->organization_id)->findOrFail($id);
+        $this->editingWebhookId = $wh->id;
+        $this->webhookUrl = $wh->url;
+        $this->webhookLabel = $wh->label ?? '';
+        $this->webhookEvents = $wh->events ?? [];
+    }
+
+    public function deleteWebhook(string $id): void
+    {
+        \App\Models\Webhook::where('organization_id', auth()->user()->organization_id)->where('id', $id)->delete();
+        $this->notifyToast('success', __('settings.webhooks.deleted'));
+    }
+
+    public function toggleWebhook(string $id): void
+    {
+        $wh = \App\Models\Webhook::where('organization_id', auth()->user()->organization_id)->findOrFail($id);
+        $wh->update(['is_active' => !$wh->is_active]);
+    }
+
+    protected function resetWebhookForm(): void
+    {
+        $this->webhookUrl = '';
+        $this->webhookLabel = '';
+        $this->webhookEvents = [];
+        $this->editingWebhookId = null;
+    }
+
     // ─── API Tokens ────────────────────────────────────────
 
     public string $newTokenName = '';

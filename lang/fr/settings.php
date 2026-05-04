@@ -176,4 +176,20 @@ return [
         'no_tokens' => 'Aucun token API. Creez-en un pour commencer.',
     ],
 
+    // Webhooks
+    'webhooks' => [
+        'title' => 'Webhooks',
+        'desc' => 'Recevez des notifications en temps reel dans vos applications externes.',
+        'url' => 'URL du webhook',
+        'label' => 'Libelle (optionnel)',
+        'label_placeholder' => 'Ex: Mon integration Slack',
+        'events' => 'Evenements',
+        'add' => 'Ajouter le webhook',
+        'saved' => 'Webhook enregistre.',
+        'deleted' => 'Webhook supprime.',
+        'confirm_delete' => 'Supprimer ce webhook ?',
+        'no_webhooks' => 'Aucun webhook configure.',
+        'failures' => 'echec(s) consecutif(s)',
+    ],
+
 ];
