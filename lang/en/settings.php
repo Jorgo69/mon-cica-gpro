@@ -121,4 +121,31 @@ return [
         'delete_account_confirm' => 'Are you sure you want to delete your account?',
     ],
 
+    // GDPR / Danger zone
+    'delete' => [
+        'danger_title' => 'Danger Zone',
+        'export_title' => 'Export my data',
+        'export_desc' => 'Download a copy of all your personal data in JSON format.',
+        'export_btn' => 'Download my data',
+        'export_org_title' => 'Export organization data',
+        'export_org_desc' => 'Download a full copy of your organization data (members, projects, budgets).',
+        'export_org_btn' => 'Download org data',
+        'delete_account_title' => 'Delete my account',
+        'delete_account_desc' => 'Your account will be anonymized and your personal data deleted. This action is irreversible.',
+        'delete_account_btn' => 'Delete my account',
+        'delete_org_title' => 'Delete organization',
+        'delete_org_desc' => 'The organization will be deleted after a 30-day grace period. All members will be detached and projects archived. You can cancel during this period.',
+        'delete_org_btn' => 'Schedule deletion',
+        'delete_org_cancel' => 'Cancel deletion',
+        'confirm_password' => 'Confirm your password to continue',
+        'wrong_password' => 'Incorrect password.',
+        'must_transfer_ownership' => 'You must first transfer organization ownership to another admin before deleting your account.',
+        'not_owner' => 'Only the organization owner can perform this action.',
+        'deleted_user' => 'Deleted user',
+        'org_scheduled' => 'Deletion scheduled. The organization will be deleted in 30 days. An email was sent to all members.',
+        'org_cancelled' => 'Deletion cancelled. The organization will not be deleted.',
+        'org_scheduled_at' => 'Deletion scheduled for :date',
+        'org_scheduled_warning' => 'This organization is scheduled for deletion. You can cancel this action.',
+    ],
+
 ];

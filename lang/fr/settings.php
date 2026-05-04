@@ -121,4 +121,31 @@ return [
         'delete_account_confirm' => 'Êtes-vous sûr de vouloir supprimer votre compte ?',
     ],
 
+    // GDPR / Danger zone
+    'delete' => [
+        'danger_title' => 'Zone de danger',
+        'export_title' => 'Exporter mes données',
+        'export_desc' => 'Téléchargez une copie de toutes vos données personnelles au format JSON.',
+        'export_btn' => 'Télécharger mes données',
+        'export_org_title' => 'Exporter les données de l\'organisation',
+        'export_org_desc' => 'Téléchargez une copie complète des données de votre organisation (membres, projets, budgets).',
+        'export_org_btn' => 'Télécharger les données org',
+        'delete_account_title' => 'Supprimer mon compte',
+        'delete_account_desc' => 'Votre compte sera anonymisé et vos données personnelles supprimées. Cette action est irréversible.',
+        'delete_account_btn' => 'Supprimer mon compte',
+        'delete_org_title' => 'Supprimer l\'organisation',
+        'delete_org_desc' => 'L\'organisation sera supprimée après un délai de 30 jours. Tous les membres seront détachés et les projets archivés. Vous pouvez annuler pendant cette période.',
+        'delete_org_btn' => 'Planifier la suppression',
+        'delete_org_cancel' => 'Annuler la suppression',
+        'confirm_password' => 'Confirmez votre mot de passe pour continuer',
+        'wrong_password' => 'Mot de passe incorrect.',
+        'must_transfer_ownership' => 'Vous devez d\'abord transférer la propriété de l\'organisation à un autre administrateur avant de supprimer votre compte.',
+        'not_owner' => 'Seul le propriétaire de l\'organisation peut effectuer cette action.',
+        'deleted_user' => 'Utilisateur supprimé',
+        'org_scheduled' => 'Suppression planifiée. L\'organisation sera supprimée dans 30 jours. Un email a été envoyé à tous les membres.',
+        'org_cancelled' => 'Suppression annulée. L\'organisation ne sera pas supprimée.',
+        'org_scheduled_at' => 'Suppression prévue le :date',
+        'org_scheduled_warning' => 'Cette organisation est programmée pour être supprimée. Vous pouvez annuler cette action.',
+    ],
+
 ];

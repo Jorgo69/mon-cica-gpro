@@ -80,19 +80,10 @@
             :error="$errors->first('ville')"
         />
 
-        {{-- Rôle --}}
-        <x-ui.select 
-            wire:model="role" 
-            label="Rôle / Type de compte" 
-            icon="shield" 
-            required
-            :error="$errors->first('role')"
-        >
-            <option value="">-- Sélectionner un rôle --</option>
-            @foreach($assignableRoles as $type)
-                <option value="{{ $type->value }}">{{ $type->label() }}</option>
-            @endforeach
-        </x-ui.select>
+        {{-- Niveau de permission (cartes visuelles) --}}
+        <div class="md:col-span-2">
+            <x-ui.permission-level-picker wireModel="permissionLevel" :selected="$permissionLevel" :error="$errors->first('permissionLevel')" />
+        </div>
 
         {{-- Département --}}
         <x-ui.input 

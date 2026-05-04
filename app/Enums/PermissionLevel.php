@@ -52,8 +52,8 @@ enum PermissionLevel: int
             ],
             self::CONTRIBUTOR => [
                 ...self::OBSERVER->permissions(),
-                'edit-activities',
                 'track-progress',
+                'manage-activities',
                 'create-projects',
             ],
             self::MANAGER => [
@@ -66,11 +66,13 @@ enum PermissionLevel: int
             self::ADMIN => [
                 ...self::MANAGER->permissions(),
                 'validate-projects',
+                'access-admin-panel',
                 'manage-organization',
                 'manage-users',
                 'manage-roles',
                 'invite-users',
                 'manage-invitations',
+                'view-audit-logs',
             ],
         };
     }

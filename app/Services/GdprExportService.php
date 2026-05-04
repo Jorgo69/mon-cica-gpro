@@ -2,15 +2,18 @@
 
 namespace App\Services;
 
+use App\Enums\AccountType;
+use App\Models\Organization;
 use App\Models\User;
 
 class GdprExportService
 {
-    public static function export(User $user): array
+    /**
+     * Export personal data for any user role.
+     */
+    public static function exportPersonal(User $user): array
     {
-        $user->loadMissing([
-            'socialAccounts',
-        ]);
+        $user->loadMissing(['socialAccounts']);
 
         return [
             'account' => [
@@ -53,5 +56,80 @@ class GdprExportService
                 ->toArray(),
             'exported_at' => now()->toISOString(),
         ];
+    }
+
+    /**
+     * Export full organization data (for ORG_ADMIN).
+     */
+    public static function exportOrganization(Organization $org): array
+    {
+        return [
+            'organization' => [
+                'name' => $org->name,
+                'slug' => $org->slug,
+                'status' => $org->status?->value,
+                'plan' => $org->plan?->value,
+                'description' => $org->description,
+                'website' => $org->website,
+                'contact_email' => $org->contact_email,
+                'contact_phone' => $org->contact_phone,
+                'created_at' => $org->created_at?->toISOString(),
+            ],
+            'members' => $org->users()
+                ->select('id', 'name', 'email', 'role', 'created_at')
+                ->get()
+                ->toArray(),
+            'projects' => $org->projects()
+                ->withoutGlobalScopes()
+                ->with(['logicalFrameworks.specificObjectives.results.activities'])
+                ->get()
+                ->map(fn ($p) => [
+                    'title' => $p->title,
+                    'project_code' => $p->project_code,
+                    'status' => $p->status?->value,
+                    'start_date' => $p->start_date?->toDateString(),
+                    'end_date' => $p->end_date?->toDateString(),
+                    'progress' => $p->calculateProjectProgress(),
+                    'created_at' => $p->created_at?->toISOString(),
+                    'objectives' => $p->logicalFrameworks->flatMap(fn ($lf) =>
+                        $lf->specificObjectives->map(fn ($so) => [
+                            'description' => $so->description,
+                            'results' => $so->results->map(fn ($r) => [
+                                'description' => $r->description,
+                                'activities' => $r->activities->map(fn ($a) => [
+                                    'description' => $a->description,
+                                    'status' => $a->status?->value,
+                                    'progress' => $a->progress_percentage,
+                                ])->toArray(),
+                            ])->toArray(),
+                        ])
+                    )->toArray(),
+                ])
+                ->toArray(),
+            'budgets' => \App\Models\Budget::withoutGlobalScopes()
+                ->whereHas('project', fn ($q) => $q->where('organization_id', $org->id))
+                ->select('id', 'project_id', 'description', 'total_cost', 'created_at')
+                ->get()
+                ->toArray(),
+            'expenses' => \App\Models\Expense::withoutGlobalScopes()
+                ->whereHas('project', fn ($q) => $q->where('organization_id', $org->id))
+                ->select('id', 'project_id', 'description', 'amount', 'expense_date', 'created_at')
+                ->get()
+                ->toArray(),
+            'invitations' => \App\Models\Invitation::withoutGlobalScopes()
+                ->where('organization_id', $org->id)
+                ->select('email', 'role', 'status', 'created_at', 'expires_at')
+                ->get()
+                ->toArray(),
+            'exported_at' => now()->toISOString(),
+        ];
+    }
+
+    /**
+     * Legacy method — kept for backwards compatibility.
+     */
+    public static function export(User $user): array
+    {
+        return self::exportPersonal($user);
     }
 }

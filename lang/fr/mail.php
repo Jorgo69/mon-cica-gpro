@@ -126,4 +126,13 @@ return [
         'projects' => '**:count** projet(s) actifs',
         'action' => 'Voir le tableau de bord',
     ],
+
+    // OrgDeletionScheduledNotification
+    'org_deletion' => [
+        'subject' => 'Suppression programmee de :org',
+        'greeting' => 'Bonjour,',
+        'line1' => 'L\'organisation **:org** est programmee pour etre supprimee.',
+        'line2' => 'La suppression sera effective le **:date**. Tous les membres seront detaches et les projets archives.',
+        'line3' => 'Si vous pensez que c\'est une erreur, contactez l\'administrateur de votre organisation.',
+    ],
 ];

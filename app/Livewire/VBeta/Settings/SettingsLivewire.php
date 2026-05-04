@@ -384,6 +384,120 @@ class SettingsLivewire extends Component
         $this->notifyToast('success', __('common.saved'));
     }
 
+    // ─── GDPR: Export & Delete ──────────────────────────────
+
+    public string $deletePassword = '';
+    public bool $showDeleteAccountModal = false;
+    public bool $showDeleteOrgModal = false;
+
+    public function exportMyData()
+    {
+        $data = \App\Services\GdprExportService::exportPersonal(auth()->user());
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $filename = 'my-data-' . now()->format('Y-m-d') . '.json';
+
+        return response()->streamDownload(function () use ($json) {
+            echo $json;
+        }, $filename, ['Content-Type' => 'application/json']);
+    }
+
+    public function exportOrgData()
+    {
+        $user = auth()->user();
+        if ($user->role !== AccountType::ORG_ADMIN || !$user->organization_id) return;
+
+        $org = Organization::findOrFail($user->organization_id);
+        $data = \App\Services\GdprExportService::exportOrganization($org);
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $filename = 'org-' . \Illuminate\Support\Str::slug($org->name) . '-' . now()->format('Y-m-d') . '.json';
+
+        return response()->streamDownload(function () use ($json) {
+            echo $json;
+        }, $filename, ['Content-Type' => 'application/json']);
+    }
+
+    public function openDeleteAccountModal()
+    {
+        $this->deletePassword = '';
+        $this->showDeleteAccountModal = true;
+    }
+
+    public function closeDeleteAccountModal()
+    {
+        $this->showDeleteAccountModal = false;
+        $this->deletePassword = '';
+    }
+
+    public function deleteAccount()
+    {
+        $this->validate(['deletePassword' => 'required']);
+
+        $user = auth()->user();
+
+        if (!password_verify($this->deletePassword, $user->password)) {
+            $this->addError('deletePassword', __('settings.delete.wrong_password'));
+            return;
+        }
+
+        try {
+            \App\Services\GdprDeleteService::anonymizeAndDelete($user);
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            $this->redirect('/');
+        } catch (\InvalidArgumentException $e) {
+            $this->notifyToast('error', $e->getMessage());
+            $this->showDeleteAccountModal = false;
+        }
+    }
+
+    public function openDeleteOrgModal()
+    {
+        $this->deletePassword = '';
+        $this->showDeleteOrgModal = true;
+    }
+
+    public function closeDeleteOrgModal()
+    {
+        $this->showDeleteOrgModal = false;
+        $this->deletePassword = '';
+    }
+
+    public function scheduleOrgDeletion()
+    {
+        $this->validate(['deletePassword' => 'required']);
+
+        $user = auth()->user();
+
+        if (!password_verify($this->deletePassword, $user->password)) {
+            $this->addError('deletePassword', __('settings.delete.wrong_password'));
+            return;
+        }
+
+        $org = $user->organization;
+        if (!$org || !$org->isOwner($user)) {
+            $this->notifyToast('error', __('settings.delete.not_owner'));
+            return;
+        }
+
+        try {
+            \App\Services\GdprDeleteService::scheduleOrgDeletion($org, $user);
+            $this->showDeleteOrgModal = false;
+            $this->notifyToast('success', __('settings.delete.org_scheduled'));
+        } catch (\InvalidArgumentException $e) {
+            $this->notifyToast('error', $e->getMessage());
+        }
+    }
+
+    public function cancelOrgDeletion()
+    {
+        $org = auth()->user()->organization;
+        if (!$org) return;
+
+        \App\Services\GdprDeleteService::cancelOrgDeletion($org);
+        $this->notifyToast('success', __('settings.delete.org_cancelled'));
+    }
+
     public function render()
     {
         $user = auth()->user();
@@ -409,6 +523,9 @@ class SettingsLivewire extends Component
                 ->get(['id', 'name', 'email']);
         }
 
+        // Org deletion scheduled?
+        $orgDeletionScheduled = $org ? $org->getMeta('deletion_scheduled_at') : null;
+
         return view('livewire.v-beta.settings.settings-livewire', [
             'socialAccounts' => auth()->user()->socialAccounts ?? collect(),
             'notificationTypes' => NotificationType::userConfigurable(),
@@ -418,6 +535,7 @@ class SettingsLivewire extends Component
             'orgMembers' => $orgMembers,
             'isOwner' => $isOwner,
             'otherAdmins' => $otherAdmins,
+            'orgDeletionScheduled' => $orgDeletionScheduled,
         ]);
     }
 }

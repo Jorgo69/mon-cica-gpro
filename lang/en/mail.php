@@ -126,4 +126,13 @@ return [
         'projects' => '**:count** active project(s)',
         'action' => 'View dashboard',
     ],
+
+    // OrgDeletionScheduledNotification
+    'org_deletion' => [
+        'subject' => 'Scheduled deletion of :org',
+        'greeting' => 'Hello,',
+        'line1' => 'The organization **:org** is scheduled for deletion.',
+        'line2' => 'Deletion will be effective on **:date**. All members will be detached and projects archived.',
+        'line3' => 'If you think this is an error, contact your organization administrator.',
+    ],
 ];

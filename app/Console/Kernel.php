@@ -17,6 +17,9 @@ class Kernel extends ConsoleKernel
 
         // Resume hebdomadaire : lundi a 08h UTC
         $schedule->command('app:send-weekly-digest')->weeklyOn(1, '08:00');
+
+        // RGPD : purge organisations expirees (30j apres suppression planifiee)
+        $schedule->command('gpro:purge-expired-orgs')->dailyAt('03:00');
     }
 
     protected function commands(): void

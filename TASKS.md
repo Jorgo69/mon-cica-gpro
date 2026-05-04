@@ -392,12 +392,15 @@ Niveaux :
 
 ### Taches
 
-- [ ] 24.1 **Owner sur org** : migration `owner_user_id` sur organizations, relation, auto-assigne a la creation
-- [ ] 24.2 **Transfert ownership** : UI dans Settings, seulement vers un autre admin, modale de confirmation
-- [ ] 24.3 **Enum PermissionLevel** : 4 niveaux (observateur, contributeur, gestionnaire, administrateur) avec mapping permissions Spatie
-- [ ] 24.4 **UI niveaux** : cartes visuelles dans membres + invitations (remplace select role brut)
-- [ ] 24.5 **Protection owner** : ne peut pas etre supprime/retrograde, doit transferer avant de quitter
+- [x] 24.1 **Owner sur org** : migration `owner_user_id` sur organizations, relation, auto-assigne a la creation
+- [x] 24.2 **Transfert ownership** : UI dans Settings, seulement vers un autre admin, modale de confirmation
+- [x] 24.3 **Enum PermissionLevel** : 4 niveaux (observateur, contributeur, gestionnaire, administrateur) avec mapping permissions Spatie
+- [x] 24.4 **UI niveaux** : composant `x-ui.permission-level-picker` (cartes visuelles), integre dans form membre
+- [x] 24.5 **Protection owner** : ne peut pas etre supprime/retrograde, doit transferer avant de quitter
 - [ ] 24.6 **Adaptation invitations** : utiliser PermissionLevel au lieu de spatie_role brut
+- [ ] 24.7 **Scoping par projet** : les permissions s'appliquent uniquement aux ressources assignees au membre (pas les projets des autres)
+- [ ] 24.8 **Personnalisation permissions par membre** : apres choix du niveau, l'admin peut cocher/decocher des permissions individuelles (ecran detail membre)
+- [ ] 24.9 **Niveaux ROOT** : sous-niveaux pour ROOT (full, support, comptable) — pour quand tu auras des collabs
 
 ## Phase 25 (planifiee) — RGPD complet
 

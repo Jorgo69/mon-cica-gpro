@@ -323,7 +323,8 @@ describe('ActivityPolicy', function () {
     test('un utilisateur sans manage-activities ne peut pas modifier une activite', function () {
         $org = createOrg();
         $user = createOrgUser($org);
-        $user->assignRole('MEMBER'); // MEMBER n'a pas manage-activities
+        // Ne pas assigner de role → pas de permissions du tout
+        // (MEMBER a maintenant manage-activities via PermissionLevel CONTRIBUTOR)
 
         $activity = Activity::factory()->create([
             'organization_id' => $org->id,
