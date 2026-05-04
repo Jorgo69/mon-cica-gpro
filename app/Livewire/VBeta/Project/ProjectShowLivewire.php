@@ -172,6 +172,32 @@ class ProjectShowLivewire extends Component
             || $user->id === $this->project->creator_user_id;
     }
 
+    // ─── Workflow ─────────────────────────────────────────
+
+    public string $workflowComment = '';
+
+    public function workflowTransition(string $targetStatus): void
+    {
+        $target = \App\Enums\ProjectStatus::tryFrom($targetStatus);
+        if (!$target) return;
+
+        try {
+            $service = new \App\Services\WorkflowService();
+            $service->transition(
+                $this->project,
+                auth()->user(),
+                $target,
+                $this->workflowComment ?: null,
+            );
+
+            $this->workflowComment = '';
+            $this->loadProject();
+            $this->notifyToast('success', __('workflow.transition_success', ['status' => $target->label()]));
+        } catch (\InvalidArgumentException $e) {
+            $this->notifyToast('error', $e->getMessage());
+        }
+    }
+
     /**
      * Rend la vue du composant.
      */
@@ -190,9 +216,14 @@ class ProjectShowLivewire extends Component
                 ->get(['id', 'name', 'email']);
         }
 
+        $approvalHistory = $this->project->approvals()->with('user:id,name')->limit(10)->get();
+        $allowedTransitions = $this->project->status->allowedTransitions();
+
         return view('livewire.project.show', [
             'projectMembers' => $projectMembers,
             'availableMembers' => $availableMembers,
+            'approvalHistory' => $approvalHistory,
+            'allowedTransitions' => $allowedTransitions,
         ]);
     }
 }

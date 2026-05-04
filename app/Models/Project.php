@@ -83,6 +83,11 @@ class Project extends Model
             ->withTimestamps();
     }
 
+    public function approvals()
+    {
+        return $this->hasMany(ProjectApproval::class)->latest();
+    }
+
     public function addMember(User $user, string $role = 'member'): void
     {
         if (!$this->members()->where('user_id', $user->id)->exists()) {

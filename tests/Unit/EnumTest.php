@@ -44,8 +44,8 @@ test('ProjectStatus: chaque case possede une color non vide', function (ProjectS
     expect($status->color())->toBeString()->not->toBeEmpty();
 })->with(ProjectStatus::cases());
 
-test('ProjectStatus: doit avoir exactement 6 cases', function () {
-    expect(ProjectStatus::cases())->toHaveCount(6);
+test('ProjectStatus: doit avoir exactement 10 cases', function () {
+    expect(ProjectStatus::cases())->toHaveCount(10);
 });
 
 /*

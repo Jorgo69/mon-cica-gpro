@@ -198,7 +198,61 @@
                     @endforeach
                 @endif
 
-                {{-- Section 4: Membres du projet --}}
+                {{-- Section 4: Workflow Approbation --}}
+                @if(count($allowedTransitions) > 0 || $approvalHistory->count() > 0)
+                <x-ui.section :title="__('workflow.title')" icon="git-branch">
+                    {{-- Current status --}}
+                    <div class="flex items-center gap-3 mb-4">
+                        <x-dynamic-component :component="'lucide-' . $project->status->icon()" class="w-5 h-5" style="color: {{ $project->status->hex() }}" />
+                        <div>
+                            <p class="text-sm font-black" style="color: {{ $project->status->hex() }}">{{ $project->status->label() }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Transition buttons --}}
+                    @if(count($allowedTransitions) > 0)
+                        <div class="mb-4">
+                            <textarea wire:model="workflowComment" rows="2"
+                                      class="input-field w-full text-xs mb-2"
+                                      placeholder="{{ __('workflow.comment_placeholder') }}"></textarea>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($allowedTransitions as $transition)
+                                    <button wire:click="workflowTransition('{{ $transition->value }}')"
+                                            wire:confirm="{{ __('workflow.confirm_transition', ['status' => $transition->label()]) }}"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border border-border-light hover:border-accent/30 bg-surface hover:bg-surface-alt">
+                                        <x-dynamic-component :component="'lucide-' . $transition->icon()" class="w-3.5 h-3.5" style="color: {{ $transition->hex() }}" />
+                                        {{ $transition->label() }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Approval history --}}
+                    @if($approvalHistory->count() > 0)
+                        <div class="border-t border-border-light pt-3">
+                            <p class="text-[10px] font-black text-muted uppercase tracking-widest mb-2">{{ __('workflow.history') }}</p>
+                            <div class="space-y-2">
+                                @foreach($approvalHistory as $entry)
+                                    <div class="flex items-start gap-2 text-xs">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 flex-shrink-0"></div>
+                                        <div>
+                                            <span class="font-bold text-heading">{{ $entry->user?->name }}</span>
+                                            <span class="text-muted">{{ __('workflow.actions.' . $entry->action) }}</span>
+                                            <span class="text-[10px] text-muted">&middot; {{ $entry->created_at->diffForHumans() }}</span>
+                                            @if($entry->comment)
+                                                <p class="text-[11px] text-body mt-0.5 italic">"{{ $entry->comment }}"</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </x-ui.section>
+                @endif
+
+                {{-- Section 5: Membres du projet --}}
                 @if($project->organization_id)
                 <x-ui.section :title="__('projects.members.title')" icon="users">
                     {{-- Current members --}}

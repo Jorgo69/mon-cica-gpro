@@ -17,6 +17,10 @@ return [
     // ProjectStatus
     'project_status' => [
         'draft' => 'Brouillon',
+        'submitted' => 'Soumis',
+        'under_review' => 'En révision',
+        'approved' => 'Approuvé',
+        'rejected' => 'Rejeté',
         'pending' => 'En attente',
         'active' => 'En cours',
         'on_hold' => 'En pause',
