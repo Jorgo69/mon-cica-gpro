@@ -1,0 +1,72 @@
+###############################################################################
+# CICA-GPRO — Override PostgreSQL + pgAdmin
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
+#
+# Prerequis: dans .env, mettre DB_CONNECTION=pgsql
+###############################################################################
+
+services:
+
+  # Desactiver MySQL et phpMyAdmin
+  mysql:
+    profiles: ["disabled"]
+  phpmyadmin:
+    profiles: ["disabled"]
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: gpro-postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: "${DB_DATABASE:-cica_gpro}"
+      POSTGRES_USER: "${DB_USERNAME:-gpro}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-gpro_secret_2026}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-gpro} -d ${DB_DATABASE:-cica_gpro}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gpro
+
+  # ── pgAdmin ────────────────────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gpro-pgadmin
+    restart: unless-stopped
+    ports:
+      - "${PGADMIN_PORT:-8082}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:-admin@cica-gpro.com}"
+      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:-pgadmin_2026}"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    depends_on:
+      - postgres
+    networks:
+      - gpro
+
+  # Override app dependency
+  app:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Override queue dependency
+  queue:
+    depends_on:
+      - app
+      - redis
+
+volumes:
+  postgres_data:
+    driver: local
