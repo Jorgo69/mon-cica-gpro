@@ -500,16 +500,19 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] **Audit org admin** : route admin.audit ajoutee, reutilise ActivityHistoryLivewire (deja scope par org), lien sidebar
 - [x] **Permissions org admin** : OrgPermissionsLivewire cree, route admin.permissions, vue avec liste membres + niveau + permissions detaillees
 
-## Backlog (Groupe E — post v1.0)
+## Backlog (Groupe E)
 
-Ordonne par priorite :
+### Termines
 
-- [ ] **Import Excel propre** : bulk import activites/projets depuis fichier Excel, nettoyer HTML dans exports
-- [ ] **Calendrier** : vue calendrier (FullCalendar.js) des activites/deadlines, drag & drop reprogrammation, export iCal
-- [ ] **Workflow approbation** : brouillon → soumis → revise → approuve → actif, avec roles valideurs et notifications
-- [ ] **Rapports automatiques** : generation trimestrielle PDF/DOCX (progression, budgets, retards), envoi email auto
-- [ ] **Carte geographique** : Leaflet.js + OpenStreetMap, projets positionnes par pays/ville, popup details
-- [ ] **API publique** : REST API v1 (projets, activites, progression), authentification Sanctum, documentation Swagger
-- [ ] **Webhooks** : notifications vers URLs externes (projet cree, activite terminee, budget depasse)
-- [ ] **WebSockets** : collaboration temps reel (Laravel Reverb/Pusher + Echo), notifications instantanees, "X est en train de..."
-- [ ] **Marketplace plugins** : systeme d'extensions (plugins rapport USAID, integration Sage, formulaires ODK, alertes SMS)
+- [x] **E1 Import Excel** : ProjectImport + ActivityImport, template telechargeable, preview avant import, workflow 3 etapes
+- [x] **E2 Workflow approbation** : 10 statuts projet, transitions autorisees, WorkflowService, ProjectApproval historique, notifications, UI boutons + historique
+- [x] **E3 Rapports automatiques** : ReportService PDF/DOCX, commande gpro:generate-reports (trimestriel), bouton export DOCX, notifications
+- [x] **E4 Calendrier** : 6 vues (annee/semestre/trimestre/mois/semaine/jour), Alpine.js pur, export iCal, abonnement URL (sync Google/Outlook)
+- [x] **E5 API publique REST v1** : 15 endpoints (CRUD projets/activites, membres, stats, notifs, audit logs), auth Sanctum tokens, UI gestion tokens, rate limiting
+- [x] **E6 Carte geographique** : Leaflet CDN, 40 pays geocodes, marqueurs colores par statut, popups, filtre, lien sidebar
+- [x] **E7 Webhooks** : 10 events, HMAC-SHA256 signature, auto-disable apres 10 echecs, UI CRUD dans Settings
+
+### A faire (post v2.0)
+
+- [ ] **E8 WebSockets** : collaboration temps reel (Laravel Reverb/Pusher + Echo), notifications instantanees — necessite config serveur
+- [ ] **E9 Marketplace plugins** : systeme d'extensions (plugins rapport USAID, integration Sage, formulaires ODK, alertes SMS)
