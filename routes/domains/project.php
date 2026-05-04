@@ -17,6 +17,9 @@ Route::middleware(['auth'])->prefix('v_beta')->group(function () {
     // Templates
     Route::view('/project-templates', 'v_beta.project-templates')->name('project.templates');
 
+    // Calendrier
+    Route::view('/calendar', 'v_beta.calendar.index')->name('calendar');
+
     // Gestion Centrale Projet
     Route::view('/project-list', 'pages.project.list')->name('project.list');
     Route::get('/projects/{projectId}/show', [App\Http\Controllers\VBeta\ProjectShowController::class, 'index'])->name('project.show');

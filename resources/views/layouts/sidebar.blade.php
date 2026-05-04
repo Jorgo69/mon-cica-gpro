@@ -66,6 +66,13 @@
         </a>
         @endcan
 
+        {{-- Calendrier --}}
+        <a href="{{ route('calendar') }}"
+           class="nav-item @if(Route::is('calendar*')) nav-item-active @endif">
+            <x-lucide-calendar class="nav-icon" />
+            <span class="nav-label">{{ __('navigation.calendar') }}</span>
+        </a>
+
 
         {{-- ── SYSTÈME (ROOT / SYSTEM_ADMIN) ── --}}
         @if (auth()->user()->role === \App\Enums\AccountType::ROOT)
