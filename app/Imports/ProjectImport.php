@@ -99,7 +99,7 @@ class ProjectImport
             'status' => trim($values[3] ?? ''),
             'start_date' => trim($values[4] ?? ''),
             'end_date' => trim($values[5] ?? ''),
-            'currency' => strtoupper(trim($values[6] ?? 'XOF')),
+            'currency' => strtoupper(trim($values[6] ?? '')) ?: 'XOF',
         ];
     }
 
