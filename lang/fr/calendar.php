@@ -28,4 +28,9 @@ return [
     'sat' => 'Sam',
     'sun' => 'Dim',
 
+    // Subscribe
+    'subscribe' => 'S\'abonner',
+    'subscribe_desc' => 'Collez cette URL dans Google Calendar, Outlook ou Apple Calendar pour synchroniser automatiquement.',
+    'subscribe_hint' => 'Google Calendar : Autres agendas > A partir de l\'URL. Outlook : Ajouter un calendrier > A partir d\'Internet.',
+
 ];

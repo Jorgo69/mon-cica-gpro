@@ -52,6 +52,28 @@
                 <x-lucide-download class="w-3.5 h-3.5" />
                 iCal
             </button>
+
+            {{-- Subscribe URL --}}
+            <div x-data="{ showUrl: false, copied: false }" class="relative">
+                <button @click="showUrl = !showUrl" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 transition-colors">
+                    <x-lucide-rss class="w-3.5 h-3.5" />
+                    {{ __('calendar.subscribe') }}
+                </button>
+                <div x-show="showUrl" @click.away="showUrl = false" x-cloak
+                     class="absolute z-30 top-full mt-2 right-0 bg-card border border-border-light rounded-xl shadow-xl p-4 w-80">
+                    <p class="text-[10px] font-bold text-heading mb-2">{{ __('calendar.subscribe_desc') }}</p>
+                    <div class="flex gap-2">
+                        <input type="text" value="{{ \App\Http\Controllers\IcalFeedController::getFeedUrl(auth()->user()) }}"
+                               class="input-field text-[10px] flex-1" readonly id="ical-url">
+                        <button @click="navigator.clipboard.writeText(document.getElementById('ical-url').value); copied = true; setTimeout(() => copied = false, 2000)"
+                                class="px-2 py-1 bg-accent text-white text-[10px] font-bold rounded-lg">
+                            <span x-show="!copied"><x-lucide-copy class="w-3.5 h-3.5" /></span>
+                            <span x-show="copied"><x-lucide-check class="w-3.5 h-3.5" /></span>
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-muted mt-2">{{ __('calendar.subscribe_hint') }}</p>
+                </div>
+            </div>
         </div>
     </div>
 

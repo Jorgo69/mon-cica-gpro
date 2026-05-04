@@ -39,6 +39,10 @@ Route::view('/terms', 'legal.terms')->name('legal.terms');
 Route::get('/shared/project/{token}', [\App\Http\Controllers\SharedProjectController::class, 'show'])
     ->name('shared.project');
 
+// iCal feed (public, token-authenticated)
+Route::get('/ical/feed', [\App\Http\Controllers\IcalFeedController::class, 'feed'])
+    ->name('ical.feed');
+
 // FAQ (auth required)
 Route::get('/faq', \App\Livewire\VBeta\FaqLivewire::class)
     ->middleware(['auth'])

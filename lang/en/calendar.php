@@ -28,4 +28,9 @@ return [
     'sat' => 'Sat',
     'sun' => 'Sun',
 
+    // Subscribe
+    'subscribe' => 'Subscribe',
+    'subscribe_desc' => 'Paste this URL into Google Calendar, Outlook or Apple Calendar to sync automatically.',
+    'subscribe_hint' => 'Google Calendar: Other calendars > From URL. Outlook: Add calendar > From Internet.',
+
 ];
