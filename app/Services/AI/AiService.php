@@ -212,6 +212,40 @@ class AiService
         }
     }
 
+    /**
+     * Strip common markdown formatting from AI responses.
+     */
+    public static function stripMarkdown(?string $text): ?string
+    {
+        if ($text === null) return null;
+
+        // Remove code blocks
+        $text = preg_replace('/```[\s\S]*?```/', '', $text);
+        $text = preg_replace('/`([^`]+)`/', '$1', $text);
+
+        // Remove headers
+        $text = preg_replace('/^#{1,6}\s+/m', '', $text);
+
+        // Remove bold/italic
+        $text = preg_replace('/\*{1,3}(.+?)\*{1,3}/', '$1', $text);
+        $text = preg_replace('/_{1,3}(.+?)_{1,3}/', '$1', $text);
+
+        // Remove list markers
+        $text = preg_replace('/^[\s]*[-*+]\s+/m', '', $text);
+        $text = preg_replace('/^[\s]*\d+\.\s+/m', '', $text);
+
+        // Remove blockquotes
+        $text = preg_replace('/^>\s?/m', '', $text);
+
+        // Remove horizontal rules
+        $text = preg_replace('/^[-*_]{3,}$/m', '', $text);
+
+        // Clean up extra blank lines
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+
+        return trim($text);
+    }
+
     public function askCached(string $prompt, string $systemInstruction = '', int $ttl = 3600): ?string
     {
         $cacheKey = 'ai_' . md5($prompt . $systemInstruction);
@@ -234,7 +268,7 @@ class AiService
             . "Genere une description professionnelle de projet en {$lang} (3-5 phrases). "
             . "Sois concis, professionnel, oriente resultats. Ne mets pas de titre, juste la description.";
 
-        return $this->ask($prompt, $system, 0.8);
+        return self::stripMarkdown($this->ask($prompt, $system, 0.8));
     }
 
     public function suggestLogframe(string $title, string $description): ?array
@@ -280,7 +314,7 @@ class AiService
             . "Inclus : etat d'avancement, points d'attention, recommandations cles. "
             . "Sois factuel, professionnel, actionnable. Pas de formule de politesse.";
 
-        return $this->ask($prompt, $system, 0.6);
+        return self::stripMarkdown($this->ask($prompt, $system, 0.6));
     }
 
     public function analyzeDashboard(array $stats): ?string
@@ -297,6 +331,6 @@ class AiService
             . "Mentionne les points critiques (retards, budgets) et une recommandation. "
             . "Sois direct et actionnable. Format texte simple.";
 
-        return $this->askCached($prompt, $system, 300);
+        return self::stripMarkdown($this->askCached($prompt, $system, 300));
     }
 }

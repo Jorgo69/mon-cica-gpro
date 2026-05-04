@@ -31,6 +31,7 @@ return [
         'delete_confirm_title' => 'Supprimer le membre ?',
         'section' => 'Membres',
         'not_specified' => 'Non renseigné',
+        'permission_level' => 'Niveau de permission',
     ],
 
     // Categories

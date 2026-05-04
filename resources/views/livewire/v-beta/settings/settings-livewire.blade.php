@@ -163,13 +163,13 @@
                     <p class="text-xs text-subtle mt-0.5">{{ __('settings.theme.desc') }}</p>
                 </div>
                 <div x-data="{ dark: @entangle('theme') }" class="flex gap-2">
-                    <button @click="dark = 'light'; $wire.set('theme', 'light'); document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode', 'false')"
+                    <button @click="dark = 'light'; $wire.set('theme', 'light'); document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode', 'false'); window.dispatchEvent(new CustomEvent('theme-changed', {detail: {theme: 'light'}}))"
                         :class="dark === 'light' ? 'bg-amber-100 text-amber-600 border-amber-300 shadow-sm' : 'bg-surface text-subtle border-border-light hover:bg-surface-alt'"
                         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all">
                         <x-lucide-sun class="w-4 h-4" />
                         {{ __('settings.theme.light') }}
                     </button>
-                    <button @click="dark = 'dark'; $wire.set('theme', 'dark'); document.documentElement.classList.add('dark'); localStorage.setItem('darkMode', 'true')"
+                    <button @click="dark = 'dark'; $wire.set('theme', 'dark'); document.documentElement.classList.add('dark'); localStorage.setItem('darkMode', 'true'); window.dispatchEvent(new CustomEvent('theme-changed', {detail: {theme: 'dark'}}))"
                         :class="dark === 'dark' ? 'bg-indigo-100 text-indigo-600 border-indigo-300 shadow-sm dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700' : 'bg-surface text-subtle border-border-light hover:bg-surface-alt'"
                         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all">
                         <x-lucide-moon class="w-4 h-4" />

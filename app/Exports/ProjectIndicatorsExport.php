@@ -72,10 +72,10 @@ class ProjectIndicatorsExport implements FromCollection, WithHeadings, WithMappi
             $indicator->_level ?? '',
             strip_tags($indicator->_parent ?? ''),
             strip_tags($indicator->description ?? ''),
-            $indicator->baseline_value ?? '',
-            $indicator->target_value ?? '',
-            $indicator->verification_source ?? '',
-            $indicator->assumption ?? '',
+            strip_tags($indicator->baseline_value ?? ''),
+            strip_tags($indicator->target_value ?? ''),
+            strip_tags($indicator->verification_source ?? ''),
+            strip_tags($indicator->assumption ?? ''),
         ];
     }
 
