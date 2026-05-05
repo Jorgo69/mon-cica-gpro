@@ -50,9 +50,10 @@
     </a>
 @else
     <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}
-        wire:loading.delay.long.attr="disabled"
-        wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none"
-        @if($targetAttr) wire:target="{{ $targetAttr }}" @endif
+        @if($targetAttr)
+            wire:loading.delay.long.attr="disabled" wire:target="{{ $targetAttr }}"
+            wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none"
+        @endif
     >
         {{-- Loading Spinner (Shows only when loading) --}}
         <svg wire:loading.delay.long @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="animate-spin -ml-1 mr-2 w-4 h-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
