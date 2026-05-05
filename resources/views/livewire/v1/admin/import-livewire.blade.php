@@ -51,10 +51,15 @@
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 
-                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file">
+                <button type="button" wire:click="parseFile"
+                        @if(!$file) disabled @endif
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all
+                               {{ $file ? 'bg-accent text-white hover:bg-accent-dark cursor-pointer' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
+                    <x-lucide-eye class="w-4 h-4" wire:loading.remove wire:target="parseFile" />
+                    <x-lucide-loader-2 class="w-4 h-4 animate-spin" wire:loading wire:target="parseFile" />
                     <span wire:loading.remove wire:target="parseFile">{{ __('import.preview_data') }}</span>
                     <span wire:loading wire:target="parseFile">{{ __('import.processing') }}</span>
-                </x-ui.button>
+                </button>
             </div>
         </x-ui.section>
     </div>
