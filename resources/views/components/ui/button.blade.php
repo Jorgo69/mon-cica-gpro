@@ -51,8 +51,9 @@
 @else
     <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}
         @if($targetAttr)
-            wire:loading.delay.long.attr="disabled" wire:target="{{ $targetAttr }}"
-            wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none" wire:target="{{ $targetAttr }}"
+            wire:target="{{ $targetAttr }}"
+            wire:loading.delay.long.attr="disabled"
+            wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none"
         @endif
     >
         {{-- Loading Spinner (Shows only when loading) --}}
