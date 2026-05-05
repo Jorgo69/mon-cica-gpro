@@ -43,105 +43,97 @@
 
     {{-- Projects Table --}}
     <x-ui.section title="Projets" icon="folder-kanban" :noPadding="false">
-        <div class="overflow-x-auto -mx-6">
-            @if ($projects->isEmpty())
-                <x-ui.empty-state icon="folder-open" :title="__('projects.no_projects')" :description="__('projects.no_projects_desc')" />
-            @else
-                <table class="w-full">
-                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
-                        <tr class="border-b border-border-light dark:border-surface-alt">
-                            <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('title')">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('projects.project') }}</span>
-                                    @if ($sortField === 'title')
-                                        <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
-                                    @endif
+        @if ($projects->isEmpty())
+            <x-ui.empty-state icon="folder-open" :title="__('projects.no_projects')" :description="__('projects.no_projects_desc')" />
+        @else
+            <x-ui.table>
+                    <x-slot:headers>
+                        <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('title')">
+                            <div class="flex items-center gap-1.5">
+                                {{ __('projects.project') }}
+                                @if ($sortField === 'title')
+                                    <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
+                                @endif
+                            </div>
+                        </x-ui.table.th>
+                        <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('project_code')">
+                            <div class="flex items-center gap-1.5">
+                                {{ __('projects.code') }}
+                                @if ($sortField === 'project_code')
+                                    <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
+                                @endif
+                            </div>
+                        </x-ui.table.th>
+                        <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('status')">
+                            <div class="flex items-center gap-1.5">
+                                {{ __('projects.status') }}
+                                @if ($sortField === 'status')
+                                    <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
+                                @endif
+                            </div>
+                        </x-ui.table.th>
+                        <x-ui.table.th>{{ __('projects.responsible') }}</x-ui.table.th>
+                        <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('start_date')">
+                            <div class="flex items-center gap-1.5">
+                                {{ __('projects.period') }}
+                                @if ($sortField === 'start_date')
+                                    <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
+                                @endif
+                            </div>
+                        </x-ui.table.th>
+                        <x-ui.table.th align="right">{{ __('projects.actions') }}</x-ui.table.th>
+                    </x-slot:headers>
+                    @foreach ($projects as $project)
+                        <x-ui.table.row>
+                            <x-ui.table.td>
+                                <div class="max-w-xs md:max-w-sm">
+                                    <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors">{{ $project->title }}</p>
+                                    <p class="text-[10px] text-muted italic mt-0.5 truncate">{{ $project->short_title ?: 'Sans titre court' }}</p>
                                 </div>
-                            </th>
-                            <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('project_code')">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('projects.code') }}</span>
-                                    @if ($sortField === 'project_code')
-                                        <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
-                                    @endif
+                            </x-ui.table.td>
+                            <x-ui.table.td>
+                                <span class="text-xs font-mono font-bold text-subtle bg-surface-alt px-2.5 py-1 rounded-lg">
+                                    {{ $project->project_code }}
+                                </span>
+                            </x-ui.table.td>
+                            <x-ui.table.td>
+                                @php
+                                    $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
+                                    $variant = $statusEnum ? $statusEnum->color() : 'slate';
+                                @endphp
+                                <x-ui.badge :variant="$variant" size="md">
+                                    {{ $statusEnum ? $statusEnum->label() : $project->status }}
+                                </x-ui.badge>
+                            </x-ui.table.td>
+                            <x-ui.table.td>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-surface-alt flex items-center justify-center text-subtle font-bold text-[10px]">
+                                        {{ strtoupper(substr($project->creator->name ?? '?', 0, 1)) }}
+                                    </div>
+                                    <span class="text-xs font-semibold text-subtle">{{ $project->creator->name ?? '—' }}</span>
                                 </div>
-                            </th>
-                            <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('status')">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('projects.status') }}</span>
-                                    @if ($sortField === 'status')
-                                        <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
-                                    @endif
+                            </x-ui.table.td>
+                            <x-ui.table.td>
+                                <div class="space-y-0.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[9px] font-black text-body uppercase">{{ __('projects.from') }}</span>
+                                        <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[9px] font-black text-body uppercase">{{ __('projects.to') }}</span>
+                                        <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</span>
+                                    </div>
                                 </div>
-                            </th>
-                            <th class="px-6 py-3 text-left">
-                                <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.responsible') }}</span>
-                            </th>
-                            <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('start_date')">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-black text-muted uppercase tracking-widest group-hover:text-accent transition-colors">{{ __('projects.period') }}</span>
-                                    @if ($sortField === 'start_date')
-                                        <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" />
-                                    @endif
+                            </x-ui.table.td>
+                            <x-ui.table.td align="right">
+                                <div class="flex items-center justify-end gap-1">
+                                    @include('livewire.v1.project.include.link-project-list', ['project' => $project])
                                 </div>
-                            </th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-body uppercase tracking-widest">{{ __('projects.actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-border-light dark:divide-surface-alt/50">
-                        @foreach ($projects as $project)
-                            <tr class="hover:bg-surface/50 dark:hover:bg-surface-alt/30 transition-colors group">
-                                <td class="px-6 py-4">
-                                    <div class="max-w-xs md:max-w-sm">
-                                        <p class="text-sm font-bold text-heading truncate group-hover:text-accent transition-colors">{{ $project->title }}</p>
-                                        <p class="text-[10px] text-muted italic mt-0.5 truncate">{{ $project->short_title ?: 'Sans titre court' }}</p>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="text-xs font-mono font-bold text-subtle bg-surface-alt px-2.5 py-1 rounded-lg">
-                                        {{ $project->project_code }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    @php
-                                        $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
-                                        $variant = $statusEnum ? $statusEnum->color() : 'slate';
-                                    @endphp
-                                    <x-ui.badge :variant="$variant" size="md">
-                                        {{ $statusEnum ? $statusEnum->label() : $project->status }}
-                                    </x-ui.badge>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-lg bg-surface-alt flex items-center justify-center text-subtle font-bold text-[10px]">
-                                            {{ strtoupper(substr($project->creator->name ?? '?', 0, 1)) }}
-                                        </div>
-                                        <span class="text-xs font-semibold text-subtle">{{ $project->creator->name ?? 'N/A' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="space-y-0.5">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-body uppercase">{{ __('projects.from') }}</span>
-                                            <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->start_date)->format('d/m/Y') }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="text-[9px] font-black text-body uppercase">{{ __('projects.to') }}</span>
-                                            <span class="text-[11px] font-semibold text-subtle">{{ \Carbon\Carbon::parse($project->end_date)->format('d/m/Y') }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-1">
-                                        @include('livewire.v1.project.include.link-project-list', ['project' => $project])
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif
-        </div>
+                            </x-ui.table.td>
+                        </x-ui.table.row>
+                    @endforeach
+            </x-ui.table>
+        @endif
 
         @if ($projects->isNotEmpty())
             <x-slot:footer>
