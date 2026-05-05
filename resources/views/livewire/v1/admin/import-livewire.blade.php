@@ -51,7 +51,7 @@
 
                 <div wire:loading.delay wire:target="file" class="flex items-center gap-2 text-xs text-accent">
                     <x-lucide-loader-2 class="w-4 h-4 animate-spin" />
-                    Chargement du fichier...
+                    {{ __('import.uploading') }}
                 </div>
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
