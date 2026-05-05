@@ -51,7 +51,7 @@
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 
-                <x-ui.button wire:click="parseFile" variant="accent" icon="eye">
+                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file">
                     {{ __('import.preview_data') }}
                 </x-ui.button>
             </div>
