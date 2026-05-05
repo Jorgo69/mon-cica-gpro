@@ -43,7 +43,7 @@
 
     {{-- Projects Table --}}
     <x-ui.section title="Projets" icon="folder-kanban" :noPadding="true">
-            <x-ui.table>
+        <x-ui.table>
                     <x-slot:headers>
                         <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('title')">
                             <div class="flex items-center gap-1.5">
