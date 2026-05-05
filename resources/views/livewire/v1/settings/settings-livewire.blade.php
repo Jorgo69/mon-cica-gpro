@@ -698,14 +698,25 @@
                 <x-ui.input wire:model="webhookLabel" :label="__('settings.webhooks.label')" icon="tag" :placeholder="__('settings.webhooks.label_placeholder')" />
                 <div>
                     <label class="text-xs font-bold text-heading block mb-2">{{ __('settings.webhooks.events') }}</label>
-                    <div class="grid grid-cols-2 gap-1.5">
+                    <div class="grid grid-cols-2 gap-2">
                         @foreach(\App\Models\Webhook::AVAILABLE_EVENTS as $event)
-                            <x-ui.checkbox wire:model="webhookEvents" :value="$event" :label="$event" />
+                            @php $isChecked = in_array($event, $webhookEvents ?? []); @endphp
+                            <button type="button" wire:click="toggleWebhookEvent('{{ $event }}')"
+                                class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all text-[11px] font-medium
+                                    {{ $isChecked ? 'bg-accent/10 text-accent border border-accent/20' : 'bg-surface-alt text-muted border border-transparent hover:text-body' }}">
+                                <span class="w-5 h-5 rounded flex items-center justify-center shrink-0
+                                    {{ $isChecked ? 'bg-accent text-white' : 'bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500' }}">
+                                    @if($isChecked)
+                                        <x-lucide-check class="w-3 h-3" />
+                                    @endif
+                                </span>
+                                {{ $event }}
+                            </button>
                         @endforeach
                     </div>
                     @error('webhookEvents') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2 pt-2">
                     <x-ui.button wire:click="saveWebhook" variant="secondary" icon="plus" size="sm">
                         {{ $editingWebhookId ? __('common.save') : __('settings.webhooks.add') }}
                     </x-ui.button>

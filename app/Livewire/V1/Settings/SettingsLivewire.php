@@ -591,6 +591,15 @@ class SettingsLivewire extends Component
         $this->editingWebhookId = null;
     }
 
+    public function toggleWebhookEvent(string $event): void
+    {
+        if (in_array($event, $this->webhookEvents)) {
+            $this->webhookEvents = array_values(array_diff($this->webhookEvents, [$event]));
+        } else {
+            $this->webhookEvents[] = $event;
+        }
+    }
+
     // ─── API Tokens ────────────────────────────────────────
 
     public string $newTokenName = '';
