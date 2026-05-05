@@ -138,6 +138,20 @@ class MemberManagementLivewire extends Component
     {
         if (!$this->selectedMember) return;
 
+        $currentUser = auth()->user();
+
+        // Cannot modify own permissions
+        if ($this->selectedMember->id === $currentUser->id) {
+            $this->notifyToast('error', __('admin.members.cannot_modify_self'));
+            return;
+        }
+
+        // Cannot modify someone with equal or higher role
+        if ($this->selectedMember->role === AccountType::ORG_ADMIN && $currentUser->role === AccountType::ORG_ADMIN) {
+            $this->notifyToast('error', __('admin.members.cannot_modify_equal'));
+            return;
+        }
+
         $level = PermissionLevel::tryFrom($this->selectedPermissionLevel);
         if (!$level) return;
 

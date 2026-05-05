@@ -36,6 +36,8 @@ return [
         'permissions_list' => 'Permissions',
         'save_permissions' => 'Enregistrer les permissions',
         'permissions_updated' => 'Permissions mises à jour.',
+        'cannot_modify_self' => 'Vous ne pouvez pas modifier vos propres permissions.',
+        'cannot_modify_equal' => 'Vous ne pouvez pas modifier les permissions d\'un administrateur de même niveau.',
     ],
 
     // Org permissions view

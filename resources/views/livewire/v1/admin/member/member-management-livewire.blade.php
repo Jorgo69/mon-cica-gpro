@@ -34,8 +34,6 @@
                     <x-ui.table.th class="hidden lg:table-cell">{{ __('admin.members.phone') }}</x-ui.table.th>
                     <x-ui.table.th>{{ __('admin.members.role') }}</x-ui.table.th>
                     <x-ui.table.th class="hidden md:table-cell">{{ __('admin.members.department') }}</x-ui.table.th>
-                    <x-ui.table.th class="hidden xl:table-cell">{{ __('admin.members.country') }}</x-ui.table.th>
-                    <x-ui.table.th class="hidden xl:table-cell">{{ __('admin.members.city') }}</x-ui.table.th>
                     <x-ui.table.th align="right">{{ __('admin.members.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
@@ -50,20 +48,21 @@
                             </div>
                         </x-ui.table.td>
                         <x-ui.table.td>{{ $member->email }}</x-ui.table.td>
-                        <x-ui.table.td class="hidden lg:table-cell">{{ $member->telephone ?? 'N/A' }}</x-ui.table.td>
+                        <x-ui.table.td class="hidden lg:table-cell">{{ $member->telephone ?? '—' }}</x-ui.table.td>
                         <x-ui.table.td>
                             <x-ui.badge :variant="$member->role?->color() ?? 'slate'" size="sm">
                                 {{ $member->role?->label() ?? $member->role }}
                             </x-ui.badge>
                         </x-ui.table.td>
-                        <x-ui.table.td class="hidden md:table-cell">{{ $member->department }}</x-ui.table.td>
-                        <x-ui.table.td class="hidden xl:table-cell">{{ $member->pays ?? 'N/A' }}</x-ui.table.td>
-                        <x-ui.table.td class="hidden xl:table-cell">{{ $member->ville ?? 'N/A' }}</x-ui.table.td>
+                        <x-ui.table.td class="hidden md:table-cell">{{ $member->department ?? '—' }}</x-ui.table.td>
                         <x-ui.table.td align="right">
+                            @php $isSelf = $member->id === auth()->id(); @endphp
                             <div class="flex items-center justify-end gap-1">
                                 <x-ui.button wire:click="openModal('view', '{{ $member->id }}')" variant="ghost" icon="eye" size="sm" />
-                                <x-ui.button wire:click="openModal('edit', '{{ $member->id }}')" variant="ghost" icon="pencil" size="sm" />
-                                <x-ui.button wire:click="openModal('delete', '{{ $member->id }}')" variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
+                                @unless($isSelf)
+                                    <x-ui.button wire:click="openModal('edit', '{{ $member->id }}')" variant="ghost" icon="pencil" size="sm" />
+                                    <x-ui.button wire:click="openModal('delete', '{{ $member->id }}')" variant="ghost" icon="trash-2" size="sm" class="text-error hover:bg-error/5" />
+                                @endunless
                             </div>
                         </x-ui.table.td>
                     </x-ui.table.row>
