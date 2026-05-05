@@ -29,7 +29,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->boolean('is_template')->default(false);
             $table->uuid('source_project_id')->nullable();
-            $table->json('meta')->default('{}')->nullable();
+            $table->json('meta')->nullable();
             $table->uuid('created_by_user_id')->nullable();
             $table->uuid('updated_by_user_id')->nullable();
             $table->timestamps();

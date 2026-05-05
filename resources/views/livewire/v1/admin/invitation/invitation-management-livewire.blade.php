@@ -39,10 +39,6 @@
                     <x-ui.table.th align="right">{{ __('admin.invitations.actions') }}</x-ui.table.th>
                 </x-slot:headers>
 
-                @php
-                    use App\Enums\PermissionLevel;
-                @endphp
-
                 @foreach($invitations as $invitation)
                     <x-ui.table.row>
                         <x-ui.table.td>
@@ -52,7 +48,7 @@
                             <x-ui.table.td>{{ $invitation->organization?->name ?? '—' }}</x-ui.table.td>
                         @endif
                         <x-ui.table.td>
-                            @php $invLevel = PermissionLevel::fromSpatieRole($invitation->spatie_role); @endphp
+                            @php $invLevel = \App\Enums\PermissionLevel::fromSpatieRole($invitation->spatie_role); @endphp
                             <x-ui.badge :color="$invLevel->color()" size="xs">
                                 {{ $invLevel->label() }}
                             </x-ui.badge>

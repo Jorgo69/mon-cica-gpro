@@ -78,6 +78,12 @@ class ExchangeRateManagementLivewire extends Component
         $this->showModal = false;
     }
 
+    public function closeModal(): void
+    {
+        $this->showModal = false;
+        $this->reset(['base_currency', 'target_currency', 'rate', 'effective_date', 'editingId']);
+    }
+
     public function delete(string $id): void
     {
         ExchangeRate::findOrFail($id)->delete();

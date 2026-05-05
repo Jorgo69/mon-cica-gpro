@@ -54,6 +54,12 @@ class ProjectShareLivewire extends Component
         $this->notifyToast('success', __('shared.link_deleted'));
     }
 
+    public function closeModal(): void
+    {
+        $this->showModal = false;
+        $this->reset('label', 'expiresIn');
+    }
+
     public function render()
     {
         $tokens = ShareToken::where('project_id', $this->projectId)

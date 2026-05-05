@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('justification')->nullable();
             $table->boolean('is_milestone')->default(false);
             $table->integer('progress_percentage')->default(0);
-            $table->json('meta')->default('{}')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

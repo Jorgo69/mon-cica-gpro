@@ -10,6 +10,9 @@ Guide complet pour deployer CICA-GPRO avec Docker sur un serveur client.
 - 2 Go de RAM minimum (4 Go recommande)
 - 10 Go d'espace disque
 
+> **Note** : Node.js 20 est installe dans le container Docker automatiquement.
+> Vous n'avez PAS besoin de Node.js sur la machine host.
+
 ## Installation rapide
 
 ### 1. Cloner le projet

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->uuid('specific_objective_id');
             $table->uuid('creator_user_id')->nullable();
             $table->longText('description');
-            $table->json('meta')->default('{}')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

@@ -1,0 +1,48 @@
+# =============================================================================
+# .dockerignore - Fichiers exclus du contexte de build Docker
+# =============================================================================
+# Ces fichiers ne seront PAS copiés dans l'image Docker lors du build.
+# Cela réduit la taille de l'image et accélère le build.
+# =============================================================================
+
+# Dépendances (seront réinstallées dans le conteneur)
+/vendor
+/node_modules
+
+# Build frontend (sera reconstruit dans le conteneur)
+/public/build
+/public/hot
+
+# Fichiers d'environnement (les variables sont passées via docker-compose)
+.env
+.env.backup
+.env.production
+
+# Fichiers Docker eux-mêmes (pas besoin dans l'image)
+docker-compose.yml
+docker-compose.override.yml
+
+# Fichiers Git
+.git
+.gitignore
+.gitattributes
+
+# IDE et éditeurs
+.idea
+.vscode
+.fleet
+*.swp
+*.swo
+
+# Tests et CI
+.phpunit.cache
+.phpunit.result.cache
+/tests
+
+# Documentation
+*.md
+LICENSE
+
+# OS
+.DS_Store
+Thumbs.db

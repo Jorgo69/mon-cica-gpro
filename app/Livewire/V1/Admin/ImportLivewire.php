@@ -22,7 +22,7 @@ class ImportLivewire extends Component
     public $file;
 
     public array $preview = [];
-    public array $errors = [];
+    public array $importErrors = [];
     public int $importedCount = 0;
     public int $errorCount = 0;
 
@@ -36,7 +36,7 @@ class ImportLivewire extends Component
 
     public function updatedImportType(): void
     {
-        $this->reset(['file', 'preview', 'errors', 'step', 'resultId']);
+        $this->reset(['file', 'preview', 'importErrors', 'step', 'resultId']);
         $this->step = 'upload';
     }
 
@@ -60,7 +60,7 @@ class ImportLivewire extends Component
 
             $importer = $this->getImporter();
             $this->preview = $importer->preview($rows);
-            $this->errors = $importer->getErrors();
+            $this->importErrors = $importer->getErrors();
             $this->step = 'preview';
         } catch (\Exception $e) {
             $this->notifyToast('error', __('import.parse_error') . ': ' . $e->getMessage());
@@ -75,8 +75,8 @@ class ImportLivewire extends Component
             $result = $importer->import($rows);
 
             $this->importedCount = $result['imported'];
-            $this->errors = $result['errors'];
-            $this->errorCount = count($this->errors);
+            $this->importErrors = $result['importErrors'];
+            $this->errorCount = count($this->importErrors);
             $this->step = 'result';
 
             if ($this->importedCount > 0) {
@@ -89,7 +89,7 @@ class ImportLivewire extends Component
 
     public function resetImport(): void
     {
-        $this->reset(['file', 'preview', 'errors', 'importedCount', 'errorCount', 'resultId']);
+        $this->reset(['file', 'preview', 'importErrors', 'importedCount', 'errorCount', 'resultId']);
         $this->step = 'upload';
     }
 

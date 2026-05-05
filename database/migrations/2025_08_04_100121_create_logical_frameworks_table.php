@@ -17,7 +17,7 @@ return new class extends Migration
             $table->longText('general_obj_indicators')->nullable();
             $table->longText('general_obj_verification_sources')->nullable();
             $table->longText('assumptions')->nullable();
-            $table->json('meta')->default('{}')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

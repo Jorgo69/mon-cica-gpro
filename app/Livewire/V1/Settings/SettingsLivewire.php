@@ -612,11 +612,6 @@ class SettingsLivewire extends Component
         $this->notifyToast('success', __('settings.api.token_revoked'));
     }
 
-    public function render()
-    {
-        $user = auth()->user();
-
-        $showAiTab = in_array($user->role, [AccountType::ORG_ADMIN, AccountType::INDEPENDENT]);
     public function togglePlugin(string $pluginId): void
     {
         $user = auth()->user();
@@ -635,6 +630,12 @@ class SettingsLivewire extends Component
             $this->notifyToast('success', "{$plugin->name} active pour votre organisation.");
         }
     }
+
+    public function render()
+    {
+        $user = auth()->user();
+
+        $showAiTab = in_array($user->role, [AccountType::ORG_ADMIN, AccountType::INDEPENDENT]);
 
         $orgMembers = collect();
         if ($user->role === AccountType::ORG_ADMIN && $user->organization_id) {

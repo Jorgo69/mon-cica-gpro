@@ -4,6 +4,12 @@
         <p class="text-xs text-subtle font-medium mt-1">{{ __('auth.register_subtitle') }}</p>
     </div>
 
+    @if (session('error'))
+        <div class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-error/10 border border-red-100 dark:border-red-500/20 text-error dark:text-red-400 text-sm font-medium">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <form wire:submit="register" class="space-y-6">
         <!-- Name -->
         <x-ui.input 

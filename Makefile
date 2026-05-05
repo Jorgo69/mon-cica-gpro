@@ -11,10 +11,10 @@ help: ## Afficher cette aide
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 up: ## Demarrer tous les services (MySQL)
-	docker compose up -d --build
+	docker compose --env-file .env.docker.mysql up -d --build
 
 up-pg: ## Demarrer tous les services (PostgreSQL)
-	docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
+	docker compose --env-file .env.docker.postgres -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
 
 down: ## Arreter tous les services
 	docker compose down

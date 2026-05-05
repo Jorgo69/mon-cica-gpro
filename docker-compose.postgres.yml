@@ -2,9 +2,7 @@
 # CICA-GPRO — Override PostgreSQL + pgAdmin
 #
 # Usage:
-#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
-#
-# Prerequis: dans .env, mettre DB_CONNECTION=pgsql
+#   docker compose --env-file .env.docker.postgres -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
 ###############################################################################
 
 services:
@@ -20,17 +18,18 @@ services:
     image: postgres:16-alpine
     container_name: gpro-postgres
     restart: unless-stopped
-    ports:
-      - "${DB_PORT:-5432}:5432"
+    # Port interne Docker seulement (pgAdmin y accede via le reseau)
+    # ports:
+    #   - "5433:5432"
     environment:
-      POSTGRES_DB: "${DB_DATABASE:-cica_gpro}"
-      POSTGRES_USER: "${DB_USERNAME:-gpro}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD:-gpro_secret_2026}"
+      POSTGRES_DB: cica_gpro
+      POSTGRES_USER: gpro
+      POSTGRES_PASSWORD: gpro_secret_2026
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-gpro} -d ${DB_DATABASE:-cica_gpro}"]
+      test: ["CMD-SHELL", "pg_isready -U gpro -d cica_gpro"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,29 +42,65 @@ services:
     container_name: gpro-pgadmin
     restart: unless-stopped
     ports:
-      - "${PGADMIN_PORT:-8082}:80"
+      - "8082:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: "${PGADMIN_EMAIL:-admin@cica-gpro.com}"
-      PGADMIN_DEFAULT_PASSWORD: "${PGADMIN_PASSWORD:-pgadmin_2026}"
+      PGADMIN_DEFAULT_EMAIL: admin@cica-gpro.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_2026
       PGADMIN_CONFIG_SERVER_MODE: "False"
     depends_on:
       - postgres
     networks:
       - gpro
 
-  # Override app dependency
+  # Override app : pointer vers postgres
   app:
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: cica_gpro
+      DB_USERNAME: gpro
+      DB_PASSWORD: gpro_secret_2026
+      REDIS_HOST: redis
+      REDIS_PASSWORD: gpro_redis_2026
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: "http://localhost:8090"
+      GPRO_MODE: selfhosted
+      BROADCAST_DRIVER: log
 
-  # Override queue dependency
+  # Override queue
   queue:
-    depends_on:
-      - app
-      - redis
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: cica_gpro
+      DB_USERNAME: gpro
+      DB_PASSWORD: gpro_secret_2026
+      REDIS_HOST: redis
+      REDIS_PASSWORD: gpro_redis_2026
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+
+  # Override scheduler
+  scheduler:
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: cica_gpro
+      DB_USERNAME: gpro
+      DB_PASSWORD: gpro_secret_2026
+      REDIS_HOST: redis
+      REDIS_PASSWORD: gpro_redis_2026
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
 
 volumes:
   postgres_data:

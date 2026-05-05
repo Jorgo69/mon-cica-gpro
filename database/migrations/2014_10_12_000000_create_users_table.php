@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignUuid('organization_id')->nullable()->constrained('organizations')->cascadeOnDelete();
             $table->boolean('is_independent')->default(false);
             $table->string('department')->nullable();
-            $table->json('meta')->default('{}');
+            $table->json('meta')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

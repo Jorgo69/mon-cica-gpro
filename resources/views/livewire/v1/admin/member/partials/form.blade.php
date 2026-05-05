@@ -82,7 +82,7 @@
 
         {{-- Niveau de permission (cartes visuelles) --}}
         <div class="md:col-span-2">
-            <x-ui.permission-level-picker wireModel="permissionLevel" :selected="$permissionLevel" :error="$errors->first('permissionLevel')" />
+            <x-ui.permission-level-picker wireModel="selectedPermissionLevel" :selected="$selectedPermissionLevel" :error="$errors->first('selectedPermissionLevel')" />
         </div>
 
         {{-- Département --}}

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('status')->default(\App\Enums\OrganizationStatus::TRIAL->value);
-            $table->json('meta')->default('{}')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,0 +1,178 @@
+# =============================================================================
+# Docker Compose pour CICA-ARCHIVES
+# =============================================================================
+# Ce fichier définit tous les services nécessaires pour faire tourner
+# l'application Laravel complète dans des conteneurs Docker.
+#
+# Services :
+#   - app       : PHP-FPM (exécute le code Laravel)
+#   - nginx     : Serveur web (reçoit les requêtes HTTP et les envoie à PHP)
+#   - mysql     : Base de données MySQL 8.0
+#   - phpmyadmin: Interface web pour gérer la base de données (optionnel)
+#
+# Pour démarrer : docker compose up -d --build
+# Pour arrêter  : docker compose down
+# Pour voir les logs : docker compose logs -f
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # SERVICE : app (PHP-FPM)
+  # ---------------------------------------------------------------------------
+  # C'est le cœur de l'application. Il exécute le code PHP de Laravel.
+  # Il est construit à partir du Dockerfile à la racine du projet.
+  # ---------------------------------------------------------------------------
+  app:
+    # Construire l'image depuis le Dockerfile local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Nom du conteneur pour faciliter l'identification
+    container_name: cica-archives-app
+    # Redémarrer automatiquement si le conteneur plante
+    restart: unless-stopped
+    # Variables d'environnement pour la connexion à la base de données
+    # Ces valeurs écrasent celles du .env pour utiliser les noms de services Docker
+    environment:
+      # "mysql" est le nom du service DB ci-dessous (résolution DNS interne Docker)
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: cica-archives
+      DB_USERNAME: cica_user
+      DB_PASSWORD: cica_secret
+    # Volumes montés : permettent de persister les données entre redémarrages
+    volumes:
+      # Volume pour les fichiers uploadés et les logs Laravel
+      - app-storage:/var/www/html/storage
+    # Réseaux Docker internes pour la communication entre conteneurs
+    networks:
+      - cica-network
+    # Ce service dépend de MySQL : il attend que MySQL soit prêt avant de démarrer
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # SERVICE : nginx (Serveur Web)
+  # ---------------------------------------------------------------------------
+  # Nginx reçoit les requêtes HTTP des utilisateurs et :
+  #   - Sert directement les fichiers statiques (CSS, JS, images)
+  #   - Transmet les requêtes PHP à PHP-FPM (le service "app")
+  # ---------------------------------------------------------------------------
+  nginx:
+    # Image officielle Nginx Alpine (légère, ~5MB)
+    image: nginx:alpine
+    container_name: cica-archives-nginx
+    restart: unless-stopped
+    # Mapping de ports : port_hôte:port_conteneur
+    # Accessible sur http://localhost:8080
+    ports:
+      - "8080:80"
+    # Volumes : configuration Nginx + fichiers statiques de l'app
+    volumes:
+      # Configuration personnalisée de Nginx
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Fichiers publics de Laravel (CSS, JS, images, index.php)
+      # Mode lecture seule (:ro) car Nginx n'a pas besoin d'écrire
+      - ./public:/var/www/html/public:ro
+      # Volume partagé pour les fichiers storage accessibles publiquement
+      - app-storage:/var/www/html/storage:ro
+    networks:
+      - cica-network
+    # Nginx dépend de l'app PHP pour pouvoir lui transmettre les requêtes
+    depends_on:
+      - app
+
+  # ---------------------------------------------------------------------------
+  # SERVICE : mysql (Base de Données)
+  # ---------------------------------------------------------------------------
+  # MySQL 8.0 stocke toutes les données de l'application :
+  # utilisateurs, courriers, documents, opérations, etc.
+  # ---------------------------------------------------------------------------
+  mysql:
+    # Image officielle MySQL 8.0
+    image: mysql:8.0
+    container_name: cica-archives-mysql
+    restart: unless-stopped
+    # Variables d'environnement pour configurer MySQL au premier démarrage
+    environment:
+      # Mot de passe du compte root MySQL
+      MYSQL_ROOT_PASSWORD: root_secret
+      # Base de données créée automatiquement au premier démarrage
+      MYSQL_DATABASE: cica-archives
+      # Utilisateur applicatif (utilisé par Laravel pour se connecter)
+      MYSQL_USER: cica_user
+      MYSQL_PASSWORD: cica_secret
+    # Volume pour persister les données MySQL entre les redémarrages
+    # Sans ce volume, les données seraient perdues à chaque "docker compose down"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    # Mapping de port pour accéder à MySQL depuis l'hôte (optionnel, utile pour debug)
+    ports:
+      - "3307:3306"
+    networks:
+      - cica-network
+    # Healthcheck : vérifie que MySQL est prêt à accepter des connexions
+    # L'app attend que ce check passe avant de démarrer (depends_on + condition)
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # Commande personnalisée pour configurer le charset UTF-8
+    # Nécessaire pour supporter les caractères accentués français
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+
+  # ---------------------------------------------------------------------------
+  # SERVICE : phpmyadmin (Interface de gestion DB - Optionnel)
+  # ---------------------------------------------------------------------------
+  # PhpMyAdmin fournit une interface web pour visualiser et gérer
+  # la base de données. Utile en développement, à désactiver en production.
+  # Accessible sur http://localhost:8081
+  # ---------------------------------------------------------------------------
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: cica-archives-phpmyadmin
+    restart: unless-stopped
+    environment:
+      # Connexion automatique au service MySQL
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      # Taille max d'upload dans phpMyAdmin
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8081:80"
+    networks:
+      - cica-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+# =============================================================================
+# VOLUMES : Stockage persistant
+# =============================================================================
+# Les volumes Docker persistent les données même quand les conteneurs
+# sont supprimés. Ils sont gérés par Docker et stockés sur le disque hôte.
+# =============================================================================
+volumes:
+  # Données MySQL (tables, index, etc.)
+  mysql-data:
+    driver: local
+  # Fichiers de stockage Laravel (uploads, logs, cache)
+  app-storage:
+    driver: local
+
+# =============================================================================
+# NETWORKS : Réseau interne Docker
+# =============================================================================
+# Un réseau bridge isolé permet aux conteneurs de communiquer entre eux
+# en utilisant leurs noms de service comme noms d'hôte (ex: "mysql", "app")
+# =============================================================================
+networks:
+  cica-network:
+    driver: bridge

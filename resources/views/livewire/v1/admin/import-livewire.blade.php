@@ -1,15 +1,10 @@
-<div>
-    {{-- Header --}}
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h2 class="text-lg font-black text-heading">{{ __('import.title') }}</h2>
-            <p class="text-xs text-muted">{{ __('import.subtitle') }}</p>
-        </div>
-    </div>
+<x-ui.page-layout>
+    <x-ui.page-header :title="__('import.title')" :subtitle="__('import.subtitle')">
+    </x-ui.page-header>
 
     {{-- Step: Upload --}}
     @if($step === 'upload')
-    <div class="max-w-xl mx-auto space-y-6">
+    <div class="space-y-6">
         {{-- Import type --}}
         <x-ui.section :title="__('import.select_type')" icon="file-spreadsheet" :noPadding="false">
             <div class="grid grid-cols-2 gap-3 mb-4">
@@ -54,10 +49,16 @@
                        class="block w-full text-xs text-body file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent/10 file:text-accent hover:file:bg-accent/20">
                 @error('file') <p class="text-xs text-error">{{ $message }}</p> @enderror
 
+                <div wire:loading wire:target="file" class="flex items-center gap-2 text-xs text-accent">
+                    <x-lucide-loader-2 class="w-4 h-4 animate-spin" />
+                    {{ __('import.uploading') }}
+                </div>
+
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 
-                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file">
-                    {{ __('import.preview_data') }}
+                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file" wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="parseFile">{{ __('import.preview_data') }}</span>
+                    <span wire:loading wire:target="parseFile">{{ __('import.processing') }}</span>
                 </x-ui.button>
             </div>
         </x-ui.section>
@@ -139,7 +140,7 @@
 
     {{-- Step: Result --}}
     @if($step === 'result')
-    <div class="max-w-xl mx-auto space-y-6">
+    <div class="space-y-6">
         <x-ui.section :title="__('import.result_title')" icon="check-circle" :noPadding="false">
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div class="p-4 bg-success/10 rounded-xl text-center">
@@ -152,9 +153,9 @@
                 </div>
             </div>
 
-            @if(count($errors) > 0)
+            @if(count($importErrors ?? []) > 0)
                 <div class="space-y-1 mb-4">
-                    @foreach($errors as $err)
+                    @foreach($importErrors as $err)
                         <p class="text-xs text-error">
                             <span class="font-bold">{{ __('import.row') }} {{ $err['row'] }} :</span> {{ $err['message'] }}
                         </p>
@@ -168,4 +169,4 @@
         </x-ui.section>
     </div>
     @endif
-</div>
+</x-ui.page-layout>

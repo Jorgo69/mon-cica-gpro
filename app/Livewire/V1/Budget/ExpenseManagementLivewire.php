@@ -105,6 +105,12 @@ class ExpenseManagementLivewire extends Component
         $this->checkBudgetAlert();
     }
 
+    public function closeModal(): void
+    {
+        $this->showModal = false;
+        $this->reset(['description', 'amount', 'expense_date', 'editingId']);
+    }
+
     public function delete(string $id): void
     {
         Expense::findOrFail($id)->delete();
