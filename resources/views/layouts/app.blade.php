@@ -22,32 +22,26 @@
     
     @stack('styles')
 
+    @auth
+        <meta name="user-theme" content="{{ \App\Services\UserMeta::get('theme', '') }}">
+    @endauth
     <script>
-        // Initialisation theme : priorite DB (via Blade) > localStorage > system preference
-        @auth
-            @php $dbTheme = \App\Services\UserMeta::get('theme'); @endphp
-            @if($dbTheme === 'dark')
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('darkMode', 'true');
-            @elseif($dbTheme === 'light')
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('darkMode', 'false');
-            @else
-                if (localStorage.getItem('darkMode') === 'true' ||
-                    (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            @endif
-        @else
-            if (localStorage.getItem('darkMode') === 'true' ||
-                (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        // Initialisation theme : DB (meta tag) > localStorage > system preference
+        // Purement JS pour survivre aux navigations wire:navigate
+        (function() {
+            var dbTheme = document.querySelector('meta[name="user-theme"]')?.content;
+            if (dbTheme === 'dark' || dbTheme === 'light') {
+                // Sync DB → localStorage au premier chargement
+                localStorage.setItem('darkMode', dbTheme === 'dark' ? 'true' : 'false');
+            }
+            var isDark = localStorage.getItem('darkMode') === 'true' ||
+                (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
-        @endauth
+        })();
 
         window.appData = function() {
             return {
