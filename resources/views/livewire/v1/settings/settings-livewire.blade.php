@@ -258,15 +258,11 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.date_format.title') }}</label>
-                    <select wire:model.live="dateFormat"
-                        class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
-                        <option value="dd/MM/yyyy">{{ __('settings.date_format.french') }}</option>
-                        <option value="MM/dd/yyyy">{{ __('settings.date_format.american') }}</option>
-                        <option value="yyyy-MM-dd">{{ __('settings.date_format.iso') }}</option>
-                    </select>
-                </div>
+                <x-ui.select wire:model.live="dateFormat" :label="__('settings.date_format.title')" icon="calendar-days">
+                    <option value="dd/MM/yyyy">{{ __('settings.date_format.french') }}</option>
+                    <option value="MM/dd/yyyy">{{ __('settings.date_format.american') }}</option>
+                    <option value="yyyy-MM-dd">{{ __('settings.date_format.iso') }}</option>
+                </x-ui.select>
             </div>
         </x-ui.section>
     </div>
@@ -277,27 +273,16 @@
     <div class="space-y-6">
         <x-ui.section :title="__('settings.notifications')" icon="bell-ring" :noPadding="false">
             <div class="space-y-6">
-                <div class="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-light">
-                    <div>
-                        <p class="text-sm font-bold text-heading">{{ __('settings.email_notifications.title') }}</p>
-                        <p class="text-xs text-subtle mt-0.5">{{ __('settings.email_notifications.desc') }}</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" wire:model.live="emailNotifications" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-300 dark:bg-surface-alt rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:border-gray-200 dark:after:border-gray-600 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
-                    </label>
-                </div>
+                <x-ui.toggle wire:model.live="emailNotifications" :label="__('settings.email_notifications.title')" :description="__('settings.email_notifications.desc')" />
 
                 {{-- Fuseau horaire --}}
                 <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.timezone.title') }}</label>
                     <p class="text-xs text-subtle mb-3">{{ __('settings.timezone.desc') }}</p>
-                    <select wire:model.live="timezone"
-                        class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3 focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all">
+                    <x-ui.select wire:model.live="timezone" :label="__('settings.timezone.title')" icon="clock">
                         @foreach(config('gpro.timezones', []) as $tz => $label)
                             <option value="{{ $tz }}">{{ $label }}</option>
                         @endforeach
-                    </select>
+                    </x-ui.select>
                 </div>
 
                 <div>
@@ -671,7 +656,7 @@
             @endif
 
             <div class="mt-4">
-                <x-ui.button wire:click="saveAiConfig" icon="save" wire:loading.attr="disabled">
+                <x-ui.button wire:click="saveAiConfig" variant="secondary" icon="save" wire:loading.attr="disabled">
                     {{ __('common.save') }}
                 </x-ui.button>
             </div>
@@ -715,17 +700,13 @@
                     <label class="text-xs font-bold text-heading block mb-2">{{ __('settings.webhooks.events') }}</label>
                     <div class="grid grid-cols-2 gap-1.5">
                         @foreach(\App\Models\Webhook::AVAILABLE_EVENTS as $event)
-                            <label class="flex items-center gap-2 text-[11px] text-body cursor-pointer">
-                                <input type="checkbox" wire:model="webhookEvents" value="{{ $event }}"
-                                       class="rounded border-border-light dark:border-slate-600 bg-card text-accent focus:ring-accent w-3.5 h-3.5">
-                                {{ $event }}
-                            </label>
+                            <x-ui.checkbox wire:model="webhookEvents" :value="$event" :label="$event" />
                         @endforeach
                     </div>
                     @error('webhookEvents') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="flex gap-2">
-                    <x-ui.button wire:click="saveWebhook" variant="accent" icon="plus" size="sm">
+                    <x-ui.button wire:click="saveWebhook" variant="secondary" icon="plus" size="sm">
                         {{ $editingWebhookId ? __('common.save') : __('settings.webhooks.add') }}
                     </x-ui.button>
                     @if($editingWebhookId)
@@ -776,7 +757,7 @@
                 <div class="flex-1">
                     <x-ui.input wire:model="newTokenName" icon="key" :placeholder="__('settings.api.token_name_placeholder')" />
                 </div>
-                <x-ui.button wire:click="createApiToken" variant="accent" icon="plus" size="sm">
+                <x-ui.button wire:click="createApiToken" variant="secondary" icon="plus" size="sm">
                     {{ __('settings.api.create_token') }}
                 </x-ui.button>
             </div>
