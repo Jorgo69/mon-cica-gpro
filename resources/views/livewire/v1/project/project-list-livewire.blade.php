@@ -43,9 +43,6 @@
 
     {{-- Projects Table --}}
     <x-ui.section title="Projets" icon="folder-kanban" :noPadding="false">
-        @if ($projects->isEmpty())
-            <x-ui.empty-state icon="folder-open" :title="__('projects.no_projects')" :description="__('projects.no_projects_desc')" />
-        @else
             <x-ui.table>
                     <x-slot:headers>
                         <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('title')">
@@ -83,7 +80,7 @@
                         </x-ui.table.th>
                         <x-ui.table.th align="right">{{ __('projects.actions') }}</x-ui.table.th>
                     </x-slot:headers>
-                    @foreach ($projects as $project)
+                    @forelse ($projects as $project)
                         <x-ui.table.row>
                             <x-ui.table.td>
                                 <div class="max-w-xs md:max-w-sm">
@@ -131,9 +128,14 @@
                                 </div>
                             </x-ui.table.td>
                         </x-ui.table.row>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-12">
+                                <x-ui.empty-state icon="folder-open" :title="__('projects.no_projects')" :description="__('projects.no_projects_desc')" />
+                            </td>
+                        </tr>
+                    @endforelse
             </x-ui.table>
-        @endif
 
         @if ($projects->isNotEmpty())
             <x-slot:footer>
