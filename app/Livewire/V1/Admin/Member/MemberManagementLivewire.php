@@ -146,8 +146,16 @@ class MemberManagementLivewire extends Component
             return;
         }
 
-        // Cannot modify someone with equal or higher role
-        if ($this->selectedMember->role === AccountType::ORG_ADMIN && $currentUser->role === AccountType::ORG_ADMIN) {
+        // Owner of the org is untouchable by anyone except ROOT
+        $org = $currentUser->organization;
+        if ($org && $this->selectedMember->id === $org->owner_user_id && $currentUser->role !== AccountType::ROOT) {
+            $this->notifyToast('error', __('admin.members.cannot_modify_owner'));
+            return;
+        }
+
+        // Cannot modify someone with equal or higher role (unless you're the owner)
+        $isOwner = $org && $currentUser->id === $org->owner_user_id;
+        if (!$isOwner && $this->selectedMember->role === AccountType::ORG_ADMIN && $currentUser->role === AccountType::ORG_ADMIN) {
             $this->notifyToast('error', __('admin.members.cannot_modify_equal'));
             return;
         }

@@ -1,21 +1,17 @@
-@props([
-    'headers' => []
-])
+@props([])
 
 <div class="overflow-x-auto -mx-6">
     <table class="w-full">
-        @if(isset($head))
+        @if(isset($headers) && !is_array($headers))
         <thead>
-            <tr class="border-b border-border-light">
-                {{ $head }}
+            <tr class="border-b border-border-light bg-surface-alt/50">
+                {{ $headers }}
             </tr>
         </thead>
-        @elseif(!empty($headers))
+        @elseif(isset($head))
         <thead>
-            <tr class="border-b border-border-light">
-                @foreach($headers as $header)
-                    <x-ui.table.th>{{ $header }}</x-ui.table.th>
-                @endforeach
+            <tr class="border-b border-border-light bg-surface-alt/50">
+                {{ $head }}
             </tr>
         </thead>
         @endif

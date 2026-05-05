@@ -38,6 +38,7 @@ return [
         'permissions_updated' => 'Permissions mises à jour.',
         'cannot_modify_self' => 'Vous ne pouvez pas modifier vos propres permissions.',
         'cannot_modify_equal' => 'Vous ne pouvez pas modifier les permissions d\'un administrateur de même niveau.',
+        'cannot_modify_owner' => 'Le créateur de l\'organisation ne peut pas être modifié.',
     ],
 
     // Org permissions view
