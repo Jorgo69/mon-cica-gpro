@@ -147,7 +147,54 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-Voir `.env.example` pour la liste complete des variables.
+### Fichiers .env par base de donnees
+
+Le projet fournit des fichiers preconfigures — copiez celui qui correspond a votre situation :
+
+| Fichier | Utilisation |
+|---------|-------------|
+| `.env.example` | Template generique (SQLite par defaut) |
+| `.env.example.sqlite` | Dev local, petites instances |
+| `.env.example.mysql` | Production avec MySQL |
+| `.env.example.postgres` | Production avec PostgreSQL |
+
+```bash
+# Exemple : installer avec MySQL
+cp .env.example.mysql .env
+php artisan key:generate
+# Editez .env avec vos identifiants DB, puis :
+php artisan migrate --seed
+```
+
+> Le code est **100% DB-agnostic** — zero SQL brut. SQLite, MySQL et PostgreSQL fonctionnent sans aucune modification.
+
+---
+
+## Deploiement
+
+### Docker (recommande pour selfhost)
+
+```bash
+# MySQL + phpMyAdmin
+make up
+
+# PostgreSQL + pgAdmin
+make up-pg
+```
+
+Guide complet : [docs/docker-guide.md](docs/docker-guide.md)
+
+### VPS / Serveur dedie (sans Docker)
+
+Guide pas a pas (Nginx, SSL, Supervisor, cron) : [docs/installation-manual.md](docs/installation-manual.md)
+
+### Hebergement mutualise (LWS, o2switch...)
+
+Voir la section dediee dans [docs/installation-manual.md](docs/installation-manual.md#hebergement-mutualise-lws-o2switch-etc)
+
+### Deploiement CI/CD (GitHub Actions → LWS FTP)
+
+Guide : [docs/deployment.md](docs/deployment.md)
 
 ---
 

@@ -24,17 +24,17 @@ cd cica-gpro
 
 ### 2. Configurer l'environnement
 
+Les fichiers Docker `.env.docker.mysql` et `.env.docker.postgres` sont deja preconfigures.
+Vous n'avez **PAS besoin de toucher au `.env` principal** — Docker utilise ses propres fichiers.
+
+Si vous voulez personnaliser (mot de passe, port, domaine), editez :
+
 ```bash
-cp .env.docker .env
-```
+# Pour MySQL :
+nano .env.docker.mysql
 
-Editez `.env` et modifiez au minimum :
-
-```env
-APP_URL=http://votre-domaine.com:8080
-DB_PASSWORD=votre_mot_de_passe_securise
-DB_ROOT_PASSWORD=votre_root_password_securise
-REDIS_PASSWORD=votre_redis_password
+# Pour PostgreSQL :
+nano .env.docker.postgres
 ```
 
 ### 3. Lancer
