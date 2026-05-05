@@ -30,7 +30,7 @@
                 <x-ui.empty-state icon="folder-open" :title="__('admin.projects.no_projects')" :description="__('admin.projects.no_projects_desc')" />
             @else
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest cursor-pointer group" wire:click="sortBy('title')">
                                 <div class="flex items-center gap-1">{{ __('admin.projects.title_col') }} @if ($sortField === 'title') <x-dynamic-component :component="'lucide-chevron-' . ($sortDirection === 'asc' ? 'up' : 'down')" class="w-3 h-3 text-accent" /> @endif</div>

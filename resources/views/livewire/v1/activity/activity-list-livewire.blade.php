@@ -41,7 +41,7 @@
                 <x-ui.empty-state icon="list-todo" :title="__('activities.no_activities')" :description="__('activities.no_activities_filter_desc')" />
             @else
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('description')">
                                 <div class="flex items-center gap-1.5">

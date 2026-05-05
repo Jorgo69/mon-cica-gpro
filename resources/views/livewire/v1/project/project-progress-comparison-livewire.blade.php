@@ -36,7 +36,7 @@
         <div class="bg-card rounded-xl border border-border overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light bg-surface dark:bg-surface-alt/50">
                             <th class="px-4 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Activite</th>
                             <th class="px-4 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Responsable</th>

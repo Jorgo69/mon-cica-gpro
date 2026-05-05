@@ -78,7 +78,7 @@
         {{-- Preview table --}}
         <div class="overflow-x-auto bg-card rounded-xl border border-border-light">
             <table class="w-full text-xs">
-                <thead>
+                <thead class="bg-surface-alt/50 bg-surface-alt/50">
                     <tr class="bg-surface text-muted font-bold uppercase tracking-wider">
                         <th class="px-3 py-2 text-left">#</th>
                         <th class="px-3 py-2 text-left">{{ __('common.status') }}</th>

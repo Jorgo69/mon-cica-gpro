@@ -8,7 +8,7 @@
         <x-ui.section :title="__('admin.trash.members_section')" icon="user-x" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllUsers" class="rounded border-border text-accent focus:ring-accent"></th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.name') }}</th>
@@ -47,7 +47,7 @@
         <x-ui.section :title="__('admin.trash.project_types_section')" icon="layout-grid" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllTypes" class="rounded border-border text-accent focus:ring-accent"></th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.name') }}</th>
@@ -84,7 +84,7 @@
         <x-ui.section :title="__('admin.trash.projects_section')" icon="folder-minus" :noPadding="false">
             <div class="overflow-x-auto -mx-6">
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left w-8"><input type="checkbox" wire:model="selectAllProjects" class="rounded border-border text-accent focus:ring-accent"></th>
                             <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('admin.trash.title_col') }}</th>

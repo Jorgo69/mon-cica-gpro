@@ -19,7 +19,7 @@
                 <x-ui.empty-state icon="box" :title="__('resources.no_resources_listed')" :description="__('resources.no_resources_desc')" />
             @else
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left">
                                 <span class="text-[10px] font-black text-muted uppercase tracking-widest">{{ __('resources.designation') }}</span>

@@ -48,7 +48,7 @@
                 <x-ui.empty-state icon="folder-open" :title="__('projects.no_projects')" :description="__('projects.no_projects_desc')" />
             @else
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="border-b border-border-light dark:border-surface-alt">
                             <th class="px-6 py-3 text-left cursor-pointer group" wire:click="sortBy('title')">
                                 <div class="flex items-center gap-1.5">

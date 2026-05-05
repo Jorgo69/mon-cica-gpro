@@ -33,7 +33,7 @@
         <div class="bg-card rounded-2xl border border-border-light overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
-                    <thead>
+                    <thead class="bg-surface-alt/50 bg-surface-alt/50">
                         <tr class="bg-surface text-muted text-left">
                             <th class="px-4 py-2.5 font-bold">{{ __('common.level') }}</th>
                             <th class="px-4 py-2.5 font-bold">{{ __('common.description') }}</th>

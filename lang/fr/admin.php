@@ -45,6 +45,7 @@ return [
     'permissions' => [
         'title' => 'Permissions de l\'organisation',
         'subtitle' => 'Consultez les permissions de chaque membre',
+        'members' => 'Membres',
     ],
 
     // Categories

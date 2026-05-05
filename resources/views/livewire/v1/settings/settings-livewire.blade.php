@@ -43,11 +43,7 @@
             <p class="text-sm text-body mb-4">{{ __('settings.org_create.desc') }}</p>
 
             <form wire:submit="createOrganization" class="space-y-4">
-                <div>
-                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.org_create.name_label') }}</label>
-                    <input type="text" wire:model="newOrgName" class="input-field w-full" placeholder="{{ __('settings.org_create.name_placeholder') }}">
-                    @error('newOrgName') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
-                </div>
+                <x-ui.input wire:model="newOrgName" :label="__('settings.org_create.name_label')" :placeholder="__('settings.org_create.name_placeholder')" icon="building-2" :error="$errors->first('newOrgName')" />
 
                 <div class="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                     <p class="text-xs text-amber-700 dark:text-amber-300">
@@ -161,15 +157,12 @@
                     <p class="text-xs text-amber-700 dark:text-amber-300">{{ __('settings.transfer.warning') }}</p>
                 </div>
 
-                <div>
-                    <label class="text-xs font-bold text-heading uppercase tracking-wider block mb-2">{{ __('settings.transfer.select_admin') }}</label>
-                    <select wire:model="transferTargetId" class="w-full rounded-xl border border-border-light bg-card text-sm text-body px-4 py-3">
-                        <option value="">-- {{ __('settings.transfer.choose') }} --</option>
-                        @foreach($otherAdmins as $admin)
-                            <option value="{{ $admin->id }}">{{ $admin->name }} ({{ $admin->email }})</option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-ui.select wire:model="transferTargetId" :label="__('settings.transfer.select_admin')" icon="user-check">
+                    <option value="">-- {{ __('settings.transfer.choose') }} --</option>
+                    @foreach($otherAdmins as $admin)
+                        <option value="{{ $admin->id }}">{{ $admin->name }} ({{ $admin->email }})</option>
+                    @endforeach
+                </x-ui.select>
             </div>
 
             <x-slot:footer>
@@ -642,12 +635,11 @@
             @if($aiMode === 'own')
             <div class="space-y-4 p-4 bg-surface rounded-xl border border-border-light">
                 <div>
-                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.provider') }}</label>
-                    <select wire:model.live="aiProvider" class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2">
+                    <x-ui.select wire:model.live="aiProvider" :label="__('ai.config.provider')" icon="brain">
                         @foreach($aiProviders as $p)
                             <option value="{{ $p->value }}">{{ $p->label() }} — {{ $p->pricing() }}</option>
                         @endforeach
-                    </select>
+                    </x-ui.select>
                     @php $selProvider = \App\Enums\AiProvider::tryFrom($aiProvider); @endphp
                     @if($selProvider)
                         <p class="text-[10px] text-muted mt-1">{{ $selProvider->description() }}</p>
@@ -660,30 +652,20 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.api_key') }}</label>
                     @if($aiMaskedKey)
                         <p class="text-[10px] text-muted mb-1">{{ __('ai.config.current_key') }}: <code class="bg-surface-alt px-1 rounded">{{ $aiMaskedKey }}</code></p>
                     @endif
-                    <input type="password" wire:model="aiApiKey"
-                        placeholder="{{ $aiMaskedKey ? __('ai.config.leave_empty') : __('ai.config.enter_key') }}"
-                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
+                    <x-ui.input type="password" wire:model="aiApiKey" :label="__('ai.config.api_key')" icon="key-round"
+                        :placeholder="$aiMaskedKey ? __('ai.config.leave_empty') : __('ai.config.enter_key')" />
                     <p class="text-[10px] text-muted mt-1">{{ __('ai.config.key_encrypted') }}</p>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.model') }}</label>
-                    <input type="text" wire:model="aiModel"
-                        placeholder="{{ \App\Enums\AiProvider::tryFrom($aiProvider)?->defaultModel() }}"
-                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
-                </div>
+                <x-ui.input wire:model="aiModel" :label="__('ai.config.model')" icon="cpu"
+                    :placeholder="\App\Enums\AiProvider::tryFrom($aiProvider)?->defaultModel()" />
 
                 @if($aiProvider === 'custom')
-                <div>
-                    <label class="block text-xs font-bold text-heading mb-1">{{ __('ai.config.base_url') }}</label>
-                    <input type="url" wire:model="aiBaseUrl"
-                        placeholder="https://your-ai-server.com/v1"
-                        class="w-full rounded-lg border-border bg-card text-body text-sm px-3 py-2" />
-                </div>
+                <x-ui.input type="url" wire:model="aiBaseUrl" :label="__('ai.config.base_url')" icon="globe"
+                    placeholder="https://your-ai-server.com/v1" />
                 @endif
             </div>
             @endif
@@ -727,22 +709,15 @@
 
             {{-- Form --}}
             <div class="space-y-3 mb-6 p-4 bg-surface rounded-xl">
-                <div>
-                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.webhooks.url') }}</label>
-                    <input type="url" wire:model="webhookUrl" class="input-field w-full text-xs" placeholder="https://example.com/webhook">
-                    @error('webhookUrl') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-heading block mb-1">{{ __('settings.webhooks.label') }}</label>
-                    <input type="text" wire:model="webhookLabel" class="input-field w-full text-xs" placeholder="{{ __('settings.webhooks.label_placeholder') }}">
-                </div>
+                <x-ui.input type="url" wire:model="webhookUrl" :label="__('settings.webhooks.url')" icon="link" placeholder="https://example.com/webhook" :error="$errors->first('webhookUrl')" />
+                <x-ui.input wire:model="webhookLabel" :label="__('settings.webhooks.label')" icon="tag" :placeholder="__('settings.webhooks.label_placeholder')" />
                 <div>
                     <label class="text-xs font-bold text-heading block mb-2">{{ __('settings.webhooks.events') }}</label>
                     <div class="grid grid-cols-2 gap-1.5">
                         @foreach(\App\Models\Webhook::AVAILABLE_EVENTS as $event)
                             <label class="flex items-center gap-2 text-[11px] text-body cursor-pointer">
                                 <input type="checkbox" wire:model="webhookEvents" value="{{ $event }}"
-                                       class="rounded border-gray-300 text-accent focus:ring-accent w-3.5 h-3.5">
+                                       class="rounded border-border-light dark:border-slate-600 bg-card text-accent focus:ring-accent w-3.5 h-3.5">
                                 {{ $event }}
                             </label>
                         @endforeach
@@ -797,8 +772,10 @@
             <p class="text-xs text-muted mb-4">{{ __('settings.api.desc') }}</p>
 
             {{-- Create token --}}
-            <div class="flex gap-2 mb-6">
-                <input type="text" wire:model="newTokenName" class="input-field flex-1 text-xs" placeholder="{{ __('settings.api.token_name_placeholder') }}">
+            <div class="flex gap-2 mb-6 items-end">
+                <div class="flex-1">
+                    <x-ui.input wire:model="newTokenName" icon="key" :placeholder="__('settings.api.token_name_placeholder')" />
+                </div>
                 <x-ui.button wire:click="createApiToken" variant="accent" icon="plus" size="sm">
                     {{ __('settings.api.create_token') }}
                 </x-ui.button>

@@ -4,7 +4,7 @@
 @if($subActivities->count() > 0)
     <div class="overflow-x-auto -mx-6">
         <table class="w-full text-sm">
-            <thead>
+            <thead class="bg-surface-alt/50 bg-surface-alt/50">
                 <tr class="border-b border-border-light dark:border-surface-alt">
                     <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Description</th>
                     <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">Début</th>

@@ -68,7 +68,7 @@
     <x-ui.section :title="__('projects.dashboard.activity_details')" icon="clipboard-list">
         <div class="overflow-x-auto -mx-6">
             <table class="w-full">
-                <thead>
+                <thead class="bg-surface-alt/50 bg-surface-alt/50">
                     <tr class="border-b border-border-light dark:border-surface-alt">
                         <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.description') }}</th>
                         <th class="px-6 py-3 text-left text-[10px] font-black text-muted uppercase tracking-widest">{{ __('projects.dashboard.responsible') }}</th>
