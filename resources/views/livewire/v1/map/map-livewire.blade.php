@@ -1,37 +1,40 @@
-<div>
-    {{-- Toolbar --}}
-    <div class="flex items-center justify-between mb-4">
-        <div>
-            <h2 class="text-lg font-black text-heading">{{ __('map.title') }}</h2>
-            <p class="text-xs text-muted">{{ count($markers) }} {{ __('map.projects_on_map') }}</p>
+<x-ui.page-layout>
+    <x-ui.page-header :title="__('map.title')" :subtitle="count($markers) . ' ' . __('map.projects_on_map')">
+    </x-ui.page-header>
+
+    {{-- Filters --}}
+    <x-ui.card class="mb-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <x-ui.select wire:model.live="statusFilter" icon="filter">
+                    <option value="">{{ __('map.all_statuses') }}</option>
+                    @foreach($statuses as $status)
+                        <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                    @endforeach
+                </x-ui.select>
+            </div>
         </div>
-        <div class="flex items-center gap-2">
-            <select wire:model.live="statusFilter" class="input-field text-xs py-1.5">
-                <option value="">{{ __('map.all_statuses') }}</option>
-                @foreach($statuses as $status)
-                    <option value="{{ $status->value }}">{{ $status->label() }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
+    </x-ui.card>
 
     {{-- Map container --}}
-    <div id="gpro-map" class="w-full h-[500px] rounded-xl border border-border-light overflow-hidden z-0"
-         wire:ignore
-         x-data="gproMap(@js($markers))"
-         x-init="initMap()">
-    </div>
+    <x-ui.card>
+        <div id="gpro-map" class="w-full h-[500px] rounded-xl overflow-hidden z-0"
+             wire:ignore
+             x-data="gproMap(@js($markers))"
+             x-init="initMap()">
+        </div>
 
-    {{-- Legend --}}
-    <div class="mt-4 flex flex-wrap gap-3">
-        @foreach($statuses as $status)
-            <div class="flex items-center gap-1.5 text-[10px]">
-                <span class="w-3 h-3 rounded-full" style="background: {{ $status->hex() }}"></span>
-                <span class="text-body">{{ $status->label() }}</span>
-            </div>
-        @endforeach
-    </div>
-</div>
+        {{-- Legend --}}
+        <div class="mt-4 flex flex-wrap gap-3">
+            @foreach($statuses as $status)
+                <div class="flex items-center gap-1.5 text-[10px]">
+                    <span class="w-3 h-3 rounded-full" style="background: {{ $status->hex() }}"></span>
+                    <span class="text-body">{{ $status->label() }}</span>
+                </div>
+            @endforeach
+        </div>
+    </x-ui.card>
+</x-ui.page-layout>
 
 @push('alpine-js')
 {{-- Leaflet CSS & JS via CDN --}}
@@ -45,7 +48,6 @@ function gproMap(markers) {
         markerLayer: null,
 
         initMap() {
-            // Default center: Africa
             this.map = L.map('gpro-map').setView([5, 15], 3);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -86,7 +88,7 @@ function gproMap(markers) {
                             <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: ${m.color}; margin-right: 4px;"></span>
                             ${m.status} · ${m.progress}%
                         </p>
-                        ${m.creator ? `<p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">👤 ${m.creator}</p>` : ''}
+                        ${m.creator ? `<p style="font-size: 10px; color: #999; margin: 0 0 6px 0;">${m.creator}</p>` : ''}
                         <a href="${m.url}" style="font-size: 11px; color: #6366f1; text-decoration: none; font-weight: 700;">Voir le projet →</a>
                     </div>
                 `;
@@ -98,7 +100,6 @@ function gproMap(markers) {
 
             this.markerLayer.addTo(this.map);
 
-            // Fit bounds if markers exist
             if (data.length > 0) {
                 const bounds = L.latLngBounds(data.map(m => [m.lat, m.lng]));
                 this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
