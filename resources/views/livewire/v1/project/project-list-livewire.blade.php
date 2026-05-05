@@ -42,7 +42,7 @@
     @include('messages.index')
 
     {{-- Projects Table --}}
-    <x-ui.section title="Projets" icon="folder-kanban" :noPadding="false">
+    <x-ui.section title="Projets" icon="folder-kanban" :noPadding="true">
             <x-ui.table>
                     <x-slot:headers>
                         <x-ui.table.th class="cursor-pointer group" wire:click="sortBy('title')">
