@@ -53,7 +53,7 @@
                             {{ auth()->user()->name ?? __('navigation.user') }}
                         </div>
                         <div class="text-[11px] text-muted leading-tight">
-                            {{ auth()->user()->role ?? __('navigation.no_role') }}
+                            {{ auth()->user()->role?->label() ?? __('navigation.no_role') }}
                         </div>
                     </div>
                     <x-lucide-chevron-down class="w-3.5 h-3.5 text-muted hidden sm:block transition-transform duration-200" x-bind:class="{ 'rotate-180': profileOpen }" />
