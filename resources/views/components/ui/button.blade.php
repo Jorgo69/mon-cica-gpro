@@ -6,13 +6,11 @@
     'type' => 'button',
     'tag' => 'button',
     'href' => null,
-    'loadingTarget' => null, // Used to scope the loading animation to a specific action
-    'loadingText' => null,   // Texte alternatif affiché pendant le chargement (ex: "Chargement...")
 ])
 
 @php
-    $baseClasses = 'inline-flex items-center justify-center whitespace-nowrap font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-wait rounded-xl shadow-sm relative overflow-hidden';
-    
+    $baseClasses = 'inline-flex items-center justify-center whitespace-nowrap font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm relative overflow-hidden';
+
     $variants = [
         'primary' => 'bg-primary text-white hover:bg-primary-dark focus:ring-primary shadow-lg shadow-primary/20 border border-transparent',
         'accent' => 'bg-accent text-white hover:bg-accent-dark focus:ring-accent shadow-lg shadow-accent/20 border border-transparent',
@@ -30,10 +28,6 @@
     ];
 
     $classes = $baseClasses . ' ' . ($variants[$variant] ?? $variants['primary']) . ' ' . ($sizes[$size] ?? $sizes['md']);
-    
-    // Déterminer le wire:target automatiquement si loadingTarget n'est pas spécifié
-    $wireClick = $attributes->get('wire:click');
-    $targetAttr = $loadingTarget ?? $wireClick;
 @endphp
 
 @if($tag === 'a')
@@ -49,33 +43,12 @@
         @endif
     </a>
 @else
-    <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}
-        @if($targetAttr)
-            wire:target="{{ $targetAttr }}"
-            wire:loading.delay.long.attr="disabled"
-            wire:loading.delay.long.class="opacity-75 cursor-wait !pointer-events-none"
+    <button type="{{ $type }}" {{ $attributes->merge(['class' => $classes]) }}>
+        @if($icon)
+            <x-dynamic-component :component="'lucide-' . $icon" class="w-4 h-4 mr-2 shrink-0" />
         @endif
-    >
-        {{-- Loading Spinner (Shows only when loading) --}}
-        <svg wire:loading.delay.long @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="animate-spin -ml-1 mr-2 w-4 h-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
 
-        {{-- Normal Icon (Hides when loading) --}}
-        <div wire:loading.delay.long.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif class="contents">
-            @if($icon)
-                <x-dynamic-component :component="'lucide-' . $icon" class="w-4 h-4 mr-2 shrink-0" />
-            @endif
-        </div>
-
-        {{-- Texte : alterné entre le slot normal et le loadingText --}}
-        @if($loadingText)
-            <span wire:loading.delay.long.remove @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $slot }}</span>
-            <span wire:loading.delay.long @if($targetAttr) wire:target="{{ $targetAttr }}" @endif>{{ $loadingText }}</span>
-        @else
-            <span>{{ $slot }}</span>
-        @endif
+        <span>{{ $slot }}</span>
 
         @if($iconRight)
             <x-dynamic-component :component="'lucide-' . $iconRight" class="w-4 h-4 ml-2 shrink-0" />
