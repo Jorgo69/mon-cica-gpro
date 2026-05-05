@@ -14,7 +14,7 @@
     $variants = [
         'primary' => 'bg-primary text-white hover:bg-primary-dark focus:ring-primary shadow-lg shadow-primary/20 border border-transparent',
         'accent' => 'bg-accent text-white hover:bg-accent-dark focus:ring-accent shadow-lg shadow-accent/20 border border-transparent',
-        'secondary' => 'bg-secondary text-white hover:bg-slate-700 dark:hover:bg-slate-500 focus:ring-secondary shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 border border-transparent',
+        'secondary' => 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 hover:bg-slate-700 dark:hover:bg-slate-300 focus:ring-slate-400 shadow-lg shadow-slate-300/50 dark:shadow-slate-900/50 border border-transparent',
         'danger' => 'bg-error text-white hover:bg-error-dark focus:ring-error shadow-lg shadow-error/20 border border-transparent',
         'outline' => 'border border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 focus:ring-primary',
         'ghost' => 'bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400 focus:ring-offset-0 shadow-none border border-transparent',

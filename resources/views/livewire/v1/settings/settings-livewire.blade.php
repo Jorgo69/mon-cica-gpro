@@ -126,7 +126,7 @@
 
         {{-- Ownership transfer (owner only) --}}
         @if($isOwner)
-        <x-ui.section title="{{ __('settings.transfer.title') }}" icon="crown" :noPadding="false">
+        <x-ui.section :title="__('settings.transfer.title')" icon="crown" :noPadding="false">
             <div class="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800">
                 <div class="flex items-start gap-3">
                     <x-lucide-crown class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
@@ -496,7 +496,7 @@
         </x-ui.section>
 
         {{-- Plan comparison --}}
-        <x-ui.section title="{{ __('plans.compare') }}" icon="layout-grid" :noPadding="false">
+        <x-ui.section :title="__('plans.compare')" icon="layout-grid" :noPadding="false">
             <div class="grid grid-cols-3 gap-3 text-center text-xs">
                 @foreach(\App\Models\Plan::active()->ordered()->get() as $p)
                     <div class="p-3 rounded-xl {{ $currentPlan->id === $p->id ? 'bg-accent/10 border border-accent/30' : 'bg-surface' }}">
