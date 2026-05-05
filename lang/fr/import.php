@@ -14,6 +14,8 @@ return [
     'download_template' => 'Télécharger le modèle Excel',
     'upload_file' => 'Fichier à importer',
     'file_hint' => 'Formats acceptés : .xlsx, .xls, .csv (max 5 Mo). La première ligne doit contenir les en-têtes.',
+    'uploading' => 'Chargement du fichier en cours...',
+    'processing' => 'Traitement en cours...',
     'preview_data' => 'Prévisualiser les données',
 
     'preview_title' => 'Prévisualisation avant import',
