@@ -51,7 +51,7 @@
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 
-                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file" wire:loading.attr="disabled">
+                <x-ui.button wire:click="parseFile" variant="accent" icon="eye" :disabled="!$file">
                     <span wire:loading.remove wire:target="parseFile">{{ __('import.preview_data') }}</span>
                     <span wire:loading wire:target="parseFile">{{ __('import.processing') }}</span>
                 </x-ui.button>
