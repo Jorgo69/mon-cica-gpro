@@ -51,13 +51,9 @@
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 
-                <button type="button"
-                        wire:click="parseFile"
-                        :disabled="!$wire.file"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all bg-accent text-white hover:bg-accent-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed">
-                    <x-lucide-eye class="w-4 h-4" />
+                <x-ui.button wire:click="parseFile" variant="accent" icon="eye">
                     {{ __('import.preview_data') }}
-                </button>
+                </x-ui.button>
             </div>
         </x-ui.section>
     </div>
