@@ -53,7 +53,7 @@
                            class="block w-full text-xs text-body file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent/10 file:text-accent hover:file:bg-accent/20">
                     @error('file') <p class="text-xs text-error">{{ $message }}</p> @enderror
 
-                    <div x-show="uploading" x-cloak class="flex items-center gap-2 text-xs text-accent mt-2">
+                    <div x-show="uploading" style="display: none" class="flex items-center gap-2 text-xs text-accent mt-2">
                         <x-lucide-loader-2 class="w-4 h-4 animate-spin" />
                         {{ __('import.uploading') }}
                     </div>
