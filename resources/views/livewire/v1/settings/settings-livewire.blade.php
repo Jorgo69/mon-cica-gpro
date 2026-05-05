@@ -52,7 +52,7 @@
                     </p>
                 </div>
 
-                <x-ui.button type="submit" variant="accent" icon="building-2">
+                <x-ui.button type="submit" variant="secondary" icon="building-2">
                     {{ __('settings.org_create.submit') }}
                 </x-ui.button>
             </form>
@@ -117,7 +117,7 @@
                 <p class="text-[10px] text-muted">{{ __('settings.org_branding_hint') }}</p>
 
                 <div class="flex justify-end">
-                    <x-ui.button type="submit" variant="accent" icon="save">
+                    <x-ui.button type="submit" variant="secondary" icon="save">
                         {{ __('common.save') }}
                     </x-ui.button>
                 </div>
@@ -167,7 +167,7 @@
 
             <x-slot:footer>
                 <x-ui.button wire:click="closeTransferModal" variant="outline" size="sm">{{ __('common.cancel') }}</x-ui.button>
-                <x-ui.button wire:click="transferOwnership" variant="accent" icon="arrow-right-left" size="sm">{{ __('settings.transfer.confirm') }}</x-ui.button>
+                <x-ui.button wire:click="transferOwnership" variant="secondary" icon="arrow-right-left" size="sm">{{ __('settings.transfer.confirm') }}</x-ui.button>
             </x-slot:footer>
         </x-ui.modal>
         @endif
