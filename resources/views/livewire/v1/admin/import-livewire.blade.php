@@ -45,19 +45,9 @@
         {{-- File upload --}}
         <x-ui.section :title="__('import.upload_file')" icon="upload" :noPadding="false">
             <div class="space-y-4">
-                <div x-data="{ uploading: false }"
-                     x-on:livewire-upload-start="uploading = true"
-                     x-on:livewire-upload-finish="uploading = false"
-                     x-on:livewire-upload-error="uploading = false">
-                    <input type="file" wire:model="file" accept=".xlsx,.xls,.csv"
-                           class="block w-full text-xs text-body file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent/10 file:text-accent hover:file:bg-accent/20">
-                    @error('file') <p class="text-xs text-error">{{ $message }}</p> @enderror
-
-                    <div x-show="uploading" style="display: none" class="flex items-center gap-2 text-xs text-accent mt-2">
-                        <x-lucide-loader-2 class="w-4 h-4 animate-spin" />
-                        {{ __('import.uploading') }}
-                    </div>
-                </div>
+                <input type="file" wire:model="file" accept=".xlsx,.xls,.csv"
+                       class="block w-full text-xs text-body file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent/10 file:text-accent hover:file:bg-accent/20">
+                @error('file') <p class="text-xs text-error">{{ $message }}</p> @enderror
 
                 <p class="text-[10px] text-muted">{{ __('import.file_hint') }}</p>
 

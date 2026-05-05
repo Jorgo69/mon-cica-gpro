@@ -20,7 +20,6 @@ class ImportLivewire extends Component
     public string $importType = 'projects'; // projects, activities
     public ?string $resultId = null; // for activity import
     public $file;
-    public bool $isUploading = false;
 
     public array $preview = [];
     public array $importErrors = [];
