@@ -2,7 +2,6 @@
     'title' => null,
     'icon' => null,
     'collapsible' => false,
-    'noPadding' => false,
 ])
 
 <div {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden']) }}>
@@ -22,7 +21,7 @@
         </div>
     @endif
 
-    <div @class(['p-6' => !$noPadding])>
+    <div class="p-6">
         {{ $slot }}
     </div>
 
