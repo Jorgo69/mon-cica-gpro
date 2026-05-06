@@ -58,6 +58,26 @@ return [
         ],
     ],
 
+    // Features (full grid)
+    'features' => [
+        'tag' => 'Features',
+        'title' => 'Everything you need',
+        'items' => [
+            ['target', 'Logical Framework', 'Complete hierarchical structure: general objective, specific objectives, results, activities, sub-activities. 3 display formats.'],
+            ['bar-chart-3', 'Budgets & Finance', 'Planned budget vs actual expenses, multi-currency (8 currencies), burn rate, overspending alerts.'],
+            ['users', 'Multi-tenant', 'Each organization has its own isolated space. 4-level RBAC with granular permissions.'],
+            ['brain', 'Integrated AI', '9 providers (Groq, OpenAI, Anthropic, Gemini...). Per-field assistance, executive summary, dashboard analysis.'],
+            ['file-text', 'Exports', 'PDF, Word, multi-sheet Excel. Automatic quarterly reports. Public donor dashboard.'],
+            ['calendar', 'Calendar', '6 views (year, semester, quarter, month, week, day). iCal export, Google Calendar / Outlook sync.'],
+            ['activity', 'Indicators', 'Progress tracking with measurements, trends, automatic alerts (stagnation, regression).'],
+            ['globe', 'REST API v1', '15 endpoints, Sanctum Bearer token auth, rate limiting. Full documentation.'],
+            ['webhook', 'Webhooks', '10 events, HMAC-SHA256 signature, auto-disable after 10 failures.'],
+            ['map-pin', 'Project Map', 'Geographic visualization (Leaflet), 40 geocoded countries, status-colored markers.'],
+            ['puzzle', 'Marketplace', 'Extensible plugin system. 8 hooks available. Create your own extensions.'],
+            ['shield-check', 'GDPR', 'Data export, anonymization, scheduled deletion. Full compliance.'],
+        ],
+    ],
+
     // Open Source
     'opensource' => [
         'tag' => 'Open Source',

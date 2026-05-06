@@ -40,6 +40,7 @@
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="flex items-center gap-2">
                     <x-ui.logo size="md" />
+                    <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent/10 text-accent">v{{ config('gpro.version') }}</span>
                 </a>
 
                 <div class="hidden md:flex items-center space-x-1">
@@ -225,6 +226,28 @@
                         </div>
                         <h5 class="font-bold text-heading mb-2">{{ $step[1] }}</h5>
                         <p class="text-sm text-subtle">{{ $step[2] }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FEATURES (grille complete) ========== -->
+        <section id="features" class="py-24 bg-surface-alt border-y border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">{{ __('landing.features.tag') }}</h3>
+                    <h4 class="text-3xl md:text-4xl font-black text-heading">{{ __('landing.features.title') }}</h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    @foreach(__('landing.features.items') as $feat)
+                    <div class="bg-card border border-border dark:border-slate-600 rounded-2xl p-6 hover:border-accent/40 transition-colors group">
+                        <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <x-dynamic-component :component="'lucide-' . $feat[0]" class="w-5 h-5 text-accent" />
+                        </div>
+                        <h5 class="font-bold text-heading mb-2">{{ $feat[1] }}</h5>
+                        <p class="text-sm text-subtle leading-relaxed">{{ $feat[2] }}</p>
                     </div>
                     @endforeach
                 </div>

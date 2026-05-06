@@ -58,6 +58,26 @@ return [
         ],
     ],
 
+    // Features (grille complete)
+    'features' => [
+        'tag' => 'Fonctionnalites',
+        'title' => 'Tout ce dont vous avez besoin',
+        'items' => [
+            ['target', 'Cadre Logique', 'Structure hierarchique complete : objectif general, objectifs specifiques, resultats, activites, sous-activites. 3 formats de visualisation.'],
+            ['bar-chart-3', 'Budgets & Finances', 'Budget planifie vs depenses reelles, multi-devise (8 devises), burn rate, alertes de depassement.'],
+            ['users', 'Multi-tenant', 'Chaque organisation a son espace isole. RBAC 4 niveaux avec permissions granulaires.'],
+            ['brain', 'IA Integree', '9 providers (Groq, OpenAI, Anthropic, Gemini...). Assistance par champ, resume executif, analyse dashboard.'],
+            ['file-text', 'Exports', 'PDF, Word, Excel multi-feuilles. Rapports automatiques trimestriels. Tableau de bord bailleur public.'],
+            ['calendar', 'Calendrier', '6 vues (annee, semestre, trimestre, mois, semaine, jour). Export iCal, sync Google Calendar / Outlook.'],
+            ['activity', 'Indicateurs', 'Suivi de progression avec mesures, tendances, alertes automatiques (stagnation, regression).'],
+            ['globe', 'API REST v1', '15 endpoints, auth Sanctum Bearer tokens, rate limiting. Documentation complete.'],
+            ['webhook', 'Webhooks', '10 evenements, signature HMAC-SHA256, auto-disable apres 10 echecs.'],
+            ['map-pin', 'Carte Projets', 'Visualisation geographique (Leaflet), 40 pays geocodes, marqueurs colores par statut.'],
+            ['puzzle', 'Marketplace', 'Systeme de plugins extensible. 8 hooks disponibles. Creez vos propres extensions.'],
+            ['shield-check', 'RGPD', 'Export donnees, anonymisation, suppression planifiee. Conformite totale.'],
+        ],
+    ],
+
     // Open Source
     'opensource' => [
         'tag' => 'Open Source',
