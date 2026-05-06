@@ -302,7 +302,7 @@ class DemoProjectSeeder extends Seeder
                     'value' => $m['value'],
                     'comment' => $m['comment'],
                     'measured_at' => $m['measured_at'],
-                    'measured_by' => $admin->id,
+                    'measured_by_user_id' => $admin->id,
                 ]);
             }
         }
@@ -334,6 +334,7 @@ class DemoProjectSeeder extends Seeder
             'expires_at' => now()->addMonths(6),
             'is_active' => true,
             'view_count' => 12,
+            'created_by_user_id' => $admin->id,
         ]);
 
         // --- Ressources (liees aux activites) ---
