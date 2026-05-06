@@ -3,6 +3,7 @@
 return [
 
     'title' => 'Workflow',
+    'change_status' => 'Changer le statut',
     'history' => 'Historique des validations',
     'comment_placeholder' => 'Commentaire (optionnel)...',
     'confirm_transition' => 'Changer le statut en ":status" ?',

@@ -102,8 +102,33 @@
                                 @php
                                     $statusEnum = $project->status instanceof \App\Enums\ProjectStatus ? $project->status : \App\Enums\ProjectStatus::tryFrom($project->status);
                                     $badgeVariant = $statusEnum ? $statusEnum->color() : 'slate';
+                                    $isOwnerOrAdmin = auth()->id() === $project->creator_user_id
+                                        || auth()->user()->role === \App\Enums\AccountType::ORG_ADMIN;
                                 @endphp
                                 <x-ui.badge :variant="$badgeVariant">{{ $statusEnum ? $statusEnum->label() : $project->status }}</x-ui.badge>
+
+                                {{-- Bouton transition rapide --}}
+                                @if($isOwnerOrAdmin && count($allowedTransitions) > 0)
+                                <div x-data="{ open: false }" class="relative">
+                                    <button @click="open = !open" class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold text-accent bg-accent/10 hover:bg-accent/20 rounded-lg transition-colors">
+                                        <x-lucide-arrow-right-circle class="w-3.5 h-3.5" />
+                                        {{ __('workflow.change_status') }}
+                                        <x-lucide-chevron-down class="w-3 h-3" />
+                                    </button>
+                                    <div x-show="open" @click.away="open = false" x-transition
+                                         class="absolute z-50 mt-1 left-0 w-56 bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+                                        @foreach($allowedTransitions as $transition)
+                                            <button wire:click="workflowTransition('{{ $transition->value }}')"
+                                                    wire:confirm="{{ __('workflow.confirm_transition', ['status' => $transition->label()]) }}"
+                                                    @click="open = false"
+                                                    class="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-body hover:bg-surface-alt transition-colors text-left">
+                                                <x-dynamic-component :component="'lucide-' . $transition->icon()" class="w-4 h-4 shrink-0" style="color: {{ $transition->hex() }}" />
+                                                <span>{{ $transition->label() }}</span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-[11px] font-bold text-muted uppercase tracking-wider w-28">{{ __('common.period') }}</span>
