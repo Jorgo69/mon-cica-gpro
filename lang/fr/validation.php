@@ -177,6 +177,7 @@ return [
         'password' => 'mot de passe',
         'password_confirmation' => 'confirmation du mot de passe',
         'telephone' => 'telephone',
+        'accept_terms' => 'conditions d\'utilisation',
         'ville' => 'ville',
         'pays' => 'pays',
         'role' => 'role',

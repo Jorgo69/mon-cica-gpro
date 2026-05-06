@@ -7,7 +7,7 @@
     <title>{{ config('app.name') }} — Gestion Intelligente de Projets</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-surface text-body font-sans" x-data="{ scrolled: false, mobileMenu: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
+<body class="bg-surface text-body font-sans" x-data="{ scrolled: false, mobileMenu: false }" @scroll.window="scrolled = (window.scrollY > 20)">
 
     {{-- Navigation --}}
     <nav class="sticky top-0 z-50 bg-card border-b border-border transition-all duration-300" :class="scrolled ? 'shadow-sm' : ''">
@@ -335,12 +335,12 @@
         class="fixed bottom-6 right-6 z-50 transition-all duration-500"
         :class="scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'"
     >
-        <button
-            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-            class="w-10 h-10 bg-accent text-white rounded-full shadow-lg flex items-center justify-center hover:bg-accent-dark transition-colors"
+        <a href="#"
+            @click.prevent="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="w-10 h-10 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full shadow-lg flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
         >
             <x-lucide-arrow-up class="w-5 h-5" />
-        </button>
+        </a>
     </div>
 
 </body>

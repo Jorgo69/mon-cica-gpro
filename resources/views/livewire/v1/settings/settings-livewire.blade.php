@@ -717,11 +717,11 @@
                     @error('webhookEvents') <p class="text-xs text-error mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <x-ui.button wire:click="saveWebhook" variant="secondary" icon="plus" size="sm">
+                    <x-ui.button wire:click="saveWebhook" variant="secondary" icon="plus">
                         {{ $editingWebhookId ? __('common.save') : __('settings.webhooks.add') }}
                     </x-ui.button>
                     @if($editingWebhookId)
-                        <x-ui.button wire:click="resetWebhookForm" variant="ghost" size="sm">{{ __('common.cancel') }}</x-ui.button>
+                        <x-ui.button wire:click="resetWebhookForm" variant="ghost">{{ __('common.cancel') }}</x-ui.button>
                     @endif
                 </div>
             </div>
@@ -772,7 +772,7 @@
                 <div class="flex-1">
                     <x-ui.input wire:model="newTokenName" icon="key" :placeholder="__('settings.api.token_name_placeholder')" />
                 </div>
-                <x-ui.button wire:click="createApiToken" variant="secondary" icon="plus" size="sm">
+                <x-ui.button wire:click="createApiToken" variant="secondary" icon="plus">
                     {{ __('settings.api.create_token') }}
                 </x-ui.button>
             </div>

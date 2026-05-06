@@ -57,6 +57,21 @@
             />
         </div>
 
+        {{-- CGU --}}
+        <div class="pt-1">
+            <label class="flex items-start gap-3 cursor-pointer group">
+                <input type="checkbox" wire:model="accept_terms"
+                    class="mt-0.5 w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-accent focus:ring-accent dark:bg-slate-700">
+                <span class="text-xs text-body leading-relaxed">
+                    {{ __('auth.accept_terms_prefix') }}
+                    <a href="{{ route('legal.terms') }}" target="_blank" class="text-accent hover:underline underline-offset-2">{{ __('auth.terms_of_service') }}</a>
+                    {{ __('auth.and') }}
+                    <a href="{{ route('legal.privacy') }}" target="_blank" class="text-accent hover:underline underline-offset-2">{{ __('auth.privacy_policy') }}</a>.
+                </span>
+            </label>
+            @error('accept_terms') <p class="text-xs text-error mt-1 ml-7">{{ $message }}</p> @enderror
+        </div>
+
         <div class="pt-2">
             <x-ui.button type="submit" variant="primary" icon="user-plus" size="lg" class="w-full" loadingText="{{ __('common.loading') }}">
                 {{ __('auth.register') }}

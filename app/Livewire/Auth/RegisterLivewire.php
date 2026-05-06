@@ -20,6 +20,7 @@ class RegisterLivewire extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public bool $accept_terms = false;
     public bool $hasInvitation = false;
 
     public function mount()
@@ -40,6 +41,7 @@ class RegisterLivewire extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'accept_terms' => ['accepted'],
         ]);
 
         $user = $registerAction->execute([

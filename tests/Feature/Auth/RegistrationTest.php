@@ -10,6 +10,7 @@ test('new users can register', function () {
         ->set('email', 'test@example.com')
         ->set('password', 'Password123!')
         ->set('password_confirmation', 'Password123!')
+        ->set('accept_terms', true)
         ->call('register')
         ->assertRedirect(route('onboarding'));
 

@@ -30,8 +30,12 @@ return [
     'create_account' => 'Créer un compte',
     'register_subtitle' => 'Rejoignez la plateforme pour gérer vos projets',
     'full_name' => 'Nom complet',
-    'confirm_password' => 'Confirmer le mot de passe',
+    'confirm_password' => 'Confirmation',
     'register' => 'S\'inscrire',
+    'accept_terms_prefix' => 'J\'accepte les',
+    'terms_of_service' => 'conditions d\'utilisation',
+    'privacy_policy' => 'politique de confidentialité',
+    'and' => 'et la',
     'already_registered' => 'Déjà inscrit ?',
 
     // Onboarding
