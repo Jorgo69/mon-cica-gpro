@@ -13,6 +13,22 @@ Guide complet pour deployer CICA-GPRO avec Docker sur un serveur client.
 > **Note** : Node.js 20 est installe dans le container Docker automatiquement.
 > Vous n'avez PAS besoin de Node.js sur la machine host.
 
+## Identifiants par defaut
+
+> **IMPORTANT : Changez ces mots de passe avant de deployer en production !**
+
+| Service | Utilisateur | Mot de passe | Port |
+|---------|-------------|-------------|------|
+| **Application** | `admin@projexia.org` | `password` | 8090 |
+| **MySQL** | `gpro` | `gpro_secret_2026` | 3306 |
+| **MySQL (root)** | `root` | `root_secret_2026` | 3306 |
+| **phpMyAdmin** | `gpro` | `gpro_secret_2026` | 8081 |
+| **PostgreSQL** | `gpro` | `gpro_secret_2026` | 5432 |
+| **pgAdmin** | `admin@cica-gpro.com` | `pgadmin_2026` | 8082 |
+| **Redis** | — | `gpro_redis_2026` | 6379 |
+
+Pour changer les mots de passe, editez `.env.docker.mysql` ou `.env.docker.postgres` **avant** le premier `make up`.
+
 ## Installation rapide
 
 ### 1. Cloner le projet

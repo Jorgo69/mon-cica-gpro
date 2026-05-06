@@ -5,6 +5,22 @@ Compatible Ubuntu, Debian, CentOS, ou tout serveur avec PHP 8.2+.
 
 ---
 
+## Comptes par defaut apres installation
+
+> **IMPORTANT : Changez ces mots de passe immediatement apres l'installation !**
+
+| Mode | Email | Mot de passe | Role |
+|------|-------|-------------|------|
+| **selfhosted** | `admin@projexia.org` | `password` | Admin (owner) |
+| **selfhosted** | `manager@projexia.org` | `password` | Manager |
+| **selfhosted** | `membre@projexia.org` | `password` | Membre |
+| **saas** | `root@cica-gpro.com` | `password` | ROOT (super admin) |
+| **saas** | `admin@projexia.org` | `password` | Admin org |
+
+Ces comptes sont crees par `php artisan db:seed`. En production, supprimez-les et creez vos propres comptes via `/register`.
+
+---
+
 ## Prerequis
 
 | Logiciel | Version minimum | Verification |
