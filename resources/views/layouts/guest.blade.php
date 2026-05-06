@@ -7,14 +7,19 @@
         <meta name="theme-color" content="#0e7490">
         <link rel="manifest" href="/manifest.json">
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
         <title>{{ config('app.name', 'CICA-GPRO') }}</title>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+            (function() {
+                var isDark = localStorage.getItem('darkMode') === 'true' ||
+                    (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) document.documentElement.classList.add('dark');
+            })();
+        </script>
+        <style>[x-cloak] { display: none !important; }</style>
     </head>
     <body class="font-sans text-heading antialiased selection:bg-accent selection:text-white">
         <div class="min-h-screen flex">
@@ -28,10 +33,7 @@
                 {{-- Logo + nom --}}
                 <div class="relative z-10">
                     <a href="/" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <span class="text-lg font-black text-white">G</span>
-                        </div>
-                        <span class="text-xl font-black tracking-tight">CICA-GPRO</span>
+                        <x-ui.logo size="md" :dark="true" />
                     </a>
                 </div>
 
@@ -76,30 +78,25 @@
 
                 {{-- Footer --}}
                 <div class="relative z-10">
-                    <p class="text-xs text-white/40">&copy; {{ date('Y') }} Cave-Tech &middot; Open Source &mdash; MIT License</p>
+                    <p class="text-xs text-white/40">&copy; {{ date('Y') }} {{ config('gpro.contact.company', 'Cave-Tech') }} &middot; Open Source &mdash; MIT License</p>
                 </div>
             </div>
 
             {{-- Panneau droit : formulaire --}}
-            <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-8 sm:py-12 bg-slate-50 dark:bg-slate-900 relative min-h-screen">
-                {{-- Decoration subtle --}}
-                <div class="absolute -top-24 -right-24 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+            <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-4 sm:px-8 lg:px-12 py-8 sm:py-12 bg-surface relative min-h-screen">
 
                 {{-- Logo mobile/tablette seulement --}}
                 <div class="mb-6 sm:mb-8 lg:hidden">
                     <a href="/" class="flex flex-col items-center gap-2">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-accent rounded-2xl flex items-center justify-center shadow-lg shadow-accent/20">
-                            <span class="text-xl sm:text-2xl font-black text-white">G</span>
-                        </div>
-                        <span class="text-base sm:text-lg font-black text-heading tracking-tight">CICA-GPRO</span>
+                        <x-ui.logo size="lg" />
                     </a>
                 </div>
 
-                <div class="w-full max-w-md relative z-10 bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-200 dark:border-slate-700">
+                <div class="w-full max-w-md relative z-10 bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 border border-border">
                     {{ $slot }}
                 </div>
 
-                <p class="mt-6 sm:mt-8 text-[10px] font-bold text-muted uppercase tracking-[0.2em]">&copy; {{ date('Y') }} Cave-Tech</p>
+                <p class="mt-6 sm:mt-8 text-[10px] font-bold text-subtle dark:text-white/60 uppercase tracking-[0.2em]">&copy; {{ date('Y') }} {{ config('gpro.contact.company', 'Cave-Tech') }}</p>
             </div>
         </div>
         <x-ui.cookie-banner />

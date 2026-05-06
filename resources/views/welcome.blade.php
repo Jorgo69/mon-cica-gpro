@@ -3,155 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CICA-GPRO — Plateforme open source de gestion de projets basee sur le Cadre Logique.">
-    <title>{{ config('app.name') }} — Gestion Intelligente de Projets</title>
+    <meta name="description" content="{{ config('app.name') }} — {{ __('landing.hero.subtitle') }}">
+    <title>{{ config('app.name') }} — {{ __('landing.hero.title_highlight') }}</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        (function() {
+            var isDark = localStorage.getItem('darkMode') === 'true' ||
+                (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
-<body class="bg-surface text-body font-sans" x-data="{ scrolled: false, mobileMenu: false }" @scroll.window="scrolled = (window.scrollY > 20)">
+<body
+    class="bg-surface text-heading font-sans selection:bg-accent/20 selection:text-accent"
+    x-data="{
+        scrolled: false,
+        darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+        toggleDark() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode);
+            document.documentElement.classList.toggle('dark', this.darkMode);
+        }
+    }"
+    @scroll.window="scrolled = (window.pageYOffset > 20)"
+>
 
-    {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 bg-card border-b border-border transition-all duration-300" :class="scrolled ? 'shadow-sm' : ''">
+    <!-- ========== NAVIGATION ========== -->
+    <nav
+        class="sticky top-0 z-50 bg-card border-b border-border transition-all duration-300"
+        x-bind:class="scrolled ? 'shadow-sm py-2' : 'py-4'"
+        x-data="{ mobileMenu: false }"
+    >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 bg-accent rounded-xl flex items-center justify-center">
-                        <span class="text-white font-black text-lg">G</span>
-                    </div>
-                    <span class="text-xl font-black tracking-tight text-heading">{{ config('app.name') }}</span>
-                    <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent/10 text-accent">v2.0</span>
-                </div>
+                <a href="/" class="flex items-center gap-2">
+                    <x-ui.logo size="md" />
+                </a>
 
-                <div class="hidden md:flex items-center gap-1">
-                    <a href="#features" class="px-3 py-2 text-sm font-semibold text-subtle hover:text-accent transition-colors">Fonctionnalites</a>
-                    <a href="#how-it-works" class="px-3 py-2 text-sm font-semibold text-subtle hover:text-accent transition-colors">Comment ca marche</a>
-                    <a href="#open-source" class="px-3 py-2 text-sm font-semibold text-subtle hover:text-accent transition-colors">Open Source</a>
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#solutions" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.solutions') }}</a>
+                    <a href="#expertise" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.expertise') }}</a>
+                    <a href="#process" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.process') }}</a>
+                    <a href="#faq" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.faq') }}</a>
+                    <a href="#contact" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.contact') }}</a>
                     @if(isSaas())
-                    <a href="{{ route('pricing') }}" class="px-3 py-2 text-sm font-semibold text-subtle hover:text-accent transition-colors">Tarifs</a>
+                    <a href="{{ route('pricing') }}" class="px-4 py-2 text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.nav.pricing') }}</a>
                     @endif
-                    <a href="#faq" class="px-3 py-2 text-sm font-semibold text-subtle hover:text-accent transition-colors">FAQ</a>
 
-                    <div class="h-5 w-px bg-border mx-3"></div>
+                    <div class="h-6 w-px bg-border mx-3"></div>
+
+                    {{-- Lang switch --}}
+                    @php $otherLocale = app()->getLocale() === 'fr' ? 'en' : 'fr'; @endphp
+                    <a href="{{ url('lang/' . $otherLocale) }}" class="px-2.5 py-1.5 text-[11px] font-black uppercase tracking-wider text-muted hover:text-accent border border-border rounded-lg transition-colors">
+                        {{ __('landing.nav.lang_switch') }}
+                    </a>
+
+                    {{-- Dark mode toggle --}}
+                    <button @click="toggleDark()" class="p-2 text-muted hover:text-accent transition-colors cursor-pointer" title="Toggle dark mode">
+                        <x-lucide-sun x-show="darkMode" x-cloak class="w-4 h-4" />
+                        <x-lucide-moon x-show="!darkMode" class="w-4 h-4" />
+                    </button>
+
+                    <div class="h-6 w-px bg-border mx-3"></div>
 
                     @auth
-                        <a href="{{ route('dashboard') }}" class="px-5 py-2 text-sm font-bold text-white bg-accent hover:bg-accent-dark rounded-lg transition-colors">Mon Espace</a>
+                        <x-ui.button tag="a" :href="route('dashboard')" variant="primary" size="md">
+                            {{ __('landing.nav.dashboard') }}
+                        </x-ui.button>
                     @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold text-subtle hover:text-heading transition-colors">Connexion</a>
-                        <a href="{{ route('register') }}" class="px-5 py-2 text-sm font-bold text-white bg-accent hover:bg-accent-dark rounded-lg transition-colors">Commencer</a>
+                        <a href="{{ route('login') }}" class="px-6 py-2 text-sm font-bold text-subtle hover:text-heading transition-colors">{{ __('landing.nav.login') }}</a>
+                        <x-ui.button tag="a" :href="route('register')" variant="accent" size="md">
+                            {{ __('landing.nav.start') }}
+                        </x-ui.button>
                     @endauth
                 </div>
 
-                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-subtle">
-                    <x-lucide-menu x-show="!mobileMenu" class="w-6 h-6" />
-                    <x-lucide-x x-show="mobileMenu" class="w-6 h-6" x-cloak />
-                </button>
+                <!-- Mobile -->
+                <div class="flex items-center gap-2 md:hidden">
+                    <a href="{{ url('lang/' . $otherLocale) }}" class="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-muted border border-border rounded-lg">
+                        {{ __('landing.nav.lang_switch') }}
+                    </a>
+                    <button @click="toggleDark()" class="p-2 text-muted cursor-pointer">
+                        <x-lucide-sun x-show="darkMode" x-cloak class="w-4 h-4" />
+                        <x-lucide-moon x-show="!darkMode" class="w-4 h-4" />
+                    </button>
+                    <button @click="mobileMenu = !mobileMenu" class="p-2 text-subtle cursor-pointer">
+                        <x-lucide-menu x-show="!mobileMenu" class="w-6 h-6" />
+                        <x-lucide-x x-show="mobileMenu" class="w-6 h-6" x-cloak />
+                    </button>
+                </div>
             </div>
         </div>
 
-        {{-- Mobile menu --}}
-        <div x-show="mobileMenu" x-transition x-cloak class="md:hidden bg-card border-t border-border p-4 space-y-1">
-            <a href="#features" @click="mobileMenu = false" class="block px-4 py-3 rounded-lg text-body font-semibold hover:bg-surface-alt">Fonctionnalites</a>
-            <a href="#how-it-works" @click="mobileMenu = false" class="block px-4 py-3 rounded-lg text-body font-semibold hover:bg-surface-alt">Comment ca marche</a>
-            <a href="#open-source" @click="mobileMenu = false" class="block px-4 py-3 rounded-lg text-body font-semibold hover:bg-surface-alt">Open Source</a>
-            <a href="#faq" @click="mobileMenu = false" class="block px-4 py-3 rounded-lg text-body font-semibold hover:bg-surface-alt">FAQ</a>
-            <div class="pt-3 border-t border-border flex flex-col gap-2">
-                <a href="{{ route('login') }}" class="text-center py-3 font-semibold text-subtle">Connexion</a>
-                <a href="{{ route('register') }}" class="text-center py-3 font-bold text-white bg-accent rounded-lg">Commencer</a>
+        <!-- Mobile Dropdown -->
+        <div x-show="mobileMenu" x-transition x-cloak class="md:hidden bg-card border-t border-border p-4 space-y-2">
+            <a href="#solutions" @click="mobileMenu = false" class="block px-4 py-3 text-lg font-bold text-body">{{ __('landing.nav.solutions') }}</a>
+            <a href="#expertise" @click="mobileMenu = false" class="block px-4 py-3 text-lg font-bold text-body">{{ __('landing.nav.expertise') }}</a>
+            <a href="#process" @click="mobileMenu = false" class="block px-4 py-3 text-lg font-bold text-body">{{ __('landing.nav.process') }}</a>
+            <a href="#faq" @click="mobileMenu = false" class="block px-4 py-3 text-lg font-bold text-body">{{ __('landing.nav.faq') }}</a>
+            <div class="pt-4 border-t border-border flex flex-col gap-3">
+                @auth
+                    <x-ui.button tag="a" :href="route('dashboard')" variant="accent" size="lg" class="w-full">
+                        {{ __('landing.nav.dashboard') }}
+                    </x-ui.button>
+                @else
+                    <a href="{{ route('login') }}" class="text-center py-3 font-bold text-subtle">{{ __('landing.nav.login') }}</a>
+                    <x-ui.button tag="a" :href="route('register')" variant="accent" size="lg" class="w-full">
+                        {{ __('landing.nav.start_mobile') }}
+                    </x-ui.button>
+                @endauth
             </div>
         </div>
     </nav>
 
     <main>
-        {{-- Hero --}}
-        <section class="pt-16 pb-24 md:pt-28 md:pb-36">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h1 class="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-heading mb-6 leading-[1.1]">
-                    Gerez vos projets<br>avec le <span class="text-accent">Cadre Logique</span>
-                </h1>
-
-                <p class="text-lg md:text-xl text-subtle mb-10 max-w-2xl mx-auto leading-relaxed">
-                    Plateforme complete pour les ONG et organisations de developpement.
-                    Cadre logique, budgets, indicateurs, rapports — tout en un.
-                </p>
-
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-                    <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-accent hover:bg-accent-dark rounded-xl transition-colors shadow-lg shadow-accent/25">
-                        Commencer gratuitement
-                    </a>
-                    <a href="#features" class="w-full sm:w-auto px-8 py-4 text-base font-bold text-heading bg-card border border-border hover:border-accent/50 rounded-xl transition-colors">
-                        Decouvrir les fonctionnalites
-                    </a>
-                </div>
-
-                {{-- Stats --}}
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-                    @foreach([
-                        ['462+', 'Tests automatises'],
-                        ['9', 'Providers IA'],
-                        ['15', 'Endpoints API'],
-                        ['8', 'Devises supportees'],
-                    ] as $stat)
-                    <div class="text-center">
-                        <div class="text-2xl md:text-3xl font-black text-heading">{{ $stat[0] }}</div>
-                        <div class="text-xs font-medium text-muted mt-1">{{ $stat[1] }}</div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        {{-- Features --}}
-        <section id="features" class="py-24 bg-surface-alt border-y border-border">
+        <!-- ========== HERO ========== -->
+        <section class="relative pt-12 pb-24 md:pt-24 md:pb-32">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-xs font-black text-accent uppercase tracking-widest mb-3">Fonctionnalites</h2>
-                    <h3 class="text-3xl md:text-4xl font-black text-heading">Tout ce dont vous avez besoin</h3>
-                </div>
+                <div class="text-center">
+                    <span class="inline-block text-[11px] font-black uppercase tracking-[0.2em] text-accent mb-6">{{ __('landing.hero.badge') }}</span>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach([
-                        ['target', 'Cadre Logique', 'Structure hierarchique complete : Objectif General, Objectifs Specifiques, Resultats, Activites, Sous-activites.'],
-                        ['bar-chart-3', 'Budgets & Finances', 'Budget planifie vs depenses reelles, multi-devise (8 devises), burn rate, alertes de depassement.'],
-                        ['users', 'Multi-tenant', 'Chaque organisation a son espace isole. RBAC 4 niveaux avec permissions granulaires.'],
-                        ['brain', 'IA Integree', '9 providers (Groq, OpenAI, Anthropic, Gemini...). Assistance par champ, resume executif, analyse dashboard.'],
-                        ['file-text', 'Exports', 'PDF, Word, Excel multi-feuilles. Rapports automatiques trimestriels. Tableau de bord bailleur public.'],
-                        ['calendar', 'Calendrier', '6 vues (annee, semestre, trimestre, mois, semaine, jour). Export iCal, sync Google Calendar / Outlook.'],
-                        ['activity', 'Indicateurs', 'Suivi de progression avec mesures, tendances, alertes automatiques (stagnation, regression).'],
-                        ['globe', 'API REST v1', '15 endpoints, auth Sanctum Bearer tokens, rate limiting. Documentation complete.'],
-                        ['webhook', 'Webhooks', '10 evenements, signature HMAC-SHA256, auto-disable apres 10 echecs.'],
-                        ['map-pin', 'Carte Projets', 'Visualisation geographique (Leaflet), 40 pays geocodes, marqueurs colores par statut.'],
-                        ['puzzle', 'Marketplace', 'Systeme de plugins extensible. 8 hooks disponibles. Creez vos propres extensions.'],
-                        ['shield-check', 'RGPD', 'Export donnees, anonymisation, suppression planifiee. Conformite totale.'],
-                    ] as $feat)
-                    <div class="bg-card border border-border rounded-2xl p-6 hover:border-accent/40 transition-colors group">
-                        <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <x-dynamic-component :component="'lucide-' . $feat[0]" class="w-5 h-5 text-accent" />
+                    <h2 class="text-5xl md:text-8xl font-black tracking-tightest text-heading mb-8 max-w-5xl mx-auto leading-[0.9]">
+                        {{ __('landing.hero.title_line1') }} <br> {{ __('landing.hero.title_line2') }} <span class="text-accent underline decoration-accent/30 underline-offset-8">{{ __('landing.hero.title_highlight') }}</span>.
+                    </h2>
+
+                    <p class="text-lg md:text-xl text-subtle mb-12 max-w-2xl mx-auto leading-relaxed">
+                        {{ __('landing.hero.subtitle') }}
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                        <x-ui.button tag="a" :href="route('register')" variant="primary" size="xl" icon="zap" class="w-full sm:w-auto">
+                            {{ __('landing.hero.cta_start') }}
+                        </x-ui.button>
+                        <x-ui.button tag="a" href="#solutions" variant="ghost" size="xl" iconRight="chevron-right" class="w-full sm:w-auto">
+                            {{ __('landing.hero.cta_discover') }}
+                        </x-ui.button>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+                        @foreach(__('landing.stats') as $stat)
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-black text-heading">{{ $stat[0] }}</div>
+                            <div class="text-xs font-medium text-muted mt-1">{{ $stat[1] }}</div>
                         </div>
-                        <h4 class="font-bold text-heading mb-2">{{ $feat[1] }}</h4>
-                        <p class="text-sm text-subtle leading-relaxed">{{ $feat[2] }}</p>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
             </div>
         </section>
 
-        {{-- How it works --}}
-        <section id="how-it-works" class="py-24">
+        <!-- ========== SOLUTIONS ========== -->
+        <section id="solutions" class="py-24 bg-card border-y border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">{{ __('landing.solutions.tag') }}</h3>
+                        <h4 class="text-4xl md:text-5xl font-black tracking-tight text-heading mb-6">{{ __('landing.solutions.title') }}</h4>
+                        <p class="text-subtle text-lg mb-10 leading-relaxed">
+                            {{ __('landing.solutions.subtitle') }}
+                        </p>
+
+                        <div class="space-y-6">
+                            @foreach(__('landing.solutions.items') as $feat)
+                            <div class="flex gap-4 p-4 rounded-2xl hover:bg-surface transition-colors group">
+                                <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                    <x-dynamic-component :component="'lucide-' . $feat[0]" class="w-6 h-6 text-accent" />
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-heading mb-1">{{ $feat[1] }}</h5>
+                                    <p class="text-sm text-subtle">{{ $feat[2] }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div id="expertise" class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4 pt-12">
+                            <div class="bg-card border border-border p-6 rounded-2xl h-64">
+                                <x-lucide-trending-up class="w-10 h-10 text-accent mb-4" />
+                                <p class="font-black text-xl text-heading">{{ __('landing.solutions.cards.kpi') }}</p>
+                                <p class="text-xs text-subtle mt-2 italic">{{ __('landing.solutions.cards.kpi_desc') }}</p>
+                            </div>
+                            <div class="bg-slate-900 dark:bg-slate-800 p-6 rounded-2xl h-48">
+                                <p class="text-white font-black text-4xl">{{ __('landing.solutions.cards.compliance') }}</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">{{ __('landing.solutions.cards.compliance_label') }}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-accent p-6 rounded-2xl h-48">
+                                <x-lucide-award class="text-white w-10 h-10" />
+                                <p class="text-white font-bold mt-4 uppercase text-[10px] tracking-widest">{{ __('landing.solutions.cards.expertise') }}</p>
+                            </div>
+                            <div class="bg-card border border-border p-6 rounded-2xl h-64">
+                                <x-lucide-shield-check class="w-10 h-10 text-accent mb-4" />
+                                <p class="font-black text-xl text-heading">{{ __('landing.solutions.cards.security') }}</p>
+                                <p class="text-xs text-subtle mt-2">{{ __('landing.solutions.cards.security_desc') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== PROCESS ========== -->
+        <section id="process" class="py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-xs font-black text-accent uppercase tracking-widest mb-3">Comment ca marche</h2>
-                    <h3 class="text-3xl md:text-4xl font-black text-heading">Du cadre logique au rapport final</h3>
+                    <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">{{ __('landing.process.tag') }}</h3>
+                    <h4 class="text-3xl md:text-5xl font-black text-heading">{{ __('landing.process.title_start') }} <span class="italic">{{ __('landing.process.title_italic') }}</span>.</h4>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    @foreach([
-                        ['1', 'Creez votre projet', 'Definissez l\'objectif general, les objectifs specifiques et les resultats attendus.', 'file-plus'],
-                        ['2', 'Planifiez les activites', 'Assignez les responsables, les budgets et les echeances a chaque activite.', 'list-todo'],
-                        ['3', 'Suivez la progression', 'Tableau de bord en temps reel, indicateurs, alertes automatiques, commentaires.', 'trending-up'],
-                        ['4', 'Generez les rapports', 'Export PDF/Word/Excel, partage bailleur, calendrier, API pour vos outils.', 'file-bar-chart'],
-                    ] as $step)
-                    <div class="relative text-center">
-                        <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-accent text-white font-black text-lg flex items-center justify-center">{{ $step[0] }}</div>
-                        <h4 class="font-bold text-heading mb-2">{{ $step[1] }}</h4>
+                    @foreach(__('landing.process.steps') as $step)
+                    <div class="relative p-8 rounded-[2rem] bg-card border border-border hover:border-accent group transition-all">
+                        <span class="absolute -top-4 left-8 bg-accent text-white font-black text-xs px-3 py-1 rounded-full">{{ $step[0] }}</span>
+                        <div class="w-12 h-12 rounded-xl bg-surface-alt flex items-center justify-center mb-6 text-muted group-hover:text-accent transition-colors">
+                            <x-dynamic-component :component="'lucide-' . $step[3]" class="w-6 h-6" />
+                        </div>
+                        <h5 class="font-bold text-heading mb-2">{{ $step[1] }}</h5>
                         <p class="text-sm text-subtle">{{ $step[2] }}</p>
                     </div>
                     @endforeach
@@ -159,89 +231,98 @@
             </div>
         </section>
 
-        {{-- Open Source --}}
-        <section id="open-source" class="py-24 bg-surface-alt border-y border-border">
+        <!-- ========== OPEN SOURCE ========== -->
+        <section class="py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 class="text-xs font-black text-accent uppercase tracking-widest mb-3">Open Source</h2>
-                        <h3 class="text-3xl md:text-4xl font-black text-heading mb-6">Deux modes, un seul outil</h3>
-                        <p class="text-subtle text-lg mb-8 leading-relaxed">
-                            CICA-GPRO est disponible en open source (MIT). Installez-le sur votre serveur ou utilisez notre version SaaS hebergee.
-                        </p>
+                        <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">{{ __('landing.opensource.tag') }}</h3>
+                        <h4 class="text-3xl md:text-4xl font-black text-heading mb-6">{{ __('landing.opensource.title') }}</h4>
+                        <p class="text-subtle text-lg mb-8 leading-relaxed">{{ __('landing.opensource.subtitle') }}</p>
 
                         <div class="space-y-4">
-                            <div class="flex gap-4 p-4 rounded-xl bg-card border border-border">
-                                <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
-                                    <x-lucide-server class="w-5 h-5 text-success" />
+                            <div class="flex gap-4 p-4 rounded-2xl bg-surface-alt border border-border">
+                                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                                    <x-lucide-server class="w-5 h-5 text-accent" />
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-heading">Self-hosted</h4>
-                                    <p class="text-sm text-subtle">Installez sur votre serveur. Tout illimite. Docker inclus.</p>
+                                    <h5 class="font-bold text-heading">{{ __('landing.opensource.selfhosted') }}</h5>
+                                    <p class="text-sm text-subtle">{{ __('landing.opensource.selfhosted_desc') }}</p>
                                 </div>
                             </div>
-                            <div class="flex gap-4 p-4 rounded-xl bg-card border border-border">
+                            <div class="flex gap-4 p-4 rounded-2xl bg-surface-alt border border-border">
                                 <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                                     <x-lucide-cloud class="w-5 h-5 text-accent" />
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-heading">SaaS</h4>
-                                    <p class="text-sm text-subtle">Version hebergee avec plans (Free / Pro / Enterprise). Zero maintenance.</p>
+                                    <h5 class="font-bold text-heading">{{ __('landing.opensource.saas') }}</h5>
+                                    <p class="text-sm text-subtle">{{ __('landing.opensource.saas_desc') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-primary dark:bg-card rounded-2xl p-6 font-mono text-sm overflow-hidden border border-border">
+                    <div class="bg-slate-900 dark:bg-slate-800 rounded-2xl p-6 font-mono text-sm overflow-hidden">
                         <div class="flex items-center gap-2 mb-4">
-                            <div class="w-3 h-3 rounded-full bg-error"></div>
-                            <div class="w-3 h-3 rounded-full bg-warning"></div>
-                            <div class="w-3 h-3 rounded-full bg-success"></div>
-                            <span class="ml-2 text-muted text-xs">terminal</span>
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-2 text-slate-500 text-xs">terminal</span>
                         </div>
-                        <div class="space-y-1 text-body dark:text-body">
-                            <p><span class="text-accent">$</span> git clone https://github.com/cave-tech/cica-gpro.git</p>
+                        <div class="space-y-1 text-slate-300">
+                            <p><span class="text-accent">$</span> git clone {{ config('gpro.contact.github_url', 'https://github.com/cave-tech/cica-gpro') }}.git</p>
                             <p><span class="text-accent">$</span> cd cica-gpro</p>
-                            <p><span class="text-accent">$</span> cp .env.docker .env</p>
                             <p><span class="text-accent">$</span> make up</p>
-                            <p class="text-muted mt-2"># Application sur http://localhost:8080</p>
-                            <p class="text-muted"># phpMyAdmin sur http://localhost:8081</p>
+                            <p class="text-slate-500 mt-3">{{ __('landing.opensource.terminal_comment1') }}</p>
+                            <p class="text-slate-500">{{ __('landing.opensource.terminal_comment2') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        {{-- FAQ --}}
+        <!-- ========== TRUST ========== -->
+        <section class="py-16">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 class="text-xs font-black text-muted uppercase tracking-widest mb-10">{{ __('landing.trust.tag') }}</h3>
+                <div class="flex flex-wrap items-center justify-center gap-10">
+                    @for($i = 0; $i < 5; $i++)
+                    <div class="w-28 h-10 rounded-lg bg-surface-alt border border-border flex items-center justify-center">
+                        <span class="text-[10px] font-bold text-muted uppercase tracking-wider">{{ __('landing.trust.placeholder') }}</span>
+                    </div>
+                    @endfor
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== FAQ ========== -->
         <section id="faq" class="py-24">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-xs font-black text-accent uppercase tracking-widest mb-3">FAQ</h2>
-                    <h3 class="text-3xl font-black text-heading">Questions frequentes</h3>
+                    <h3 class="text-xs font-black text-accent uppercase tracking-widest mb-4">{{ __('landing.faq.tag') }}</h3>
+                    <h4 class="text-3xl font-black text-heading">{{ __('landing.faq.title') }}</h4>
                 </div>
 
-                <div class="space-y-3" x-data="{ active: null }">
-                    @foreach([
-                        ['Qu\'est-ce que le Cadre Logique ?', 'Le Cadre Logique (LogFrame) est une methodologie standard utilisee par les ONG et bailleurs de fonds pour concevoir, suivre et evaluer des projets de developpement. Il structure les objectifs, resultats, activites et indicateurs de maniere hierarchique.'],
-                        ['GPRO est-il adapte aux petites organisations ?', 'Oui. En mode selfhosted, tout est gratuit et illimite. L\'interface guide les utilisateurs pas a pas. Le systeme d\'onboarding et la FAQ integree facilitent la prise en main.'],
-                        ['Quels formats d\'export sont supportes ?', 'PDF (DomPDF ou Chromium), Word (PHPWord), Excel multi-feuilles (Maatwebsite). Les rapports peuvent etre generes automatiquement chaque trimestre et envoyes par email.'],
-                        ['Mes donnees sont-elles securisees ?', 'Oui. Architecture multi-tenant stricte (isolation par organisation), chiffrement des cles API, audit logs complet, conformite RGPD (export, anonymisation, suppression). En selfhosted, vos donnees restent sur votre serveur.'],
-                        ['Puis-je integrer GPRO avec d\'autres outils ?', 'Oui. API REST v1 (15 endpoints, auth Sanctum), webhooks HMAC-SHA256 (10 evenements), export iCal (sync calendrier), systeme de plugins extensible.'],
-                        ['Comment installer la version selfhosted ?', 'Avec Docker : 3 commandes (git clone, cp .env.docker .env, make up). Supporte MySQL et PostgreSQL. Guide complet dans la documentation.'],
-                        ['L\'IA est-elle obligatoire ?', 'Non. L\'IA est optionnelle et desactivee par defaut. Si vous la configurez (Groq gratuit recommande), elle assiste la redaction des descriptions, resume executif et analyse du dashboard.'],
-                    ] as $index => $faq)
-                    <div class="bg-card rounded-xl border border-border overflow-hidden">
+                <div class="space-y-4" x-data="{ active: null }">
+                    @foreach(__('landing.faq.items') as $index => $faq)
+                    <div class="bg-card rounded-2xl border border-border dark:border-slate-600 overflow-hidden">
                         <button
-                            @click="active = (active === {{ $index }} ? null : {{ $index }})"
-                            class="w-full px-6 py-4 text-left flex justify-between items-center"
+                            type="button"
+                            x-on:click="active = (active === {{ $index }} ? null : {{ $index }})"
+                            class="w-full px-6 py-5 text-left flex justify-between items-center group cursor-pointer"
                         >
-                            <span class="font-semibold text-heading pr-4">{{ $faq[0] }}</span>
+                            <span class="font-bold text-body group-hover:text-accent transition-colors">{{ $faq[0] }}</span>
                             <x-lucide-chevron-down
                                 class="w-5 h-5 text-muted transition-transform duration-300 shrink-0"
-                                ::class="active === {{ $index }} ? 'rotate-180' : ''"
+                                x-bind:class="active === {{ $index }} ? 'rotate-180' : ''"
                             />
                         </button>
-                        <div x-show="active === {{ $index }}" x-collapse class="px-6 pb-4 text-sm text-subtle leading-relaxed">
+                        <div
+                            x-show="active === {{ $index }}"
+                            x-collapse
+                            x-cloak
+                            class="px-6 pb-5 text-sm text-subtle leading-relaxed"
+                        >
                             {{ $faq[1] }}
                         </div>
                     </div>
@@ -250,20 +331,27 @@
             </div>
         </section>
 
-        {{-- CTA --}}
+        <!-- ========== CTA ========== -->
         <section class="py-24">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-primary dark:bg-card rounded-3xl px-8 py-16 md:px-16 md:py-20 text-center relative overflow-hidden border border-border">
-                    <div class="relative max-w-2xl mx-auto">
-                        <h3 class="text-3xl md:text-4xl font-black text-white dark:text-heading mb-4">Pret a structurer vos projets ?</h3>
-                        <p class="text-muted dark:text-subtle mb-8 text-lg">Rejoignez les organisations qui utilisent GPRO pour maximiser l'impact de leurs projets de developpement.</p>
+                <div class="bg-slate-900 dark:bg-slate-800 rounded-3xl px-8 py-20 md:px-16 md:py-24">
+                    <div class="text-center max-w-3xl mx-auto">
+                        <h3 class="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight">
+                            {{ __('landing.cta.title') }}
+                        </h3>
+                        <p class="text-muted mb-12 text-lg">
+                            {{ str_replace(':app', config('app.name'), __('landing.cta.subtitle')) }}
+                        </p>
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <a href="{{ route('register') }}" class="w-full sm:w-auto px-8 py-4 font-bold bg-accent text-white hover:bg-accent-dark rounded-xl transition-colors">
-                                Creer mon compte
+                            <x-ui.button tag="a" :href="route('register')" variant="accent" size="xl" icon="arrow-right">
+                                {{ __('landing.cta.button') }}
+                            </x-ui.button>
+                            @if(config('gpro.contact.whatsapp'))
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', config('gpro.contact.whatsapp')) }}" target="_blank" class="inline-flex items-center gap-2 px-8 py-4 text-sm font-bold text-white/80 hover:text-white border-2 border-white/20 hover:border-white/40 rounded-xl transition-colors uppercase tracking-wider">
+                                <x-lucide-message-circle class="w-4 h-4" />
+                                {{ __('landing.cta.contact') }}
                             </a>
-                            <a href="https://github.com/cave-tech/cica-gpro" target="_blank" class="w-full sm:w-auto px-8 py-4 font-bold text-white dark:text-heading border-2 border-white/30 dark:border-border hover:border-white/60 dark:hover:border-accent/50 rounded-xl transition-colors">
-                                Voir sur GitHub
-                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -271,75 +359,92 @@
         </section>
     </main>
 
-    {{-- Footer --}}
+    <!-- ========== FOOTER ========== -->
     <footer id="contact" class="bg-card border-t border-border py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                            <span class="text-white font-black text-sm">G</span>
-                        </div>
-                        <span class="text-lg font-black text-heading">{{ config('app.name') }}</span>
+                <div class="col-span-1 md:col-span-2">
+                    <div class="mb-6">
+                        <x-ui.logo size="sm" />
                     </div>
-                    <p class="text-subtle text-sm max-w-xs leading-relaxed mb-6">
-                        Plateforme open source de gestion de projets basee sur le Cadre Logique. Concue pour les ONG et organisations de developpement.
+                    <p class="text-subtle text-sm max-w-xs leading-relaxed">
+                        {{ __('landing.footer.description') }}
                     </p>
-                    <div class="flex gap-3">
-                        <a href="mailto:contact@cave-tech.com" class="p-2 rounded-lg bg-surface-alt border border-border text-muted hover:text-accent transition-colors" title="Email">
+                    <div class="mt-6 space-y-3">
+                        @if(config('gpro.contact.email'))
+                        <a href="mailto:{{ config('gpro.contact.email') }}" class="flex items-center gap-2 text-sm text-subtle hover:text-accent transition-colors">
                             <x-lucide-mail class="w-4 h-4" />
+                            {{ config('gpro.contact.email') }}
                         </a>
-                        <a href="https://github.com/cave-tech/cica-gpro" target="_blank" class="p-2 rounded-lg bg-surface-alt border border-border text-muted hover:text-accent transition-colors" title="GitHub">
+                        @endif
+                        @if(config('gpro.contact.whatsapp'))
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', config('gpro.contact.whatsapp')) }}" target="_blank" class="flex items-center gap-2 text-sm text-subtle hover:text-accent transition-colors">
+                            <x-lucide-message-circle class="w-4 h-4" />
+                            {{ config('gpro.contact.whatsapp') }}
+                        </a>
+                        @endif
+                        @if(config('gpro.contact.github_url'))
+                        <a href="{{ config('gpro.contact.github_url') }}" target="_blank" class="flex items-center gap-2 text-sm text-subtle hover:text-accent transition-colors">
                             <x-lucide-github class="w-4 h-4" />
+                            GitHub
                         </a>
+                        @endif
                     </div>
                 </div>
-
                 <div>
-                    <h6 class="text-xs font-bold uppercase tracking-widest text-muted mb-4">Produit</h6>
-                    <ul class="space-y-3">
-                        <li><a href="#features" class="text-sm text-subtle hover:text-accent transition-colors">Fonctionnalites</a></li>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest text-muted mb-6">{{ __('landing.footer.col_platform') }}</h6>
+                    <ul class="space-y-4">
+                        <li><a href="#solutions" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.solutions') }}</a></li>
+                        <li><a href="#expertise" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.expertise') }}</a></li>
                         @if(isSaas())
-                        <li><a href="{{ route('pricing') }}" class="text-sm text-subtle hover:text-accent transition-colors">Tarifs</a></li>
+                        <li><a href="{{ route('pricing') }}" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.pricing') }}</a></li>
                         @endif
-                        <li><a href="{{ route('login') }}" class="text-sm text-subtle hover:text-accent transition-colors">Connexion</a></li>
-                        <li><a href="{{ route('register') }}" class="text-sm text-subtle hover:text-accent transition-colors">Inscription</a></li>
+                        <li><a href="{{ route('login') }}" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.portal') }}</a></li>
+                        <li><a href="{{ route('register') }}" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.register') }}</a></li>
                     </ul>
                 </div>
-
                 <div>
-                    <h6 class="text-xs font-bold uppercase tracking-widest text-muted mb-4">Legal</h6>
-                    <ul class="space-y-3">
-                        <li><a href="{{ url('/privacy') }}" class="text-sm text-subtle hover:text-accent transition-colors">Confidentialite</a></li>
-                        <li><a href="{{ url('/terms') }}" class="text-sm text-subtle hover:text-accent transition-colors">Conditions d'utilisation</a></li>
-                        <li><a href="#faq" class="text-sm text-subtle hover:text-accent transition-colors">FAQ</a></li>
-                        <li><a href="https://github.com/cave-tech/cica-gpro" target="_blank" class="text-sm text-subtle hover:text-accent transition-colors">GitHub</a></li>
+                    <h6 class="text-[10px] font-black uppercase tracking-widest text-muted mb-6">{{ __('landing.footer.col_resources') }}</h6>
+                    <ul class="space-y-4">
+                        <li><a href="#faq" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.faq') }}</a></li>
+                        <li><a href="{{ url('/privacy') }}" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.privacy') }}</a></li>
+                        <li><a href="{{ url('/terms') }}" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.terms') }}</a></li>
+                        @if(config('gpro.contact.github_url'))
+                        <li><a href="{{ config('gpro.contact.github_url') }}" target="_blank" class="text-sm font-bold text-subtle hover:text-accent transition-colors">{{ __('landing.footer.github') }}</a></li>
+                        @endif
                     </ul>
                 </div>
             </div>
 
-            <div class="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-xs text-muted">&copy; {{ date('Y') }} {{ config('app.name') }}. Open source sous licence MIT. Developpe par Cave-Tech.</p>
+            <div class="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-xs text-muted">
+                    &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('landing.footer.copyright') }}
+                    {{ __('landing.footer.built_by') }}
+                    <a href="{{ config('gpro.contact.company_url', '#') }}" target="_blank" class="text-accent hover:underline">{{ config('gpro.contact.company', 'Cave-Tech') }}</a>.
+                </p>
                 <button
+                    type="button"
                     @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-                    class="text-xs font-semibold text-muted hover:text-accent transition-colors flex items-center gap-1"
+                    class="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-muted hover:text-accent transition-colors cursor-pointer"
                 >
-                    Retour en haut <x-lucide-arrow-up class="w-3 h-3" />
+                    {{ __('landing.footer.back_to_top') }}
+                    <x-lucide-arrow-up class="w-4 h-4 group-hover:-translate-y-1 transition-transform" />
                 </button>
             </div>
         </div>
     </footer>
 
-    {{-- Back to top --}}
+    <!-- Back to top sticky button -->
     <div
-        class="fixed bottom-6 right-6 z-50 transition-all duration-500"
-        :class="scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'"
+        class="fixed bottom-8 right-8 z-[60] transition-all duration-500"
+        x-bind:class="scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'"
     >
-        <button type="button"
-            @click="document.documentElement.scrollTo({ top: 0, behavior: 'smooth' })"
-            class="w-10 h-10 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full shadow-lg flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors cursor-pointer"
+        <button
+            type="button"
+            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="w-12 h-12 bg-slate-900 dark:bg-accent text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer"
         >
-            <x-lucide-arrow-up class="w-5 h-5" />
+            <x-lucide-arrow-up class="w-6 h-6" />
         </button>
     </div>
 

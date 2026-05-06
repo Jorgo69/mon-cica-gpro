@@ -158,6 +158,24 @@ return [
         'catalog_url' => env('GPRO_PLUGIN_CATALOG_URL', null),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact & liens publics
+    |--------------------------------------------------------------------------
+    */
+    'logo' => env('GPRO_LOGO', null), // path relatif depuis public/ (ex: images/logo.png)
+    'logo_dark' => env('GPRO_LOGO_DARK', null), // variante pour dark mode (optionnel)
+
+    'contact' => [
+        'whatsapp' => env('GPRO_CONTACT_WHATSAPP', '+22997000000'),
+        'phone' => env('GPRO_CONTACT_PHONE', null),
+        'email' => env('GPRO_CONTACT_EMAIL', 'contact@cica-gpro.com'),
+        'site_url' => env('GPRO_SITE_URL', 'https://cica-gpro.com'),
+        'github_url' => env('GPRO_GITHUB_URL', 'https://github.com/cave-tech/cica-gpro'),
+        'company' => env('GPRO_COMPANY_NAME', 'Cave-Tech'),
+        'company_url' => env('GPRO_COMPANY_URL', 'https://cave-tech.com'),
+    ],
+
     // AI (Groq gratuit prioritaire, Gemini en fallback)
     'ai' => [
         'gemini_api_key' => env('GEMINI_API_KEY'),
