@@ -537,3 +537,29 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] **Seed demo** : mesures indicateurs, commentaires, lien partage bailleur
 - [x] **.env.example** : complet (GPRO_MODE, social auth, Firebase, payment)
 - [x] **Rename V1** : VBeta/v-beta/v_beta → V1/v1 (220 fichiers, namespaces, vues, routes)
+
+### Solidification v2.1.0 (TERMINEE)
+
+- [x] **Docker Hub** : image jorgo69/cica-gpro publiee (v2.0.0 + latest), docker-compose.hub.yml pour clients, make push-hub/update-hub
+- [x] **Seeders mode-aware** : selfhosted (pas de ROOT, 1 org, 3 users, plan illimite) vs saas (ROOT + 2 orgs + 7 users + 3 plans)
+- [x] **Migrations fusionnees** : add_plan_to_organizations/users + add_branding + add_owner → dans create_* originaux
+- [x] **Spatie MySQL fix** : nullable team_foreign_key → unique() au lieu de primary() (compatible MySQL/PG/SQLite)
+- [x] **DemoProjectSeeder** : measured_by → measured_by_user_id, ShareToken created_by_user_id
+- [x] **Guest layout split** : branding gauche (accent) + formulaire droite, responsive mobile/tablette
+- [x] **CGU checkbox** : obligatoire sur register (accept_terms validated 'accepted')
+- [x] **Dark mode wire:navigate** : script purement JS (localStorage source de verite), plus de flash
+- [x] **page-layout** : wire:loading global SUPPRIME (bloquait tous les clics)
+- [x] **x-ui.button** : loading spinner scope par wire:target (pas global)
+- [x] **Import Excel** : spinner supprime, bouton disabled/enabled, traductions ajoutees
+- [x] **Logo** : CICA-GPRO remplace le SVG Laravel sur login/register
+- [x] **Bouton transition rapide** : dropdown statut sur project-show (createur + admin)
+- [x] **Owner protege** : ne peut pas etre retrograde, admin ne peut pas modifier son propre role
+- [x] **Scroll to top** : button au lieu de a (fix click)
+- [x] **Docs** : identifiants par defaut en haut des guides, sections MAJ Docker Hub + sources
+
+### A faire
+
+- [ ] **Landing page v2** : refaire completement (voir memory/landing-page.md pour les specs)
+- [ ] **Checkboxes webhook** : style comme les notifications (toggles ronds)
+- [ ] **Social auth** : messages d'erreur silencieux sur login/register via Google
+- [ ] **NativePHP** : preparation mobile/desktop (a venir)
