@@ -335,12 +335,12 @@
         class="fixed bottom-6 right-6 z-50 transition-all duration-500"
         :class="scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'"
     >
-        <a href="#"
-            @click.prevent="window.scrollTo({ top: 0, behavior: 'smooth' })"
-            class="w-10 h-10 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full shadow-lg flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+        <button type="button"
+            @click="document.documentElement.scrollTo({ top: 0, behavior: 'smooth' })"
+            class="w-10 h-10 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full shadow-lg flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors cursor-pointer"
         >
             <x-lucide-arrow-up class="w-5 h-5" />
-        </a>
+        </button>
     </div>
 
 </body>

@@ -206,7 +206,28 @@ class MemberManagementLivewire extends Component
     {
         $this->authorize('update', $this->selectedMember);
         $data = $this->validate();
-        
+
+        $currentUser = auth()->user();
+        $org = $currentUser->organization;
+
+        // Protection : l'owner ne peut pas être rétrogradé
+        if ($org && $org->owner_user_id === $this->selectedMember->id) {
+            $newRole = AccountType::tryFrom($data['role'] ?? '');
+            if ($newRole && $newRole !== AccountType::ORG_ADMIN) {
+                $this->notifyToast('error', __('admin.members.cannot_downgrade_owner'));
+                return;
+            }
+        }
+
+        // Protection : on ne peut pas se rétrograder soi-même
+        if ($this->selectedMember->id === $currentUser->id) {
+            $newRole = AccountType::tryFrom($data['role'] ?? '');
+            if ($newRole && $newRole !== $currentUser->role) {
+                $this->notifyToast('error', __('admin.members.cannot_modify_self'));
+                return;
+            }
+        }
+
         $saveAction->execute($data, $this->selectedMember);
 
         $this->closeModal();
