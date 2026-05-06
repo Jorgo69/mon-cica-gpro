@@ -389,7 +389,7 @@
                         </div>
                         @if(in_array($key, $linked))
                             <x-ui.button wire:click="unlinkSocial('{{ $key }}')" wire:confirm="Delier ce compte {{ $provider['label'] }} ?"
-                                variant="secondary" size="sm" icon="unlink">
+                                variant="danger" size="sm" icon="unlink">
                                 Delier
                             </x-ui.button>
                         @else
@@ -743,13 +743,13 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-2 ml-3">
-                        <x-ui.button wire:click="toggleWebhook('{{ $wh->id }}')" variant="secondary" size="sm" icon="{{ $wh->is_active ? 'pause' : 'play' }}">
+                        <x-ui.button wire:click="toggleWebhook('{{ $wh->id }}')" variant="{{ $wh->is_active ? 'outline' : 'accent' }}" size="sm" icon="{{ $wh->is_active ? 'pause' : 'play' }}">
                             {{ $wh->is_active ? __('common.deactivate') : __('common.activate') }}
                         </x-ui.button>
-                        <x-ui.button wire:click="editWebhook('{{ $wh->id }}')" variant="secondary" size="sm" icon="pencil">
+                        <x-ui.button wire:click="editWebhook('{{ $wh->id }}')" variant="ghost" size="sm" icon="pencil">
                             {{ __('common.edit') }}
                         </x-ui.button>
-                        <x-ui.button wire:click="deleteWebhook('{{ $wh->id }}')" wire:confirm="{{ __('settings.webhooks.confirm_delete') }}" variant="secondary" size="sm" icon="trash-2">
+                        <x-ui.button wire:click="deleteWebhook('{{ $wh->id }}')" wire:confirm="{{ __('settings.webhooks.confirm_delete') }}" variant="danger" size="sm" icon="trash-2">
                             {{ __('common.delete') }}
                         </x-ui.button>
                     </div>
@@ -788,7 +788,7 @@
                     <div class="flex gap-2">
                         <code class="flex-1 bg-white dark:bg-black/20 p-2 rounded text-[10px] font-mono text-heading break-all" id="api-token">{{ $plainTextToken }}</code>
                         <x-ui.button @click="navigator.clipboard.writeText(document.getElementById('api-token').textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                                variant="secondary" size="sm">
+                                variant="accent" size="sm">
                             <span x-show="!copied"><x-lucide-copy class="w-3.5 h-3.5" /></span>
                             <span x-show="copied"><x-lucide-check class="w-3.5 h-3.5" /></span>
                         </x-ui.button>
@@ -810,7 +810,7 @@
                             </div>
                             <x-ui.button wire:click="revokeApiToken('{{ $token->id }}')"
                                     wire:confirm="{{ __('settings.api.confirm_revoke') }}"
-                                    variant="secondary" size="sm" icon="trash-2">
+                                    variant="danger" size="sm" icon="trash-2">
                                 {{ __('settings.api.revoke') }}
                             </x-ui.button>
                         </div>
