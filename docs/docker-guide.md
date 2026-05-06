@@ -284,19 +284,84 @@ docker compose exec -T postgres psql -U gpro -d cica_gpro < backup_20260504_1200
 
 ## Mise a jour
 
+### Methode 1 : Depuis les sources (contributeurs / developpeurs)
+
+Vous avez clone le repo avec `git clone`. Pour mettre a jour :
+
 ```bash
 make update
 ```
 
-Cela fait : `git pull` → rebuild image → restart → migrate → cache.
+Cela fait automatiquement :
+1. Sauvegarde de la base de donnees
+2. `git pull` (recupere les derniers changements)
+3. Rebuild de l'image Docker
+4. Redemarrage des services
+5. Migrations (nouvelles tables/colonnes)
+6. Reconstruction du cache
 
 Si vous avez des modifications locales :
 
 ```bash
-git stash
-make update
-git stash pop
+git stash          # Sauvegarder vos changements
+make update        # Mettre a jour
+git stash pop      # Restaurer vos changements
 ```
+
+### Methode 2 : Depuis Docker Hub (clients / production)
+
+Pas besoin de `git` ni de `npm`. L'image est deja construite et testee.
+
+**Premiere installation :**
+
+```bash
+# 1. Telecharger les fichiers de configuration
+mkdir cica-gpro && cd cica-gpro
+# Copier docker-compose.yml, docker-compose.postgres.yml,
+# .env.docker.mysql (ou .env.docker.postgres),
+# docker/nginx/default.conf, docker/mysql/init.sql (ou docker/postgres/init.sql)
+# depuis le repo GitHub ou un zip fourni par Cave-Tech
+
+# 2. Remplacer le build par l'image Docker Hub dans docker-compose.yml :
+#    Commenter :  build: { context: ., dockerfile: Dockerfile }
+#    Decommenter : image: cavetech/cica-gpro:latest
+#    Faire pareil pour les services 'queue' et 'scheduler'
+
+# 3. Lancer
+docker compose up -d
+```
+
+**Mise a jour :**
+
+```bash
+make update-hub
+```
+
+Ou manuellement :
+
+```bash
+docker compose pull app           # Telecharger la nouvelle image
+docker compose up -d              # Redemarrer avec la nouvelle image
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
+```
+
+### Pour Cave-Tech : publier une nouvelle version
+
+Apres avoir teste et valide les changements :
+
+```bash
+# Publier une version specifique
+make push-hub VERSION=2.1.0
+
+# Cela cree deux tags sur Docker Hub :
+#   cavetech/cica-gpro:2.1.0
+#   cavetech/cica-gpro:latest
+```
+
+Les clients font ensuite `make update-hub` pour recevoir la mise a jour.
 
 ---
 

@@ -93,12 +93,57 @@ backup-pg: ## Sauvegarder la base PostgreSQL
 
 # ── Mise a jour ───────────────────────────────────────────────────────────────
 
-update: ## Mettre a jour l'application (git pull + rebuild)
+update: ## Mettre a jour depuis les sources (git pull + rebuild)
+	@echo "=== Sauvegarde avant mise a jour ==="
+	-$(MAKE) backup-mysql 2>/dev/null || $(MAKE) backup-pg 2>/dev/null || true
+	@echo "=== Recuperation des sources ==="
 	git pull
+	@echo "=== Rebuild de l'image ==="
 	docker compose build app
+	@echo "=== Redemarrage des services ==="
 	docker compose up -d
+	@echo "=== Attente demarrage (30s) ==="
+	sleep 30
+	@echo "=== Migrations ==="
 	docker compose exec app php artisan migrate --force
+	@echo "=== Cache ==="
 	docker compose exec app php artisan config:cache
 	docker compose exec app php artisan route:cache
 	docker compose exec app php artisan view:cache
-	@echo "Mise a jour terminee!"
+	@echo ""
+	@echo "Mise a jour terminee !"
+
+update-hub: ## Mettre a jour depuis Docker Hub (sans git)
+	@echo "=== Sauvegarde avant mise a jour ==="
+	-$(MAKE) backup-mysql 2>/dev/null || $(MAKE) backup-pg 2>/dev/null || true
+	@echo "=== Telechargement de la nouvelle image ==="
+	docker compose pull app
+	@echo "=== Redemarrage des services ==="
+	docker compose up -d
+	@echo "=== Attente demarrage (30s) ==="
+	sleep 30
+	@echo "=== Migrations ==="
+	docker compose exec app php artisan migrate --force
+	@echo "=== Cache ==="
+	docker compose exec app php artisan config:cache
+	docker compose exec app php artisan route:cache
+	docker compose exec app php artisan view:cache
+	@echo ""
+	@echo "Mise a jour terminee !"
+
+# ── Docker Hub ───────────────────────────────────────────────────────────────
+
+DOCKER_REPO ?= cavetech/cica-gpro
+VERSION ?= latest
+
+push-hub: ## Publier l'image sur Docker Hub (usage: make push-hub VERSION=2.0.0)
+	@echo "=== Build de l'image ==="
+	docker build -t $(DOCKER_REPO):$(VERSION) -t $(DOCKER_REPO):latest .
+	@echo "=== Push sur Docker Hub ==="
+	docker push $(DOCKER_REPO):$(VERSION)
+	docker push $(DOCKER_REPO):latest
+	@echo ""
+	@echo "Image publiee: $(DOCKER_REPO):$(VERSION)"
+
+pull-hub: ## Telecharger la derniere image depuis Docker Hub
+	docker pull $(DOCKER_REPO):latest

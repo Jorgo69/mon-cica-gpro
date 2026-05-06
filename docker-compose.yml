@@ -16,10 +16,14 @@
 services:
 
   # --- Application (PHP-FPM) ---
+  # Pour utiliser l'image Docker Hub au lieu de builder localement :
+  #   image: cavetech/cica-gpro:latest
+  # et commenter le bloc build ci-dessous.
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    # image: cavetech/cica-gpro:latest
     container_name: gpro-app
     restart: unless-stopped
     environment:
