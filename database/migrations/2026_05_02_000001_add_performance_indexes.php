@@ -24,6 +24,15 @@ return new class extends Migration
         $this->addIndexIfNotExists('expenses', 'project_id');
         $this->addIndexIfNotExists('expenses', 'budget_id');
         $this->addIndexIfNotExists('budgets', 'project_id');
+
+        // FK owner_user_id sur organizations (apres creation de la table users)
+        try {
+            Schema::table('organizations', function (Blueprint $table) {
+                $table->foreign('owner_user_id')->references('id')->on('users')->onDelete('set null');
+            });
+        } catch (\Exception $e) {
+            // FK already exists, skip
+        }
     }
 
     public function down(): void

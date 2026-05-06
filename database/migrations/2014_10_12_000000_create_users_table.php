@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('pays', 100)->nullable();
             $table->string('ville', 100)->nullable();
             $table->string('role')->nullable();
+            $table->string('plan')->default('free');
+            $table->timestamp('plan_activated_at')->nullable();
+            $table->timestamp('plan_expires_at')->nullable();
             $table->foreignUuid('organization_id')->nullable()->constrained('organizations')->cascadeOnDelete();
             $table->boolean('is_independent')->default(false);
             $table->string('department')->nullable();
