@@ -9,6 +9,27 @@ class PlanSeeder extends Seeder
 {
     public function run(): void
     {
+        if (isSelfHosted()) {
+            // Selfhosted : un seul plan illimite par defaut
+            Plan::updateOrCreate(
+                ['slug' => 'selfhosted'],
+                [
+                    'name' => 'Self-Hosted',
+                    'price' => 0,
+                    'currency' => 'FCFA',
+                    'billing_period' => 'lifetime',
+                    'max_projects' => -1,
+                    'max_members' => -1,
+                    'features' => ['basic_export', 'logframe', 'pdf_export', 'excel_export', 'share_link', 'templates', 'indicators', 'budget_tracking', 'api_access', 'multi_currency'],
+                    'is_default' => true,
+                    'is_active' => true,
+                    'sort_order' => 1,
+                ]
+            );
+            return;
+        }
+
+        // SaaS : 3 plans
         $plans = [
             [
                 'name' => 'Free',
