@@ -30,13 +30,21 @@ return [
     'create_account' => 'Créer un compte',
     'register_subtitle' => 'Rejoignez la plateforme pour gérer vos projets',
     'full_name' => 'Nom complet',
-    'confirm_password' => 'Confirmation',
+    'confirm_password' => 'Confirmer mot de passe',
     'register' => 'S\'inscrire',
     'accept_terms_prefix' => 'J\'accepte les',
     'terms_of_service' => 'conditions d\'utilisation',
     'privacy_policy' => 'politique de confidentialité',
     'and' => 'et la',
     'already_registered' => 'Déjà inscrit ?',
+
+    // Branding (panneau gauche login/register)
+    'branding_title' => 'Gérez vos projets avec le Cadre Logique',
+    'branding_subtitle' => 'Plateforme complète pour les ONG et organisations de développement. Cadre logique, budgets, indicateurs, rapports — tout en un.',
+    'feature_1' => 'Tableau de bord intelligent',
+    'feature_2' => 'Suivi budgétaire en temps réel',
+    'feature_3' => 'Export PDF, DOCX et Excel',
+    'feature_4' => 'Assistant IA intégré',
 
     // Onboarding
     'onboarding' => 'Configuration de votre espace',
