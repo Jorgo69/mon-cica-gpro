@@ -133,7 +133,7 @@ update-hub: ## Mettre a jour depuis Docker Hub (sans git)
 
 # ── Docker Hub ───────────────────────────────────────────────────────────────
 
-DOCKER_REPO ?= cavetech/cica-gpro
+DOCKER_REPO ?= jorgo69/cica-gpro
 VERSION ?= latest
 
 push-hub: ## Publier l'image sur Docker Hub (usage: make push-hub VERSION=2.0.0)

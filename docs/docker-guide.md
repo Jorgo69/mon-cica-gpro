@@ -315,21 +315,32 @@ Pas besoin de `git` ni de `npm`. L'image est deja construite et testee.
 **Premiere installation :**
 
 ```bash
-# 1. Telecharger les fichiers de configuration
+# 1. Creer un dossier et telecharger les fichiers necessaires
 mkdir cica-gpro && cd cica-gpro
-# Copier docker-compose.yml, docker-compose.postgres.yml,
-# .env.docker.mysql (ou .env.docker.postgres),
-# docker/nginx/default.conf, docker/mysql/init.sql (ou docker/postgres/init.sql)
-# depuis le repo GitHub ou un zip fourni par Cave-Tech
+mkdir -p docker/nginx
 
-# 2. Remplacer le build par l'image Docker Hub dans docker-compose.yml :
-#    Commenter :  build: { context: ., dockerfile: Dockerfile }
-#    Decommenter : image: cavetech/cica-gpro:latest
-#    Faire pareil pour les services 'queue' et 'scheduler'
+# 2. Telecharger les 2 fichiers depuis le repo GitHub :
+#    - docker-compose.hub.yml   (le compose pre-configure pour Docker Hub)
+#    - docker/nginx/default.conf (config Nginx)
+#
+#    Depuis : https://github.com/jorgo69/cica-gpro/tree/main
 
-# 3. Lancer
-docker compose up -d
+# 3. Configurer le mode et les mots de passe
+#    Ouvrir docker-compose.hub.yml et modifier :
+#    - GPRO_MODE: saas ou selfhosted
+#    - APP_URL: votre domaine
+#    - Les mots de passe (DB_PASSWORD, MYSQL_ROOT_PASSWORD, etc.)
+#    - Les ports si necessaire (8090, 8081, 3307)
+
+# 4. Lancer
+docker compose -f docker-compose.hub.yml up -d
+
+# 5. L'application est prete sur http://localhost:8090
 ```
+
+> **Le client n'a besoin que de 2 fichiers :**
+> - `docker-compose.hub.yml` — tout est dedans (mode, ports, passwords)
+> - `docker/nginx/default.conf` — config du serveur web
 
 **Mise a jour :**
 
@@ -357,8 +368,8 @@ Apres avoir teste et valide les changements :
 make push-hub VERSION=2.1.0
 
 # Cela cree deux tags sur Docker Hub :
-#   cavetech/cica-gpro:2.1.0
-#   cavetech/cica-gpro:latest
+#   jorgo69/cica-gpro:2.1.0
+#   jorgo69/cica-gpro:latest
 ```
 
 Les clients font ensuite `make update-hub` pour recevoir la mise a jour.

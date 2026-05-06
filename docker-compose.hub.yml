@@ -1,46 +1,48 @@
 # =============================================================================
-# CICA-GPRO — Docker Compose (MySQL par defaut)
+# CICA-GPRO — Docker Compose pour clients Docker Hub
 # =============================================================================
 #
-# IMPORTANT : ne JAMAIS copier un .env.docker vers .env !
-# Utiliser --env-file pour passer les variables Docker :
+# Ce fichier utilise l'image pre-construite depuis Docker Hub.
+# Pas besoin de git clone, npm, ni Dockerfile.
 #
-# MySQL :
-#   docker compose --env-file .env.docker.mysql up -d --build
+# Installation :
+#   1. Telecharger ce fichier + .env.docker.mysql + docker/nginx/default.conf
+#   2. Adapter .env.docker.mysql (mode, ports, mots de passe)
+#   3. docker compose -f docker-compose.hub.yml up -d
 #
-# PostgreSQL :
-#   docker compose --env-file .env.docker.postgres -f docker-compose.yml -f docker-compose.postgres.yml up -d --build
+# Mise a jour :
+#   docker compose -f docker-compose.hub.yml pull
+#   docker compose -f docker-compose.hub.yml up -d
+#   docker compose -f docker-compose.hub.yml exec app php artisan migrate --force
 #
 # =============================================================================
 
 services:
 
-  # --- Application (PHP-FPM) ---
-  # Par defaut : build local depuis le Dockerfile.
-  # Pour utiliser Docker Hub a la place : commenter 'build' et decommenter 'image'
+  # --- Application ---
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: jorgo69/cica-gpro:latest
+    image: jorgo69/cica-gpro:latest
     container_name: gpro-app
     restart: unless-stopped
     environment:
+      # === ADAPTEZ CES VALEURS ===
+      GPRO_MODE: selfhosted        # selfhosted ou saas
+      APP_URL: "http://localhost:8090"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # Base de donnees
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: cica_gpro
       DB_USERNAME: gpro
       DB_PASSWORD: gpro_secret_2026
+      # Redis
       REDIS_HOST: redis
       REDIS_PASSWORD: gpro_redis_2026
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
-      APP_ENV: production
-      APP_DEBUG: "false"
-      APP_URL: "http://localhost:8090"
-      GPRO_MODE: selfhosted
       BROADCAST_DRIVER: log
     volumes:
       - app-storage:/var/www/html/storage
@@ -53,11 +55,9 @@ services:
     container_name: gpro-nginx
     restart: unless-stopped
     ports:
-      - "8090:80"
+      - "8090:80"                   # Changez 8090 si le port est occupe
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./public:/var/www/html/public:ro
-      - app-storage:/var/www/html/storage:ro
     networks:
       - gpro
     depends_on:
@@ -69,14 +69,14 @@ services:
     container_name: gpro-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root_secret_2026
+      MYSQL_ROOT_PASSWORD: root_secret_2026    # CHANGEZ EN PRODUCTION
       MYSQL_DATABASE: cica_gpro
       MYSQL_USER: gpro
-      MYSQL_PASSWORD: gpro_secret_2026
+      MYSQL_PASSWORD: gpro_secret_2026         # CHANGEZ EN PRODUCTION
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3307:3306"                 # Changez 3307 si le port est occupe
     networks:
       - gpro
     healthcheck:
@@ -100,7 +100,7 @@ services:
       PMA_PORT: 3306
       UPLOAD_LIMIT: 64M
     ports:
-      - "8081:80"
+      - "8081:80"                   # Changez 8081 si le port est occupe
     networks:
       - gpro
     depends_on:
@@ -120,10 +120,7 @@ services:
 
   # --- Queue Worker ---
   queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: jorgo69/cica-gpro:latest
+    image: jorgo69/cica-gpro:latest
     container_name: gpro-queue
     restart: unless-stopped
     entrypoint: []
@@ -147,10 +144,7 @@ services:
 
   # --- Scheduler ---
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: jorgo69/cica-gpro:latest
+    image: jorgo69/cica-gpro:latest
     container_name: gpro-scheduler
     restart: unless-stopped
     entrypoint: []
