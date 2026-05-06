@@ -12,7 +12,7 @@
     $baseClasses = 'inline-flex items-center justify-center whitespace-nowrap font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm relative overflow-hidden';
 
     $variants = [
-        'primary' => 'bg-primary text-white hover:bg-primary-dark focus:ring-primary shadow-lg shadow-primary/20 border border-transparent',
+        'primary' => 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 focus:ring-slate-500 shadow-lg shadow-slate-300/50 dark:shadow-slate-900/50 border border-transparent',
         'accent' => 'bg-accent text-white hover:bg-accent-dark focus:ring-accent shadow-lg shadow-accent/20 border border-transparent',
         'secondary' => 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-800 hover:bg-slate-700 dark:hover:bg-slate-300 focus:ring-slate-400 shadow-lg shadow-slate-300/50 dark:shadow-slate-900/50 border border-transparent',
         'danger' => 'bg-error text-white hover:bg-error-dark focus:ring-error shadow-lg shadow-error/20 border border-transparent',

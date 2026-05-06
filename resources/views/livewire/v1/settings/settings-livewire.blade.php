@@ -85,9 +85,9 @@
                                 <input type="file" wire:model="orgLogo" accept="image/*" class="hidden" />
                             </label>
                             @if($orgLogoUrl)
-                                <button type="button" wire:click="removeOrgLogo" class="block text-xs text-error hover:underline">
+                                <x-ui.button type="button" wire:click="removeOrgLogo" variant="ghost" size="sm" icon="x">
                                     {{ __('settings.remove_logo') }}
-                                </button>
+                                </x-ui.button>
                             @endif
                             <p class="text-[10px] text-muted">PNG, JPG, SVG. Max 2 Mo.</p>
                         </div>
@@ -388,10 +388,10 @@
                             </div>
                         </div>
                         @if(in_array($key, $linked))
-                            <button wire:click="unlinkSocial('{{ $key }}')" wire:confirm="Delier ce compte {{ $provider['label'] }} ?"
-                                class="px-4 py-2 text-xs font-bold text-error bg-error/5 rounded-xl hover:bg-error/10 transition-all">
+                            <x-ui.button wire:click="unlinkSocial('{{ $key }}')" wire:confirm="Delier ce compte {{ $provider['label'] }} ?"
+                                variant="danger" size="sm" icon="unlink">
                                 Delier
-                            </button>
+                            </x-ui.button>
                         @else
                             <a href="{{ route('social.redirect', $key) }}"
                                 class="px-4 py-2 text-xs font-bold text-accent bg-accent/5 rounded-xl hover:bg-accent/10 transition-all">
@@ -743,11 +743,15 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-2 ml-3">
-                        <button wire:click="toggleWebhook('{{ $wh->id }}')" class="text-[10px] font-bold {{ $wh->is_active ? 'text-warning' : 'text-success' }}">
+                        <x-ui.button wire:click="toggleWebhook('{{ $wh->id }}')" variant="{{ $wh->is_active ? 'outline' : 'accent' }}" size="sm" icon="{{ $wh->is_active ? 'pause' : 'play' }}">
                             {{ $wh->is_active ? __('common.deactivate') : __('common.activate') }}
-                        </button>
-                        <button wire:click="editWebhook('{{ $wh->id }}')" class="text-[10px] font-bold text-accent">{{ __('common.edit') }}</button>
-                        <button wire:click="deleteWebhook('{{ $wh->id }}')" wire:confirm="{{ __('settings.webhooks.confirm_delete') }}" class="text-[10px] font-bold text-error">{{ __('common.delete') }}</button>
+                        </x-ui.button>
+                        <x-ui.button wire:click="editWebhook('{{ $wh->id }}')" variant="ghost" size="sm" icon="pencil">
+                            {{ __('common.edit') }}
+                        </x-ui.button>
+                        <x-ui.button wire:click="deleteWebhook('{{ $wh->id }}')" wire:confirm="{{ __('settings.webhooks.confirm_delete') }}" variant="danger" size="sm" icon="trash-2">
+                            {{ __('common.delete') }}
+                        </x-ui.button>
                     </div>
                 </div>
             @empty
@@ -783,11 +787,11 @@
                     </p>
                     <div class="flex gap-2">
                         <code class="flex-1 bg-white dark:bg-black/20 p-2 rounded text-[10px] font-mono text-heading break-all" id="api-token">{{ $plainTextToken }}</code>
-                        <button @click="navigator.clipboard.writeText(document.getElementById('api-token').textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                                class="px-3 py-1 bg-accent text-white text-xs font-bold rounded-lg flex-shrink-0">
+                        <x-ui.button @click="navigator.clipboard.writeText(document.getElementById('api-token').textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                                variant="accent" size="sm">
                             <span x-show="!copied"><x-lucide-copy class="w-3.5 h-3.5" /></span>
                             <span x-show="copied"><x-lucide-check class="w-3.5 h-3.5" /></span>
-                        </button>
+                        </x-ui.button>
                     </div>
                 </div>
             @endif
@@ -804,11 +808,11 @@
                                     @if($token->last_used_at) · {{ __('settings.api.last_used') }} {{ $token->last_used_at->diffForHumans() }} @endif
                                 </p>
                             </div>
-                            <button wire:click="revokeApiToken('{{ $token->id }}')"
+                            <x-ui.button wire:click="revokeApiToken('{{ $token->id }}')"
                                     wire:confirm="{{ __('settings.api.confirm_revoke') }}"
-                                    class="text-xs text-error font-bold hover:underline">
+                                    variant="danger" size="sm" icon="trash-2">
                                 {{ __('settings.api.revoke') }}
-                            </button>
+                            </x-ui.button>
                         </div>
                     @endforeach
                 </div>
