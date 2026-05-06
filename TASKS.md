@@ -557,9 +557,20 @@ Un independant peut creer son org (migration de compte). Les permissions sont sc
 - [x] **Scroll to top** : button au lieu de a (fix click)
 - [x] **Docs** : identifiants par defaut en haut des guides, sections MAJ Docker Hub + sources
 
+### Landing page v2 (TERMINEE)
+
+- [x] **Landing page** : hero cadre logique, stats, solutions, open source, processus, FAQ, temoignages, CTA WhatsApp
+- [x] **Traductions FR+EN** : lang/fr/landing.php + lang/en/landing.php
+- [x] **Dark mode + langue** : switch dans navbar landing, propagation sur login/register/legal/pricing
+- [x] **Alpine.js standalone** : app.js charge Alpine sur pages sans Livewire
+- [x] **Layout legal** : layout partage (navbar, dark mode, footer) pour privacy/terms/pricing
+- [x] **Composant x-ui.logo** : config GPRO_LOGO/.env, fallback "G", variante dark
+- [x] **Branding configurable** : logo, phone, site_url, company dans config/gpro.php + .env
+- [x] **Secrets Docker** : passwords remplaces par CHANGEZ_MOI (fix GitGuardian)
+- [x] **Guest layout** : dark mode propage, tokens semantiques, company depuis config
+
 ### A faire
 
-- [ ] **Landing page v2** : refaire completement (voir memory/landing-page.md pour les specs)
 - [ ] **Checkboxes webhook** : style comme les notifications (toggles ronds)
 - [ ] **Social auth** : messages d'erreur silencieux sur login/register via Google
 - [ ] **NativePHP** : preparation mobile/desktop (a venir)
